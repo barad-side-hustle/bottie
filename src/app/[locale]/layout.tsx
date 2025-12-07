@@ -64,13 +64,14 @@ export default async function LocaleLayout({
             </AuthProvider>
           </DirectionProvider>
 
-          <Script src="https://www.googletagmanager.com/gtag/js?id=AW-17485891262" strategy="afterInteractive" />
+          <Script src="https://www.googletagmanager.com/gtag/js?id=G-4077J0PY28" strategy="afterInteractive" />
           <Script id="google-analytics" strategy="afterInteractive">
             {`
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
               gtag('config', 'AW-17485891262');
+              gtag('config', 'G-4077J0PY28');
             `}
           </Script>
         </NextIntlClientProvider>
