@@ -5,9 +5,7 @@ import { getTranslations } from "next-intl/server";
 import { getBusiness } from "@/lib/actions/businesses.actions";
 import { getInsights, getInsightsTrends } from "@/lib/actions/insights.actions";
 import { getAuthenticatedUserId } from "@/lib/api/auth";
-import { InsightsOverview } from "@/components/dashboard/insights/InsightsOverview";
-import { InsightsCharts } from "@/components/dashboard/insights/InsightsCharts";
-import { InsightsDateFilter } from "@/components/dashboard/insights/InsightsDateFilter";
+import { InsightsDateFilter, InsightsOverview, InsightsCharts } from "@/components/dashboard/insights";
 import { EmptyState } from "@/components/ui/empty-state";
 import { subDays } from "date-fns";
 
