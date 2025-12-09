@@ -5,7 +5,6 @@ export interface NewUserSignupEmailProps {
   userEmail: string;
   userId: string;
   signupTimestamp: Date;
-  googleProfilePicture?: string;
   dashboardUrl: string;
 }
 

@@ -13,7 +13,6 @@ interface NewUserNotificationData {
   userName: string;
   userId: string;
   signupTimestamp: Date;
-  googleProfilePicture?: string;
 }
 
 interface UserWelcomeData {
@@ -100,7 +99,7 @@ export async function sendEmail(
 }
 
 export async function sendNewUserNotification(data: NewUserNotificationData): Promise<EmailResult> {
-  const { userName, userEmail, userId, signupTimestamp, googleProfilePicture } = data;
+  const { userName, userEmail, userId, signupTimestamp } = data;
 
   console.log("New user notification - Preparing to send admin email", {
     userId,
@@ -116,7 +115,6 @@ export async function sendNewUserNotification(data: NewUserNotificationData): Pr
     userEmail,
     userId,
     signupTimestamp,
-    googleProfilePicture,
     dashboardUrl,
   });
 
