@@ -290,6 +290,7 @@
         "disconnected": "מנותק",
         "navigating": "מעביר...",
         "viewReviews": "צפה בביקורות",
+        "viewInsights": "תובנות",
         "editDetails": "ערוך פרטים"
       }
     },
@@ -620,6 +621,75 @@
       "errorLoading": "שגיאה בטעינת הביקורת",
       "reviewFrom": "ביקורת מאת {reviewerName}"
     },
+    "insights": {
+      "title": "תובנות",
+      "description": "הבן את ביצועי העסק שלך באמצעות ניתוח ביקורות",
+      "loading": "טוען תובנות...",
+      "noData": "אין נתונים זמינים",
+      "noDataDescription": "אין ביקורות מסווגות לתקופה שנבחרה",
+      "dateFilter": {
+        "label": "טווח תאריכים",
+        "last7Days": "7 ימים אחרונים",
+        "last30Days": "30 ימים אחרונים",
+        "last90Days": "90 ימים אחרונים",
+        "last12Months": "12 חודשים אחרונים",
+        "allTime": "כל הזמנים",
+        "custom": "טווח מותאם",
+        "from": "מתאריך",
+        "to": "עד תאריך",
+        "apply": "החל",
+        "cancel": "ביטול"
+      },
+      "overview": {
+        "title": "סקירה",
+        "totalReviews": "סה״כ ביקורות",
+        "classifiedReviews": "מסווגות",
+        "averageRating": "דירוג ממוצע",
+        "sentimentScore": "סנטימנט",
+        "positiveSentiment": "חיובי",
+        "negativeSentiment": "שלילי"
+      },
+      "sentiment": {
+        "title": "התפלגות סנטימנט",
+        "positive": "חיובי",
+        "neutral": "ניטרלי",
+        "negative": "שלילי"
+      },
+      "trends": {
+        "title": "מגמות לאורך זמן",
+        "reviews": "ביקורות",
+        "rating": "דירוג"
+      },
+      "noCategories": "אין קטגוריות להצגה",
+      "sections": {
+        "sentimentBreakdown": "התפלגות סנטימנט",
+        "trends": "מגמות ביקורות",
+        "topPositives": "מה לקוחות אהבו",
+        "topNegatives": "נקודות לשיפור"
+      },
+      "categories": {
+        "topPositives": "מה לקוחות אהבו",
+        "topNegatives": "נקודות לשיפור",
+        "mentions": "{count} אזכורים",
+        "service": "שירות",
+        "quality": "איכות",
+        "value": "תמורה למחיר",
+        "cleanliness": "ניקיון",
+        "atmosphere": "אווירה",
+        "professionalism": "מקצועיות",
+        "communication": "תקשורת",
+        "wait_time": "זמן המתנה",
+        "location": "מיקום",
+        "facilities": "מתקנים",
+        "food_quality": "איכות אוכל",
+        "menu_variety": "מגוון תפריט",
+        "product_selection": "מבחר מוצרים",
+        "return_policy": "מדיניות החזרות",
+        "expertise": "מומחיות",
+        "results": "תוצאות",
+        "safety": "בטיחות"
+      }
+    },
     "settings": {
       "businessNotFound": "עסק לא נמצא",
       "businessNotFoundDescription": "העסק המבוקש לא נמצא.",
@@ -842,6 +912,10 @@
       "statsTitle": "סקירה",
       "totalReviewsLabel": "סה״כ ביקורות",
       "averageRatingLabel": "דירוג ממוצע",
+      "sentimentTitle": "התפלגות סנטימנט",
+      "sentimentPositive": "חיובי",
+      "sentimentNeutral": "ניטרלי",
+      "sentimentNegative": "שלילי",
       "positiveThemesTitle": "מה לקוחות אהבו",
       "negativeThemesTitle": "נקודות לשיפור",
       "recommendationsTitle": "המלצות",

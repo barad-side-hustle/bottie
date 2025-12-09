@@ -9,6 +9,7 @@ import { listReviews, starRatingToNumber, parseGoogleTimestamp, GoogleReview } f
 import { decryptToken } from "@/lib/google/business-profile";
 import { ReviewInsert, ReviewResponseInsert } from "@/lib/db/schema";
 import { isDuplicateKeyError } from "@/lib/db/error-handlers";
+import { classifyReview } from "@/lib/ai/classification";
 
 export async function triggerReviewImport(accountId: string, businessId: string) {
   const { userId } = await getAuthenticatedUserId();
@@ -43,8 +44,8 @@ export async function triggerReviewImport(accountId: string, businessId: string)
 
     let importedCount = 0;
     let totalFetchedCount = 0;
-    const MAX_IMPORT_COUNT = 500;
-    const BATCH_SIZE = 500;
+    const MAX_IMPORT_COUNT = 50;
+    const BATCH_SIZE = 50;
     let reviewBuffer: GoogleReview[] = [];
 
     const processReviewBatch = async (reviews: GoogleReview[]) => {
@@ -73,6 +74,17 @@ export async function triggerReviewImport(accountId: string, businessId: string)
           try {
             const newReview = await reviewsRepo.create(reviewData);
             importedCount++;
+
+            classifyReview({
+              rating: reviewData.rating,
+              text: reviewData.text || null,
+            })
+              .then((classification) => {
+                reviewsRepo
+                  .update(newReview.id, { classifications: classification })
+                  .catch((err) => console.error("Failed to save classification:", err));
+              })
+              .catch((err) => console.error("Failed to classify review:", err));
 
             if (hasReply && googleReview.reviewReply && googleReview.reviewReply.comment) {
               const responseData: Omit<ReviewResponseInsert, "accountId" | "businessId"> = {
