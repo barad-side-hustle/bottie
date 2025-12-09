@@ -103,12 +103,6 @@ export default function PrivacyPage() {
                   {t("sections.contact.emailValue")}
                 </a>
               </p>
-              <p>
-                {t("sections.contact.phone", { phone: t("sections.contact.phoneValue") })}{" "}
-                <a href={`tel:${t("sections.contact.phoneValue")}`} className="text-primary hover:underline">
-                  {t("sections.contact.phoneValue")}
-                </a>
-              </p>
             </div>
           </section>
 

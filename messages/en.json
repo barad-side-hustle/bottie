@@ -820,9 +820,7 @@
         "title": "10. Contact",
         "content": "For questions or requests regarding the privacy policy or exercising your rights, please contact:",
         "email": "Email: {email}",
-        "phone": "Phone: {phone}",
-        "emailValue": "alon@bottie.ai",
-        "phoneValue": "+972-50-671-5060"
+        "emailValue": "alon@bottie.ai"
       }
     }
   },

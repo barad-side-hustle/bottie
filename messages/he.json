@@ -831,9 +831,7 @@
         "title": "10. צור קשר",
         "content": "לשאלות או בקשות הנוגעות למדיניות הפרטיות או למימוש זכויותיך, ניתן ליצור קשר:",
         "email": "דוא\"ל: {email}",
-        "phone": "טלפון: {phone}",
-        "emailValue": "alon@bottie.ai",
-        "phoneValue": "+972-50-671-5060"
+        "emailValue": "alon@bottie.ai"
       }
     }
   },
