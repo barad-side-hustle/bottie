@@ -1,5 +1,14 @@
 import { Body, Button, Container, Head, Heading, Hr, Html, Section, Text, Column, Row } from "@react-email/components";
 
+export interface SentimentData {
+  positive: number;
+  neutral: number;
+  negative: number;
+  positiveLabel: string;
+  neutralLabel: string;
+  negativeLabel: string;
+}
+
 export interface WeeklySummaryEmailProps {
   title: string;
   dateRange: string;
@@ -10,6 +19,9 @@ export interface WeeklySummaryEmailProps {
   averageRatingLabel: string;
   totalReviews: number;
   averageRating: string;
+
+  sentimentTitle?: string;
+  sentiment?: SentimentData;
 
   positiveThemesTitle: string;
   positiveThemes: string[];
@@ -36,6 +48,8 @@ export default function WeeklySummaryEmail({
   averageRatingLabel,
   totalReviews,
   averageRating,
+  sentimentTitle,
+  sentiment,
   positiveThemesTitle,
   positiveThemes,
   negativeThemesTitle,
@@ -153,6 +167,55 @@ export default function WeeklySummaryEmail({
               </Row>
             </Section>
 
+            {sentiment && sentimentTitle && (
+              <Section
+                style={{
+                  backgroundColor: "#F8FAFC",
+                  borderRadius: "8px",
+                  padding: "20px",
+                  border: `1px solid ${borderSoft}`,
+                  marginBottom: "32px",
+                }}
+              >
+                <Heading
+                  as="h3"
+                  style={{
+                    fontSize: "18px",
+                    margin: "0 0 16px 0",
+                    color: textDark,
+                  }}
+                >
+                  {sentimentTitle}
+                </Heading>
+                <Row>
+                  <Column style={{ textAlign: "center" }}>
+                    <Text style={{ fontSize: "24px", fontWeight: "bold", margin: 0, color: positiveColor }}>
+                      {sentiment.positive}
+                    </Text>
+                    <Text style={{ fontSize: "13px", color: "#64748b", margin: "4px 0 0 0" }}>
+                      {sentiment.positiveLabel}
+                    </Text>
+                  </Column>
+                  <Column style={{ textAlign: "center" }}>
+                    <Text style={{ fontSize: "24px", fontWeight: "bold", margin: 0, color: "#64748b" }}>
+                      {sentiment.neutral}
+                    </Text>
+                    <Text style={{ fontSize: "13px", color: "#64748b", margin: "4px 0 0 0" }}>
+                      {sentiment.neutralLabel}
+                    </Text>
+                  </Column>
+                  <Column style={{ textAlign: "center" }}>
+                    <Text style={{ fontSize: "24px", fontWeight: "bold", margin: 0, color: negativeColor }}>
+                      {sentiment.negative}
+                    </Text>
+                    <Text style={{ fontSize: "13px", color: "#64748b", margin: "4px 0 0 0" }}>
+                      {sentiment.negativeLabel}
+                    </Text>
+                  </Column>
+                </Row>
+              </Section>
+            )}
+
             {positiveThemes.length > 0 && (
               <Section style={{ marginBottom: "24px" }}>
                 <Heading as="h3" style={{ fontSize: "18px", margin: "0 0 12px 0", color: textDark }}>
@@ -260,6 +323,15 @@ WeeklySummaryEmail.PreviewProps = {
   averageRatingLabel: "דירוג ממוצע",
   totalReviews: 15,
   averageRating: "4.8",
+  sentimentTitle: "התפלגות סנטימנט",
+  sentiment: {
+    positive: 12,
+    neutral: 2,
+    negative: 1,
+    positiveLabel: "חיובי",
+    neutralLabel: "ניטרלי",
+    negativeLabel: "שלילי",
+  },
   positiveThemesTitle: "נקודות חוזק",
   positiveThemes: ["שירות מעולה ומהיר", "אוכל טעים", "אווירה נעימה"],
   negativeThemesTitle: "נקודות לשיפור",

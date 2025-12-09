@@ -12,7 +12,7 @@ import {
   DashboardCardContent,
 } from "@/components/ui/dashboard-card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin } from "lucide-react";
+import { MapPin, BarChart3, Settings2, Star } from "lucide-react";
 import Image from "next/image";
 import { EmptyState } from "@/components/ui/empty-state";
 import { AccountAvatarDropdown } from "./AccountAvatarDropdown";
@@ -25,7 +25,10 @@ interface AccountBusinessesListProps {
 export function AccountBusinessesList({ accounts }: AccountBusinessesListProps) {
   const router = useRouter();
   const t = useTranslations("dashboard.home.accountBusinessesList");
-  const [loadingState, setLoadingState] = useState<{ businessId: string; action: "reviews" | "settings" } | null>(null);
+  const [loadingState, setLoadingState] = useState<{
+    businessId: string;
+    action: "reviews" | "settings" | "insights";
+  } | null>(null);
 
   const handleViewReviews = (accountId: string, businessId: string) => {
     setLoadingState({ businessId, action: "reviews" });
@@ -35,6 +38,11 @@ export function AccountBusinessesList({ accounts }: AccountBusinessesListProps) 
   const handleEditDetails = (accountId: string, businessId: string) => {
     setLoadingState({ businessId, action: "settings" });
     router.push(`/dashboard/accounts/${accountId}/businesses/${businessId}/settings`);
+  };
+
+  const handleViewInsights = (accountId: string, businessId: string) => {
+    setLoadingState({ businessId, action: "insights" });
+    router.push(`/dashboard/accounts/${accountId}/businesses/${businessId}/insights`);
   };
 
   const handleAddBusiness = () => {
@@ -106,14 +114,15 @@ export function AccountBusinessesList({ accounts }: AccountBusinessesListProps) 
                         {business.description}
                       </div>
                     )}
-                    <div className="flex gap-3 pt-2 mt-auto">
+                    <div className="flex flex-wrap gap-2 pt-2 mt-auto">
                       <Button
                         variant="default"
                         size="sm"
-                        className="flex-1 shadow-primary hover:shadow-xl transition-all duration-300"
+                        className="flex-1 min-w-[100px] shadow-primary hover:shadow-xl transition-all duration-300"
                         onClick={() => handleViewReviews(account.id, business.id)}
                         disabled={loadingState?.businessId === business.id && loadingState?.action === "reviews"}
                       >
+                        <Star className="h-4 w-4 mr-1" />
                         {loadingState?.businessId === business.id && loadingState?.action === "reviews"
                           ? t("navigating")
                           : t("viewReviews")}
@@ -121,10 +130,23 @@ export function AccountBusinessesList({ accounts }: AccountBusinessesListProps) 
                       <Button
                         variant="outline"
                         size="sm"
-                        className="flex-1 hover:bg-pastel-lavender/10 transition-all duration-300"
+                        className="flex-1 min-w-[100px] hover:bg-pastel-lavender/10 transition-all duration-300"
+                        onClick={() => handleViewInsights(account.id, business.id)}
+                        disabled={loadingState?.businessId === business.id && loadingState?.action === "insights"}
+                      >
+                        <BarChart3 className="h-4 w-4 me-1" />
+                        {loadingState?.businessId === business.id && loadingState?.action === "insights"
+                          ? t("navigating")
+                          : t("viewInsights")}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1 min-w-[100px] hover:bg-pastel-lavender/10 transition-all duration-300"
                         onClick={() => handleEditDetails(account.id, business.id)}
                         disabled={loadingState?.businessId === business.id && loadingState?.action === "settings"}
                       >
+                        <Settings2 className="h-4 w-4 me-1" />
                         {loadingState?.businessId === business.id && loadingState?.action === "settings"
                           ? t("navigating")
                           : t("editDetails")}

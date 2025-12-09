@@ -25,7 +25,8 @@
     "comments:remove": "tsx scripts/remove-comments.ts",
     "pubsub:update": "bash scripts/update-pubsub-subscription.sh",
     "email:dev": "npx react-email dev --dir lib/emails",
-    "email:export": "npx react-email export --dir lib/emails"
+    "email:export": "npx react-email export --dir lib/emails",
+    "stripe:webhook": "stripe listen --forward-to localhost:3000/api/stripe/webhook"
   },
   "dependencies": {
     "@google-cloud/pubsub": "^4.10.0",
@@ -73,7 +74,7 @@
     "react-dom": "19.1.2",
     "react-intersection-observer": "^10.0.0",
     "react-responsive": "^10.0.1",
-    "recharts": "2.15.4",
+    "recharts": "^3.5.1",
     "resend": "^6.4.2",
     "server-only": "^0.0.1",
     "sonner": "^2.0.7",
@@ -124,6 +125,9 @@
   "knip": {
     "ignore": [
       "src/i18n/request.ts"
+    ],
+    "ignoreBinaries": [
+      "stripe"
     ],
     "rules": {
       "dependencies": "off",

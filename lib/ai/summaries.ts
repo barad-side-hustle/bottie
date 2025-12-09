@@ -1,13 +1,22 @@
 import mustache from "mustache";
 import { generateWithGemini } from "./core/gemini-client";
-import { WEEKLY_SUMMARY_PROMPT } from "./prompts/weekly-summary-template";
+import { WEEKLY_SUMMARY_PROMPT, WEEKLY_SUMMARY_FROM_CLASSIFICATIONS_PROMPT } from "./prompts/weekly-summary-template";
 import type { Review } from "@/lib/db/schema";
 import { SchemaType, type ResponseSchema } from "@google/generative-ai";
+import type { ClassificationStats, CategoryCount } from "../types/classification.types";
 
 export interface WeeklySummaryData {
   positiveThemes: string[];
   negativeThemes: string[];
   recommendations: string[];
+}
+
+export interface ClassificationSummaryInput {
+  businessName: string;
+  stats: ClassificationStats;
+  topPositives: CategoryCount[];
+  topNegatives: CategoryCount[];
+  language: "en" | "he";
 }
 
 const summarySchema: ResponseSchema = {
@@ -77,6 +86,65 @@ export async function generateWeeklySummary(
     };
   } catch (error) {
     console.error("Error generating weekly summary:", error);
+    return {
+      positiveThemes: [],
+      negativeThemes: [],
+      recommendations: ["Could not generate recommendations at this time due to an error."],
+    };
+  }
+}
+
+export async function generateWeeklySummaryFromClassifications(
+  input: ClassificationSummaryInput
+): Promise<WeeklySummaryData> {
+  const { businessName, stats, topPositives, topNegatives, language } = input;
+
+  if (stats.totalReviews === 0) {
+    return {
+      positiveThemes: [],
+      negativeThemes: [],
+      recommendations: [],
+    };
+  }
+
+  const classificationData = {
+    totalReviews: stats.totalReviews,
+    classifiedReviews: stats.classifiedReviews,
+    averageRating: stats.averageRating.toFixed(1),
+    sentimentBreakdown: stats.sentimentBreakdown,
+    topPositiveCategories: topPositives.map((c) => ({
+      category: c.category,
+      count: c.count,
+      percentage: c.percentage.toFixed(0),
+    })),
+    topNegativeCategories: topNegatives.map((c) => ({
+      category: c.category,
+      count: c.count,
+      percentage: c.percentage.toFixed(0),
+    })),
+  };
+
+  const prompt = mustache.render(WEEKLY_SUMMARY_FROM_CLASSIFICATIONS_PROMPT, {
+    businessName,
+    language: language === "he" ? "Hebrew" : "English",
+    classificationData: JSON.stringify(classificationData, null, 2),
+  });
+
+  try {
+    const key = process.env.GEMINI_API_KEY;
+    if (!key) throw new Error("Missing GEMINI_API_KEY");
+
+    const response = await generateWithGemini(key, prompt, "gemini-2.5-flash", 4096, summarySchema);
+
+    const data = JSON.parse(response) as WeeklySummaryData;
+
+    return {
+      positiveThemes: data.positiveThemes || [],
+      negativeThemes: data.negativeThemes || [],
+      recommendations: data.recommendations || [],
+    };
+  } catch (error) {
+    console.error("Error generating weekly summary from classifications:", error);
     return {
       positiveThemes: [],
       negativeThemes: [],

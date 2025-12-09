@@ -2,8 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
 import { authUsers, subscriptions, businesses, userAccounts, reviews } from "@/lib/db/schema";
 import { eq, and, gte, lte } from "drizzle-orm";
-import { generateWeeklySummary } from "@/lib/ai/summaries";
+import { generateWeeklySummary, generateWeeklySummaryFromClassifications } from "@/lib/ai/summaries";
 import { WeeklySummariesRepository } from "@/lib/db/repositories/weekly-summaries.repository";
+import { InsightsRepository } from "@/lib/db/repositories/insights.repository";
 import { Resend } from "resend";
 import WeeklySummaryEmail from "@/lib/emails/weekly-summary";
 import { UsersConfigsRepository } from "@/lib/db/repositories/users-configs.repository";
@@ -92,14 +93,30 @@ export async function GET(req: NextRequest) {
             continue;
           }
 
-          const summaryData = await generateWeeklySummary(business.name, businessReviews, locale as "en" | "he");
+          const insightsRepo = new InsightsRepository(userId, business.id);
+          const stats = await insightsRepo.getClassificationStats(lastSunday, lastSaturday);
+          const topPositives = await insightsRepo.getTopCategories(lastSunday, lastSaturday, "positive", 5);
+          const topNegatives = await insightsRepo.getTopCategories(lastSunday, lastSaturday, "negative", 5);
+
+          const hasClassifications = stats.classifiedReviews > 0;
+          const summaryData = hasClassifications
+            ? await generateWeeklySummaryFromClassifications({
+                businessName: business.name,
+                stats,
+                topPositives,
+                topNegatives,
+                language: locale as "en" | "he",
+              })
+            : await generateWeeklySummary(business.name, businessReviews, locale as "en" | "he");
+
+          const averageRating = businessReviews.reduce((acc, r) => acc + r.rating, 0) / businessReviews.length;
 
           const { created } = await weeklySummariesRepo.upsert({
             businessId: business.id,
             weekStartDate: lastSunday.toISOString().split("T")[0],
             weekEndDate: lastSaturday.toISOString().split("T")[0],
             totalReviews: businessReviews.length,
-            averageRating: businessReviews.reduce((acc, r) => acc + r.rating, 0) / businessReviews.length,
+            averageRating,
             positiveThemes: summaryData.positiveThemes,
             negativeThemes: summaryData.negativeThemes,
             recommendations: summaryData.recommendations,
@@ -116,6 +133,17 @@ export async function GET(req: NextRequest) {
 
             const subject = t("subject", { businessName: business.name });
 
+            const sentimentData = hasClassifications
+              ? {
+                  positive: stats.sentimentBreakdown.positive,
+                  neutral: stats.sentimentBreakdown.neutral,
+                  negative: stats.sentimentBreakdown.negative,
+                  positiveLabel: t("sentimentPositive"),
+                  neutralLabel: t("sentimentNeutral"),
+                  negativeLabel: t("sentimentNegative"),
+                }
+              : undefined;
+
             await resend.emails.send({
               from: process.env.RESEND_FROM_EMAIL!,
               to: user.email,
@@ -128,9 +156,9 @@ export async function GET(req: NextRequest) {
                 totalReviewsLabel: t("totalReviewsLabel"),
                 averageRatingLabel: t("averageRatingLabel"),
                 totalReviews: businessReviews.length,
-                averageRating: (businessReviews.reduce((acc, r) => acc + r.rating, 0) / businessReviews.length).toFixed(
-                  1
-                ),
+                averageRating: averageRating.toFixed(1),
+                sentimentTitle: hasClassifications ? t("sentimentTitle") : undefined,
+                sentiment: sentimentData,
                 positiveThemesTitle: t("positiveThemesTitle"),
                 positiveThemes: summaryData.positiveThemes,
                 negativeThemesTitle: t("negativeThemesTitle"),

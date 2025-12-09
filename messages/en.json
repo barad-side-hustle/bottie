@@ -293,6 +293,7 @@
         "disconnected": "Disconnected",
         "navigating": "Navigating...",
         "viewReviews": "View reviews",
+        "viewInsights": "Insights",
         "editDetails": "Edit details"
       }
     },
@@ -609,6 +610,80 @@
       "errorLoading": "Error loading review",
       "reviewFrom": "Review from {reviewerName}"
     },
+    "insights": {
+      "title": "Insights",
+      "description": "Understand your business performance through review analysis",
+      "loading": "Loading insights...",
+      "noData": "No data available",
+      "noDataDescription": "There are no classified reviews for the selected period",
+      "dateFilter": {
+        "label": "Date Range",
+        "last7Days": "Last 7 days",
+        "last30Days": "Last 30 days",
+        "last90Days": "Last 90 days",
+        "last12Months": "Last 12 months",
+        "allTime": "All time",
+        "custom": "Custom range",
+        "from": "From",
+        "to": "To",
+        "apply": "Apply",
+        "cancel": "Cancel"
+      },
+      "overview": {
+        "title": "Overview",
+        "totalReviews": "Total Reviews",
+        "classifiedReviews": "Classified",
+        "averageRating": "Avg Rating",
+        "sentimentScore": "Sentiment",
+        "positiveSentiment": "Positive",
+        "negativeSentiment": "Negative"
+      },
+      "sentiment": {
+        "title": "Sentiment Distribution",
+        "positive": "Positive",
+        "neutral": "Neutral",
+        "negative": "Negative"
+      },
+      "trends": {
+        "title": "Trends Over Time",
+        "reviews": "Reviews",
+        "rating": "Rating"
+      },
+      "noCategories": "No categories to display",
+      "sections": {
+        "sentimentBreakdown": "Sentiment Breakdown",
+        "trends": "Review Trends",
+        "topPositives": "What Customers Love",
+        "topNegatives": "Areas for Improvement",
+        "categories": "Categories"
+      },
+      "modal": {
+        "title": "Reviews: {category}",
+        "noReviews": "No reviews found for this category"
+      },
+      "categories": {
+        "topPositives": "What Customers Love",
+        "topNegatives": "Areas for Improvement",
+        "mentions": "{count} mentions",
+        "service": "Service",
+        "quality": "Quality",
+        "value": "Value",
+        "cleanliness": "Cleanliness",
+        "atmosphere": "Atmosphere",
+        "professionalism": "Professionalism",
+        "communication": "Communication",
+        "wait_time": "Wait Time",
+        "location": "Location",
+        "facilities": "Facilities",
+        "food_quality": "Food Quality",
+        "menu_variety": "Menu Variety",
+        "product_selection": "Product Selection",
+        "return_policy": "Return Policy",
+        "expertise": "Expertise",
+        "results": "Results",
+        "safety": "Safety"
+      }
+    },
     "settings": {
       "businessNotFound": "Business not found",
       "businessNotFoundDescription": "The requested business was not found.",
@@ -824,6 +899,10 @@
       "statsTitle": "Overview",
       "totalReviewsLabel": "Total Reviews",
       "averageRatingLabel": "Avg Rating",
+      "sentimentTitle": "Sentiment Breakdown",
+      "sentimentPositive": "Positive",
+      "sentimentNeutral": "Neutral",
+      "sentimentNegative": "Negative",
       "positiveThemesTitle": "What Customers Loved",
       "negativeThemesTitle": "Areas for Improvement",
       "recommendationsTitle": "Recommendations",

@@ -1,8 +1,9 @@
-import { boolean, integer, pgTable, text, timestamp, uuid, index, pgPolicy, check } from "drizzle-orm/pg-core";
+import { boolean, integer, jsonb, pgTable, text, timestamp, uuid, index, pgPolicy, check } from "drizzle-orm/pg-core";
 import { sql, relations } from "drizzle-orm";
 import { authenticatedRole, authUid } from "./roles";
 import { businesses } from "./businesses.schema";
 import type { ReplyStatus } from "../../types/review.types";
+import type { ReviewClassification } from "../../types/classification.types";
 import { reviewResponses } from "./review-responses.schema";
 
 export const reviews = pgTable(
@@ -30,6 +31,8 @@ export const reviews = pgTable(
 
     receivedAt: timestamp("received_at", { withTimezone: true }).notNull().defaultNow(),
     updateTime: timestamp("update_time", { withTimezone: true }),
+
+    classifications: jsonb("classifications").$type<ReviewClassification>(),
   },
   (table) => [
     index("reviews_business_id_idx").on(table.businessId),
@@ -38,6 +41,7 @@ export const reviews = pgTable(
     index("reviews_received_at_idx").on(table.receivedAt),
     index("reviews_business_status_idx").on(table.businessId, table.replyStatus),
     index("reviews_received_status_idx").on(table.receivedAt, table.replyStatus),
+    index("reviews_business_date_idx").on(table.businessId, table.date),
 
     check(
       "reviews_reply_status_check",
