@@ -35,33 +35,46 @@ export function CategoryReviewsModal({
   const t = useTranslations("dashboard.insights");
   const tCategories = useTranslations("dashboard.insights.categories");
   const format = useFormatter();
+
+  const fetchKey = open && category && type ? `${category}-${type}` : null;
+  const [lastFetchKey, setLastFetchKey] = useState<string | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    if (open && category && type) {
-      setIsLoading(true);
-      getReviewsByCategory({
-        accountId,
-        businessId,
-        dateFrom,
-        dateTo,
-        category,
-        type,
-        limit: 50,
-      })
-        .then((data) => {
+    if (!fetchKey) return;
+    if (fetchKey === lastFetchKey) return;
+
+    let cancelled = false;
+
+    getReviewsByCategory({
+      accountId,
+      businessId,
+      dateFrom,
+      dateTo,
+      category: category!,
+      type: type!,
+      limit: 50,
+    })
+      .then((data) => {
+        if (!cancelled) {
           setReviews(data);
-        })
-        .catch((error) => {
-          console.error("Error fetching reviews:", error);
+          setLastFetchKey(fetchKey);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching reviews:", error);
+        if (!cancelled) {
           setReviews([]);
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
-    }
-  }, [open, category, type, accountId, businessId, dateFrom, dateTo]);
+          setLastFetchKey(fetchKey);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [fetchKey, lastFetchKey, accountId, businessId, dateFrom, dateTo, category, type]);
+
+  const isLoading = fetchKey !== null && fetchKey !== lastFetchKey;
 
   const getInitials = (name: string) => {
     return name
