@@ -146,7 +146,7 @@ export function AccountBusinessesList({ accounts }: AccountBusinessesListProps) 
                         onClick={() => handleEditDetails(account.id, business.id)}
                         disabled={loadingState?.businessId === business.id && loadingState?.action === "settings"}
                       >
-                        <Settings2 className="h-4 w-4 mr-1" />
+                        <Settings2 className="h-4 w-4 me-1" />
                         {loadingState?.businessId === business.id && loadingState?.action === "settings"
                           ? t("navigating")
                           : t("editDetails")}
