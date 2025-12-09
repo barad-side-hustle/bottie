@@ -126,6 +126,9 @@
     "ignore": [
       "src/i18n/request.ts"
     ],
+    "ignoreBinaries": [
+      "stripe"
+    ],
     "rules": {
       "dependencies": "off",
       "exports": "off",
