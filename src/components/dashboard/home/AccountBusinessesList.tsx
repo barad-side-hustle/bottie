@@ -12,7 +12,7 @@ import {
   DashboardCardContent,
 } from "@/components/ui/dashboard-card";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, BarChart3, Settings2 } from "lucide-react";
+import { MapPin, BarChart3, Settings2, Star } from "lucide-react";
 import Image from "next/image";
 import { EmptyState } from "@/components/ui/empty-state";
 import { AccountAvatarDropdown } from "./AccountAvatarDropdown";
@@ -122,6 +122,7 @@ export function AccountBusinessesList({ accounts }: AccountBusinessesListProps) 
                         onClick={() => handleViewReviews(account.id, business.id)}
                         disabled={loadingState?.businessId === business.id && loadingState?.action === "reviews"}
                       >
+                        <Star className="h-4 w-4 mr-1" />
                         {loadingState?.businessId === business.id && loadingState?.action === "reviews"
                           ? t("navigating")
                           : t("viewReviews")}
