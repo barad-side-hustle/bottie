@@ -27,8 +27,15 @@ export default async function InsightsPage({ params, searchParams }: InsightsPag
   const dateFromParam = resolvedSearchParams.dateFrom as string | undefined;
   const dateToParam = resolvedSearchParams.dateTo as string | undefined;
 
-  const dateTo = dateToParam ? new Date(dateToParam) : new Date();
-  const dateFrom = dateFromParam ? new Date(dateFromParam) : subDays(dateTo, 30);
+  let dateTo = dateToParam ? new Date(dateToParam) : new Date();
+  if (isNaN(dateTo.getTime())) {
+    dateTo = new Date();
+  }
+
+  let dateFrom = dateFromParam ? new Date(dateFromParam) : subDays(dateTo, 30);
+  if (isNaN(dateFrom.getTime())) {
+    dateFrom = subDays(dateTo, 30);
+  }
 
   const [business, insights, trends] = await Promise.all([
     getBusiness(userId, accountId, businessId),
