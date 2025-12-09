@@ -5,6 +5,7 @@ import { StarRating } from "@/components/ui/StarRating";
 import { useTranslations } from "next-intl";
 import type { ClassificationStats } from "@/lib/types/classification.types";
 import { TrendingUp, TrendingDown, MessageSquare } from "lucide-react";
+import { StatCard } from "./StatCard";
 
 interface InsightsOverviewProps {
   stats: ClassificationStats;
@@ -22,19 +23,7 @@ export function InsightsOverview({ stats }: InsightsOverviewProps) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      <DashboardCard className="hover:scale-100 hover:-translate-y-0">
-        <DashboardCardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">{t("totalReviews")}</p>
-              <p className="text-3xl font-bold mt-1">{stats.totalReviews}</p>
-            </div>
-            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-              <MessageSquare className="h-6 w-6 text-primary" />
-            </div>
-          </div>
-        </DashboardCardContent>
-      </DashboardCard>
+      <StatCard label={t("totalReviews")} value={stats.totalReviews} icon={MessageSquare} />
 
       <DashboardCard className="hover:scale-100 hover:-translate-y-0">
         <DashboardCardContent className="p-6">
@@ -50,33 +39,23 @@ export function InsightsOverview({ stats }: InsightsOverviewProps) {
         </DashboardCardContent>
       </DashboardCard>
 
-      <DashboardCard className="hover:scale-100 hover:-translate-y-0">
-        <DashboardCardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">{t("positiveSentiment")}</p>
-              <p className="text-3xl font-bold mt-1 text-green-600">{positivePercent}%</p>
-            </div>
-            <div className="h-12 w-12 rounded-full bg-green-100 flex items-center justify-center">
-              <TrendingUp className="h-6 w-6 text-green-600" />
-            </div>
-          </div>
-        </DashboardCardContent>
-      </DashboardCard>
+      <StatCard
+        label={t("positiveSentiment")}
+        value={`${positivePercent}%`}
+        icon={TrendingUp}
+        iconBgColor="bg-green-100"
+        iconColor="text-green-600"
+        valueColor="text-green-600"
+      />
 
-      <DashboardCard className="hover:scale-100 hover:-translate-y-0">
-        <DashboardCardContent className="p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-muted-foreground">{t("negativeSentiment")}</p>
-              <p className="text-3xl font-bold mt-1 text-red-600">{negativePercent}%</p>
-            </div>
-            <div className="h-12 w-12 rounded-full bg-red-100 flex items-center justify-center">
-              <TrendingDown className="h-6 w-6 text-red-600" />
-            </div>
-          </div>
-        </DashboardCardContent>
-      </DashboardCard>
+      <StatCard
+        label={t("negativeSentiment")}
+        value={`${negativePercent}%`}
+        icon={TrendingDown}
+        iconBgColor="bg-red-100"
+        iconColor="text-red-600"
+        valueColor="text-red-600"
+      />
     </div>
   );
 }

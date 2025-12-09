@@ -665,7 +665,12 @@
         "sentimentBreakdown": "התפלגות סנטימנט",
         "trends": "מגמות ביקורות",
         "topPositives": "מה לקוחות אהבו",
-        "topNegatives": "נקודות לשיפור"
+        "topNegatives": "נקודות לשיפור",
+        "categories": "קטגוריות"
+      },
+      "modal": {
+        "title": "ביקורות: {category}",
+        "noReviews": "לא נמצאו ביקורות לקטגוריה זו"
       },
       "categories": {
         "topPositives": "מה לקוחות אהבו",

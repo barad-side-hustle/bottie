@@ -654,7 +654,12 @@
         "sentimentBreakdown": "Sentiment Breakdown",
         "trends": "Review Trends",
         "topPositives": "What Customers Love",
-        "topNegatives": "Areas for Improvement"
+        "topNegatives": "Areas for Improvement",
+        "categories": "Categories"
+      },
+      "modal": {
+        "title": "Reviews: {category}",
+        "noReviews": "No reviews found for this category"
       },
       "categories": {
         "topPositives": "What Customers Love",
