@@ -2,13 +2,19 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { format, subDays } from "date-fns";
+import { format, subDays, type Locale } from "date-fns";
+import { he, enUS } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { CalendarIcon } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
+
+const localeMap: Record<string, Locale> = {
+  he,
+  en: enUS,
+};
 
 interface InsightsDateFilterProps {
   dateFrom: Date;
@@ -17,6 +23,8 @@ interface InsightsDateFilterProps {
 
 export function InsightsDateFilter({ dateFrom, dateTo }: InsightsDateFilterProps) {
   const t = useTranslations("dashboard.insights.dateFilter");
+  const locale = useLocale();
+  const dateLocale = localeMap[locale] || enUS;
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -56,7 +64,8 @@ export function InsightsDateFilter({ dateFrom, dateTo }: InsightsDateFilterProps
             className={cn("justify-start text-left font-normal", !dateFrom && "text-muted-foreground")}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
-            {format(dateFrom, "MMM d, yyyy")} - {format(dateTo, "MMM d, yyyy")}
+            {format(dateFrom, "MMM d, yyyy", { locale: dateLocale })} -{" "}
+            {format(dateTo, "MMM d, yyyy", { locale: dateLocale })}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
@@ -85,6 +94,7 @@ export function InsightsDateFilter({ dateFrom, dateTo }: InsightsDateFilterProps
                 }}
                 numberOfMonths={2}
                 disabled={{ after: new Date() }}
+                locale={dateLocale}
               />
               <div className="flex justify-end gap-2 pt-3 border-t mt-3">
                 <Button variant="outline" size="sm" onClick={() => setIsOpen(false)}>

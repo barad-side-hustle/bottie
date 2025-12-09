@@ -7,10 +7,16 @@ import {
   DashboardCardTitle,
 } from "@/components/ui/dashboard-card";
 import { Badge } from "@/components/ui/badge";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import type { ClassificationStats, ClassificationTrend, CategoryCount } from "@/lib/types/classification.types";
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
-import { format, parseISO } from "date-fns";
+import { format, parseISO, type Locale } from "date-fns";
+import { he, enUS } from "date-fns/locale";
+
+const localeMap: Record<string, Locale> = {
+  he,
+  en: enUS,
+};
 
 interface InsightsChartsProps {
   stats: ClassificationStats;
@@ -20,10 +26,12 @@ interface InsightsChartsProps {
 export function InsightsCharts({ stats, trends }: InsightsChartsProps) {
   const t = useTranslations("dashboard.insights");
   const tCategories = useTranslations("dashboard.insights.categories");
+  const locale = useLocale();
+  const dateLocale = localeMap[locale] || enUS;
 
-  const trendData = trends.map((t) => ({
-    ...t,
-    formattedDate: format(parseISO(t.date), "MMM d"),
+  const trendData = trends.map((trend) => ({
+    ...trend,
+    formattedDate: format(parseISO(trend.date), "MMM d", { locale: dateLocale }),
   }));
 
   return (
