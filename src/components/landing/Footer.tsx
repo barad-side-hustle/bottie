@@ -1,7 +1,7 @@
 "use client";
 
 import { Link } from "@/i18n/routing";
-import { Mail, MapPin, Phone } from "lucide-react";
+import { Mail, MapPin } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
 
@@ -23,13 +23,6 @@ export function Footer() {
               >
                 <Mail className="h-4 w-4" />
                 <span>{t("company.email")}</span>
-              </a>
-              <a
-                href="tel:+972-50-671-5060"
-                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                <Phone className="h-4 w-4" />
-                <span>050-671-5060</span>
               </a>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <MapPin className="h-4 w-4" />
