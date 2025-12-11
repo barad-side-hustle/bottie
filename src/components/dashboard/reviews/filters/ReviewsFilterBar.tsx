@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter, usePathname, useSearchParams, useParams } from "next/navigation";
 import { ReviewFilters } from "@/lib/types";
-import { parseFiltersFromSearchParams, buildSearchParams } from "@/lib/utils/filter-utils";
+import { parseFiltersFromSearchParams, buildSearchParams, DEFAULT_REVIEW_SORT } from "@/lib/utils/filter-utils";
 import { useFiltersStore } from "@/lib/store/filters-store";
 import { ReviewFiltersForm } from "./ReviewFiltersForm";
 import { ResponsiveFilterPanel } from "./ResponsiveFilterPanel";
@@ -34,7 +34,7 @@ export function ReviewsFilterBar() {
     filters = parseFiltersFromSearchParams(paramsObj);
   } else {
     const storedFilters = getFilters(businessId);
-    filters = storedFilters || {};
+    filters = storedFilters || { sort: DEFAULT_REVIEW_SORT };
   }
 
   const activeCount =

@@ -80,7 +80,7 @@ export class ReviewsRepository extends BaseRepository<ReviewInsert, Review, Part
     };
   }
 
-  async list(filters: ReviewFilters = {}): Promise<ReviewWithLatestGeneration[]> {
+  async list(filters: Partial<ReviewFilters> = {}): Promise<ReviewWithLatestGeneration[]> {
     const conditions = [eq(reviews.locationId, this.locationId), this.getAccessCondition()];
 
     if (filters.replyStatus && filters.replyStatus.length > 0) {

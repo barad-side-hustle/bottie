@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import { ReviewFilters } from "@/lib/types";
 import type { ReplyStatus } from "@/lib/types/review.types";
 import type { ReviewSortOptions } from "@/lib/types/sort.types";
+import { DEFAULT_REVIEW_SORT } from "@/lib/utils/filter-utils";
 
 interface SerializableReviewFilters {
   replyStatus?: ReplyStatus[];
@@ -40,7 +41,7 @@ function deserializeFilters(serialized: SerializableReviewFilters): ReviewFilter
     rating: serialized.rating,
     dateFrom: serialized.dateFrom ? new Date(serialized.dateFrom) : undefined,
     dateTo: serialized.dateTo ? new Date(serialized.dateTo) : undefined,
-    sort: serialized.sort,
+    sort: serialized.sort || DEFAULT_REVIEW_SORT,
   };
 }
 

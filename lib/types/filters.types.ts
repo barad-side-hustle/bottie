@@ -15,7 +15,7 @@ export interface ReviewFilters extends TFilters {
   sentiment?: Sentiment[];
   dateFrom?: Date;
   dateTo?: Date;
-  sort?: ReviewSortOptions;
+  sort: ReviewSortOptions;
 }
 
 export interface LocationFilters extends TFilters {

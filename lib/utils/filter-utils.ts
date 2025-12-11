@@ -1,10 +1,17 @@
-import { ReviewFilters, ReviewSortField, Sentiment } from "@/lib/types";
+import { ReviewFilters, ReviewSortField, ReviewSortOptions, Sentiment } from "@/lib/types";
 import { format } from "date-fns";
+
+export const DEFAULT_REVIEW_SORT: ReviewSortOptions = {
+  orderBy: "receivedAt",
+  orderDirection: "desc",
+};
 
 export function parseFiltersFromSearchParams(searchParams: {
   [key: string]: string | string[] | undefined;
 }): ReviewFilters {
-  const filters: ReviewFilters = {};
+  const filters: ReviewFilters = {
+    sort: DEFAULT_REVIEW_SORT,
+  };
 
   const replyStatus = searchParams.replyStatus;
   if (typeof replyStatus === "string") {
@@ -29,14 +36,14 @@ export function parseFiltersFromSearchParams(searchParams: {
   }
 
   filters.sort = {
-    orderBy: (searchParams.sortBy as ReviewSortField) || "receivedAt",
-    orderDirection: (searchParams.sortDir as "asc" | "desc") || "desc",
+    orderBy: (searchParams.sortBy as ReviewSortField) || DEFAULT_REVIEW_SORT.orderBy,
+    orderDirection: (searchParams.sortDir as "asc" | "desc") || DEFAULT_REVIEW_SORT.orderDirection,
   };
 
   return filters;
 }
 
-export function buildSearchParams(filters: ReviewFilters): URLSearchParams {
+export function buildSearchParams(filters: Partial<ReviewFilters>): URLSearchParams {
   const params = new URLSearchParams();
 
   if (filters.replyStatus?.length) {
