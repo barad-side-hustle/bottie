@@ -48,20 +48,7 @@ export async function updateUserSettings(settings: Partial<UserSettings>): Promi
     if (typeof settings.weeklySummaryEnabled !== "boolean") {
       throw new Error("Invalid weeklySummaryEnabled value");
     }
-
-    const enableWeeklySummary = settings.weeklySummaryEnabled ?? false;
-
-    if (enableWeeklySummary) {
-      const { getActiveSubscription } = await import("@/lib/actions/subscription.actions");
-      const subscription = await getActiveSubscription();
-      const isPro = subscription?.planTier === "pro" && subscription?.status === "active";
-
-      if (!isPro) {
-        throw new Error("Weekly summary is only available for Pro users");
-      }
-    }
-
-    updates.WEEKLY_SUMMARY_ENABLED = enableWeeklySummary;
+    updates.WEEKLY_SUMMARY_ENABLED = settings.weeklySummaryEnabled;
   }
 
   const controller = new UsersController();
