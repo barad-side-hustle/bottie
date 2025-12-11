@@ -69,7 +69,7 @@ export class AccountLocationsRepository {
   }
 
   async create(data: AccountLocationInsert): Promise<AccountLocation> {
-    if (!(await this.verifyAccess())) throw new Error("Access denied");
+    if (!(await this.verifyAccess())) throw new NotFoundError("Access denied");
 
     const existing = await db.query.accountLocations.findFirst({
       where: and(eq(accountLocations.accountId, data.accountId), eq(accountLocations.locationId, data.locationId)),
@@ -173,7 +173,7 @@ export class AccountLocationsRepository {
       };
     }
   ): Promise<{ accountLocation: AccountLocation; location: typeof locations.$inferSelect; isNew: boolean }> {
-    if (!(await this.verifyAccess())) throw new Error("Access denied");
+    if (!(await this.verifyAccess())) throw new NotFoundError("Access denied");
 
     let location = await db.query.locations.findFirst({
       where: eq(locations.googleLocationId, googleLocationId),

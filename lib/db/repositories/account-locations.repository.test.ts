@@ -141,7 +141,7 @@ describe("AccountLocationsRepository", () => {
   });
 
   describe("create", () => {
-    it("should throw error if user does not have access", async () => {
+    it("should throw NotFoundError if user does not have access", async () => {
       (db.query.userAccounts.findFirst as Mock).mockResolvedValue(null);
 
       await expect(
@@ -151,7 +151,7 @@ describe("AccountLocationsRepository", () => {
           googleBusinessId: "accounts/123/locations/456",
           connected: true,
         })
-      ).rejects.toThrow("Access denied");
+      ).rejects.toThrow(NotFoundError);
     });
 
     it("should return existing account location if already exists and connected", async () => {
@@ -400,11 +400,11 @@ describe("AccountLocationsRepository", () => {
       },
     };
 
-    it("should throw error if user does not have access", async () => {
+    it("should throw NotFoundError if user does not have access", async () => {
       (db.query.userAccounts.findFirst as Mock).mockResolvedValue(null);
 
       await expect(repository.findOrCreate("accounts/123/locations/456", "456", locationData)).rejects.toThrow(
-        "Access denied"
+        NotFoundError
       );
     });
 
