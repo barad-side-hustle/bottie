@@ -44,7 +44,7 @@ export async function triggerReviewImport(accountId: string, locationId: string)
 
     let importedCount = 0;
     let totalFetchedCount = 0;
-    const MAX_IMPORT_COUNT = 50;
+    const MAX_IMPORT_COUNT = 500;
     const BATCH_SIZE = 50;
     let reviewBuffer: GoogleReview[] = [];
 
