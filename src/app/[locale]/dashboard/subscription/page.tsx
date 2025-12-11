@@ -27,9 +27,9 @@ export default async function SubscriptionPage({ params }: { params: Promise<{ l
         <SubscriptionInfo
           limits={stats.limits}
           subscription={subscription}
-          currentBusiness={stats.businesses}
+          currentLocations={stats.locations}
           currentReviews={stats.reviews}
-          businessesPercent={stats.businessesPercent}
+          locationsPercent={stats.locationsPercent}
           reviewsPercent={stats.reviewsPercent}
           planType={planType}
         />

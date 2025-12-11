@@ -21,7 +21,7 @@ interface ReplyEditorProps {
   review: ReviewWithLatestGeneration;
   accountId: string;
   userId: string;
-  businessId: string;
+  locationId: string;
   open: boolean;
   onClose: () => void;
   onSave: () => void;
@@ -32,7 +32,7 @@ interface ReplyEditorProps {
 export function ReplyEditor({
   review,
   accountId,
-  businessId,
+  locationId,
   open,
   onClose,
   onSave,
@@ -51,7 +51,7 @@ export function ReplyEditor({
 
       await saveReviewDraft({
         accountId,
-        businessId,
+        locationId,
         reviewId: review.id,
         customReply: replyText,
       });

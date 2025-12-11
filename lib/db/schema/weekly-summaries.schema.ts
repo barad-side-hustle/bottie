@@ -1,6 +1,7 @@
 import { pgTable, timestamp, uuid, integer, jsonb, pgPolicy, date, real, unique, index } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
-import { businesses } from "./businesses.schema";
+import { locations } from "./locations.schema";
+import { accountLocations } from "./account-locations.schema";
 import { userAccounts } from "./user-accounts.schema";
 import { authenticatedRole, authUid } from "./roles";
 
@@ -8,9 +9,9 @@ export const weeklySummaries = pgTable(
   "weekly_summaries",
   {
     id: uuid("id").defaultRandom().primaryKey(),
-    businessId: uuid("business_id")
+    locationId: uuid("location_id")
       .notNull()
-      .references(() => businesses.id, { onDelete: "cascade" }),
+      .references(() => locations.id, { onDelete: "cascade" }),
 
     weekStartDate: date("week_start_date").notNull(),
     weekEndDate: date("week_end_date").notNull(),
@@ -25,15 +26,15 @@ export const weeklySummaries = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
-    unique("weekly_summaries_business_week_unique").on(table.businessId, table.weekStartDate, table.weekEndDate),
-    index("weekly_summaries_business_week_idx").on(table.businessId, table.weekStartDate, table.weekEndDate),
-    pgPolicy("weekly_summaries_select_associated", {
+    unique("weekly_summaries_location_week_unique").on(table.locationId, table.weekStartDate, table.weekEndDate),
+    index("weekly_summaries_location_week_idx").on(table.locationId, table.weekStartDate, table.weekEndDate),
+    pgPolicy("weekly_summaries_select_connected", {
       for: "select",
       to: authenticatedRole,
       using: sql`EXISTS (
-        SELECT 1 FROM ${businesses} b
-        JOIN ${userAccounts} ua ON ua.account_id = b.account_id
-        WHERE b.id = ${table.businessId}
+        SELECT 1 FROM ${accountLocations} al
+        JOIN ${userAccounts} ua ON ua.account_id = al.account_id
+        WHERE al.location_id = ${table.locationId}
         AND ua.user_id = ${authUid()}
       )`,
     }),

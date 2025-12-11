@@ -10,7 +10,7 @@ type MockSubsRepo = {
 };
 
 type MockStatsRepo = {
-  countUserBusinesses: Mock;
+  countUserLocations: Mock;
 };
 
 describe("SubscriptionsController", () => {
@@ -27,7 +27,7 @@ describe("SubscriptionsController", () => {
     };
 
     mockStatsRepo = {
-      countUserBusinesses: vi.fn(),
+      countUserLocations: vi.fn(),
     };
 
     (SubscriptionsRepository as unknown as Mock).mockImplementation(function () {
@@ -53,34 +53,34 @@ describe("SubscriptionsController", () => {
     });
   });
 
-  describe("checkBusinessLimit", () => {
+  describe("checkLocationLimit", () => {
     it("should return true if limit is -1 (unlimited)", async () => {
       const userId = "user-123";
       mockSubsRepo.getUserPlanLimits.mockResolvedValue({ businesses: -1 });
 
-      const result = await controller.checkBusinessLimit(userId);
+      const result = await controller.checkLocationLimit(userId);
 
       expect(result).toBe(true);
-      expect(mockStatsRepo.countUserBusinesses).not.toHaveBeenCalled();
+      expect(mockStatsRepo.countUserLocations).not.toHaveBeenCalled();
     });
 
     it("should return true if count is less than limit", async () => {
       const userId = "user-123";
       mockSubsRepo.getUserPlanLimits.mockResolvedValue({ businesses: 5 });
-      mockStatsRepo.countUserBusinesses.mockResolvedValue(4);
+      mockStatsRepo.countUserLocations.mockResolvedValue(4);
 
-      const result = await controller.checkBusinessLimit(userId);
+      const result = await controller.checkLocationLimit(userId);
 
-      expect(mockStatsRepo.countUserBusinesses).toHaveBeenCalledWith(userId);
+      expect(mockStatsRepo.countUserLocations).toHaveBeenCalledWith(userId);
       expect(result).toBe(true);
     });
 
     it("should return false if count is equal to limit", async () => {
       const userId = "user-123";
       mockSubsRepo.getUserPlanLimits.mockResolvedValue({ businesses: 5 });
-      mockStatsRepo.countUserBusinesses.mockResolvedValue(5);
+      mockStatsRepo.countUserLocations.mockResolvedValue(5);
 
-      const result = await controller.checkBusinessLimit(userId);
+      const result = await controller.checkLocationLimit(userId);
 
       expect(result).toBe(false);
     });
@@ -88,9 +88,9 @@ describe("SubscriptionsController", () => {
     it("should return false if count is greater than limit", async () => {
       const userId = "user-123";
       mockSubsRepo.getUserPlanLimits.mockResolvedValue({ businesses: 5 });
-      mockStatsRepo.countUserBusinesses.mockResolvedValue(6);
+      mockStatsRepo.countUserLocations.mockResolvedValue(6);
 
-      const result = await controller.checkBusinessLimit(userId);
+      const result = await controller.checkLocationLimit(userId);
 
       expect(result).toBe(false);
     });

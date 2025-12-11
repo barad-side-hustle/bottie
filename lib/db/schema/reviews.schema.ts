@@ -1,7 +1,7 @@
 import { boolean, integer, jsonb, pgTable, text, timestamp, uuid, index, pgPolicy, check } from "drizzle-orm/pg-core";
 import { sql, relations } from "drizzle-orm";
 import { authenticatedRole, authUid } from "./roles";
-import { businesses } from "./businesses.schema";
+import { locations } from "./locations.schema";
 import type { ReplyStatus } from "../../types/review.types";
 import type { ReviewClassification } from "../../types/classification.types";
 import { reviewResponses } from "./review-responses.schema";
@@ -10,9 +10,9 @@ export const reviews = pgTable(
   "reviews",
   {
     id: uuid("id").defaultRandom().primaryKey(),
-    businessId: uuid("business_id")
+    locationId: uuid("location_id")
       .notNull()
-      .references(() => businesses.id, { onDelete: "cascade" }),
+      .references(() => locations.id, { onDelete: "cascade" }),
 
     googleReviewId: text("google_review_id").notNull().unique(),
     googleReviewName: text("google_review_name"),
@@ -35,56 +35,56 @@ export const reviews = pgTable(
     classifications: jsonb("classifications").$type<ReviewClassification>(),
   },
   (table) => [
-    index("reviews_business_id_idx").on(table.businessId),
+    index("reviews_location_id_idx").on(table.locationId),
     index("reviews_google_review_id_idx").on(table.googleReviewId),
     index("reviews_reply_status_idx").on(table.replyStatus),
     index("reviews_received_at_idx").on(table.receivedAt),
-    index("reviews_business_status_idx").on(table.businessId, table.replyStatus),
+    index("reviews_location_status_idx").on(table.locationId, table.replyStatus),
     index("reviews_received_status_idx").on(table.receivedAt, table.replyStatus),
-    index("reviews_business_date_idx").on(table.businessId, table.date),
+    index("reviews_location_date_idx").on(table.locationId, table.date),
 
     check(
       "reviews_reply_status_check",
       sql`${table.replyStatus} IN ('pending', 'rejected', 'posted', 'failed', 'quota_exceeded')`
     ),
 
-    pgPolicy("reviews_select_associated", {
+    pgPolicy("reviews_select_connected", {
       for: "select",
       to: authenticatedRole,
       using: sql`EXISTS (
-        SELECT 1 FROM businesses b
-        INNER JOIN user_accounts ua ON ua.account_id = b.account_id
-        WHERE b.id = ${table.businessId}
+        SELECT 1 FROM account_locations al
+        INNER JOIN user_accounts ua ON ua.account_id = al.account_id
+        WHERE al.location_id = ${table.locationId}
         AND ua.user_id = ${authUid()}
       )`,
     }),
-    pgPolicy("reviews_insert_associated", {
+    pgPolicy("reviews_insert_connected", {
       for: "insert",
       to: authenticatedRole,
       withCheck: sql`EXISTS (
-        SELECT 1 FROM businesses b
-        INNER JOIN user_accounts ua ON ua.account_id = b.account_id
-        WHERE b.id = ${table.businessId}
+        SELECT 1 FROM account_locations al
+        INNER JOIN user_accounts ua ON ua.account_id = al.account_id
+        WHERE al.location_id = ${table.locationId}
         AND ua.user_id = ${authUid()}
       )`,
     }),
-    pgPolicy("reviews_update_associated", {
+    pgPolicy("reviews_update_connected", {
       for: "update",
       to: authenticatedRole,
       using: sql`EXISTS (
-        SELECT 1 FROM businesses b
-        INNER JOIN user_accounts ua ON ua.account_id = b.account_id
-        WHERE b.id = ${table.businessId}
+        SELECT 1 FROM account_locations al
+        INNER JOIN user_accounts ua ON ua.account_id = al.account_id
+        WHERE al.location_id = ${table.locationId}
         AND ua.user_id = ${authUid()}
       )`,
     }),
-    pgPolicy("reviews_delete_owner", {
+    pgPolicy("reviews_delete_connected_owner", {
       for: "delete",
       to: authenticatedRole,
       using: sql`EXISTS (
-        SELECT 1 FROM businesses b
-        INNER JOIN user_accounts ua ON ua.account_id = b.account_id
-        WHERE b.id = ${table.businessId}
+        SELECT 1 FROM account_locations al
+        INNER JOIN user_accounts ua ON ua.account_id = al.account_id
+        WHERE al.location_id = ${table.locationId}
         AND ua.user_id = ${authUid()}
         AND ua.role = 'owner'
       )`,
@@ -93,9 +93,9 @@ export const reviews = pgTable(
 );
 
 export const reviewsRelations = relations(reviews, ({ many, one }) => ({
-  business: one(businesses, {
-    fields: [reviews.businessId],
-    references: [businesses.id],
+  location: one(locations, {
+    fields: [reviews.locationId],
+    references: [locations.id],
   }),
 
   responses: many(reviewResponses),

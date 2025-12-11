@@ -3,6 +3,7 @@ import { db } from "@/lib/db/client";
 import {
   reviewResponses,
   userAccounts,
+  accountLocations,
   type ReviewResponse,
   type ReviewResponseInsert,
   type Review,
@@ -17,7 +18,7 @@ export class ReviewResponsesRepository {
   constructor(
     private userId: string,
     private accountId: string,
-    private businessId: string
+    private locationId: string
   ) {}
 
   private async verifyAccess(): Promise<boolean> {
@@ -32,11 +33,12 @@ export class ReviewResponsesRepository {
       db
         .select()
         .from(userAccounts)
-        .where(and(eq(userAccounts.userId, this.userId), eq(userAccounts.accountId, this.accountId)))
+        .innerJoin(accountLocations, eq(accountLocations.accountId, userAccounts.accountId))
+        .where(and(eq(userAccounts.userId, this.userId), eq(accountLocations.locationId, this.locationId)))
     );
   }
 
-  async create(data: Omit<ReviewResponseInsert, "accountId" | "businessId">): Promise<ReviewResponse> {
+  async create(data: Omit<ReviewResponseInsert, "accountId" | "locationId">): Promise<ReviewResponse> {
     if (!(await this.verifyAccess())) {
       throw new ForbiddenError("Access denied");
     }
@@ -44,7 +46,7 @@ export class ReviewResponsesRepository {
     const insertData: ReviewResponseInsert = {
       ...data,
       accountId: this.accountId,
-      businessId: this.businessId,
+      locationId: this.locationId,
     };
 
     const [created] = await db.insert(reviewResponses).values(insertData).returning();
@@ -66,7 +68,7 @@ export class ReviewResponsesRepository {
         and(
           eq(reviewResponses.id, id),
           eq(reviewResponses.accountId, this.accountId),
-          eq(reviewResponses.businessId, this.businessId)
+          eq(reviewResponses.locationId, this.locationId)
         )
       )
       .returning();
@@ -79,7 +81,7 @@ export class ReviewResponsesRepository {
       where: and(
         eq(reviewResponses.reviewId, reviewId),
         eq(reviewResponses.accountId, this.accountId),
-        eq(reviewResponses.businessId, this.businessId),
+        eq(reviewResponses.locationId, this.locationId),
         eq(reviewResponses.status, "draft"),
         this.getAccessCondition()
       ),
@@ -92,7 +94,7 @@ export class ReviewResponsesRepository {
       where: and(
         eq(reviewResponses.reviewId, reviewId),
         eq(reviewResponses.accountId, this.accountId),
-        eq(reviewResponses.businessId, this.businessId),
+        eq(reviewResponses.locationId, this.locationId),
         eq(reviewResponses.status, "draft"),
         eq(reviewResponses.type, "ai_generated"),
         this.getAccessCondition()
@@ -105,7 +107,7 @@ export class ReviewResponsesRepository {
     return await db.query.reviewResponses.findMany({
       where: and(
         eq(reviewResponses.accountId, this.accountId),
-        eq(reviewResponses.businessId, this.businessId),
+        eq(reviewResponses.locationId, this.locationId),
         eq(reviewResponses.status, status),
         this.getAccessCondition()
       ),

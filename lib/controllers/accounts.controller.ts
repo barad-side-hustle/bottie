@@ -1,7 +1,9 @@
-import type { AccountFilters, AccountWithBusinesses, BusinessFilters, Account, AccountCreate } from "@/lib/types";
+import type { AccountFilters, AccountLocationFilters, Account, AccountCreate, AccountWithLocations } from "@/lib/types";
+
+export type { AccountWithLocations };
 import { AccountsRepository } from "@/lib/db/repositories";
 import { db } from "@/lib/db/client";
-import { businesses, userAccounts } from "@/lib/db/schema";
+import { accountLocations, userAccounts } from "@/lib/db/schema";
 import { eq, and, inArray, type SQL } from "drizzle-orm";
 
 export class AccountsController {
@@ -58,24 +60,24 @@ export class AccountsController {
     });
   }
 
-  async getAccountsWithBusinesses(
+  async getAccountsWithLocations(
     accountFilters: AccountFilters = {},
-    businessFilters: BusinessFilters = {}
-  ): Promise<AccountWithBusinesses[]> {
+    locationFilters: AccountLocationFilters = {}
+  ): Promise<AccountWithLocations[]> {
     const accountConditions = [eq(userAccounts.userId, this.userId)];
 
     if (accountFilters.ids && accountFilters.ids.length > 0) {
       accountConditions.push(inArray(userAccounts.accountId, accountFilters.ids));
     }
 
-    const businessConditions: SQL[] = [];
+    const locationConditions: SQL[] = [];
 
-    if (businessFilters.connected !== undefined) {
-      businessConditions.push(eq(businesses.connected, businessFilters.connected));
+    if (locationFilters.connected !== undefined) {
+      locationConditions.push(eq(accountLocations.connected, locationFilters.connected));
     }
 
-    if (businessFilters.ids && businessFilters.ids.length > 0) {
-      businessConditions.push(inArray(businesses.id, businessFilters.ids));
+    if (locationFilters.ids && locationFilters.ids.length > 0) {
+      locationConditions.push(inArray(accountLocations.id, locationFilters.ids));
     }
 
     const userAccountsResult = await db.query.userAccounts.findMany({
@@ -83,7 +85,13 @@ export class AccountsController {
       with: {
         account: {
           with: {
-            businesses: businessConditions.length > 0 ? { where: and(...businessConditions) } : true,
+            accountLocations:
+              locationConditions.length > 0
+                ? {
+                    where: and(...locationConditions),
+                    with: { location: true },
+                  }
+                : { with: { location: true } },
           },
         },
       },
@@ -91,7 +99,7 @@ export class AccountsController {
 
     return userAccountsResult.map((ua) => ({
       ...ua.account,
-      businesses: ua.account.businesses,
-    })) as AccountWithBusinesses[];
+      accountLocations: ua.account.accountLocations,
+    })) as AccountWithLocations[];
   }
 }

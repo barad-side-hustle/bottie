@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db/client";
-import { businesses, type ReviewInsert, type Business } from "@/lib/db/schema";
+import { locations, accountLocations, type ReviewInsert, type Location } from "@/lib/db/schema";
 import { getReview, starRatingToNumber, parseGoogleTimestamp } from "@/lib/google/reviews";
 import { decryptToken, extractLocationId } from "@/lib/google/business-profile";
 import { ReviewsRepository } from "@/lib/db/repositories/reviews.repository";
@@ -28,13 +28,14 @@ interface PubSubNotificationData {
   location: string;
 }
 
-interface BusinessLookupResult {
+interface LocationLookupResult {
   userId: string;
   accountId: string;
-  business: Business;
+  location: Location;
+  accountLocationId: string;
 }
 
-async function findBusinessByGoogleBusinessId(googleBusinessId: string): Promise<BusinessLookupResult | null> {
+async function findLocationByGoogleBusinessId(googleBusinessId: string): Promise<LocationLookupResult | null> {
   try {
     const locationId = extractLocationId(googleBusinessId);
     if (!locationId) {
@@ -42,10 +43,19 @@ async function findBusinessByGoogleBusinessId(googleBusinessId: string): Promise
       return null;
     }
 
-    console.log("Searching for business with locationId", locationId);
+    console.log("Searching for location with googleLocationId", locationId);
 
-    const business = await db.query.businesses.findFirst({
-      where: eq(businesses.googleLocationId, locationId),
+    const location = await db.query.locations.findFirst({
+      where: eq(locations.googleLocationId, locationId),
+    });
+
+    if (!location) {
+      console.error("No location found for googleLocationId", locationId);
+      return null;
+    }
+
+    const accountLocationConnections = await db.query.accountLocations.findMany({
+      where: eq(accountLocations.locationId, location.id),
       with: {
         account: {
           with: {
@@ -55,37 +65,38 @@ async function findBusinessByGoogleBusinessId(googleBusinessId: string): Promise
       },
     });
 
-    if (!business) {
-      console.error("No business found for locationId", locationId);
+    if (!accountLocationConnections || accountLocationConnections.length === 0) {
+      console.error("No account connections found for location:", location.id);
       return null;
     }
 
-    if (!business.account.userAccounts || business.account.userAccounts.length === 0) {
-      console.error("No user accounts found for business:", business.id);
-      return null;
+    const connectedAccounts = accountLocationConnections.filter((ac) => ac.connected);
+    const accountsToCheck = connectedAccounts.length > 0 ? connectedAccounts : accountLocationConnections;
+
+    for (const accountLocation of accountsToCheck) {
+      const ownerUser = accountLocation.account.userAccounts
+        .filter((ua) => ua.role === "owner")
+        .sort((a, b) => {
+          const dateA = a.addedAt ? new Date(a.addedAt).getTime() : 0;
+          const dateB = b.addedAt ? new Date(b.addedAt).getTime() : 0;
+          if (dateA !== dateB) return dateA - dateB;
+          return a.userId.localeCompare(b.userId);
+        })[0];
+
+      if (ownerUser) {
+        return {
+          userId: ownerUser.userId,
+          accountId: accountLocation.accountId,
+          location: location,
+          accountLocationId: accountLocation.id,
+        };
+      }
     }
 
-    const userAccount = business.account.userAccounts
-      .filter((ua) => ua.role === "owner")
-      .sort((a, b) => {
-        const dateA = a.addedAt ? new Date(a.addedAt).getTime() : 0;
-        const dateB = b.addedAt ? new Date(b.addedAt).getTime() : 0;
-        if (dateA !== dateB) return dateA - dateB;
-        return a.userId.localeCompare(b.userId);
-      })[0];
-
-    if (!userAccount) {
-      console.error("No owner user account found for business:", business.id);
-      return null;
-    }
-
-    return {
-      userId: userAccount.userId,
-      accountId: business.accountId,
-      business: business,
-    };
+    console.error("No owner user account found for location:", location.id);
+    return null;
   } catch (error) {
-    console.error("Error finding business:", error);
+    console.error("Error finding location:", error);
     return null;
   }
 }
@@ -143,24 +154,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ message: "Notification type ignored" }, { status: 200 });
     }
 
-    const businessData = await findBusinessByGoogleBusinessId(locationName);
-    if (!businessData) {
-      console.error("Business not found for location:", locationName);
-      return NextResponse.json({ error: "Business not found" }, { status: 404 });
+    const locationData = await findLocationByGoogleBusinessId(locationName);
+    if (!locationData) {
+      console.error("Location not found for:", locationName);
+      return NextResponse.json({ error: "Location not found" }, { status: 404 });
     }
 
-    const { userId, accountId, business } = businessData;
-    console.log("Found business:", {
+    const { userId, accountId, location, accountLocationId } = locationData;
+    console.log("Found location:", {
       userId,
       accountId,
-      businessId: business.id,
-      businessName: business.name,
+      locationId: location.id,
+      locationName: location.name,
+      accountLocationId,
     });
-
-    if (!business.connected) {
-      console.log("Business not connected, skipping notification:", business.id);
-      return NextResponse.json({ message: "Business not connected" }, { status: 200 });
-    }
 
     const encryptedToken = await getAccountRefreshToken(userId, accountId);
     if (!encryptedToken) {
@@ -183,7 +190,7 @@ export async function POST(request: NextRequest) {
       reviewer: googleReview.reviewer.displayName,
     });
 
-    const reviewsRepo = new ReviewsRepository(userId, business.id);
+    const reviewsRepo = new ReviewsRepository(userId, location.id);
     const existingReview = await reviewsRepo.findByGoogleReviewId(googleReview.reviewId);
 
     if (existingReview) {
@@ -238,7 +245,7 @@ export async function POST(request: NextRequest) {
     }
 
     const reviewData: ReviewInsert = {
-      businessId: business.id,
+      locationId: location.id,
       googleReviewId: googleReview.reviewId,
       googleReviewName: googleReview.name,
       name: googleReview.reviewer.displayName,
@@ -292,7 +299,7 @@ export async function POST(request: NextRequest) {
         reviewId: newReview.id,
         userId,
         accountId,
-        businessId: business.id,
+        locationId: location.id,
       });
 
       try {
@@ -305,7 +312,7 @@ export async function POST(request: NextRequest) {
           body: JSON.stringify({
             userId,
             accountId,
-            businessId: business.id,
+            locationId: location.id,
             reviewId: newReview.id,
           }),
         });
@@ -343,7 +350,7 @@ export async function POST(request: NextRequest) {
         const errorDetail = getPostgresErrorDetail(error);
         console.warn("Race condition detected: Review already inserted by another process", {
           googleReviewId: googleReview.reviewId,
-          businessId: business.id,
+          locationId: location.id,
           userId,
           accountId,
           detail: errorDetail,
@@ -353,7 +360,7 @@ export async function POST(request: NextRequest) {
 
       console.error("Unexpected database error when creating review:", {
         googleReviewId: googleReview.reviewId,
-        businessId: business.id,
+        locationId: location.id,
         errorCode: getPostgresErrorCode(error),
         error: error instanceof Error ? error.message : String(error),
       });

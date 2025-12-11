@@ -1,15 +1,8 @@
 "use server";
 
 import { getAuthenticatedUserId } from "@/lib/api/auth";
-import { AccountsController } from "@/lib/controllers";
-import type {
-  Account,
-  AccountCreate,
-  AccountUpdate,
-  AccountFilters,
-  AccountWithBusinesses,
-  BusinessFilters,
-} from "@/lib/types";
+import { AccountsController, type AccountWithLocations } from "@/lib/controllers";
+import type { Account, AccountCreate, AccountUpdate, AccountFilters, AccountLocationFilters } from "@/lib/types";
 
 export async function getAccounts(userId: string, filters: AccountFilters = {}): Promise<Account[]> {
   const { userId: authenticatedUserId } = await getAuthenticatedUserId();
@@ -66,14 +59,14 @@ export async function deleteAccount(userId: string, accountId: string): Promise<
   return controller.deleteAccount(accountId);
 }
 
-export async function getAccountsWithBusinesses(
+export async function getAccountsWithLocations(
   accountFilters: AccountFilters = {},
-  businessFilters: BusinessFilters = {}
-): Promise<AccountWithBusinesses[]> {
+  locationFilters: AccountLocationFilters = {}
+): Promise<AccountWithLocations[]> {
   const { userId } = await getAuthenticatedUserId();
 
   const controller = new AccountsController(userId);
-  return controller.getAccountsWithBusinesses(accountFilters, businessFilters);
+  return controller.getAccountsWithLocations(accountFilters, locationFilters);
 }
 
 export async function updateAccountLastSynced(userId: string, accountId: string): Promise<Account> {

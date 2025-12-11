@@ -29,12 +29,12 @@ interface ReviewCardProps {
   review: ReviewWithLatestGeneration;
   accountId: string;
   userId: string;
-  businessId: string;
+  locationId: string;
   onUpdate?: () => void;
   onClick?: () => void;
 }
 
-export function ReviewCard({ review, accountId, userId, businessId, onUpdate, onClick }: ReviewCardProps) {
+export function ReviewCard({ review, accountId, userId, locationId, onUpdate, onClick }: ReviewCardProps) {
   const t = useTranslations("dashboard.reviews.card");
   const tCommon = useTranslations("common");
   const format = useFormatter();
@@ -85,7 +85,7 @@ export function ReviewCard({ review, accountId, userId, businessId, onUpdate, on
     if (!user) return;
 
     try {
-      await postReviewReply({ accountId, businessId, reviewId: review.id });
+      await postReviewReply({ accountId, locationId, reviewId: review.id });
       onUpdate?.();
     } catch (error) {
       console.error("Error publishing reply:", error);
@@ -100,7 +100,7 @@ export function ReviewCard({ review, accountId, userId, businessId, onUpdate, on
 
     try {
       setIsLoading(true);
-      await generateReviewReply({ accountId, businessId, reviewId: review.id });
+      await generateReviewReply({ accountId, locationId, reviewId: review.id });
       onUpdate?.();
     } catch (error) {
       console.error("Error regenerating reply:", error);
@@ -259,7 +259,7 @@ export function ReviewCard({ review, accountId, userId, businessId, onUpdate, on
         review={review}
         accountId={accountId}
         userId={userId}
-        businessId={businessId}
+        locationId={locationId}
         open={showEditor}
         onClose={() => setShowEditor(false)}
         onSave={() => {
@@ -306,10 +306,10 @@ interface ReviewCardWithRefreshProps {
   review: ReviewWithLatestGeneration;
   accountId: string;
   userId: string;
-  businessId: string;
+  locationId: string;
 }
 
-export function ReviewCardWithRefresh({ review, accountId, userId, businessId }: ReviewCardWithRefreshProps) {
+export function ReviewCardWithRefresh({ review, accountId, userId, locationId }: ReviewCardWithRefreshProps) {
   const router = useRouter();
 
   return (
@@ -317,7 +317,7 @@ export function ReviewCardWithRefresh({ review, accountId, userId, businessId }:
       review={review}
       accountId={accountId}
       userId={userId}
-      businessId={businessId}
+      locationId={locationId}
       onUpdate={() => router.refresh()}
     />
   );

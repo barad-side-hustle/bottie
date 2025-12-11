@@ -25,7 +25,7 @@ const ReviewFiltersSchema = z
 
 const ContextSchema = z.object({
   accountId: z.string().uuid(),
-  businessId: z.string().uuid(),
+  locationId: z.string().uuid(),
 });
 
 const GetReviewsSchema = ContextSchema.extend({
@@ -49,47 +49,47 @@ const SaveReviewDraftSchema = ReviewIdSchema.extend({
 });
 
 const CreateReviewSchema = ContextSchema.extend({
-  data: z.custom<Omit<ReviewCreate, "accountId" | "businessId">>(),
+  data: z.custom<Omit<ReviewCreate, "accountId" | "locationId">>(),
 });
 
-export const getReviews = createSafeAction(GetReviewsSchema, async ({ accountId, businessId, filters }, { userId }) => {
-  const controller = new ReviewsController(userId, accountId, businessId);
+export const getReviews = createSafeAction(GetReviewsSchema, async ({ accountId, locationId, filters }, { userId }) => {
+  const controller = new ReviewsController(userId, accountId, locationId);
   return controller.getReviews(filters);
 });
 
-export const getReview = createSafeAction(ReviewIdSchema, async ({ accountId, businessId, reviewId }, { userId }) => {
-  const controller = new ReviewsController(userId, accountId, businessId);
+export const getReview = createSafeAction(ReviewIdSchema, async ({ accountId, locationId, reviewId }, { userId }) => {
+  const controller = new ReviewsController(userId, accountId, locationId);
   return controller.getReview(reviewId);
 });
 
 export const updateReview = createSafeAction(
   UpdateReviewSchema,
-  async ({ accountId, businessId, reviewId, data }, { userId }) => {
-    const controller = new ReviewsController(userId, accountId, businessId);
+  async ({ accountId, locationId, reviewId, data }, { userId }) => {
+    const controller = new ReviewsController(userId, accountId, locationId);
     return controller.updateReview(reviewId, data);
   }
 );
 
 export const generateReviewReply = createSafeAction(
   ReviewIdSchema,
-  async ({ accountId, businessId, reviewId }, { userId }) => {
-    const controller = new ReviewsController(userId, accountId, businessId);
+  async ({ accountId, locationId, reviewId }, { userId }) => {
+    const controller = new ReviewsController(userId, accountId, locationId);
     return controller.generateReply(reviewId);
   }
 );
 
 export const saveReviewDraft = createSafeAction(
   SaveReviewDraftSchema,
-  async ({ accountId, businessId, reviewId, customReply }, { userId }) => {
-    const controller = new ReviewsController(userId, accountId, businessId);
+  async ({ accountId, locationId, reviewId, customReply }, { userId }) => {
+    const controller = new ReviewsController(userId, accountId, locationId);
     return controller.saveDraft(reviewId, customReply);
   }
 );
 
 export const postReviewReply = createSafeAction(
   PostReviewReplySchema,
-  async ({ accountId, businessId, reviewId, customReply }, { userId }) => {
-    const controller = new ReviewsController(userId, accountId, businessId);
+  async ({ accountId, locationId, reviewId, customReply }, { userId }) => {
+    const controller = new ReviewsController(userId, accountId, locationId);
     const { review } = await controller.postReply(reviewId, customReply, userId);
     return review;
   }
@@ -97,10 +97,10 @@ export const postReviewReply = createSafeAction(
 
 export const createReview = createSafeAction(
   CreateReviewSchema,
-  async ({ accountId, businessId, data }, { userId }) => {
-    const controller = new ReviewsController(userId, accountId, businessId);
+  async ({ accountId, locationId, data }, { userId }) => {
+    const controller = new ReviewsController(userId, accountId, locationId);
     const reviewData: ReviewCreate = {
-      businessId,
+      locationId,
       ...data,
     };
     return controller.createReview(reviewData);

@@ -3,8 +3,7 @@ import { db } from "@/lib/db/client";
 import {
   subscriptions,
   userAccounts,
-  accounts,
-  businesses,
+  accountLocations,
   reviews,
   type Subscription,
   type SubscriptionInsert,
@@ -111,9 +110,8 @@ export class SubscriptionsRepository {
       const result = await db
         .select({ count: countDistinct(reviews.id) })
         .from(reviews)
-        .innerJoin(businesses, eq(reviews.businessId, businesses.id))
-        .innerJoin(accounts, eq(businesses.accountId, accounts.id))
-        .innerJoin(userAccounts, eq(accounts.id, userAccounts.accountId))
+        .innerJoin(accountLocations, eq(reviews.locationId, accountLocations.locationId))
+        .innerJoin(userAccounts, eq(accountLocations.accountId, userAccounts.accountId))
         .where(
           and(eq(userAccounts.userId, userId), gte(reviews.receivedAt, startDate), eq(reviews.consumesQuota, true))
         );

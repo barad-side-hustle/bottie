@@ -1,33 +1,33 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import type { BusinessDetailsFormData } from "@/components/dashboard/businesses/forms/BusinessDetailsForm";
-import type { AIResponseSettingsFormData } from "@/components/dashboard/businesses/forms/AIResponseSettingsForm";
-import type { StarRatingConfigFormData } from "@/components/dashboard/businesses/forms/StarRatingConfigForm";
-import { getDefaultBusinessConfig } from "@/lib/utils/business-config";
+import type { LocationDetailsFormData } from "@/components/dashboard/locations/forms/LocationDetailsForm";
+import type { AIResponseSettingsFormData } from "@/components/dashboard/locations/forms/AIResponseSettingsForm";
+import type { StarRatingConfigFormData } from "@/components/dashboard/locations/forms/StarRatingConfigForm";
+import { getDefaultLocationConfig } from "@/lib/utils/location-config";
 
 interface OnboardingState {
   accountId: string | null;
-  businessId: string | null;
+  locationId: string | null;
 
-  businessDetails: BusinessDetailsFormData | null;
+  locationDetails: LocationDetailsFormData | null;
   aiSettings: AIResponseSettingsFormData | null;
   starRatings: StarRatingConfigFormData | null;
 
   setAccountId: (accountId: string) => void;
-  setBusinessId: (businessId: string) => void;
-  setBusinessDetails: (data: BusinessDetailsFormData) => void;
+  setLocationId: (locationId: string) => void;
+  setLocationDetails: (data: LocationDetailsFormData) => void;
   setAISettings: (data: AIResponseSettingsFormData) => void;
   setStarRatings: (data: StarRatingConfigFormData) => void;
 
   reset: () => void;
-  getCombinedConfig: () => ReturnType<typeof getDefaultBusinessConfig>;
+  getCombinedConfig: () => ReturnType<typeof getDefaultLocationConfig>;
 }
 
 const getInitialState = () => {
   return {
     accountId: null,
-    businessId: null,
-    businessDetails: null,
+    locationId: null,
+    locationDetails: null,
     aiSettings: null,
     starRatings: null,
   };
@@ -42,12 +42,12 @@ export const useOnboardingStore = create<OnboardingState>()(
         set({ accountId });
       },
 
-      setBusinessId: (businessId: string) => {
-        set({ businessId });
+      setLocationId: (locationId: string) => {
+        set({ locationId });
       },
 
-      setBusinessDetails: (data: BusinessDetailsFormData) => {
-        set({ businessDetails: data });
+      setLocationDetails: (data: LocationDetailsFormData) => {
+        set({ locationDetails: data });
       },
 
       setAISettings: (data: AIResponseSettingsFormData) => {
@@ -64,7 +64,7 @@ export const useOnboardingStore = create<OnboardingState>()(
 
       getCombinedConfig: () => {
         const state = get();
-        const defaults = getDefaultBusinessConfig();
+        const defaults = getDefaultLocationConfig();
 
         const config = {
           toneOfVoice: state.aiSettings?.toneOfVoice ?? defaults.toneOfVoice,

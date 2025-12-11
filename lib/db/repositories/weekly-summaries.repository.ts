@@ -13,26 +13,26 @@ export class WeeklySummariesRepository {
       .insert(weeklySummaries)
       .values(data)
       .onConflictDoNothing({
-        target: [weeklySummaries.businessId, weeklySummaries.weekStartDate, weeklySummaries.weekEndDate],
+        target: [weeklySummaries.locationId, weeklySummaries.weekStartDate, weeklySummaries.weekEndDate],
       })
       .returning();
 
     if (!insertedSummary) {
-      const existingSummary = await this.getLatestForBusiness(data.businessId, data.weekStartDate, data.weekEndDate);
+      const existingSummary = await this.getLatestForLocation(data.locationId, data.weekStartDate, data.weekEndDate);
       return { summary: existingSummary!, created: false };
     }
 
     return { summary: insertedSummary, created: true };
   }
 
-  async getLatestForBusiness(
-    businessId: string,
+  async getLatestForLocation(
+    locationId: string,
     weekStartDate: string,
     weekEndDate: string
   ): Promise<WeeklySummary | undefined> {
     return await db.query.weeklySummaries.findFirst({
       where: and(
-        eq(weeklySummaries.businessId, businessId),
+        eq(weeklySummaries.locationId, locationId),
         eq(weeklySummaries.weekStartDate, weekStartDate),
         eq(weeklySummaries.weekEndDate, weekEndDate)
       ),
@@ -40,9 +40,9 @@ export class WeeklySummariesRepository {
     });
   }
 
-  async getByBusinessId(businessId: string, limit = 10): Promise<WeeklySummary[]> {
+  async getByLocationId(locationId: string, limit = 10): Promise<WeeklySummary[]> {
     return await db.query.weeklySummaries.findMany({
-      where: eq(weeklySummaries.businessId, businessId),
+      where: eq(weeklySummaries.locationId, locationId),
       orderBy: [desc(weeklySummaries.weekStartDate)],
       limit,
     });

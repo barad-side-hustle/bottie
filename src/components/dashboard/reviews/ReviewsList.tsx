@@ -13,11 +13,11 @@ import { parseFiltersFromSearchParams } from "@/lib/utils/filter-utils";
 interface ReviewsListProps {
   reviews: ReviewWithLatestGeneration[];
   accountId: string;
-  businessId: string;
+  locationId: string;
   userId: string;
 }
 
-export function ReviewsList({ reviews: initialReviews, accountId, businessId, userId }: ReviewsListProps) {
+export function ReviewsList({ reviews: initialReviews, accountId, locationId, userId }: ReviewsListProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [reviews, setReviews] = useState<ReviewWithLatestGeneration[]>(initialReviews);
@@ -37,7 +37,7 @@ export function ReviewsList({ reviews: initialReviews, accountId, businessId, us
     try {
       const nextBatch = await getReviews({
         accountId,
-        businessId,
+        locationId,
         filters: {
           ...parseFiltersFromSearchParams(Object.fromEntries(searchParams.entries())),
           limit: 10,
@@ -55,7 +55,7 @@ export function ReviewsList({ reviews: initialReviews, accountId, businessId, us
     } finally {
       setIsLoading(false);
     }
-  }, [accountId, businessId, hasMore, isLoading, reviews.length, searchParams]);
+  }, [accountId, locationId, hasMore, isLoading, reviews.length, searchParams]);
 
   useEffect(() => {
     if (inView) {
@@ -68,7 +68,7 @@ export function ReviewsList({ reviews: initialReviews, accountId, businessId, us
   };
 
   const handleReviewClick = (reviewId: string) => {
-    router.push(`/dashboard/accounts/${accountId}/businesses/${businessId}/reviews/${reviewId}`);
+    router.push(`/dashboard/accounts/${accountId}/locations/${locationId}/reviews/${reviewId}`);
   };
 
   return (
@@ -78,7 +78,7 @@ export function ReviewsList({ reviews: initialReviews, accountId, businessId, us
           <ReviewCard
             review={review}
             accountId={accountId}
-            businessId={businessId}
+            locationId={locationId}
             userId={userId}
             onUpdate={handleUpdate}
             onClick={() => handleReviewClick(review.id)}

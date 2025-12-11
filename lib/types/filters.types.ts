@@ -15,7 +15,11 @@ export interface ReviewFilters extends TFilters {
   sort?: ReviewSortOptions;
 }
 
-export interface BusinessFilters extends TFilters {
+export interface LocationFilters extends TFilters {
+  connected?: boolean;
+}
+
+export interface AccountLocationFilters extends TFilters {
   connected?: boolean;
 }
 

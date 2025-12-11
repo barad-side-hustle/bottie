@@ -3,7 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { Resend } from "resend";
 import { getTranslations } from "next-intl/server";
 import { ReviewsRepository } from "@/lib/db/repositories/reviews.repository";
-import { BusinessesRepository } from "@/lib/db/repositories/businesses.repository";
+import { LocationsRepository } from "@/lib/db/repositories/locations.repository";
 import { AccountsRepository } from "@/lib/db/repositories/accounts.repository";
 import { UsersConfigsRepository } from "@/lib/db/repositories/users-configs.repository";
 import { SubscriptionsController } from "@/lib/controllers/subscriptions.controller";
@@ -19,7 +19,7 @@ export const maxDuration = 60;
 interface ProcessReviewRequest {
   userId: string;
   accountId: string;
-  businessId: string;
+  locationId: string;
   reviewId: string;
 }
 
@@ -42,19 +42,19 @@ export async function POST(request: NextRequest) {
     }
 
     const body = (await request.json()) as ProcessReviewRequest;
-    const { userId, accountId, businessId, reviewId } = body;
+    const { userId, accountId, locationId, reviewId } = body;
 
     console.log("Processing review", {
       userId,
       accountId,
-      businessId,
+      locationId,
       reviewId,
     });
 
-    const reviewsRepo = new ReviewsRepository(userId, businessId);
-    const businessesRepo = new BusinessesRepository(userId, accountId);
+    const reviewsRepo = new ReviewsRepository(userId, locationId);
+    const locationsRepo = new LocationsRepository(userId);
     const accountsRepo = new AccountsRepository(userId);
-    const reviewsController = new ReviewsController(userId, accountId, businessId);
+    const reviewsController = new ReviewsController(userId, accountId, locationId);
 
     const review = await reviewsRepo.get(reviewId);
     if (!review) {
@@ -62,10 +62,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Review not found" }, { status: 404 });
     }
 
-    const business = await businessesRepo.get(businessId);
-    if (!business) {
-      console.error("Business not found", { businessId });
-      return NextResponse.json({ error: "Business not found" }, { status: 404 });
+    const location = await locationsRepo.get(locationId);
+    if (!location) {
+      console.error("Location not found", { locationId });
+      return NextResponse.json({ error: "Location not found" }, { status: 404 });
     }
 
     const subscriptionsController = new SubscriptionsController();
@@ -100,7 +100,7 @@ export async function POST(request: NextRequest) {
       limit: quotaCheck.limit,
     });
 
-    const starConfig: StarConfig = business.starConfigs[review.rating as 1 | 2 | 3 | 4 | 5];
+    const starConfig: StarConfig = location.starConfigs[review.rating as 1 | 2 | 3 | 4 | 5];
 
     console.log("Generating AI reply", { reviewId });
     let aiReply: string;
@@ -160,27 +160,41 @@ export async function POST(request: NextRequest) {
 
     if (replyStatus === "pending" || replyStatus === "posted") {
       try {
-        console.log("Sending email notifications to all opted-in users", { reviewId, accountId, replyStatus });
-
-        const { db } = await import("@/lib/db/client");
-        const { userAccounts } = await import("@/lib/db/schema");
-        const { eq } = await import("drizzle-orm");
-
-        const allUserAccounts = await db.query.userAccounts.findMany({
-          where: eq(userAccounts.accountId, accountId),
+        console.log("Sending email notifications to all opted-in users connected to location", {
+          reviewId,
+          locationId,
+          replyStatus,
         });
 
-        console.log(`Found ${allUserAccounts.length} users in account ${accountId}`);
+        const { db } = await import("@/lib/db/client");
+        const { accountLocations, userAccounts } = await import("@/lib/db/schema");
+        const { eq } = await import("drizzle-orm");
+
+        const locationConnections = await db.query.accountLocations.findMany({
+          where: eq(accountLocations.locationId, locationId),
+        });
+
+        const accountIds = [...new Set(locationConnections.map((lc) => lc.accountId))];
+        const allUserAccounts = [];
+
+        for (const accId of accountIds) {
+          const usersForAccount = await db.query.userAccounts.findMany({
+            where: eq(userAccounts.accountId, accId),
+          });
+          allUserAccounts.push(...usersForAccount);
+        }
+
+        const uniqueUserIds = [...new Set(allUserAccounts.map((ua) => ua.userId))];
+
+        console.log(`Found ${uniqueUserIds.length} unique users connected to location ${locationId}`);
 
         const supabase = createAdminClient();
         const usersConfigsRepo = new UsersConfigsRepository();
 
         const { default: ReviewNotificationEmailComponent } = await import("@/lib/emails/review-notification");
 
-        for (const userAccount of allUserAccounts) {
+        for (const currentUserId of uniqueUserIds) {
           try {
-            const currentUserId = userAccount.userId;
-
             const userConfig = await usersConfigsRepo.getOrCreate(currentUserId);
 
             if (!userConfig.configs.EMAIL_ON_NEW_REVIEW) {
@@ -207,13 +221,13 @@ export async function POST(request: NextRequest) {
             const status = replyStatus as "pending" | "posted";
 
             const t = await getTranslations({ locale, namespace: "emails.reviewNotification" });
-            const reviewPageUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/dashboard/accounts/${accountId}/businesses/${business.id}/reviews/${reviewId}`;
+            const reviewPageUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/dashboard/accounts/${accountId}/locations/${location.id}/reviews/${reviewId}`;
 
             const emailProps: ReviewNotificationEmailProps = {
               title: t("title"),
               greeting: t("greeting", { name: recipientName || recipientEmail }),
-              body: t("body", { businessName: business.name }),
-              businessName: business.name,
+              body: t("body", { businessName: location.name }),
+              businessName: location.name,
               noReviewText: t("noReviewText"),
               aiReplyHeader: t("aiReplyHeader"),
               statusText: status === "pending" ? t("statusPending") : t("statusPosted"),
@@ -229,7 +243,7 @@ export async function POST(request: NextRequest) {
             };
 
             const emailComponent = <ReviewNotificationEmailComponent {...emailProps} />;
-            const subject = t("subject", { rating: review.rating, businessName: business.name });
+            const subject = t("subject", { rating: review.rating, businessName: location.name });
 
             const resend = new Resend(process.env.RESEND_API_KEY!);
             await resend.emails.send({
@@ -247,7 +261,7 @@ export async function POST(request: NextRequest) {
             });
           } catch (emailError) {
             console.error("Failed to send email to user", {
-              userId: userAccount.userId,
+              userId: currentUserId,
               reviewId,
               error: emailError,
             });

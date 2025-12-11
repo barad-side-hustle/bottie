@@ -5,29 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1764079203894,
-      "tag": "0000_parched_ultimo",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1764496879019,
-      "tag": "0001_curly_titanium_man",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1765202127286,
-      "tag": "0002_cynical_landau",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1765445585266,
-      "tag": "0003_greedy_kang",
+      "when": 1765452297540,
+      "tag": "0000_plain_harpoon",
       "breakpoints": true
     }
   ]

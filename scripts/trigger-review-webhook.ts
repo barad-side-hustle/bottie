@@ -20,6 +20,17 @@ if (!process.env.DATABASE_URL) {
 const client = postgres(process.env.DATABASE_URL, { max: 1 });
 const db = drizzle(client, { schema });
 
+interface AccountLocationWithLocation {
+  id: string;
+  googleBusinessId: string;
+  connected: boolean;
+  location: {
+    id: string;
+    name: string;
+    googleLocationId: string;
+  };
+}
+
 async function main() {
   try {
     console.log("🔍 Finding accounts...");
@@ -40,27 +51,31 @@ async function main() {
       })),
     });
 
-    console.log("🔍 Finding businesses...");
-    const businesses = await db.query.businesses.findMany({
-      where: eq(schema.businesses.accountId, selectedAccountId),
-      columns: { id: true, name: true, googleBusinessId: true, connected: true },
+    console.log("🔍 Finding locations...");
+    const accountLocations = await db.query.accountLocations.findMany({
+      where: eq(schema.accountLocations.accountId, selectedAccountId),
+      with: {
+        location: {
+          columns: { id: true, name: true, googleLocationId: true },
+        },
+      },
     });
 
-    if (businesses.length === 0) {
-      console.log("No businesses found for this account.");
+    if (accountLocations.length === 0) {
+      console.log("No locations found for this account.");
       return;
     }
 
-    const selectedBusiness = await select({
-      message: "Select a business:",
-      choices: businesses.map((b) => ({
-        name: `${b.name} (${b.googleBusinessId}) ${b.connected ? "✅" : "❌"}`,
-        value: b,
+    const selectedAccountLocation = (await select({
+      message: "Select a location:",
+      choices: accountLocations.map((al) => ({
+        name: `${al.location.name} (${al.googleBusinessId}) ${al.connected ? "✅" : "❌"}`,
+        value: al,
       })),
-    });
+    })) as AccountLocationWithLocation;
 
-    if (!selectedBusiness.connected) {
-      console.warn("⚠️ This business is marked as not connected. Fetching reviews might fail.");
+    if (!selectedAccountLocation.connected) {
+      console.warn("⚠️ This location is marked as not connected. Fetching reviews might fail.");
     }
 
     const account = await db.query.accounts.findFirst({
@@ -75,11 +90,11 @@ async function main() {
 
     const refreshToken = await decryptToken(account.googleRefreshToken, process.env.TOKEN_ENCRYPTION_SECRET);
 
-    console.log(`🔄 Fetching reviews for ${selectedBusiness.name}...`);
+    console.log(`🔄 Fetching reviews for ${selectedAccountLocation.location.name}...`);
     let reviewsResponse;
     try {
       for await (const response of listReviews(
-        selectedBusiness.googleBusinessId,
+        selectedAccountLocation.googleBusinessId,
         refreshToken,
         process.env.GOOGLE_CLIENT_ID,
         process.env.GOOGLE_CLIENT_SECRET
@@ -116,7 +131,7 @@ async function main() {
       const notification = {
         type: "NEW_REVIEW",
         review: review.name,
-        location: selectedBusiness.googleBusinessId,
+        location: selectedAccountLocation.googleBusinessId,
       };
 
       const messageData = Buffer.from(JSON.stringify(notification)).toString("base64");

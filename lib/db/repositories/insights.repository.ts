@@ -1,6 +1,6 @@
 import { eq, and, gte, lte, isNotNull, exists } from "drizzle-orm";
 import { db } from "@/lib/db/client";
-import { reviews, businesses, userAccounts } from "@/lib/db/schema";
+import { reviews, accountLocations, userAccounts } from "@/lib/db/schema";
 import type {
   ClassificationStats,
   CategoryCount,
@@ -13,22 +13,22 @@ import { CLASSIFICATION_CATEGORIES } from "@/lib/types/classification.types";
 export class InsightsRepository {
   constructor(
     private userId: string,
-    private businessId: string
+    private locationId: string
   ) {}
 
   private getAccessCondition() {
     return exists(
       db
         .select()
-        .from(businesses)
-        .innerJoin(userAccounts, eq(userAccounts.accountId, businesses.accountId))
-        .where(and(eq(businesses.id, this.businessId), eq(userAccounts.userId, this.userId)))
+        .from(accountLocations)
+        .innerJoin(userAccounts, eq(userAccounts.accountId, accountLocations.accountId))
+        .where(and(eq(accountLocations.locationId, this.locationId), eq(userAccounts.userId, this.userId)))
     );
   }
 
   async getClassificationStats(dateFrom: Date, dateTo: Date): Promise<ClassificationStats> {
     const conditions = [
-      eq(reviews.businessId, this.businessId),
+      eq(reviews.locationId, this.locationId),
       gte(reviews.date, dateFrom),
       lte(reviews.date, dateTo),
       this.getAccessCondition(),
@@ -98,7 +98,7 @@ export class InsightsRepository {
     groupBy: "day" | "week" = "day"
   ): Promise<ClassificationTrend[]> {
     const conditions = [
-      eq(reviews.businessId, this.businessId),
+      eq(reviews.locationId, this.locationId),
       gte(reviews.date, dateFrom),
       lte(reviews.date, dateTo),
       this.getAccessCondition(),
@@ -163,7 +163,7 @@ export class InsightsRepository {
     limit: number = 10
   ): Promise<CategoryCount[]> {
     const conditions = [
-      eq(reviews.businessId, this.businessId),
+      eq(reviews.locationId, this.locationId),
       gte(reviews.date, dateFrom),
       lte(reviews.date, dateTo),
       isNotNull(reviews.classifications),
@@ -200,7 +200,7 @@ export class InsightsRepository {
     limit: number = 20
   ) {
     const conditions = [
-      eq(reviews.businessId, this.businessId),
+      eq(reviews.locationId, this.locationId),
       gte(reviews.date, dateFrom),
       lte(reviews.date, dateTo),
       isNotNull(reviews.classifications),

@@ -4,25 +4,25 @@ import { useState, useEffect } from "react";
 import {
   AIResponseSettingsForm,
   AIResponseSettingsFormData,
-} from "@/components/dashboard/businesses/forms/AIResponseSettingsForm";
+} from "@/components/dashboard/locations/forms/AIResponseSettingsForm";
 import { useRouter } from "@/i18n/routing";
 import { useAuth } from "@/contexts/AuthContext";
-import { getDefaultBusinessConfig } from "@/lib/utils/business-config";
+import { getDefaultLocationConfig } from "@/lib/utils/location-config";
 import { ToneOfVoice, LanguageMode } from "@/lib/types";
 import { useOnboardingStore } from "@/lib/store/onboarding-store";
 import { OnboardingCard } from "@/components/onboarding/OnboardingCard";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { updateBusinessConfig } from "@/lib/actions/businesses.actions";
+import { updateLocationConfig } from "@/lib/actions/locations.actions";
 import type { PlanLimits } from "@/lib/subscriptions/plans";
 
 interface AISettingsWrapperProps {
   accountId: string;
-  businessId: string;
+  locationId: string;
   limits: PlanLimits;
 }
 
-export function AISettingsWrapper({ accountId, businessId, limits }: AISettingsWrapperProps) {
+export function AISettingsWrapper({ accountId, locationId, limits }: AISettingsWrapperProps) {
   const { user } = useAuth();
   const router = useRouter();
   const t = useTranslations("onboarding.aiSettings");
@@ -30,7 +30,7 @@ export function AISettingsWrapper({ accountId, businessId, limits }: AISettingsW
 
   const aiSettings = useOnboardingStore((state) => state.aiSettings);
   const setAccountId = useOnboardingStore((state) => state.setAccountId);
-  const setBusinessId = useOnboardingStore((state) => state.setBusinessId);
+  const setLocationId = useOnboardingStore((state) => state.setLocationId);
   const setAISettings = useOnboardingStore((state) => state.setAISettings);
 
   const [saving, setSaving] = useState(false);
@@ -38,7 +38,7 @@ export function AISettingsWrapper({ accountId, businessId, limits }: AISettingsW
     if (aiSettings) {
       return aiSettings;
     }
-    const defaults = getDefaultBusinessConfig();
+    const defaults = getDefaultLocationConfig();
     return {
       toneOfVoice: defaults.toneOfVoice,
       languageMode: defaults.languageMode,
@@ -50,8 +50,8 @@ export function AISettingsWrapper({ accountId, businessId, limits }: AISettingsW
 
   useEffect(() => {
     if (accountId) setAccountId(accountId);
-    if (businessId) setBusinessId(businessId);
-  }, [accountId, businessId, setAccountId, setBusinessId]);
+    if (locationId) setLocationId(locationId);
+  }, [accountId, locationId, setAccountId, setLocationId]);
 
   const handleFormChange = (
     field: keyof AIResponseSettingsFormData,
@@ -63,16 +63,16 @@ export function AISettingsWrapper({ accountId, businessId, limits }: AISettingsW
   };
 
   const handleBack = () => {
-    router.push(`/onboarding/business-details?accountId=${accountId}&businessId=${businessId}`);
+    router.push(`/onboarding/location-details?accountId=${accountId}&locationId=${locationId}`);
   };
 
   const handleNext = async () => {
-    if (!user || !accountId || !businessId) return;
+    if (!user || !accountId || !locationId) return;
 
     try {
       setSaving(true);
 
-      await updateBusinessConfig(user.id, accountId, businessId, {
+      await updateLocationConfig(user.id, locationId, {
         toneOfVoice: formData.toneOfVoice,
         languageMode: formData.languageMode,
         allowedEmojis: formData.allowedEmojis,
@@ -80,7 +80,7 @@ export function AISettingsWrapper({ accountId, businessId, limits }: AISettingsW
         signature: formData.signature,
       });
 
-      router.push(`/onboarding/star-ratings?accountId=${accountId}&businessId=${businessId}`);
+      router.push(`/onboarding/star-ratings?accountId=${accountId}&locationId=${locationId}`);
     } catch (error) {
       console.error("Error saving AI settings:", error);
       toast.error(t("errorSaving"));

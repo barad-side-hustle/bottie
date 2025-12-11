@@ -19,9 +19,9 @@ import type { Locale } from "@/lib/locale";
 interface SubscriptionInfoProps {
   limits: PlanLimits;
   subscription: Subscription | null;
-  currentBusiness: number;
+  currentLocations: number;
   currentReviews: number;
-  businessesPercent: number;
+  locationsPercent: number;
   reviewsPercent: number;
   planType: PlanTier;
 }
@@ -37,9 +37,9 @@ function getPlanBadgeInfo(planType: PlanTier, planLabel: string) {
 
 export function SubscriptionInfo({
   limits,
-  currentBusiness,
+  currentLocations,
   currentReviews,
-  businessesPercent,
+  locationsPercent,
   reviewsPercent,
   planType,
 }: SubscriptionInfoProps) {
@@ -66,11 +66,11 @@ export function SubscriptionInfo({
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="font-medium">
-                  {t("businessesCount", { current: currentBusiness, max: limits.businesses })}
+                  {t("businessesCount", { current: currentLocations, max: limits.businesses })}
                 </span>
-                <span className="text-muted-foreground">{businessesPercent}%</span>
+                <span className="text-muted-foreground">{locationsPercent}%</span>
               </div>
-              <Progress value={businessesPercent} />
+              <Progress value={locationsPercent} />
             </div>
           </DashboardCardField>
 

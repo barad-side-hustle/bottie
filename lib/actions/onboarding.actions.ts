@@ -4,14 +4,14 @@ import { getAuthenticatedUserId } from "@/lib/api/auth";
 import { ReviewsRepository } from "@/lib/db/repositories/reviews.repository";
 import { ReviewResponsesRepository } from "@/lib/db/repositories/review-responses.repository";
 import { AccountsRepository } from "@/lib/db/repositories/accounts.repository";
-import { BusinessesRepository } from "@/lib/db/repositories/businesses.repository";
+import { AccountLocationsRepository } from "@/lib/db/repositories/account-locations.repository";
 import { listReviews, starRatingToNumber, parseGoogleTimestamp, GoogleReview } from "@/lib/google/reviews";
 import { decryptToken } from "@/lib/google/business-profile";
 import { ReviewInsert, ReviewResponseInsert } from "@/lib/db/schema";
 import { isDuplicateKeyError } from "@/lib/db/error-handlers";
 import { classifyReview } from "@/lib/ai/classification";
 
-export async function triggerReviewImport(accountId: string, businessId: string) {
+export async function triggerReviewImport(accountId: string, locationId: string) {
   const { userId } = await getAuthenticatedUserId();
 
   if (!userId) {
@@ -22,22 +22,22 @@ export async function triggerReviewImport(accountId: string, businessId: string)
     console.log("Importing past reviews", {
       userId,
       accountId,
-      businessId,
+      locationId,
     });
 
     const accountsRepo = new AccountsRepository(userId);
-    const businessesRepo = new BusinessesRepository(userId, accountId);
-    const reviewsRepo = new ReviewsRepository(userId, businessId);
-    const reviewResponsesRepo = new ReviewResponsesRepository(userId, accountId, businessId);
+    const accountLocationsRepo = new AccountLocationsRepository(userId, accountId);
+    const reviewsRepo = new ReviewsRepository(userId, locationId);
+    const reviewResponsesRepo = new ReviewResponsesRepository(userId, accountId, locationId);
 
     const account = await accountsRepo.get(accountId);
     if (!account || !account.googleRefreshToken) {
       return { success: false, error: "Account not found or missing Google refresh token" };
     }
 
-    const business = await businessesRepo.get(businessId);
-    if (!business || !business.googleBusinessId) {
-      return { success: false, error: "Business not found or missing Google Business ID" };
+    const accountLocation = await accountLocationsRepo.getByLocationId(locationId);
+    if (!accountLocation || !accountLocation.googleBusinessId) {
+      return { success: false, error: "Location connection not found or missing Google Business ID" };
     }
 
     const refreshToken = await decryptToken(account.googleRefreshToken);
@@ -56,7 +56,7 @@ export async function triggerReviewImport(accountId: string, businessId: string)
           const hasReply = !!googleReview.reviewReply;
 
           const reviewData: ReviewInsert = {
-            businessId,
+            locationId,
             googleReviewId: googleReview.reviewId,
             googleReviewName: googleReview.name,
             name: googleReview.reviewer.displayName,
@@ -87,7 +87,7 @@ export async function triggerReviewImport(accountId: string, businessId: string)
               .catch((err) => console.error("Failed to classify review:", err));
 
             if (hasReply && googleReview.reviewReply && googleReview.reviewReply.comment) {
-              const responseData: Omit<ReviewResponseInsert, "accountId" | "businessId"> = {
+              const responseData: Omit<ReviewResponseInsert, "accountId" | "locationId"> = {
                 reviewId: newReview.id,
                 text: googleReview.reviewReply.comment,
                 status: "posted",
@@ -112,7 +112,7 @@ export async function triggerReviewImport(accountId: string, businessId: string)
     };
 
     for await (const reviewsResponse of listReviews(
-      business.googleBusinessId,
+      accountLocation.googleBusinessId,
       refreshToken,
       process.env.GOOGLE_CLIENT_ID,
       process.env.GOOGLE_CLIENT_SECRET

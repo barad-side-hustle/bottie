@@ -17,7 +17,7 @@ interface CategoryReviewsModalProps {
   category: ClassificationCategory | null;
   type: "positive" | "negative" | null;
   accountId: string;
-  businessId: string;
+  locationId: string;
   dateFrom: Date;
   dateTo: Date;
 }
@@ -28,7 +28,7 @@ export function CategoryReviewsModal({
   category,
   type,
   accountId,
-  businessId,
+  locationId,
   dateFrom,
   dateTo,
 }: CategoryReviewsModalProps) {
@@ -48,7 +48,7 @@ export function CategoryReviewsModal({
 
     getReviewsByCategory({
       accountId,
-      businessId,
+      locationId,
       dateFrom,
       dateTo,
       category: category!,
@@ -72,7 +72,7 @@ export function CategoryReviewsModal({
     return () => {
       cancelled = true;
     };
-  }, [fetchKey, lastFetchKey, accountId, businessId, dateFrom, dateTo, category, type]);
+  }, [fetchKey, lastFetchKey, accountId, locationId, dateFrom, dateTo, category, type]);
 
   const isLoading = fetchKey !== null && fetchKey !== lastFetchKey;
 

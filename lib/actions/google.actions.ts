@@ -1,18 +1,18 @@
 "use server";
 
 import { getAuthenticatedUserId } from "@/lib/api/auth";
-import { AccountsController, BusinessesController } from "@/lib/controllers";
+import { AccountsController, AccountLocationsController } from "@/lib/controllers";
 import { listAllBusinesses, decryptToken, subscribeToNotifications } from "@/lib/google/business-profile";
 import { listReviews, starRatingToNumber, parseGoogleTimestamp } from "@/lib/google/reviews";
 import { AccountsRepository } from "@/lib/db/repositories/accounts.repository";
-import { BusinessesRepository } from "@/lib/db/repositories/businesses.repository";
+import { AccountLocationsRepository } from "@/lib/db/repositories/account-locations.repository";
 import { ReviewsRepository, ReviewWithLatestGeneration } from "@/lib/db/repositories/reviews.repository";
 import { ReviewResponsesRepository } from "@/lib/db/repositories/review-responses.repository";
 import { isDuplicateKeyError } from "@/lib/db/error-handlers";
-import type { GoogleBusinessProfileBusiness } from "@/lib/types";
+import type { GoogleBusinessProfileLocation } from "@/lib/types";
 import type { ReviewInsert, ReviewResponseInsert } from "@/lib/db/schema";
 
-export async function getGoogleBusinesses(userId: string, accountId: string): Promise<GoogleBusinessProfileBusiness[]> {
+export async function getGoogleBusinesses(userId: string, accountId: string): Promise<GoogleBusinessProfileLocation[]> {
   const { userId: authenticatedUserId } = await getAuthenticatedUserId();
 
   if (authenticatedUserId !== userId) {
@@ -41,7 +41,7 @@ export async function subscribeToGoogleNotifications(
   }
 
   const accountsController = new AccountsController(userId);
-  const businessesController = new BusinessesController(userId, accountId);
+  const accountLocationsController = new AccountLocationsController(userId, accountId);
 
   const account = await accountsController.getAccount(accountId);
 
@@ -57,12 +57,12 @@ export async function subscribeToGoogleNotifications(
     throw new Error("Missing Google refresh token");
   }
 
-  const businesses = await businessesController.getBusinesses();
-  if (businesses.length === 0) {
-    throw new Error("No businesses found");
+  const accountLocations = await accountLocationsController.getAccountLocationsWithDetails();
+  if (accountLocations.length === 0) {
+    throw new Error("No locations found");
   }
 
-  const googleAccountName = businesses[0].googleBusinessId.split("/locations")[0];
+  const googleAccountName = accountLocations[0].googleBusinessId.split("/locations")[0];
 
   const projectId = process.env.NEXT_PUBLIC_GCP_PROJECT_ID || "review-ai-reply";
   const topicName = process.env.PUBSUB_TOPIC_NAME || "gmb-review-notifications";
@@ -80,7 +80,7 @@ export async function subscribeToGoogleNotifications(
 export async function importRecentReviews(
   userId: string,
   accountId: string,
-  businessId: string
+  locationId: string
 ): Promise<ReviewWithLatestGeneration[]> {
   const { userId: authenticatedUserId } = await getAuthenticatedUserId();
 
@@ -89,24 +89,24 @@ export async function importRecentReviews(
   }
 
   const accountsRepo = new AccountsRepository(userId);
-  const businessesRepo = new BusinessesRepository(userId, accountId);
-  const reviewsRepo = new ReviewsRepository(userId, businessId);
-  const reviewResponsesRepo = new ReviewResponsesRepository(userId, accountId, businessId);
+  const accountLocationsRepo = new AccountLocationsRepository(userId, accountId);
+  const reviewsRepo = new ReviewsRepository(userId, locationId);
+  const reviewResponsesRepo = new ReviewResponsesRepository(userId, accountId, locationId);
 
   const account = await accountsRepo.get(accountId);
   if (!account || !account.googleRefreshToken) {
     throw new Error("Account not found or missing Google refresh token");
   }
 
-  const business = await businessesRepo.get(businessId);
-  if (!business || !business.googleBusinessId) {
-    throw new Error("Business not found or missing Google Business ID");
+  const accountLocation = await accountLocationsRepo.getByLocationId(locationId);
+  if (!accountLocation || !accountLocation.googleBusinessId) {
+    throw new Error("Location connection not found or missing Google Business ID");
   }
 
   const refreshToken = await decryptToken(account.googleRefreshToken);
 
   for await (const reviewsResponse of listReviews(
-    business.googleBusinessId,
+    accountLocation.googleBusinessId,
     refreshToken,
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,
@@ -120,7 +120,7 @@ export async function importRecentReviews(
           const hasReply = !!googleReview.reviewReply;
 
           const reviewData: ReviewInsert = {
-            businessId,
+            locationId,
             googleReviewId: googleReview.reviewId,
             googleReviewName: googleReview.name,
             name: googleReview.reviewer.displayName,
@@ -139,7 +139,7 @@ export async function importRecentReviews(
             const newReview = await reviewsRepo.create(reviewData);
 
             if (hasReply && googleReview.reviewReply && googleReview.reviewReply.comment) {
-              const responseData: Omit<ReviewResponseInsert, "accountId" | "businessId"> = {
+              const responseData: Omit<ReviewResponseInsert, "accountId" | "locationId"> = {
                 reviewId: newReview.id,
                 text: googleReview.reviewReply.comment,
                 status: "posted",
@@ -168,7 +168,7 @@ export async function importRecentReviews(
                   body: JSON.stringify({
                     userId,
                     accountId,
-                    businessId,
+                    locationId,
                     reviewId: newReview.id,
                   }),
                 });

@@ -32,7 +32,7 @@ export class AccountMergeService {
       with: {
         account: {
           with: {
-            businesses: true,
+            accountLocations: true,
             userAccounts: true,
           },
         },
@@ -44,7 +44,7 @@ export class AccountMergeService {
 
       const account = link.account;
 
-      if (account.businesses.length === 0 && account.userAccounts.length === 1) {
+      if (account.accountLocations.length === 0 && account.userAccounts.length === 1) {
         await db.delete(accounts).where(eq(accounts.id, account.id));
       }
     }
