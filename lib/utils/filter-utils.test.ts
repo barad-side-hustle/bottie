@@ -1,7 +1,17 @@
 import { describe, it, expect } from "vitest";
-import { parseFiltersFromSearchParams, buildSearchParams } from "./filter-utils";
+import { parseFiltersFromSearchParams, buildSearchParams, DEFAULT_REVIEW_SORT } from "./filter-utils";
 
 describe("filter-utils", () => {
+  describe("DEFAULT_REVIEW_SORT", () => {
+    it("should have receivedAt as default orderBy", () => {
+      expect(DEFAULT_REVIEW_SORT.orderBy).toBe("receivedAt");
+    });
+
+    it("should have desc as default orderDirection", () => {
+      expect(DEFAULT_REVIEW_SORT.orderDirection).toBe("desc");
+    });
+  });
+
   describe("parseFiltersFromSearchParams", () => {
     it("should return default sort (receivedAt desc) when no params provided", () => {
       const result = parseFiltersFromSearchParams({});
