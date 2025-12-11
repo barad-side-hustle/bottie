@@ -106,11 +106,20 @@ describe("AccountLocationsRepository", () => {
   });
 
   describe("listWithLocations", () => {
-    it("should return account locations with location details", async () => {
+    it("should return account locations with full location details", async () => {
       const mockAccountLocations = [
         {
           id: "al-1",
-          location: { id: "loc-1", name: "Test Location" },
+          location: {
+            id: "loc-1",
+            googleLocationId: "google-123",
+            name: "Test Location",
+            address: "123 Main St",
+            toneOfVoice: "friendly",
+            languageMode: "auto-detect",
+            starConfigs: {},
+            createdAt: new Date(),
+          },
         },
       ];
 

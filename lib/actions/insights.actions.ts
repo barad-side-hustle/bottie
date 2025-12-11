@@ -6,7 +6,6 @@ import { z } from "zod";
 import type { ClassificationCategory } from "@/lib/types/classification.types";
 
 const ContextSchema = z.object({
-  accountId: z.string().uuid(),
   locationId: z.string().uuid(),
 });
 

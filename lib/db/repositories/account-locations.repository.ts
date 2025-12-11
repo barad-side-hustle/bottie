@@ -6,6 +6,7 @@ import {
   locations,
   type AccountLocation,
   type AccountLocationInsert,
+  type Location,
 } from "@/lib/db/schema";
 import { NotFoundError } from "@/lib/api/errors";
 
@@ -54,18 +55,7 @@ export class AccountLocationsRepository {
     return results;
   }
 
-  async listWithLocations(): Promise<
-    Array<
-      AccountLocation & {
-        location: {
-          id: string;
-          googleLocationId: string;
-          name: string;
-          address: string;
-        };
-      }
-    >
-  > {
+  async listWithLocations(): Promise<Array<AccountLocation & { location: Location }>> {
     if (!(await this.verifyAccess())) return [];
 
     const results = await db.query.accountLocations.findMany({

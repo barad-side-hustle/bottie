@@ -3,6 +3,7 @@
 import { getAuthenticatedUserId } from "@/lib/api/auth";
 import { LocationsController, AccountLocationsController, SubscriptionsController } from "@/lib/controllers";
 import type { Location, LocationCreate, LocationUpdate, AccountLocation } from "@/lib/types";
+import type { Location as DBLocation } from "@/lib/db/schema";
 import { getDefaultLocationConfig } from "@/lib/utils/location-config";
 import { extractLocationId } from "@/lib/google/business-profile";
 
@@ -31,18 +32,7 @@ export async function getLocation(userId: string, locationId: string): Promise<L
 export async function getAccountLocations(
   userId: string,
   accountId: string
-): Promise<
-  Array<
-    AccountLocation & {
-      location: {
-        id: string;
-        googleLocationId: string;
-        name: string;
-        address: string;
-      };
-    }
-  >
-> {
+): Promise<Array<AccountLocation & { location: DBLocation }>> {
   const { userId: authenticatedUserId } = await getAuthenticatedUserId();
 
   if (authenticatedUserId !== userId) {

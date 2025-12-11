@@ -20,18 +20,7 @@ export class AccountLocationsController {
     return this.repository.list();
   }
 
-  async getAccountLocationsWithDetails(): Promise<
-    Array<
-      AccountLocation & {
-        location: {
-          id: string;
-          googleLocationId: string;
-          name: string;
-          address: string;
-        };
-      }
-    >
-  > {
+  async getAccountLocationsWithDetails(): Promise<Array<AccountLocation & { location: Location }>> {
     return this.repository.listWithLocations();
   }
 

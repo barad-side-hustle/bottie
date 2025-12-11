@@ -17,7 +17,7 @@ interface InsightsPageProps {
 }
 
 export default async function InsightsPage({ params, searchParams }: InsightsPageProps) {
-  const { locale, accountId, locationId } = await params;
+  const { locale, locationId } = await params;
   const resolvedSearchParams = await searchParams;
 
   const { userId } = await getAuthenticatedUserId();
@@ -39,8 +39,8 @@ export default async function InsightsPage({ params, searchParams }: InsightsPag
 
   const [location, insights, trends] = await Promise.all([
     getLocation(userId, locationId),
-    getInsights({ accountId, locationId, dateFrom, dateTo }),
-    getInsightsTrends({ accountId, locationId, dateFrom, dateTo, groupBy: "day" }),
+    getInsights({ locationId, dateFrom, dateTo }),
+    getInsightsTrends({ locationId, dateFrom, dateTo, groupBy: "day" }),
   ]);
 
   const hasData = insights.totalReviews > 0;
@@ -64,7 +64,6 @@ export default async function InsightsPage({ params, searchParams }: InsightsPag
             <InsightsCharts
               stats={insights}
               trends={trends}
-              accountId={accountId}
               locationId={locationId}
               dateFrom={dateFrom}
               dateTo={dateTo}
