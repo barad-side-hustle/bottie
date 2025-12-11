@@ -140,6 +140,13 @@ export function ReviewFiltersForm({ filters: initialFilters, onApply, onReset }:
           setDate={(range) => setFilters({ ...filters, dateFrom: range?.from, dateTo: range?.to })}
           locale={dateLocale}
           placeholder={t("pickDate")}
+          showPresets
+          presets={[
+            { label: t("last7Days"), days: 7 },
+            { label: t("last30Days"), days: 30 },
+            { label: t("last90Days"), days: 90 },
+          ]}
+          title={t("selectDateRange")}
         />
       </FilterSection>
 
