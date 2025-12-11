@@ -8,6 +8,8 @@ import { getAuthenticatedUserId } from "@/lib/api/auth";
 import { InsightsDateFilter, InsightsOverview, InsightsCharts } from "@/components/dashboard/insights";
 import { EmptyState } from "@/components/ui/empty-state";
 import { subDays } from "date-fns";
+import { SubscriptionsController } from "@/lib/controllers/subscriptions.controller";
+import { FeatureLockedState } from "@/components/dashboard/FeatureLockedState";
 
 export const dynamic = "force-dynamic";
 
@@ -23,6 +25,23 @@ export default async function InsightsPage({ params, searchParams }: InsightsPag
   const { userId } = await getAuthenticatedUserId();
   const t = await getTranslations({ locale, namespace: "dashboard.insights" });
   const tCommon = await getTranslations({ locale, namespace: "common" });
+
+  const subscriptionsController = new SubscriptionsController();
+  const analyticsAccess = await subscriptionsController.checkFeatureAccess(userId, "analytics");
+
+  if (!analyticsAccess.hasAccess) {
+    return (
+      <PageContainer>
+        <div className="mb-6">
+          <BackButton label={tCommon("back")} />
+        </div>
+        <PageHeader title={t("title", { businessName: "Insights" })} description={t("description")} />
+        <div className="mt-6">
+          <FeatureLockedState feature="analytics" requiredPlan={analyticsAccess.requiredPlan!} />
+        </div>
+      </PageContainer>
+    );
+  }
 
   const dateFromParam = resolvedSearchParams.dateFrom as string | undefined;
   const dateToParam = resolvedSearchParams.dateTo as string | undefined;

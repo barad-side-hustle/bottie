@@ -713,6 +713,19 @@
         "close": "סגור",
         "upgradeToPlan": "שדרג לתוכנית בסיסי"
       }
+    },
+    "featureGate": {
+      "plans": {
+        "basic": "בסיסי",
+        "pro": "פרו"
+      },
+      "upgradeTo": "שדרג ל-{plan}",
+      "features": {
+        "analytics": {
+          "title": "אנליטיקס היא תכונת פרו",
+          "description": "שדרג ל-{plan} כדי לגשת לתובנות וניתוחים מפורטים עבור הביקורות שלך."
+        }
+      }
     }
   },
   "checkout": {
