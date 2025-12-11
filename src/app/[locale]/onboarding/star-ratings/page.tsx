@@ -11,11 +11,11 @@ interface PageProps {
 export default async function StarRatingsPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const accountId = params.accountId as string | undefined;
-  const businessId = params.businessId as string | undefined;
+  const locationId = params.locationId as string | undefined;
 
-  if (!accountId || !businessId) {
-    redirect("/onboarding/choose-business");
+  if (!accountId || !locationId) {
+    redirect("/onboarding/choose-location");
   }
 
-  return <StarRatingsWrapper accountId={accountId} businessId={businessId} />;
+  return <StarRatingsWrapper accountId={accountId} locationId={locationId} />;
 }

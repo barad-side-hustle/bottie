@@ -7,7 +7,7 @@ export class SubscriptionsController {
     return repo.getUserPlanLimits(userId);
   }
 
-  async checkBusinessLimit(userId: string): Promise<boolean> {
+  async checkLocationLimit(userId: string): Promise<boolean> {
     const repo = new SubscriptionsRepository();
     const limits = await repo.getUserPlanLimits(userId);
 
@@ -16,9 +16,9 @@ export class SubscriptionsController {
     }
 
     const statsRepo = new StatsRepository();
-    const businessCount = await statsRepo.countUserBusinesses(userId);
+    const locationCount = await statsRepo.countUserLocations(userId);
 
-    return businessCount < limits.businesses;
+    return locationCount < limits.businesses;
   }
 
   async checkReviewQuota(userId: string): Promise<{ allowed: boolean; currentCount: number; limit: number }> {

@@ -1,7 +1,7 @@
 import { pgTable, text, timestamp, uuid, index, pgPolicy } from "drizzle-orm/pg-core";
 import { sql, relations } from "drizzle-orm";
 import { authenticatedRole, authUid } from "./roles";
-import { businesses } from "./businesses.schema";
+import { accountLocations } from "./account-locations.schema";
 import { userAccounts } from "./user-accounts.schema";
 
 export const accounts = pgTable(
@@ -60,7 +60,7 @@ export const accounts = pgTable(
 );
 
 export const accountsRelations = relations(accounts, ({ many }) => ({
-  businesses: many(businesses),
+  accountLocations: many(accountLocations),
   userAccounts: many(userAccounts),
 }));
 

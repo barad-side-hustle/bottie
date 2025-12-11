@@ -1,8 +1,18 @@
 import { OAuth2Client } from "google-auth-library";
 import * as Iron from "@hapi/iron";
-import { GoogleBusinessProfileBusiness } from "@/lib/types";
+import { GoogleBusinessProfileLocation } from "@/lib/types";
 
 const GOOGLE_MY_BUSINESS_API_BASE = "https://mybusinessbusinessinformation.googleapis.com/v1";
+
+export function extractLocationId(googleBusinessId: string): string | null {
+  const match = googleBusinessId.match(/\/locations\/(\d+)$/);
+  return match ? match[1] : null;
+}
+
+export function extractAccountName(googleBusinessId: string): string | null {
+  const match = googleBusinessId.match(/^(accounts\/\d+)\/locations\/\d+$/);
+  return match ? match[1] : null;
+}
 
 interface GoogleAccount {
   name: string;
@@ -156,7 +166,7 @@ function formatAddress(business: GoogleBusinessProfile): string {
   return parts.join(", ");
 }
 
-export async function listAllBusinesses(refreshToken: string): Promise<GoogleBusinessProfileBusiness[]> {
+export async function listAllBusinesses(refreshToken: string): Promise<GoogleBusinessProfileLocation[]> {
   try {
     const accessToken = await getAccessTokenFromRefreshToken(refreshToken);
     const accounts = await listAccounts(accessToken);
@@ -165,17 +175,19 @@ export async function listAllBusinesses(refreshToken: string): Promise<GoogleBus
       return [];
     }
 
-    const allBusinesses: GoogleBusinessProfileBusiness[] = [];
+    const allBusinesses: GoogleBusinessProfileLocation[] = [];
 
     for (const account of accounts) {
       const businesses = await listBusinessesForAccount(account.name, accessToken);
 
       for (const business of businesses) {
         const businessId = business.name.startsWith("accounts/") ? business.name : `${account.name}/${business.name}`;
+        const locationId = extractLocationId(businessId);
 
         allBusinesses.push({
           accountId: account.name,
           id: businessId,
+          locationId: locationId || businessId,
           name: business.title,
           address: formatAddress(business),
           city: business.storefrontAddress?.locality ?? null,

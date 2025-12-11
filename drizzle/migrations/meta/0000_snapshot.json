@@ -1,5 +1,5 @@
 {
-  "id": "9e1750ca-212f-4fd5-99bd-88e0dd947b70",
+  "id": "6e7424b1-79d5-4642-aa44-b124e0d535ba",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -547,8 +547,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.businesses": {
-      "name": "businesses",
+    "public.locations": {
+      "name": "locations",
       "schema": "",
       "columns": {
         "id": {
@@ -558,14 +558,8 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "account_id": {
-          "name": "account_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "google_business_id": {
-          "name": "google_business_id",
+        "google_location_id": {
+          "name": "google_location_id",
           "type": "text",
           "primaryKey": false,
           "notNull": true
@@ -680,6 +674,108 @@
           "primaryKey": false,
           "notNull": true
         },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "locations_google_location_id_idx": {
+          "name": "locations_google_location_id_idx",
+          "columns": [
+            {
+              "expression": "google_location_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "locations_google_location_id_unique": {
+          "name": "locations_google_location_id_unique",
+          "nullsNotDistinct": false,
+          "columns": ["google_location_id"]
+        }
+      },
+      "policies": {
+        "locations_select_connected": {
+          "name": "locations_select_connected",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": ["authenticated"],
+          "using": "EXISTS (\n        SELECT 1 FROM account_locations al\n        INNER JOIN user_accounts ua ON ua.account_id = al.account_id\n        WHERE al.location_id = \"locations\".\"id\"\n        AND ua.user_id = (auth.uid())\n      )"
+        },
+        "locations_insert_authenticated": {
+          "name": "locations_insert_authenticated",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": ["authenticated"],
+          "withCheck": "true"
+        },
+        "locations_update_connected": {
+          "name": "locations_update_connected",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": ["authenticated"],
+          "using": "EXISTS (\n        SELECT 1 FROM account_locations al\n        INNER JOIN user_accounts ua ON ua.account_id = al.account_id\n        WHERE al.location_id = \"locations\".\"id\"\n        AND ua.user_id = (auth.uid())\n      )"
+        },
+        "locations_delete_orphan": {
+          "name": "locations_delete_orphan",
+          "as": "PERMISSIVE",
+          "for": "DELETE",
+          "to": ["authenticated"],
+          "using": "NOT EXISTS (\n        SELECT 1 FROM account_locations al\n        WHERE al.location_id = \"locations\".\"id\"\n      )"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.account_locations": {
+      "name": "account_locations",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "account_id": {
+          "name": "account_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "location_id": {
+          "name": "location_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "google_business_id": {
+          "name": "google_business_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
         "connected": {
           "name": "connected",
           "type": "boolean",
@@ -700,17 +796,11 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": false
         }
       },
       "indexes": {
-        "businesses_account_id_idx": {
-          "name": "businesses_account_id_idx",
+        "account_locations_account_id_idx": {
+          "name": "account_locations_account_id_idx",
           "columns": [
             {
               "expression": "account_id",
@@ -724,8 +814,38 @@
           "method": "btree",
           "with": {}
         },
-        "businesses_google_business_id_idx": {
-          "name": "businesses_google_business_id_idx",
+        "account_locations_location_id_idx": {
+          "name": "account_locations_location_id_idx",
+          "columns": [
+            {
+              "expression": "location_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "account_locations_connected_idx": {
+          "name": "account_locations_connected_idx",
+          "columns": [
+            {
+              "expression": "connected",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "account_locations_google_business_id_idx": {
+          "name": "account_locations_google_business_id_idx",
           "columns": [
             {
               "expression": "google_business_id",
@@ -738,50 +858,23 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
-        },
-        "businesses_connected_idx": {
-          "name": "businesses_connected_idx",
-          "columns": [
-            {
-              "expression": "connected",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "businesses_account_connected_idx": {
-          "name": "businesses_account_connected_idx",
-          "columns": [
-            {
-              "expression": "account_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "connected",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
         }
       },
       "foreignKeys": {
-        "businesses_account_id_accounts_id_fk": {
-          "name": "businesses_account_id_accounts_id_fk",
-          "tableFrom": "businesses",
+        "account_locations_account_id_accounts_id_fk": {
+          "name": "account_locations_account_id_accounts_id_fk",
+          "tableFrom": "account_locations",
           "tableTo": "accounts",
           "columnsFrom": ["account_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "account_locations_location_id_locations_id_fk": {
+          "name": "account_locations_location_id_locations_id_fk",
+          "tableFrom": "account_locations",
+          "tableTo": "locations",
+          "columnsFrom": ["location_id"],
           "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
@@ -789,40 +882,40 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "businesses_google_business_id_unique": {
-          "name": "businesses_google_business_id_unique",
+        "account_locations_account_location_unique": {
+          "name": "account_locations_account_location_unique",
           "nullsNotDistinct": false,
-          "columns": ["google_business_id"]
+          "columns": ["account_id", "location_id"]
         }
       },
       "policies": {
-        "businesses_select_associated": {
-          "name": "businesses_select_associated",
+        "account_locations_select_associated": {
+          "name": "account_locations_select_associated",
           "as": "PERMISSIVE",
           "for": "SELECT",
           "to": ["authenticated"],
-          "using": "EXISTS (\n        SELECT 1 FROM user_accounts ua\n        WHERE ua.account_id = \"businesses\".\"account_id\"\n        AND ua.user_id = (auth.uid())\n      )"
+          "using": "EXISTS (\n        SELECT 1 FROM user_accounts ua\n        WHERE ua.account_id = \"account_locations\".\"account_id\"\n        AND ua.user_id = (auth.uid())\n      )"
         },
-        "businesses_insert_associated": {
-          "name": "businesses_insert_associated",
+        "account_locations_insert_associated": {
+          "name": "account_locations_insert_associated",
           "as": "PERMISSIVE",
           "for": "INSERT",
           "to": ["authenticated"],
-          "withCheck": "EXISTS (\n        SELECT 1 FROM user_accounts ua\n        WHERE ua.account_id = \"businesses\".\"account_id\"\n        AND ua.user_id = (auth.uid())\n      )"
+          "withCheck": "EXISTS (\n        SELECT 1 FROM user_accounts ua\n        WHERE ua.account_id = \"account_locations\".\"account_id\"\n        AND ua.user_id = (auth.uid())\n      )"
         },
-        "businesses_update_associated": {
-          "name": "businesses_update_associated",
+        "account_locations_update_associated": {
+          "name": "account_locations_update_associated",
           "as": "PERMISSIVE",
           "for": "UPDATE",
           "to": ["authenticated"],
-          "using": "EXISTS (\n        SELECT 1 FROM user_accounts ua\n        WHERE ua.account_id = \"businesses\".\"account_id\"\n        AND ua.user_id = (auth.uid())\n      )"
+          "using": "EXISTS (\n        SELECT 1 FROM user_accounts ua\n        WHERE ua.account_id = \"account_locations\".\"account_id\"\n        AND ua.user_id = (auth.uid())\n      )"
         },
-        "businesses_delete_owner": {
-          "name": "businesses_delete_owner",
+        "account_locations_delete_owner": {
+          "name": "account_locations_delete_owner",
           "as": "PERMISSIVE",
           "for": "DELETE",
           "to": ["authenticated"],
-          "using": "EXISTS (\n        SELECT 1 FROM user_accounts ua\n        WHERE ua.account_id = \"businesses\".\"account_id\"\n        AND ua.user_id = (auth.uid())\n        AND ua.role = 'owner'\n      )"
+          "using": "EXISTS (\n        SELECT 1 FROM user_accounts ua\n        WHERE ua.account_id = \"account_locations\".\"account_id\"\n        AND ua.user_id = (auth.uid())\n        AND ua.role = 'owner'\n      )"
         }
       },
       "checkConstraints": {},
@@ -839,14 +932,8 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "account_id": {
-          "name": "account_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "business_id": {
-          "name": "business_id",
+        "location_id": {
+          "name": "location_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -926,29 +1013,20 @@
           "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false
+        },
+        "classifications": {
+          "name": "classifications",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {
-        "reviews_account_id_idx": {
-          "name": "reviews_account_id_idx",
+        "reviews_location_id_idx": {
+          "name": "reviews_location_id_idx",
           "columns": [
             {
-              "expression": "account_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "reviews_business_id_idx": {
-          "name": "reviews_business_id_idx",
-          "columns": [
-            {
-              "expression": "business_id",
+              "expression": "location_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -1004,32 +1082,11 @@
           "method": "btree",
           "with": {}
         },
-        "reviews_account_business_idx": {
-          "name": "reviews_account_business_idx",
+        "reviews_location_status_idx": {
+          "name": "reviews_location_status_idx",
           "columns": [
             {
-              "expression": "account_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "business_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        },
-        "reviews_business_status_idx": {
-          "name": "reviews_business_status_idx",
-          "columns": [
-            {
-              "expression": "business_id",
+              "expression": "location_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -1066,23 +1123,35 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
+        },
+        "reviews_location_date_idx": {
+          "name": "reviews_location_date_idx",
+          "columns": [
+            {
+              "expression": "location_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "date",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {
-        "reviews_account_id_accounts_id_fk": {
-          "name": "reviews_account_id_accounts_id_fk",
+        "reviews_location_id_locations_id_fk": {
+          "name": "reviews_location_id_locations_id_fk",
           "tableFrom": "reviews",
-          "tableTo": "accounts",
-          "columnsFrom": ["account_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        },
-        "reviews_business_id_businesses_id_fk": {
-          "name": "reviews_business_id_businesses_id_fk",
-          "tableFrom": "reviews",
-          "tableTo": "businesses",
-          "columnsFrom": ["business_id"],
+          "tableTo": "locations",
+          "columnsFrom": ["location_id"],
           "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
@@ -1097,33 +1166,33 @@
         }
       },
       "policies": {
-        "reviews_select_associated": {
-          "name": "reviews_select_associated",
+        "reviews_select_connected": {
+          "name": "reviews_select_connected",
           "as": "PERMISSIVE",
           "for": "SELECT",
           "to": ["authenticated"],
-          "using": "EXISTS (\n        SELECT 1 FROM user_accounts ua\n        WHERE ua.account_id = \"reviews\".\"account_id\"\n        AND ua.user_id = (auth.uid())\n      )"
+          "using": "EXISTS (\n        SELECT 1 FROM account_locations al\n        INNER JOIN user_accounts ua ON ua.account_id = al.account_id\n        WHERE al.location_id = \"reviews\".\"location_id\"\n        AND ua.user_id = (auth.uid())\n      )"
         },
-        "reviews_insert_associated": {
-          "name": "reviews_insert_associated",
+        "reviews_insert_connected": {
+          "name": "reviews_insert_connected",
           "as": "PERMISSIVE",
           "for": "INSERT",
           "to": ["authenticated"],
-          "withCheck": "EXISTS (\n        SELECT 1 FROM user_accounts ua\n        WHERE ua.account_id = \"reviews\".\"account_id\"\n        AND ua.user_id = (auth.uid())\n      )"
+          "withCheck": "EXISTS (\n        SELECT 1 FROM account_locations al\n        INNER JOIN user_accounts ua ON ua.account_id = al.account_id\n        WHERE al.location_id = \"reviews\".\"location_id\"\n        AND ua.user_id = (auth.uid())\n      )"
         },
-        "reviews_update_associated": {
-          "name": "reviews_update_associated",
+        "reviews_update_connected": {
+          "name": "reviews_update_connected",
           "as": "PERMISSIVE",
           "for": "UPDATE",
           "to": ["authenticated"],
-          "using": "EXISTS (\n        SELECT 1 FROM user_accounts ua\n        WHERE ua.account_id = \"reviews\".\"account_id\"\n        AND ua.user_id = (auth.uid())\n      )"
+          "using": "EXISTS (\n        SELECT 1 FROM account_locations al\n        INNER JOIN user_accounts ua ON ua.account_id = al.account_id\n        WHERE al.location_id = \"reviews\".\"location_id\"\n        AND ua.user_id = (auth.uid())\n      )"
         },
-        "reviews_delete_owner": {
-          "name": "reviews_delete_owner",
+        "reviews_delete_connected_owner": {
+          "name": "reviews_delete_connected_owner",
           "as": "PERMISSIVE",
           "for": "DELETE",
           "to": ["authenticated"],
-          "using": "EXISTS (\n        SELECT 1 FROM user_accounts ua\n        WHERE ua.account_id = \"reviews\".\"account_id\"\n        AND ua.user_id = (auth.uid())\n        AND ua.role = 'owner'\n      )"
+          "using": "EXISTS (\n        SELECT 1 FROM account_locations al\n        INNER JOIN user_accounts ua ON ua.account_id = al.account_id\n        WHERE al.location_id = \"reviews\".\"location_id\"\n        AND ua.user_id = (auth.uid())\n        AND ua.role = 'owner'\n      )"
         }
       },
       "checkConstraints": {
@@ -1151,8 +1220,8 @@
           "primaryKey": false,
           "notNull": true
         },
-        "business_id": {
-          "name": "business_id",
+        "location_id": {
+          "name": "location_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -1216,11 +1285,11 @@
         }
       },
       "indexes": {
-        "review_responses_business_id_idx": {
-          "name": "review_responses_business_id_idx",
+        "review_responses_location_id_idx": {
+          "name": "review_responses_location_id_idx",
           "columns": [
             {
-              "expression": "business_id",
+              "expression": "location_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -1276,11 +1345,11 @@
           "method": "btree",
           "with": {}
         },
-        "review_responses_business_status_created_idx": {
-          "name": "review_responses_business_status_created_idx",
+        "review_responses_location_status_created_idx": {
+          "name": "review_responses_location_status_created_idx",
           "columns": [
             {
-              "expression": "business_id",
+              "expression": "location_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -1314,11 +1383,11 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "review_responses_business_id_businesses_id_fk": {
-          "name": "review_responses_business_id_businesses_id_fk",
+        "review_responses_location_id_locations_id_fk": {
+          "name": "review_responses_location_id_locations_id_fk",
           "tableFrom": "review_responses",
-          "tableTo": "businesses",
-          "columnsFrom": ["business_id"],
+          "tableTo": "locations",
+          "columnsFrom": ["location_id"],
           "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
@@ -1356,19 +1425,19 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {
-        "review_responses_select_associated": {
-          "name": "review_responses_select_associated",
+        "review_responses_select_connected": {
+          "name": "review_responses_select_connected",
           "as": "PERMISSIVE",
           "for": "SELECT",
           "to": ["authenticated"],
-          "using": "EXISTS (\n        SELECT 1 FROM user_accounts ua\n        WHERE ua.account_id = \"review_responses\".\"account_id\"\n        AND ua.user_id = (auth.uid())\n      )"
+          "using": "EXISTS (\n        SELECT 1 FROM \"account_locations\" al\n        INNER JOIN \"user_accounts\" ua ON ua.account_id = al.account_id\n        WHERE al.location_id = \"review_responses\".\"location_id\"\n        AND ua.user_id = (auth.uid())\n      )"
         },
-        "review_responses_insert_associated": {
-          "name": "review_responses_insert_associated",
+        "review_responses_insert_connected": {
+          "name": "review_responses_insert_connected",
           "as": "PERMISSIVE",
           "for": "INSERT",
           "to": ["authenticated"],
-          "withCheck": "EXISTS (\n        SELECT 1 FROM user_accounts ua\n        WHERE ua.account_id = \"review_responses\".\"account_id\"\n        AND ua.user_id = (auth.uid())\n      )"
+          "withCheck": "EXISTS (\n        SELECT 1 FROM \"account_locations\" al\n        INNER JOIN \"user_accounts\" ua ON ua.account_id = al.account_id\n        WHERE al.location_id = \"review_responses\".\"location_id\"\n        AND ua.user_id = (auth.uid())\n      )"
         }
       },
       "checkConstraints": {
@@ -1390,8 +1459,8 @@
           "notNull": true,
           "default": "gen_random_uuid()"
         },
-        "business_id": {
-          "name": "business_id",
+        "location_id": {
+          "name": "location_id",
           "type": "uuid",
           "primaryKey": false,
           "notNull": true
@@ -1450,11 +1519,11 @@
         }
       },
       "indexes": {
-        "weekly_summaries_business_week_idx": {
-          "name": "weekly_summaries_business_week_idx",
+        "weekly_summaries_location_week_idx": {
+          "name": "weekly_summaries_location_week_idx",
           "columns": [
             {
-              "expression": "business_id",
+              "expression": "location_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -1479,11 +1548,11 @@
         }
       },
       "foreignKeys": {
-        "weekly_summaries_business_id_businesses_id_fk": {
-          "name": "weekly_summaries_business_id_businesses_id_fk",
+        "weekly_summaries_location_id_locations_id_fk": {
+          "name": "weekly_summaries_location_id_locations_id_fk",
           "tableFrom": "weekly_summaries",
-          "tableTo": "businesses",
-          "columnsFrom": ["business_id"],
+          "tableTo": "locations",
+          "columnsFrom": ["location_id"],
           "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
@@ -1491,19 +1560,19 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "weekly_summaries_business_week_unique": {
-          "name": "weekly_summaries_business_week_unique",
+        "weekly_summaries_location_week_unique": {
+          "name": "weekly_summaries_location_week_unique",
           "nullsNotDistinct": false,
-          "columns": ["business_id", "week_start_date", "week_end_date"]
+          "columns": ["location_id", "week_start_date", "week_end_date"]
         }
       },
       "policies": {
-        "weekly_summaries_select_associated": {
-          "name": "weekly_summaries_select_associated",
+        "weekly_summaries_select_connected": {
+          "name": "weekly_summaries_select_connected",
           "as": "PERMISSIVE",
           "for": "SELECT",
           "to": ["authenticated"],
-          "using": "EXISTS (\n        SELECT 1 FROM \"businesses\" b\n        JOIN \"user_accounts\" ua ON ua.account_id = b.account_id\n        WHERE b.id = \"weekly_summaries\".\"business_id\"\n        AND ua.user_id = (auth.uid())\n      )"
+          "using": "EXISTS (\n        SELECT 1 FROM \"account_locations\" al\n        JOIN \"user_accounts\" ua ON ua.account_id = al.account_id\n        WHERE al.location_id = \"weekly_summaries\".\"location_id\"\n        AND ua.user_id = (auth.uid())\n      )"
         }
       },
       "checkConstraints": {},

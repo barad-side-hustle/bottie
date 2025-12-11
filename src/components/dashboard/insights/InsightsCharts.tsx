@@ -14,13 +14,12 @@ import { CategoryReviewsModal } from "./CategoryReviewsModal";
 interface InsightsChartsProps {
   stats: ClassificationStats;
   trends: ClassificationTrend[];
-  accountId: string;
-  businessId: string;
+  locationId: string;
   dateFrom: Date;
   dateTo: Date;
 }
 
-export function InsightsCharts({ stats, trends, accountId, businessId, dateFrom, dateTo }: InsightsChartsProps) {
+export function InsightsCharts({ stats, trends, locationId, dateFrom, dateTo }: InsightsChartsProps) {
   const locale = useLocale();
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<ClassificationCategory | null>(null);
@@ -44,8 +43,7 @@ export function InsightsCharts({ stats, trends, accountId, businessId, dateFrom,
         onOpenChange={setModalOpen}
         category={selectedCategory}
         type={selectedType}
-        accountId={accountId}
-        businessId={businessId}
+        locationId={locationId}
         dateFrom={dateFrom}
         dateTo={dateTo}
       />

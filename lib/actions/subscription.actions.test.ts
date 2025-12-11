@@ -69,7 +69,7 @@ describe("createCheckoutSession", () => {
       error: null,
     });
 
-    const result = await createCheckoutSession("invalid", "monthly");
+    const result = await createCheckoutSession("invalid" as unknown as "basic" | "pro", "monthly");
     expect(result).toEqual({ error: "Invalid plan" });
   });
 
@@ -79,7 +79,7 @@ describe("createCheckoutSession", () => {
       error: null,
     });
 
-    const result = await createCheckoutSession("pro", "invalid");
+    const result = await createCheckoutSession("pro", "invalid" as unknown as "monthly" | "yearly");
     expect(result).toEqual({ error: "Invalid interval" });
   });
 });

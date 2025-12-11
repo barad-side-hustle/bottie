@@ -1,20 +1,21 @@
 import { eq, and, gte, countDistinct } from "drizzle-orm";
 import { db } from "@/lib/db/client";
-import { businesses, reviews, userAccounts } from "@/lib/db/schema";
+import { accountLocations, reviews, userAccounts } from "@/lib/db/schema";
 import { startOfMonth } from "date-fns";
 
 export class StatsRepository {
-  async countUserBusinesses(userId: string): Promise<number> {
+  async countUserLocations(userId: string): Promise<number> {
     try {
       const result = await db
-        .select({ count: businesses.id })
-        .from(businesses)
-        .innerJoin(userAccounts, eq(businesses.accountId, userAccounts.accountId))
-        .where(and(eq(userAccounts.userId, userId), eq(businesses.connected, true)));
+        .select({ locationId: accountLocations.locationId })
+        .from(accountLocations)
+        .innerJoin(userAccounts, eq(accountLocations.accountId, userAccounts.accountId))
+        .where(and(eq(userAccounts.userId, userId), eq(accountLocations.connected, true)));
 
-      return result.length;
+      const uniqueLocationIds = new Set(result.map((r) => r.locationId));
+      return uniqueLocationIds.size;
     } catch (error) {
-      console.error("Error counting user businesses:", error);
+      console.error("Error counting user locations:", error);
       return 0;
     }
   }
@@ -26,8 +27,8 @@ export class StatsRepository {
       const result = await db
         .select({ count: countDistinct(reviews.id) })
         .from(reviews)
-        .innerJoin(businesses, eq(reviews.businessId, businesses.id))
-        .innerJoin(userAccounts, eq(businesses.accountId, userAccounts.accountId))
+        .innerJoin(accountLocations, eq(reviews.locationId, accountLocations.locationId))
+        .innerJoin(userAccounts, eq(accountLocations.accountId, userAccounts.accountId))
         .where(
           and(eq(userAccounts.userId, userId), gte(reviews.receivedAt, startDate), eq(reviews.consumesQuota, true))
         );

@@ -201,26 +201,26 @@ describe("AccountsController", () => {
     });
   });
 
-  describe("getAccountsWithBusinesses", () => {
-    it("should return accounts with businesses", async () => {
+  describe("getAccountsWithLocations", () => {
+    it("should return accounts with locations", async () => {
       const mockUserAccounts = [
         {
           account: {
             id: "acc-1",
-            businesses: [{ id: "bus-1" }],
+            accountLocations: [{ id: "loc-1" }],
           },
         },
       ];
 
       (db.query.userAccounts.findMany as Mock).mockResolvedValue(mockUserAccounts);
 
-      const result = await controller.getAccountsWithBusinesses({}, {});
+      const result = await controller.getAccountsWithLocations({}, {});
 
       expect(db.query.userAccounts.findMany).toHaveBeenCalled();
       expect(result).toEqual([
         {
           id: "acc-1",
-          businesses: [{ id: "bus-1" }],
+          accountLocations: [{ id: "loc-1" }],
         },
       ]);
     });
@@ -230,14 +230,14 @@ describe("AccountsController", () => {
         {
           account: {
             id: "acc-1",
-            businesses: [{ id: "bus-1" }],
+            accountLocations: [{ id: "loc-1" }],
           },
         },
       ];
 
       (db.query.userAccounts.findMany as Mock).mockResolvedValue(mockUserAccounts);
 
-      await controller.getAccountsWithBusinesses({ ids: ["acc-1"] }, { connected: true });
+      await controller.getAccountsWithLocations({ ids: ["acc-1"] }, { connected: true });
 
       expect(db.query.userAccounts.findMany).toHaveBeenCalled();
     });

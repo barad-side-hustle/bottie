@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
-import { authUsers, subscriptions, businesses, userAccounts, reviews } from "@/lib/db/schema";
+import { authUsers, subscriptions, locations, accountLocations, userAccounts, reviews } from "@/lib/db/schema";
 import { eq, and, gte, lte } from "drizzle-orm";
 import { generateWeeklySummary, generateWeeklySummaryFromClassifications } from "@/lib/ai/summaries";
 import { WeeklySummariesRepository } from "@/lib/db/repositories/weekly-summaries.repository";
@@ -73,27 +73,30 @@ export async function GET(req: NextRequest) {
         const [user] = await db.select().from(authUsers).where(eq(authUsers.id, userId));
         if (!user || !user.email) continue;
 
-        const userBusinesses = await db
+        const userLocations = await db
           .select({
-            business: businesses,
+            location: locations,
           })
-          .from(businesses)
-          .innerJoin(userAccounts, eq(userAccounts.accountId, businesses.accountId))
-          .where(and(eq(userAccounts.userId, userId), eq(businesses.connected, true)));
+          .from(locations)
+          .innerJoin(accountLocations, eq(accountLocations.locationId, locations.id))
+          .innerJoin(userAccounts, eq(userAccounts.accountId, accountLocations.accountId))
+          .where(and(eq(userAccounts.userId, userId), eq(accountLocations.connected, true)));
 
-        for (const { business } of userBusinesses) {
-          const businessReviews = await db
+        const uniqueLocations = [...new Map(userLocations.map((ul) => [ul.location.id, ul.location])).values()];
+
+        for (const location of uniqueLocations) {
+          const locationReviews = await db
             .select()
             .from(reviews)
             .where(
-              and(eq(reviews.businessId, business.id), gte(reviews.date, lastSunday), lte(reviews.date, lastSaturday))
+              and(eq(reviews.locationId, location.id), gte(reviews.date, lastSunday), lte(reviews.date, lastSaturday))
             );
 
-          if (businessReviews.length === 0) {
+          if (locationReviews.length === 0) {
             continue;
           }
 
-          const insightsRepo = new InsightsRepository(userId, business.id);
+          const insightsRepo = new InsightsRepository(userId, location.id);
           const stats = await insightsRepo.getClassificationStats(lastSunday, lastSaturday);
           const topPositives = await insightsRepo.getTopCategories(lastSunday, lastSaturday, "positive", 5);
           const topNegatives = await insightsRepo.getTopCategories(lastSunday, lastSaturday, "negative", 5);
@@ -101,21 +104,21 @@ export async function GET(req: NextRequest) {
           const hasClassifications = stats.classifiedReviews > 0;
           const summaryData = hasClassifications
             ? await generateWeeklySummaryFromClassifications({
-                businessName: business.name,
+                businessName: location.name,
                 stats,
                 topPositives,
                 topNegatives,
                 language: locale as "en" | "he",
               })
-            : await generateWeeklySummary(business.name, businessReviews, locale as "en" | "he");
+            : await generateWeeklySummary(location.name, locationReviews, locale as "en" | "he");
 
-          const averageRating = businessReviews.reduce((acc, r) => acc + r.rating, 0) / businessReviews.length;
+          const averageRating = locationReviews.reduce((acc, r) => acc + r.rating, 0) / locationReviews.length;
 
           const { created } = await weeklySummariesRepo.upsert({
-            businessId: business.id,
+            locationId: location.id,
             weekStartDate: lastSunday.toISOString().split("T")[0],
             weekEndDate: lastSaturday.toISOString().split("T")[0],
-            totalReviews: businessReviews.length,
+            totalReviews: locationReviews.length,
             averageRating,
             positiveThemes: summaryData.positiveThemes,
             negativeThemes: summaryData.negativeThemes,
@@ -131,7 +134,7 @@ export async function GET(req: NextRequest) {
           if (resend) {
             const dateRangeStr = `${lastSunday.toLocaleDateString(locale, { day: "numeric", month: "short" })} - ${lastSaturday.toLocaleDateString(locale, { day: "numeric", month: "short" })}`;
 
-            const subject = t("subject", { businessName: business.name });
+            const subject = t("subject", { businessName: location.name });
 
             const sentimentData = hasClassifications
               ? {
@@ -151,11 +154,11 @@ export async function GET(req: NextRequest) {
               react: WeeklySummaryEmail({
                 title: t("title"),
                 dateRange: dateRangeStr,
-                businessName: business.name,
+                businessName: location.name,
                 statsTitle: t("statsTitle"),
                 totalReviewsLabel: t("totalReviewsLabel"),
                 averageRatingLabel: t("averageRatingLabel"),
-                totalReviews: businessReviews.length,
+                totalReviews: locationReviews.length,
                 averageRating: averageRating.toFixed(1),
                 sentimentTitle: hasClassifications ? t("sentimentTitle") : undefined,
                 sentiment: sentimentData,

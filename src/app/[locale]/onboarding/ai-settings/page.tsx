@@ -13,14 +13,14 @@ interface PageProps {
 export default async function AISettingsPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const accountId = params.accountId as string | undefined;
-  const businessId = params.businessId as string | undefined;
+  const locationId = params.locationId as string | undefined;
 
-  if (!accountId || !businessId) {
-    redirect("/onboarding/choose-business");
+  if (!accountId || !locationId) {
+    redirect("/onboarding/choose-location");
   }
 
   const { userId } = await getAuthenticatedUserId();
   const limits = await new SubscriptionsController().getUserPlanLimits(userId);
 
-  return <AISettingsWrapper accountId={accountId} businessId={businessId} limits={limits} />;
+  return <AISettingsWrapper accountId={accountId} locationId={locationId} limits={limits} />;
 }

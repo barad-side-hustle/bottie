@@ -6,21 +6,21 @@ import { useRouter } from "@/i18n/routing";
 import {
   StarRatingConfigForm,
   StarRatingConfigFormData,
-} from "@/components/dashboard/businesses/forms/StarRatingConfigForm";
-import { getDefaultBusinessConfig } from "@/lib/utils/business-config";
+} from "@/components/dashboard/locations/forms/StarRatingConfigForm";
+import { getDefaultLocationConfig } from "@/lib/utils/location-config";
 import { toast } from "sonner";
 import { useOnboardingStore } from "@/lib/store/onboarding-store";
 import { OnboardingCard } from "@/components/onboarding/OnboardingCard";
 import { useTranslations } from "next-intl";
-import { updateBusinessConfig } from "@/lib/actions/businesses.actions";
+import { updateLocationConfig } from "@/lib/actions/locations.actions";
 import { triggerReviewImport } from "@/lib/actions/onboarding.actions";
 
 interface StarRatingsWrapperProps {
   accountId: string;
-  businessId: string;
+  locationId: string;
 }
 
-export function StarRatingsWrapper({ accountId, businessId }: StarRatingsWrapperProps) {
+export function StarRatingsWrapper({ accountId, locationId }: StarRatingsWrapperProps) {
   const { user } = useAuth();
   const router = useRouter();
   const t = useTranslations("onboarding.starRatings");
@@ -28,7 +28,7 @@ export function StarRatingsWrapper({ accountId, businessId }: StarRatingsWrapper
 
   const starRatings = useOnboardingStore((state) => state.starRatings);
   const setAccountId = useOnboardingStore((state) => state.setAccountId);
-  const setBusinessId = useOnboardingStore((state) => state.setBusinessId);
+  const setLocationId = useOnboardingStore((state) => state.setLocationId);
   const setStarRatings = useOnboardingStore((state) => state.setStarRatings);
   const getCombinedConfig = useOnboardingStore((state) => state.getCombinedConfig);
   const reset = useOnboardingStore((state) => state.reset);
@@ -37,7 +37,7 @@ export function StarRatingsWrapper({ accountId, businessId }: StarRatingsWrapper
     if (starRatings) {
       return starRatings;
     }
-    const defaults = getDefaultBusinessConfig();
+    const defaults = getDefaultLocationConfig();
     return defaults.starConfigs;
   });
 
@@ -45,8 +45,8 @@ export function StarRatingsWrapper({ accountId, businessId }: StarRatingsWrapper
 
   useEffect(() => {
     setAccountId(accountId);
-    setBusinessId(businessId);
-  }, [accountId, businessId, setAccountId, setBusinessId]);
+    setLocationId(locationId);
+  }, [accountId, locationId, setAccountId, setLocationId]);
 
   const handleFormChange = (rating: 1 | 2 | 3 | 4 | 5, config: { autoReply: boolean; customInstructions: string }) => {
     const updatedData = {
@@ -58,20 +58,20 @@ export function StarRatingsWrapper({ accountId, businessId }: StarRatingsWrapper
   };
 
   const handleBack = () => {
-    router.push(`/onboarding/ai-settings?accountId=${accountId}&businessId=${businessId}`);
+    router.push(`/onboarding/ai-settings?accountId=${accountId}&locationId=${locationId}`);
   };
 
   const handleNext = async () => {
-    if (!user || !accountId || !businessId) return;
+    if (!user || !accountId || !locationId) return;
 
     try {
       setSaving(true);
 
       const config = getCombinedConfig();
 
-      await updateBusinessConfig(user.id, accountId, businessId, config);
+      await updateLocationConfig(user.id, locationId, config);
 
-      triggerReviewImport(accountId, businessId).catch((error) => {
+      triggerReviewImport(accountId, locationId).catch((error) => {
         console.error("Failed to trigger review import:", error);
       });
 

@@ -3,7 +3,8 @@ import {
   ReviewsRepository,
   ReviewResponsesRepository,
   AccountsRepository,
-  BusinessesRepository,
+  LocationsRepository,
+  AccountLocationsRepository,
   type ReviewWithLatestGeneration,
 } from "@/lib/db/repositories";
 import { generateAIReply } from "@/lib/ai/gemini";
@@ -15,15 +16,17 @@ export class ReviewsController {
   private repository: ReviewsRepository;
   private responsesRepo: ReviewResponsesRepository;
   private accountsRepo: AccountsRepository;
-  private businessesRepo: BusinessesRepository;
+  private locationsRepo: LocationsRepository;
+  private accountLocationsRepo: AccountLocationsRepository;
   private userId: string;
 
-  constructor(userId: string, accountId: string, businessId: string) {
+  constructor(userId: string, accountId: string, locationId: string) {
     this.userId = userId;
-    this.repository = new ReviewsRepository(userId, businessId);
-    this.responsesRepo = new ReviewResponsesRepository(userId, accountId, businessId);
+    this.repository = new ReviewsRepository(userId, locationId);
+    this.responsesRepo = new ReviewResponsesRepository(userId, accountId, locationId);
     this.accountsRepo = new AccountsRepository(userId);
-    this.businessesRepo = new BusinessesRepository(userId, accountId);
+    this.locationsRepo = new LocationsRepository(userId);
+    this.accountLocationsRepo = new AccountLocationsRepository(userId, accountId);
   }
 
   async getReviews(filters: ReviewFilters = {}): Promise<ReviewWithLatestGeneration[]> {
@@ -59,8 +62,8 @@ export class ReviewsController {
 
   async generateReply(reviewId: string): Promise<{ review: ReviewWithLatestGeneration; aiReply: string }> {
     const review = await this.getReview(reviewId);
-    const business = await this.businessesRepo.get(review.businessId);
-    if (!business) throw new Error("Business not found");
+    const location = await this.locationsRepo.get(review.locationId);
+    if (!location) throw new Error("Location not found");
 
     const approvedGenerations = await this.responsesRepo.getRecent("posted", 5);
 
@@ -80,7 +83,7 @@ export class ReviewsController {
       await this.responsesRepo.updateStatus(latestGen.id, "rejected");
     }
 
-    const prompt = buildReplyPrompt(business, review, approvedSamples, rejectedSamples);
+    const prompt = buildReplyPrompt(location, review, approvedSamples, rejectedSamples);
     const aiReply = await generateAIReply(prompt);
 
     await this.responsesRepo.create({
@@ -142,10 +145,13 @@ export class ReviewsController {
       throw new Error("No reply to post. Generate AI reply first or provide custom reply.");
     }
 
-    const business = await this.businessesRepo.get(review.businessId);
-    if (!business) throw new Error("Business not found");
+    const location = await this.locationsRepo.get(review.locationId);
+    if (!location) throw new Error("Location not found");
 
-    const account = await this.accountsRepo.get(business.accountId);
+    const accountLocation = await this.accountLocationsRepo.getByLocationId(review.locationId);
+    if (!accountLocation) throw new Error("Account location connection not found");
+
+    const account = await this.accountsRepo.get(accountLocation.accountId);
     if (!account) throw new Error("Account not found");
 
     const refreshToken = await decryptToken(account.googleRefreshToken);

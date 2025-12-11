@@ -1,76 +1,84 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "@/i18n/routing";
 import { useAuth } from "@/contexts/AuthContext";
-import type { Business } from "@/lib/types";
+import type { Location } from "@/lib/types";
 import {
-  BusinessDetailsForm,
-  BusinessDetailsFormData,
-} from "@/components/dashboard/businesses/forms/BusinessDetailsForm";
+  LocationDetailsForm,
+  LocationDetailsFormData,
+} from "@/components/dashboard/locations/forms/LocationDetailsForm";
 import { useOnboardingStore } from "@/lib/store/onboarding-store";
 import { OnboardingCard } from "@/components/onboarding/OnboardingCard";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { updateBusinessConfig } from "@/lib/actions/businesses.actions";
+import { updateLocationConfig } from "@/lib/actions/locations.actions";
 
-interface BusinessDetailsWrapperProps {
+interface LocationDetailsWrapperProps {
   accountId: string;
-  businessId: string;
-  business: Business;
+  locationId: string;
+  location: Location;
 }
 
-export function BusinessDetailsWrapper({ accountId, businessId, business }: BusinessDetailsWrapperProps) {
+export function LocationDetailsWrapper({ accountId, locationId, location }: LocationDetailsWrapperProps) {
   const { user } = useAuth();
   const router = useRouter();
   const t = useTranslations("onboarding.businessDetails");
   const tCommon = useTranslations("onboarding.common");
 
-  const businessDetails = useOnboardingStore((state) => state.businessDetails);
+  const locationDetails = useOnboardingStore((state) => state.locationDetails);
+  const storeAccountId = useOnboardingStore((state) => state.accountId);
+  const storeLocationId = useOnboardingStore((state) => state.locationId);
   const setAccountId = useOnboardingStore((state) => state.setAccountId);
-  const setBusinessId = useOnboardingStore((state) => state.setBusinessId);
-  const setBusinessDetails = useOnboardingStore((state) => state.setBusinessDetails);
+  const setLocationId = useOnboardingStore((state) => state.setLocationId);
+  const setLocationDetails = useOnboardingStore((state) => state.setLocationDetails);
 
   const [saving, setSaving] = useState(false);
-  const [formData, setFormData] = useState<BusinessDetailsFormData>(() => {
-    if (businessDetails) {
-      return businessDetails;
+  const [formData, setFormData] = useState<LocationDetailsFormData>(() => {
+    if (locationDetails) {
+      return locationDetails;
     }
     return {
-      name: business.name || "",
-      description: business.description || "",
-      phoneNumber: business.phoneNumber || "",
+      name: location.name || "",
+      description: location.description || "",
+      phoneNumber: location.phoneNumber || "",
     };
   });
 
-  setAccountId(accountId);
-  setBusinessId(businessId);
+  useEffect(() => {
+    if (accountId && storeAccountId !== accountId) {
+      setAccountId(accountId);
+    }
+    if (locationId && storeLocationId !== locationId) {
+      setLocationId(locationId);
+    }
+  }, [accountId, locationId, storeAccountId, storeLocationId, setAccountId, setLocationId]);
 
-  const handleFormChange = (field: keyof BusinessDetailsFormData, value: string) => {
+  const handleFormChange = (field: keyof LocationDetailsFormData, value: string) => {
     const updatedData = { ...formData, [field]: value };
     setFormData(updatedData);
-    setBusinessDetails(updatedData);
+    setLocationDetails(updatedData);
   };
 
   const handleBack = () => {
-    router.push(`/onboarding/choose-business?accountId=${accountId}`);
+    router.push(`/onboarding/choose-location?accountId=${accountId}`);
   };
 
   const handleNext = async () => {
-    if (!user || !accountId || !businessId) return;
+    if (!user || !accountId || !locationId) return;
 
     try {
       setSaving(true);
 
-      await updateBusinessConfig(user.id, accountId, businessId, {
+      await updateLocationConfig(user.id, locationId, {
         name: formData.name,
         description: formData.description,
         phoneNumber: formData.phoneNumber,
       });
 
-      router.push(`/onboarding/ai-settings?accountId=${accountId}&businessId=${businessId}`);
+      router.push(`/onboarding/ai-settings?accountId=${accountId}&locationId=${locationId}`);
     } catch (error) {
-      console.error("Error saving business details:", error);
+      console.error("Error saving location details:", error);
       toast.error(t("errorSaving"));
     } finally {
       setSaving(false);
@@ -84,7 +92,7 @@ export function BusinessDetailsWrapper({ accountId, businessId, business }: Busi
       backButton={{ onClick: handleBack, loading: saving, label: tCommon("back") }}
       nextButton={{ label: tCommon("next"), loadingLabel: tCommon("saving"), onClick: handleNext, loading: saving }}
     >
-      <BusinessDetailsForm values={formData} onChange={handleFormChange} businessNamePlaceholder={business.name} />
+      <LocationDetailsForm values={formData} onChange={handleFormChange} locationNamePlaceholder={location.name} />
     </OnboardingCard>
   );
 }

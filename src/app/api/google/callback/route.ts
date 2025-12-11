@@ -7,9 +7,9 @@ import { resolveLocale } from "@/lib/locale-detection";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const redirectToBusinesses = async (success?: boolean, accountId?: string, userId?: string) => {
+const redirectToLocations = async (success?: boolean, accountId?: string, userId?: string) => {
   if (success && accountId) {
-    return await createLocaleAwareRedirect("/onboarding/choose-business", { accountId }, userId);
+    return await createLocaleAwareRedirect("/onboarding/choose-location", { accountId }, userId);
   }
 
   return await createLocaleAwareRedirect("/onboarding/connect-account", undefined, userId);
@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
         hasCode: !!code,
         hasState: !!state,
       });
-      return redirectToBusinesses(false, undefined);
+      return redirectToLocations(false, undefined);
     }
 
     const stateData = JSON.parse(Buffer.from(state, "base64").toString());
@@ -38,13 +38,13 @@ export async function GET(request: NextRequest) {
 
     if (!stateUserId) {
       console.error("OAuth callback - Invalid state: missing userId");
-      return redirectToBusinesses(false, undefined);
+      return redirectToLocations(false, undefined);
     }
 
     const authResult = await getAuthenticatedUserId();
     if (authResult instanceof NextResponse) {
       console.error("OAuth callback - User not authenticated");
-      return redirectToBusinesses(false, undefined);
+      return redirectToLocations(false, undefined);
     }
 
     const { userId: authenticatedUserId } = authResult;
@@ -54,19 +54,19 @@ export async function GET(request: NextRequest) {
         stateUserId,
         authenticatedUserId,
       });
-      return redirectToBusinesses(false, undefined);
+      return redirectToLocations(false, undefined);
     }
 
     const tokens = await exchangeCodeForTokens(code);
 
     if (!tokens.refresh_token) {
       console.error("OAuth callback - No refresh token received from Google");
-      return redirectToBusinesses(false, undefined);
+      return redirectToLocations(false, undefined);
     }
 
     if (!tokens.access_token) {
       console.error("OAuth callback - No access token received from Google");
-      return redirectToBusinesses(false, undefined);
+      return redirectToLocations(false, undefined);
     }
 
     const encryptedToken = await encryptToken(tokens.refresh_token);
@@ -106,9 +106,9 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    return redirectToBusinesses(true, accountId, authenticatedUserId);
+    return redirectToLocations(true, accountId, authenticatedUserId);
   } catch (error) {
     console.error("OAuth callback - Error:", error);
-    return redirectToBusinesses(false, undefined);
+    return redirectToLocations(false, undefined);
   }
 }

@@ -29,12 +29,12 @@ interface ReviewCardProps {
   review: ReviewWithLatestGeneration;
   accountId: string;
   userId: string;
-  businessId: string;
+  locationId: string;
   onUpdate?: () => void;
   onClick?: () => void;
 }
 
-export function ReviewCard({ review, accountId, userId, businessId, onUpdate, onClick }: ReviewCardProps) {
+export function ReviewCard({ review, accountId, userId, locationId, onUpdate, onClick }: ReviewCardProps) {
   const t = useTranslations("dashboard.reviews.card");
   const tCommon = useTranslations("common");
   const format = useFormatter();
@@ -85,7 +85,7 @@ export function ReviewCard({ review, accountId, userId, businessId, onUpdate, on
     if (!user) return;
 
     try {
-      await postReviewReply({ accountId, businessId, reviewId: review.id });
+      await postReviewReply({ accountId, locationId, reviewId: review.id });
       onUpdate?.();
     } catch (error) {
       console.error("Error publishing reply:", error);
@@ -100,7 +100,7 @@ export function ReviewCard({ review, accountId, userId, businessId, onUpdate, on
 
     try {
       setIsLoading(true);
-      await generateReviewReply({ accountId, businessId, reviewId: review.id });
+      await generateReviewReply({ accountId, locationId, reviewId: review.id });
       onUpdate?.();
     } catch (error) {
       console.error("Error regenerating reply:", error);
@@ -113,7 +113,7 @@ export function ReviewCard({ review, accountId, userId, businessId, onUpdate, on
     <>
       <DashboardCard className="w-full">
         <DashboardCardHeader className="pb-3">
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3">
             <div className="flex items-center gap-2 min-w-0 flex-1">
               <Avatar className="h-10 w-10 shrink-0">
                 <AvatarImage src={review.photoUrl || undefined} alt={`${review.name} profile`} />
@@ -143,22 +143,24 @@ export function ReviewCard({ review, accountId, userId, businessId, onUpdate, on
                 </div>
               </div>
             </div>
-            <StarRating rating={review.rating} size={18} />
-            {getStatusBadge(review)}
-            {onClick && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 shrink-0"
-                aria-label={t("reviewInfoLabel")}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onClick();
-                }}
-              >
-                <Info className="h-4 w-4 text-muted-foreground" />
-              </Button>
-            )}
+            <div className="flex items-center gap-2">
+              <StarRating rating={review.rating} size={18} />
+              {getStatusBadge(review)}
+              {onClick && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 shrink-0"
+                  aria-label={t("reviewInfoLabel")}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onClick();
+                  }}
+                >
+                  <Info className="h-4 w-4 text-muted-foreground" />
+                </Button>
+              )}
+            </div>
           </div>
         </DashboardCardHeader>
 
@@ -257,7 +259,7 @@ export function ReviewCard({ review, accountId, userId, businessId, onUpdate, on
         review={review}
         accountId={accountId}
         userId={userId}
-        businessId={businessId}
+        locationId={locationId}
         open={showEditor}
         onClose={() => setShowEditor(false)}
         onSave={() => {
@@ -304,10 +306,10 @@ interface ReviewCardWithRefreshProps {
   review: ReviewWithLatestGeneration;
   accountId: string;
   userId: string;
-  businessId: string;
+  locationId: string;
 }
 
-export function ReviewCardWithRefresh({ review, accountId, userId, businessId }: ReviewCardWithRefreshProps) {
+export function ReviewCardWithRefresh({ review, accountId, userId, locationId }: ReviewCardWithRefreshProps) {
   const router = useRouter();
 
   return (
@@ -315,7 +317,7 @@ export function ReviewCardWithRefresh({ review, accountId, userId, businessId }:
       review={review}
       accountId={accountId}
       userId={userId}
-      businessId={businessId}
+      locationId={locationId}
       onUpdate={() => router.refresh()}
     />
   );

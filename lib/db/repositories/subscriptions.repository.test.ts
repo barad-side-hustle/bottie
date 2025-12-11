@@ -42,9 +42,7 @@ describe("SubscriptionsRepository", () => {
         from: vi.fn().mockReturnValue({
           innerJoin: vi.fn().mockReturnValue({
             innerJoin: vi.fn().mockReturnValue({
-              innerJoin: vi.fn().mockReturnValue({
-                where: vi.fn().mockResolvedValue(mockResult),
-              }),
+              where: vi.fn().mockResolvedValue(mockResult),
             }),
           }),
         }),
@@ -63,9 +61,7 @@ describe("SubscriptionsRepository", () => {
         from: vi.fn().mockReturnValue({
           innerJoin: vi.fn().mockReturnValue({
             innerJoin: vi.fn().mockReturnValue({
-              innerJoin: vi.fn().mockReturnValue({
-                where: vi.fn().mockResolvedValue(mockResult),
-              }),
+              where: vi.fn().mockResolvedValue(mockResult),
             }),
           }),
         }),
