@@ -67,10 +67,6 @@ export function ReviewsList({ reviews: initialReviews, accountId, locationId, us
     router.refresh();
   };
 
-  const handleReviewClick = (reviewId: string) => {
-    router.push(`/dashboard/accounts/${accountId}/locations/${locationId}/reviews/${reviewId}`);
-  };
-
   return (
     <div className="space-y-4">
       {reviews.map((review) => (
@@ -81,7 +77,6 @@ export function ReviewsList({ reviews: initialReviews, accountId, locationId, us
             locationId={locationId}
             userId={userId}
             onUpdate={handleUpdate}
-            onClick={() => handleReviewClick(review.id)}
           />
         </div>
       ))}
