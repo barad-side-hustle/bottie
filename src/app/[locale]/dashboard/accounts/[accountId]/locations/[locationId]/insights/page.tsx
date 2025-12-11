@@ -37,7 +37,7 @@ export default async function InsightsPage({ params, searchParams }: InsightsPag
         </div>
         <PageHeader title={t("title", { businessName: "Insights" })} description={t("description")} />
         <div className="mt-6">
-          <FeatureLockedState feature="analytics" requiredPlan={analyticsAccess.requiredPlan!} />
+          <FeatureLockedState feature="analytics" requiredPlan={analyticsAccess.requiredPlan} />
         </div>
       </PageContainer>
     );

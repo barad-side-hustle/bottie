@@ -4,11 +4,9 @@ import type { FeatureOverrides } from "@/lib/db/schema/subscriptions.schema";
 
 export type GatedFeature = "analytics";
 
-export interface FeatureCheckResult {
-  hasAccess: boolean;
-  reason: "plan" | "override" | "denied";
-  requiredPlan?: PlanTier;
-}
+export type FeatureCheckResult =
+  | { hasAccess: true; reason: "plan" | "override" }
+  | { hasAccess: false; reason: "denied"; requiredPlan: PlanTier };
 
 const FEATURE_REQUIRED_PLAN: Record<GatedFeature, PlanTier> = {
   analytics: "pro",
