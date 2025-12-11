@@ -46,7 +46,8 @@ export async function sendEmail(
   to: string | string[],
   subject: string,
   reactComponent: ReactElement,
-  from?: string
+  from?: string,
+  replyTo?: string
 ): Promise<EmailResult> {
   try {
     const resend = getResendInstance();
@@ -64,6 +65,7 @@ export async function sendEmail(
       to: Array.isArray(to) ? to : [to],
       subject,
       react: reactComponent,
+      ...(replyTo && { replyTo }),
     });
 
     if (result.error) {
@@ -150,7 +152,13 @@ export async function sendUserWelcomeEmail(data: UserWelcomeData): Promise<Email
     userEmail,
   });
 
-  const result = await sendEmail(userEmail, "Welcome to Bottie.ai - Let's Get You Started!", emailComponent);
+  const result = await sendEmail(
+    userEmail,
+    "Welcome to Bottie.ai - Let's Get You Started!",
+    emailComponent,
+    "Alon from Bottie <noreply@bottie.ai>",
+    "alon@bottie.ai"
+  );
 
   if (result.success) {
     console.log("New user notification - Welcome email sent successfully", {

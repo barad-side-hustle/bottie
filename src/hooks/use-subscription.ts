@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { getPlanLimits, type PlanTier, type PlanLimits } from "@/lib/subscriptions/plans";
-import type { Subscription } from "@/lib/db/schema";
+import type { Subscription, FeatureOverrides } from "@/lib/db/schema";
 import { getActiveSubscription } from "@/lib/actions/subscription.actions";
+import { checkFeatureAccess, type GatedFeature, type FeatureCheckResult } from "@/lib/subscriptions/feature-check";
 
 interface UseSubscriptionReturn {
   subscription: Subscription | null;
@@ -13,6 +14,8 @@ interface UseSubscriptionReturn {
   isActive: boolean;
   planType: PlanTier;
   limits: PlanLimits;
+  featureOverrides: FeatureOverrides | null;
+  checkFeature: (feature: GatedFeature) => FeatureCheckResult;
 }
 
 export function useSubscription(): UseSubscriptionReturn {
@@ -22,6 +25,7 @@ export function useSubscription(): UseSubscriptionReturn {
   const [error, setError] = useState<string | null>(null);
   const [planType, setPlanType] = useState<PlanTier>("free");
   const [limits, setLimits] = useState<PlanLimits>(getPlanLimits("free"));
+  const [featureOverrides, setFeatureOverrides] = useState<FeatureOverrides | null>(null);
 
   useEffect(() => {
     if (!user) {
@@ -37,10 +41,12 @@ export function useSubscription(): UseSubscriptionReturn {
           setSubscription(null);
           setPlanType("free");
           setLimits(getPlanLimits("free"));
+          setFeatureOverrides(null);
         } else {
           setSubscription(sub);
           setPlanType(sub.planTier as PlanTier);
           setLimits(getPlanLimits(sub.planTier as PlanTier));
+          setFeatureOverrides(sub.featureOverrides ?? null);
         }
         setError(null);
       } catch (err) {
@@ -56,6 +62,13 @@ export function useSubscription(): UseSubscriptionReturn {
 
   const isActive = subscription?.status === "active";
 
+  const checkFeature = useCallback(
+    (feature: GatedFeature): FeatureCheckResult => {
+      return checkFeatureAccess(planType, feature, featureOverrides);
+    },
+    [planType, featureOverrides]
+  );
+
   return {
     subscription,
     loading,
@@ -63,5 +76,7 @@ export function useSubscription(): UseSubscriptionReturn {
     isActive,
     planType,
     limits,
+    featureOverrides,
+    checkFeature,
   };
 }

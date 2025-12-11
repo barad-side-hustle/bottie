@@ -13,8 +13,8 @@ export class LocationsRepository extends BaseRepository<LocationInsert, Location
   }
 
   private async verifyAccessToLocation(locationId: string): Promise<boolean> {
-    const access = await db.query.accountLocations.findFirst({
-      where: and(eq(accountLocations.locationId, locationId)),
+    const accessRecords = await db.query.accountLocations.findMany({
+      where: eq(accountLocations.locationId, locationId),
       with: {
         account: {
           with: {
@@ -26,7 +26,7 @@ export class LocationsRepository extends BaseRepository<LocationInsert, Location
       },
     });
 
-    return !!(access?.account.userAccounts && access.account.userAccounts.length > 0);
+    return accessRecords.some((record) => record.account.userAccounts && record.account.userAccounts.length > 0);
   }
 
   async get(locationId: string): Promise<Location | null> {

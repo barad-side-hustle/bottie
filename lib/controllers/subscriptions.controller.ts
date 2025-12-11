@@ -1,5 +1,6 @@
 import { SubscriptionsRepository, StatsRepository } from "@/lib/db/repositories";
-import type { PlanLimits } from "@/lib/subscriptions/plans";
+import type { PlanLimits, PlanTier } from "@/lib/subscriptions/plans";
+import { checkFeatureAccess, type GatedFeature, type FeatureCheckResult } from "@/lib/subscriptions/feature-check";
 
 export class SubscriptionsController {
   async getUserPlanLimits(userId: string): Promise<PlanLimits> {
@@ -33,5 +34,15 @@ export class SubscriptionsController {
       currentCount,
       limit: limits.reviewsPerMonth,
     };
+  }
+
+  async checkFeatureAccess(userId: string, feature: GatedFeature): Promise<FeatureCheckResult> {
+    const repo = new SubscriptionsRepository();
+    const subscription = await repo.getActiveSubscriptionForUser(userId);
+
+    const planTier = (subscription?.planTier as PlanTier) ?? "free";
+    const featureOverrides = subscription?.featureOverrides ?? null;
+
+    return checkFeatureAccess(planTier, feature, featureOverrides);
   }
 }

@@ -1,7 +1,11 @@
-import { pgTable, text, timestamp, uuid, index, pgPolicy } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, uuid, index, pgPolicy, jsonb } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { authenticatedRole, authUid } from "./roles";
 import { authUsers } from "./auth.schema";
+
+export type FeatureOverrides = {
+  analytics?: boolean;
+};
 
 export const subscriptions = pgTable(
   "subscriptions",
@@ -18,6 +22,8 @@ export const subscriptions = pgTable(
     stripeCustomerId: text("stripe_customer_id"),
     stripeSubscriptionId: text("stripe_subscription_id"),
     stripePriceId: text("stripe_price_id"),
+
+    featureOverrides: jsonb("feature_overrides").$type<FeatureOverrides>(),
 
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },

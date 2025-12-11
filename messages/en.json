@@ -702,6 +702,19 @@
         "close": "Close",
         "upgradeToPlan": "Upgrade to Basic Plan"
       }
+    },
+    "featureGate": {
+      "plans": {
+        "basic": "Basic",
+        "pro": "Pro"
+      },
+      "upgradeTo": "Upgrade to {plan}",
+      "features": {
+        "analytics": {
+          "title": "Analytics is a Pro Feature",
+          "description": "Upgrade to {plan} to access detailed insights and analytics for your reviews."
+        }
+      }
     }
   },
   "checkout": {
