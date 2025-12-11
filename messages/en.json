@@ -584,7 +584,11 @@
         },
         "rating": "Rating",
         "dateRange": "Date Range",
+        "selectDateRange": "Select Date Range",
         "pickDate": "Pick a date",
+        "last7Days": "Last 7 days",
+        "last30Days": "Last 30 days",
+        "last90Days": "Last 90 days",
         "sortBy": "Sort By",
         "sort": {
           "receivedAt": "Received At",
@@ -624,6 +628,7 @@
       "noDataDescription": "There are no classified reviews for the selected period",
       "dateFilter": {
         "label": "Date Range",
+        "selectDateRange": "Select Date Range",
         "last7Days": "Last 7 days",
         "last30Days": "Last 30 days",
         "last90Days": "Last 90 days",

@@ -508,7 +508,11 @@
         },
         "rating": "דירוג",
         "dateRange": "טווח תאריכים",
+        "selectDateRange": "בחירת טווח תאריכים",
         "pickDate": "בחר תאריך",
+        "last7Days": "7 ימים אחרונים",
+        "last30Days": "30 ימים אחרונים",
+        "last90Days": "90 ימים אחרונים",
         "sortBy": "מיון לפי",
         "sort": {
           "receivedAt": "התקבל ב",
@@ -635,6 +639,7 @@
       "noDataDescription": "אין ביקורות מסווגות לתקופה שנבחרה",
       "dateFilter": {
         "label": "טווח תאריכים",
+        "selectDateRange": "בחירת טווח תאריכים",
         "last7Days": "7 ימים אחרונים",
         "last30Days": "30 ימים אחרונים",
         "last90Days": "90 ימים אחרונים",
