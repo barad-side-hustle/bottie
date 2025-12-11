@@ -9,6 +9,11 @@ export function extractLocationId(googleBusinessId: string): string | null {
   return match ? match[1] : null;
 }
 
+export function extractAccountName(googleBusinessId: string): string | null {
+  const match = googleBusinessId.match(/^(accounts\/\d+)\/locations\/\d+$/);
+  return match ? match[1] : null;
+}
+
 interface GoogleAccount {
   name: string;
   accountName: string;

@@ -2,7 +2,12 @@
 
 import { getAuthenticatedUserId } from "@/lib/api/auth";
 import { AccountsController, AccountLocationsController } from "@/lib/controllers";
-import { listAllBusinesses, decryptToken, subscribeToNotifications } from "@/lib/google/business-profile";
+import {
+  listAllBusinesses,
+  decryptToken,
+  subscribeToNotifications,
+  extractAccountName,
+} from "@/lib/google/business-profile";
 import { listReviews, starRatingToNumber, parseGoogleTimestamp } from "@/lib/google/reviews";
 import { AccountsRepository } from "@/lib/db/repositories/accounts.repository";
 import { AccountLocationsRepository } from "@/lib/db/repositories/account-locations.repository";
@@ -62,7 +67,13 @@ export async function subscribeToGoogleNotifications(
     throw new Error("No locations found");
   }
 
-  const googleAccountName = accountLocations[0].googleBusinessId.split("/locations")[0];
+  const googleBusinessId = accountLocations[0].googleBusinessId;
+  const googleAccountName = extractAccountName(googleBusinessId);
+  if (!googleAccountName) {
+    throw new Error(
+      `Invalid Google Business ID format: ${googleBusinessId}. Expected format: accounts/{accountId}/locations/{locationId}`
+    );
+  }
 
   const projectId = process.env.NEXT_PUBLIC_GCP_PROJECT_ID || "review-ai-reply";
   const topicName = process.env.PUBSUB_TOPIC_NAME || "gmb-review-notifications";
