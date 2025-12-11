@@ -124,7 +124,7 @@ export function AccountLocationsList({ accounts }: AccountLocationsListProps) {
                           onClick={() => handleViewReviews(account.id, location.id)}
                           disabled={loadingState?.locationId === location.id && loadingState?.action === "reviews"}
                         >
-                          <Star className="h-4 w-4 mr-1" />
+                          <Star className="h-4 w-4 ms-1" />
                           {loadingState?.locationId === location.id && loadingState?.action === "reviews"
                             ? t("navigating")
                             : t("viewReviews")}

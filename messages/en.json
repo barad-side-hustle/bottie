@@ -78,7 +78,15 @@
         "averageRating": "Average Rating",
         "reviewSample": "Amazing tool! Saved me hours.",
         "responseRate": "Response Rate",
-        "days": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        "days": [
+          "Mon",
+          "Tue",
+          "Wed",
+          "Thu",
+          "Fri",
+          "Sat",
+          "Sun"
+        ]
       }
     },
     "stats": {
@@ -292,7 +300,7 @@
         "connectAccount": "Connect account",
         "disconnected": "Disconnected",
         "navigating": "Navigating...",
-        "viewReviews": "View reviews",
+        "viewReviews": "Reviews",
         "viewInsights": "Insights",
         "editDetails": "Edit details"
       }
