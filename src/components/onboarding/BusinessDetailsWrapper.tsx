@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "@/i18n/routing";
 import { useAuth } from "@/contexts/AuthContext";
 import type { Location } from "@/lib/types";
@@ -27,6 +27,8 @@ export function LocationDetailsWrapper({ accountId, locationId, location }: Loca
   const tCommon = useTranslations("onboarding.common");
 
   const locationDetails = useOnboardingStore((state) => state.locationDetails);
+  const storeAccountId = useOnboardingStore((state) => state.accountId);
+  const storeLocationId = useOnboardingStore((state) => state.locationId);
   const setAccountId = useOnboardingStore((state) => state.setAccountId);
   const setLocationId = useOnboardingStore((state) => state.setLocationId);
   const setLocationDetails = useOnboardingStore((state) => state.setLocationDetails);
@@ -43,8 +45,14 @@ export function LocationDetailsWrapper({ accountId, locationId, location }: Loca
     };
   });
 
-  setAccountId(accountId);
-  setLocationId(locationId);
+  useEffect(() => {
+    if (accountId && storeAccountId !== accountId) {
+      setAccountId(accountId);
+    }
+    if (locationId && storeLocationId !== locationId) {
+      setLocationId(locationId);
+    }
+  }, [accountId, locationId, storeAccountId, storeLocationId, setAccountId, setLocationId]);
 
   const handleFormChange = (field: keyof LocationDetailsFormData, value: string) => {
     const updatedData = { ...formData, [field]: value };
