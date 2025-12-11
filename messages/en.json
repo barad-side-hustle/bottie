@@ -593,6 +593,12 @@
           "replyStatus": "Reply Status",
           "direction": "Direction"
         },
+        "sentiment": "Sentiment",
+        "sentimentValues": {
+          "positive": "Positive",
+          "neutral": "Neutral",
+          "negative": "Negative"
+        },
         "reset": "Reset",
         "apply": "Apply",
         "filter": "Filter",

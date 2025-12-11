@@ -58,7 +58,7 @@ export function ResponsiveFilterPanel({ children, activeCount, open, onOpenChang
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerTrigger asChild>{Trigger}</DrawerTrigger>
       <DrawerContent>
-        <DrawerHeader className="text-left">
+        <DrawerHeader className="text-start">
           <DrawerTitle>{t("filters")}</DrawerTitle>
         </DrawerHeader>
         <div className="p-4 pb-8">{children}</div>

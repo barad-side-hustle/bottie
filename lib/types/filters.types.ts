@@ -1,6 +1,8 @@
 import { ReplyStatus } from "./review.types";
 import { SortOptions, ReviewSortOptions } from "./sort.types";
 
+export type Sentiment = "positive" | "neutral" | "negative";
+
 export interface TFilters {
   ids?: string[];
   limit?: number;
@@ -10,6 +12,7 @@ export interface TFilters {
 export interface ReviewFilters extends TFilters {
   replyStatus?: ReplyStatus[];
   rating?: number[];
+  sentiment?: Sentiment[];
   dateFrom?: Date;
   dateTo?: Date;
   sort?: ReviewSortOptions;

@@ -1,4 +1,4 @@
-import { eq, and, inArray, gte, lte, exists, desc, asc } from "drizzle-orm";
+import { eq, and, inArray, gte, lte, exists, desc, asc, sql } from "drizzle-orm";
 import { db } from "@/lib/db/client";
 import {
   reviews,
@@ -101,6 +101,10 @@ export class ReviewsRepository extends BaseRepository<ReviewInsert, Review, Part
 
     if (filters.dateTo) {
       conditions.push(lte(reviews.receivedAt, filters.dateTo));
+    }
+
+    if (filters.sentiment && filters.sentiment.length > 0) {
+      conditions.push(sql`${reviews.classifications}->>'sentiment' IN (${sql.join(filters.sentiment, sql`, `)})`);
     }
 
     const limit = filters.limit || undefined;
