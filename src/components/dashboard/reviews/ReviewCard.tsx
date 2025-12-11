@@ -113,7 +113,7 @@ export function ReviewCard({ review, accountId, userId, businessId, onUpdate, on
     <>
       <DashboardCard className="w-full">
         <DashboardCardHeader className="pb-3">
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3">
             <div className="flex items-center gap-2 min-w-0 flex-1">
               <Avatar className="h-10 w-10 shrink-0">
                 <AvatarImage src={review.photoUrl || undefined} alt={`${review.name} profile`} />
@@ -143,22 +143,24 @@ export function ReviewCard({ review, accountId, userId, businessId, onUpdate, on
                 </div>
               </div>
             </div>
-            <StarRating rating={review.rating} size={18} />
-            {getStatusBadge(review)}
-            {onClick && (
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 shrink-0"
-                aria-label={t("reviewInfoLabel")}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onClick();
-                }}
-              >
-                <Info className="h-4 w-4 text-muted-foreground" />
-              </Button>
-            )}
+            <div className="flex items-center gap-2">
+              <StarRating rating={review.rating} size={18} />
+              {getStatusBadge(review)}
+              {onClick && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 shrink-0"
+                  aria-label={t("reviewInfoLabel")}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onClick();
+                  }}
+                >
+                  <Info className="h-4 w-4 text-muted-foreground" />
+                </Button>
+              )}
+            </div>
           </div>
         </DashboardCardHeader>
 
