@@ -13,6 +13,7 @@ export const businesses = pgTable(
       .references(() => accounts.id, { onDelete: "cascade" }),
 
     googleBusinessId: text("google_business_id").notNull().unique(),
+    googleLocationId: text("google_location_id"),
     name: text("name").notNull(),
     address: text("address").notNull(),
     city: text("city"),
@@ -53,6 +54,7 @@ export const businesses = pgTable(
   (table) => [
     index("businesses_account_id_idx").on(table.accountId),
     index("businesses_google_business_id_idx").on(table.googleBusinessId),
+    index("businesses_google_location_id_idx").on(table.googleLocationId),
     index("businesses_connected_idx").on(table.connected),
     index("businesses_account_connected_idx").on(table.accountId, table.connected),
 

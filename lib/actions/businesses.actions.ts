@@ -4,6 +4,7 @@ import { getAuthenticatedUserId } from "@/lib/api/auth";
 import { BusinessesController, SubscriptionsController } from "@/lib/controllers";
 import type { Business, BusinessCreate, BusinessUpdate, BusinessFilters } from "@/lib/types";
 import { getDefaultBusinessConfig } from "@/lib/utils/business-config";
+import { extractLocationId } from "@/lib/google/business-profile";
 
 export async function getBusinesses(
   userId: string,
@@ -52,6 +53,7 @@ export async function upsertBusiness(
       accountId,
       ...defaultConfig,
       ...data,
+      googleLocationId: extractLocationId(data.googleBusinessId),
     };
 
     return await controller.upsertBusiness(businessData, () => subscriptionsController.checkBusinessLimit(userId));

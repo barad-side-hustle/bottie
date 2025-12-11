@@ -4,6 +4,11 @@ import { GoogleBusinessProfileBusiness } from "@/lib/types";
 
 const GOOGLE_MY_BUSINESS_API_BASE = "https://mybusinessbusinessinformation.googleapis.com/v1";
 
+export function extractLocationId(googleBusinessId: string): string | null {
+  const match = googleBusinessId.match(/\/locations\/(\d+)$/);
+  return match ? match[1] : null;
+}
+
 interface GoogleAccount {
   name: string;
   accountName: string;

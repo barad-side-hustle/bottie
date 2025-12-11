@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import { db } from "@/lib/db/client";
 import { businesses, type ReviewInsert, type Business } from "@/lib/db/schema";
 import { getReview, starRatingToNumber, parseGoogleTimestamp } from "@/lib/google/reviews";
-import { decryptToken } from "@/lib/google/business-profile";
+import { decryptToken, extractLocationId } from "@/lib/google/business-profile";
 import { ReviewsRepository } from "@/lib/db/repositories/reviews.repository";
 import { AccountsRepository } from "@/lib/db/repositories/accounts.repository";
 import { verifyPubSubToken, getPubSubWebhookAudience } from "@/lib/google/pubsub-auth";
@@ -36,10 +36,16 @@ interface BusinessLookupResult {
 
 async function findBusinessByGoogleBusinessId(googleBusinessId: string): Promise<BusinessLookupResult | null> {
   try {
-    console.log("Searching for business with googleBusinessId:", googleBusinessId);
+    const locationId = extractLocationId(googleBusinessId);
+    if (!locationId) {
+      console.error("Could not extract location ID from:", googleBusinessId);
+      return null;
+    }
+
+    console.log("Searching for business with locationId", locationId);
 
     const business = await db.query.businesses.findFirst({
-      where: eq(businesses.googleBusinessId, googleBusinessId),
+      where: eq(businesses.googleLocationId, locationId),
       with: {
         account: {
           with: {
@@ -50,7 +56,7 @@ async function findBusinessByGoogleBusinessId(googleBusinessId: string): Promise
     });
 
     if (!business) {
-      console.error("No business found for googleBusinessId:", googleBusinessId);
+      console.error("No business found for locationId", locationId);
       return null;
     }
 
