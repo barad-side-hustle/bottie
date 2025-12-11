@@ -17,7 +17,7 @@ DashboardCard.displayName = "DashboardCard";
 
 const DashboardCardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn("flex flex-col space-y-3 p-8 pb-4", className)} {...props} />
+    <div ref={ref} className={cn("flex flex-col space-y-3 p-4 sm:p-6 md:p-8 pb-3 sm:pb-4", className)} {...props} />
   )
 );
 DashboardCardHeader.displayName = "DashboardCardHeader";
@@ -41,7 +41,9 @@ const DashboardCardDescription = React.forwardRef<HTMLParagraphElement, React.HT
 DashboardCardDescription.displayName = "DashboardCardDescription";
 
 const DashboardCardContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => <div ref={ref} className={cn("flex-1 p-8 pt-4", className)} {...props} />
+  ({ className, ...props }, ref) => (
+    <div ref={ref} className={cn("flex-1 p-4 sm:p-6 md:p-8 pt-0", className)} {...props} />
+  )
 );
 DashboardCardContent.displayName = "DashboardCardContent";
 
@@ -61,7 +63,7 @@ const DashboardCardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttribute
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn("flex items-center justify-end gap-2 p-6 pt-4 border-t border-border/40", className)}
+      className={cn("flex items-center justify-end gap-2 p-4 sm:p-6 pt-3 sm:pt-4 border-t border-border/40", className)}
       {...props}
     />
   )

@@ -18,6 +18,7 @@ const ReviewFiltersSchema = z
       .optional(),
     replyStatus: z.array(z.enum(["pending", "rejected", "posted", "failed", "quota_exceeded"])).optional(),
     rating: z.array(z.number()).optional(),
+    sentiment: z.array(z.enum(["positive", "neutral", "negative"])).optional(),
     dateFrom: z.date().optional(),
     dateTo: z.date().optional(),
   })

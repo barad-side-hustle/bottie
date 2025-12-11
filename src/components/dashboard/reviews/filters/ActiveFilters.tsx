@@ -26,7 +26,11 @@ export function ActiveFilters({ filters, onRemove, onClearAll }: ActiveFiltersPr
   const dateLocale = localeMap[locale] || enUS;
 
   const hasFilters =
-    (filters.replyStatus?.length ?? 0) > 0 || (filters.rating?.length ?? 0) > 0 || filters.dateFrom || filters.dateTo;
+    (filters.replyStatus?.length ?? 0) > 0 ||
+    (filters.rating?.length ?? 0) > 0 ||
+    (filters.sentiment?.length ?? 0) > 0 ||
+    filters.dateFrom ||
+    filters.dateTo;
 
   if (!hasFilters) return null;
 
@@ -55,6 +59,21 @@ export function ActiveFilters({ filters, onRemove, onClearAll }: ActiveFiltersPr
             size="icon"
             className="h-4 w-4 rounded-full p-0 hover:bg-muted"
             onClick={() => onRemove("rating", rating)}
+            aria-label={t("removeFilter")}
+          >
+            <X className="h-3 w-3" aria-hidden="true" />
+          </Button>
+        </Badge>
+      ))}
+
+      {filters.sentiment?.map((sentiment) => (
+        <Badge key={sentiment} variant="secondary" className="gap-1">
+          {t(`sentimentValues.${sentiment}`)}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-4 w-4 rounded-full p-0 hover:bg-muted"
+            onClick={() => onRemove("sentiment", sentiment)}
             aria-label={t("removeFilter")}
           >
             <X className="h-3 w-3" aria-hidden="true" />

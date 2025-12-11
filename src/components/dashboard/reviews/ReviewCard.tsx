@@ -18,7 +18,7 @@ import { postReviewReply, generateReviewReply } from "@/lib/actions/reviews.acti
 import { useAuth } from "@/contexts/AuthContext";
 import { ReplyEditor } from "@/components/dashboard/reviews/ReplyEditor";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
-import { User, Bot, Info, Sparkles } from "lucide-react";
+import { User, Bot, Sparkles } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { useTranslations, useFormatter } from "next-intl";
@@ -31,10 +31,9 @@ interface ReviewCardProps {
   userId: string;
   locationId: string;
   onUpdate?: () => void;
-  onClick?: () => void;
 }
 
-export function ReviewCard({ review, accountId, userId, locationId, onUpdate, onClick }: ReviewCardProps) {
+export function ReviewCard({ review, accountId, userId, locationId, onUpdate }: ReviewCardProps) {
   const t = useTranslations("dashboard.reviews.card");
   const tCommon = useTranslations("common");
   const format = useFormatter();
@@ -113,53 +112,42 @@ export function ReviewCard({ review, accountId, userId, locationId, onUpdate, on
     <>
       <DashboardCard className="w-full">
         <DashboardCardHeader className="pb-3">
-          <div className="flex flex-wrap items-center justify-between gap-2 sm:gap-3">
-            <div className="flex items-center gap-2 min-w-0 flex-1">
-              <Avatar className="h-10 w-10 shrink-0">
-                <AvatarImage src={review.photoUrl || undefined} alt={`${review.name} profile`} />
-                <AvatarFallback className="bg-muted">
-                  {review.photoUrl ? (
-                    <User className="h-5 w-5 text-muted-foreground" />
-                  ) : (
-                    <span className="text-sm font-medium text-muted-foreground">{getInitials(review.name)}</span>
-                  )}
-                </AvatarFallback>
-              </Avatar>
-              <div className="min-w-0">
-                <h3 className="font-semibold truncate">{review.name}</h3>
-                <div className="flex items-center gap-1">
-                  <p className="text-xs text-muted-foreground">
-                    {format.dateTime(new Date(review.date), {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                    })}
-                  </p>
-                  <TooltipIcon
-                    text={t("dateTooltip")}
-                    additionalInfoLabel={t("reviewDateLabel")}
-                    closeLabel={tCommon("close")}
-                  />
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center justify-between gap-2 w-full sm:w-auto sm:flex-1">
+              <div className="flex items-center gap-2 min-w-0">
+                <Avatar className="h-10 w-10 shrink-0">
+                  <AvatarImage src={review.photoUrl || undefined} alt={`${review.name} profile`} />
+                  <AvatarFallback className="bg-muted">
+                    {review.photoUrl ? (
+                      <User className="h-5 w-5 text-muted-foreground" />
+                    ) : (
+                      <span className="text-sm font-medium text-muted-foreground">{getInitials(review.name)}</span>
+                    )}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="min-w-0">
+                  <h3 className="font-semibold truncate">{review.name}</h3>
+                  <div className="flex items-center gap-1">
+                    <p className="text-xs text-muted-foreground">
+                      {format.dateTime(new Date(review.date), {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </p>
+                    <TooltipIcon
+                      text={t("dateTooltip")}
+                      additionalInfoLabel={t("reviewDateLabel")}
+                      closeLabel={tCommon("close")}
+                    />
+                  </div>
                 </div>
               </div>
+              <div className="sm:hidden">{getStatusBadge(review)}</div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 sm:gap-2">
               <StarRating rating={review.rating} size={18} />
-              {getStatusBadge(review)}
-              {onClick && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 shrink-0"
-                  aria-label={t("reviewInfoLabel")}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onClick();
-                  }}
-                >
-                  <Info className="h-4 w-4 text-muted-foreground" />
-                </Button>
-              )}
+              <div className="hidden sm:block">{getStatusBadge(review)}</div>
             </div>
           </div>
         </DashboardCardHeader>
@@ -217,26 +205,36 @@ export function ReviewCard({ review, accountId, userId, locationId, onUpdate, on
           )}
         </DashboardCardContent>
 
-        <DashboardCardFooter>
+        <DashboardCardFooter className="flex-col sm:flex-row">
           {(review.replyStatus === "pending" || review.replyStatus === "failed") && (
-            <>
-              <Button type="button" onClick={handleRegenerate} disabled={isLoading} size="sm" variant="outline">
-                <Sparkles className="h-4 w-4 mr-2" />
-                {t("actions.regenerate")}
-              </Button>
-              <Button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setShowEditor(true);
-                }}
-                disabled={isLoading}
-                size="sm"
-                variant="outline"
-              >
-                {t("actions.edit")}
-              </Button>
+            <div className="flex flex-col-reverse sm:flex-row gap-2 w-full sm:w-auto">
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  onClick={handleRegenerate}
+                  disabled={isLoading}
+                  size="sm"
+                  variant="outline"
+                  className="flex-1 sm:flex-none"
+                >
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  {t("actions.regenerate")}
+                </Button>
+                <Button
+                  type="button"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setShowEditor(true);
+                  }}
+                  disabled={isLoading}
+                  size="sm"
+                  variant="outline"
+                  className="flex-1 sm:flex-none"
+                >
+                  {t("actions.edit")}
+                </Button>
+              </div>
               <Button
                 type="button"
                 onClick={(e) => {
@@ -247,10 +245,11 @@ export function ReviewCard({ review, accountId, userId, locationId, onUpdate, on
                 disabled={isLoading}
                 size="sm"
                 variant="default"
+                className="w-full sm:w-auto"
               >
                 {t("actions.publish")}
               </Button>
-            </>
+            </div>
           )}
         </DashboardCardFooter>
       </DashboardCard>

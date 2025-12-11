@@ -1,4 +1,4 @@
-import { eq, and, inArray, gte, lte, exists, desc, asc } from "drizzle-orm";
+import { eq, and, inArray, gte, lte, exists, desc, asc, sql } from "drizzle-orm";
 import { db } from "@/lib/db/client";
 import {
   reviews,
@@ -80,7 +80,7 @@ export class ReviewsRepository extends BaseRepository<ReviewInsert, Review, Part
     };
   }
 
-  async list(filters: ReviewFilters = {}): Promise<ReviewWithLatestGeneration[]> {
+  async list(filters: Partial<ReviewFilters> = {}): Promise<ReviewWithLatestGeneration[]> {
     const conditions = [eq(reviews.locationId, this.locationId), this.getAccessCondition()];
 
     if (filters.replyStatus && filters.replyStatus.length > 0) {
@@ -101,6 +101,10 @@ export class ReviewsRepository extends BaseRepository<ReviewInsert, Review, Part
 
     if (filters.dateTo) {
       conditions.push(lte(reviews.receivedAt, filters.dateTo));
+    }
+
+    if (filters.sentiment && filters.sentiment.length > 0) {
+      conditions.push(sql`${reviews.classifications}->>'sentiment' IN (${sql.join(filters.sentiment, sql`, `)})`);
     }
 
     const limit = filters.limit || undefined;

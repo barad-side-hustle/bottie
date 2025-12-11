@@ -29,7 +29,7 @@ export class ReviewsController {
     this.accountLocationsRepo = new AccountLocationsRepository(userId, accountId);
   }
 
-  async getReviews(filters: ReviewFilters = {}): Promise<ReviewWithLatestGeneration[]> {
+  async getReviews(filters: Partial<ReviewFilters> = {}): Promise<ReviewWithLatestGeneration[]> {
     return this.repository.list(filters);
   }
 

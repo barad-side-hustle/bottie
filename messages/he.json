@@ -517,6 +517,12 @@
           "replyStatus": "סטטוס תגובה",
           "direction": "כיוון"
         },
+        "sentiment": "סנטימנט",
+        "sentimentValues": {
+          "positive": "חיובי",
+          "neutral": "ניטרלי",
+          "negative": "שלילי"
+        },
         "reset": "איפוס",
         "apply": "החל",
         "filter": "סינון",

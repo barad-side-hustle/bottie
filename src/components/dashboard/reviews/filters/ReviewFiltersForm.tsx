@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { FilterSection } from "./FilterSection";
-import { ReviewFilters, ReviewSortField, ReplyStatus } from "@/lib/types";
+import { ReviewFilters, ReviewSortField, ReplyStatus, Sentiment } from "@/lib/types";
 import { ArrowDown, ArrowUp } from "lucide-react";
 import { he, enUS } from "date-fns/locale";
 import { Locale } from "date-fns";
@@ -54,6 +54,17 @@ export function ReviewFiltersForm({ filters: initialFilters, onApply, onReset }:
       newRatings = currentRatings.filter((r) => r !== rating);
     }
     setFilters({ ...filters, rating: newRatings });
+  };
+
+  const handleSentimentChange = (sentiment: string, checked: boolean) => {
+    const currentSentiments = filters.sentiment || [];
+    let newSentiments;
+    if (checked) {
+      newSentiments = [...currentSentiments, sentiment];
+    } else {
+      newSentiments = currentSentiments.filter((s) => s !== sentiment);
+    }
+    setFilters({ ...filters, sentiment: newSentiments as Sentiment[] });
   };
 
   const handleSortFieldChange = (value: string) => {
@@ -106,6 +117,21 @@ export function ReviewFiltersForm({ filters: initialFilters, onApply, onReset }:
             </div>
           ))}
         </div>
+      </FilterSection>
+
+      <FilterSection title={t("sentiment")}>
+        {(["positive", "neutral", "negative"] as const).map((sentiment) => (
+          <div key={sentiment} className="flex items-center space-x-2">
+            <Checkbox
+              id={`sentiment-${sentiment}`}
+              checked={filters.sentiment?.includes(sentiment)}
+              onCheckedChange={(checked) => handleSentimentChange(sentiment, checked as boolean)}
+            />
+            <Label htmlFor={`sentiment-${sentiment}`} className="capitalize">
+              {t(`sentimentValues.${sentiment}`)}
+            </Label>
+          </div>
+        ))}
       </FilterSection>
 
       <FilterSection title={t("dateRange")}>

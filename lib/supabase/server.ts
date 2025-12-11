@@ -10,6 +10,13 @@ export const createClient = cache(async () => {
       getAll() {
         return cookieStore.getAll();
       },
+      setAll(cookiesToSet) {
+        try {
+          cookiesToSet.forEach(({ name, value, options }) => cookieStore.set(name, value, options));
+        } catch (error) {
+          console.log("Failed to set cookies (expected in Server Components)", error);
+        }
+      },
     },
   });
 });
