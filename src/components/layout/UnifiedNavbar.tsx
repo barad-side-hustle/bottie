@@ -91,11 +91,17 @@ export function UnifiedNavbar({ variant }: { variant: "landing" | "dashboard" })
           <>
             <div className="md:hidden flex items-center gap-1">
               <Link href="/dashboard/home" onClick={() => setIsNavigating(true)}>
-                <Button variant="ghost" size="icon" disabled={isNavigating}>
+                <Button variant="ghost" size="icon" disabled={isNavigating} aria-label={t("auth.myAccount")}>
                   <User className="h-5 w-5" />
                 </Button>
               </Link>
-              <Button variant="ghost" size="icon" onClick={handleSignOut} disabled={isSigningOut}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleSignOut}
+                disabled={isSigningOut}
+                aria-label={t("auth.signOut")}
+              >
                 <LogOut className="h-5 w-5" />
               </Button>
             </div>
