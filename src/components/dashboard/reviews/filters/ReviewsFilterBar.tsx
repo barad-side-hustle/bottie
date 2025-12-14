@@ -16,7 +16,7 @@ export function ReviewsFilterBar() {
   const params = useParams();
   const [isOpen, setIsOpen] = useState(false);
 
-  const businessId = params.businessId as string;
+  const locationId = params.locationId as string;
 
   const { getFilters, setFilters: storeSetFilters, clearFilters } = useFiltersStore();
 
@@ -33,22 +33,25 @@ export function ReviewsFilterBar() {
   if (hasUrlParams) {
     filters = parseFiltersFromSearchParams(paramsObj);
   } else {
-    const storedFilters = getFilters(businessId);
+    const storedFilters = getFilters(locationId);
     filters = storedFilters || { sort: DEFAULT_REVIEW_SORT };
   }
 
   const activeCount =
-    (filters.replyStatus?.length ?? 0) + (filters.rating?.length ?? 0) + (filters.dateFrom || filters.dateTo ? 1 : 0);
+    (filters.replyStatus?.length ?? 0) +
+    (filters.rating?.length ?? 0) +
+    (filters.sentiment?.length ?? 0) +
+    (filters.dateFrom || filters.dateTo ? 1 : 0);
 
   const handleApply = (newFilters: ReviewFilters) => {
-    storeSetFilters(businessId, newFilters);
+    storeSetFilters(locationId, newFilters);
     const params = buildSearchParams(newFilters);
     router.push(`${pathname}?${params.toString()}`);
     setIsOpen(false);
   };
 
   const handleReset = () => {
-    clearFilters(businessId);
+    clearFilters(locationId);
     router.push(pathname);
     setIsOpen(false);
   };
@@ -60,6 +63,8 @@ export function ReviewsFilterBar() {
       newFilters.replyStatus = newFilters.replyStatus.filter((s) => s !== value);
     } else if (key === "rating" && newFilters.rating) {
       newFilters.rating = newFilters.rating.filter((r) => r !== value);
+    } else if (key === "sentiment" && newFilters.sentiment) {
+      newFilters.sentiment = newFilters.sentiment.filter((s) => s !== value);
     } else if (key === "dateFrom" || key === "dateTo") {
       delete newFilters.dateFrom;
       delete newFilters.dateTo;

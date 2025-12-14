@@ -1,4 +1,4 @@
-import { eq, and, gte, lte, sql, count, avg, isNotNull } from "drizzle-orm";
+import { eq, and, gte, lte, sql, count, avg, isNotNull, desc } from "drizzle-orm";
 import { db } from "@/lib/db/client";
 import { reviews, accountLocations, userAccounts } from "@/lib/db/schema";
 import type {
@@ -6,6 +6,7 @@ import type {
   CategoryCount,
   ClassificationTrend,
   ClassificationCategory,
+  ReviewClassification,
 } from "@/lib/types/classification.types";
 import { CLASSIFICATION_CATEGORIES } from "@/lib/types/classification.types";
 
@@ -22,6 +23,60 @@ export class InsightsRepository {
       WHERE al.location_id = ${this.locationId}
       AND ua.user_id = ${this.userId}
     )`;
+  }
+
+  private async getClassifiedReviews(dateFrom: Date, dateTo: Date, limit?: number) {
+    return db.query.reviews.findMany({
+      where: and(
+        eq(reviews.locationId, this.locationId),
+        gte(reviews.date, dateFrom),
+        lte(reviews.date, dateTo),
+        isNotNull(reviews.classifications),
+        this.getAccessCondition()
+      ),
+      columns: {
+        id: true,
+        classifications: true,
+      },
+      orderBy: desc(reviews.date),
+      limit: limit || 2000,
+    });
+  }
+
+  private countCategoriesFromReviews(
+    reviewsData: { classifications: ReviewClassification | null }[],
+    arrayField: "positives" | "negatives"
+  ): Map<ClassificationCategory, number> {
+    const categoryCounts = new Map<ClassificationCategory, number>();
+
+    for (const review of reviewsData) {
+      if (!review.classifications) continue;
+
+      const mentions = review.classifications[arrayField];
+      for (const mention of mentions) {
+        if (!CLASSIFICATION_CATEGORIES.includes(mention.category)) continue;
+
+        const currentCount = categoryCounts.get(mention.category) || 0;
+        categoryCounts.set(mention.category, currentCount + 1);
+      }
+    }
+
+    return categoryCounts;
+  }
+
+  private formatCategoryCountsToTop(
+    categoryCounts: Map<ClassificationCategory, number>,
+    totalClassified: number,
+    limit: number
+  ): CategoryCount[] {
+    return Array.from(categoryCounts.entries())
+      .map(([category, count]) => ({
+        category,
+        count,
+        percentage: totalClassified > 0 ? Math.round((count / totalClassified) * 100) : 0,
+      }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, limit);
   }
 
   async getClassificationStats(dateFrom: Date, dateTo: Date): Promise<ClassificationStats> {
@@ -59,47 +114,13 @@ export class InsightsRepository {
       };
     }
 
-    const [positivesResult, negativesResult] = await Promise.all([
-      db.execute(sql`
-        SELECT
-          elem->>'category' as category,
-          COUNT(*)::int as count
-        FROM ${reviews},
-          jsonb_array_elements(${reviews.classifications}->'positives') as elem
-        WHERE ${reviews.locationId} = ${this.locationId}
-          AND ${reviews.date} >= ${dateFrom}
-          AND ${reviews.date} <= ${dateTo}
-          AND ${reviews.classifications} IS NOT NULL
-          AND ${this.getAccessCondition()}
-        GROUP BY elem->>'category'
-        ORDER BY count DESC
-        LIMIT 10
-      `),
-      db.execute(sql`
-        SELECT
-          elem->>'category' as category,
-          COUNT(*)::int as count
-        FROM ${reviews},
-          jsonb_array_elements(${reviews.classifications}->'negatives') as elem
-        WHERE ${reviews.locationId} = ${this.locationId}
-          AND ${reviews.date} >= ${dateFrom}
-          AND ${reviews.date} <= ${dateTo}
-          AND ${reviews.classifications} IS NOT NULL
-          AND ${this.getAccessCondition()}
-        GROUP BY elem->>'category'
-        ORDER BY count DESC
-        LIMIT 10
-      `),
-    ]);
+    const classifiedReviewsData = await this.getClassifiedReviews(dateFrom, dateTo);
 
-    const topPositives = this.formatCategoryResults(
-      positivesResult as unknown as { category: string; count: number }[],
-      classifiedReviews
-    );
-    const topNegatives = this.formatCategoryResults(
-      negativesResult as unknown as { category: string; count: number }[],
-      classifiedReviews
-    );
+    const positiveCounts = this.countCategoriesFromReviews(classifiedReviewsData, "positives");
+    const negativeCounts = this.countCategoriesFromReviews(classifiedReviewsData, "negatives");
+
+    const topPositives = this.formatCategoryCountsToTop(positiveCounts, classifiedReviews, 10);
+    const topNegatives = this.formatCategoryCountsToTop(negativeCounts, classifiedReviews, 10);
 
     return {
       totalReviews,
@@ -159,8 +180,6 @@ export class InsightsRepository {
     type: "positive" | "negative",
     limit: number = 10
   ): Promise<CategoryCount[]> {
-    const arrayField = type === "positive" ? "positives" : "negatives";
-
     const totalResult = await db
       .select({ count: count() })
       .from(reviews)
@@ -176,29 +195,18 @@ export class InsightsRepository {
 
     const totalClassified = Number(totalResult[0]?.count || 0);
 
-    const result = await db.execute(sql`
-      SELECT
-        elem->>'category' as category,
-        COUNT(*)::int as count
-      FROM ${reviews},
-        jsonb_array_elements(${reviews.classifications}->${sql.raw(`'${arrayField}'`)}) as elem
-      WHERE ${reviews.locationId} = ${this.locationId}
-        AND ${reviews.date} >= ${dateFrom}
-        AND ${reviews.date} <= ${dateTo}
-        AND ${reviews.classifications} IS NOT NULL
-        AND ${this.getAccessCondition()}
-      GROUP BY elem->>'category'
-      ORDER BY count DESC
-      LIMIT ${limit}
-    `);
+    if (totalClassified === 0) {
+      return [];
+    }
 
-    return (result as unknown as { category: string; count: number }[])
-      .filter((row) => CLASSIFICATION_CATEGORIES.includes(row.category as ClassificationCategory))
-      .map((row) => ({
-        category: row.category as ClassificationCategory,
-        count: Number(row.count),
-        percentage: totalClassified > 0 ? Math.round((Number(row.count) / totalClassified) * 100) : 0,
-      }));
+    const classifiedReviewsData = await this.getClassifiedReviews(dateFrom, dateTo);
+
+    const categoryCounts = this.countCategoriesFromReviews(
+      classifiedReviewsData,
+      type === "positive" ? "positives" : "negatives"
+    );
+
+    return this.formatCategoryCountsToTop(categoryCounts, totalClassified, limit);
   }
 
   async getReviewsByCategory(
@@ -227,15 +235,5 @@ export class InsightsRepository {
     });
 
     return result;
-  }
-
-  private formatCategoryResults(rows: { category: string; count: number }[], totalClassified: number): CategoryCount[] {
-    return rows
-      .filter((row) => CLASSIFICATION_CATEGORIES.includes(row.category as ClassificationCategory))
-      .map((row) => ({
-        category: row.category as ClassificationCategory,
-        count: Number(row.count),
-        percentage: totalClassified > 0 ? Math.round((Number(row.count) / totalClassified) * 100) : 0,
-      }));
   }
 }

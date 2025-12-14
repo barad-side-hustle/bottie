@@ -52,10 +52,6 @@ export function ReviewCard({ review, accountId, userId, locationId, onUpdate }: 
   };
 
   const getStatusBadge = (review: ReviewWithLatestGeneration) => {
-    if (!review.consumesQuota) {
-      return <Badge variant="muted">{t("imported")}</Badge>;
-    }
-
     const status = review.replyStatus as ReplyStatus;
     const statusMap = {
       pending: { label: t("status.pending"), variant: "warning" as const },
@@ -67,17 +63,29 @@ export function ReviewCard({ review, accountId, userId, locationId, onUpdate }: 
 
     const statusInfo = statusMap[status] || statusMap.pending;
 
+    let statusBadge;
     if (status === "posted") {
       const Icon = review.latestAiReplyPostedBy ? User : Bot;
-      return (
+      statusBadge = (
         <Badge variant={statusInfo.variant} className="gap-1">
           <Icon className="h-3 w-3" />
           {statusInfo.label}
         </Badge>
       );
+    } else {
+      statusBadge = <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>;
     }
 
-    return <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>;
+    if (!review.consumesQuota) {
+      return (
+        <div className="flex gap-2">
+          <Badge variant="muted">{t("imported")}</Badge>
+          {statusBadge}
+        </div>
+      );
+    }
+
+    return statusBadge;
   };
 
   const handlePublishConfirm = async () => {
