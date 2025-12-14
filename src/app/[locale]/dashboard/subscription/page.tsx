@@ -2,7 +2,6 @@ import { PageContainer } from "@/components/layout/PageContainer";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { getTranslations } from "next-intl/server";
 import { getUserStats } from "@/lib/actions/stats.actions";
-import { getActiveSubscription } from "@/lib/actions/subscription.actions";
 import { getAuthenticatedUserId } from "@/lib/api/auth";
 import type { PlanTier } from "@/lib/subscriptions/plans";
 import { SubscriptionInfo } from "@/components/dashboard/dashboard/SubscriptionInfo";
@@ -15,9 +14,9 @@ export default async function SubscriptionPage({ params }: { params: Promise<{ l
   const { userId } = await getAuthenticatedUserId();
   const t = await getTranslations({ locale, namespace: "dashboard.subscription" });
 
-  const [stats, subscription] = await Promise.all([getUserStats(userId), getActiveSubscription()]);
+  const stats = await getUserStats(userId);
 
-  const planType: PlanTier = subscription ? (subscription.planTier as PlanTier) : "free";
+  const planType: PlanTier = stats.subscription ? (stats.subscription.planTier as PlanTier) : "free";
 
   return (
     <PageContainer>
@@ -26,7 +25,7 @@ export default async function SubscriptionPage({ params }: { params: Promise<{ l
       <div className="space-y-6">
         <SubscriptionInfo
           limits={stats.limits}
-          subscription={subscription}
+          subscription={stats.subscription}
           currentLocations={stats.locations}
           currentReviews={stats.reviews}
           locationsPercent={stats.locationsPercent}

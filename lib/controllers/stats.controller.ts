@@ -1,6 +1,7 @@
 import { StatsRepository } from "@/lib/db/repositories";
 import { SubscriptionsRepository } from "@/lib/db/repositories";
-import type { PlanLimits } from "@/lib/subscriptions/plans";
+import { getPlanLimits, type PlanLimits, type PlanTier } from "@/lib/subscriptions/plans";
+import type { Subscription } from "@/lib/db/schema";
 
 export interface UserStats {
   locations: number;
@@ -8,6 +9,7 @@ export interface UserStats {
   locationsPercent: number;
   reviewsPercent: number;
   limits: PlanLimits;
+  subscription: Subscription | null;
 }
 
 export class StatsController {
@@ -15,12 +17,13 @@ export class StatsController {
     const statsRepo = new StatsRepository();
     const subRepo = new SubscriptionsRepository();
 
-    const [locations, reviews, limits] = await Promise.all([
+    const [locations, reviews, subscription] = await Promise.all([
       statsRepo.countUserLocations(userId),
       statsRepo.countUserReviewsThisMonth(userId),
-      subRepo.getUserPlanLimits(userId),
+      subRepo.getActiveSubscriptionForUser(userId),
     ]);
 
+    const limits = getPlanLimits((subscription?.planTier as PlanTier) || "free");
     const locationsPercent = Math.min(100, Math.round((locations * 100) / limits.businesses));
     const reviewsPercent = Math.min(100, Math.round((reviews * 100) / limits.reviewsPerMonth));
 
@@ -30,6 +33,7 @@ export class StatsController {
       locationsPercent,
       reviewsPercent,
       limits,
+      subscription,
     };
   }
 }

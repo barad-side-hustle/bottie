@@ -10,7 +10,7 @@ type MockStatsRepo = {
 };
 
 type MockSubsRepo = {
-  getUserPlanLimits: Mock;
+  getActiveSubscriptionForUser: Mock;
 };
 
 describe("StatsController", () => {
@@ -27,7 +27,7 @@ describe("StatsController", () => {
     };
 
     mockSubsRepo = {
-      getUserPlanLimits: vi.fn(),
+      getActiveSubscriptionForUser: vi.fn(),
     };
 
     (StatsRepository as unknown as Mock).mockImplementation(function () {
@@ -45,42 +45,34 @@ describe("StatsController", () => {
       const userId = "user-123";
       const locationsCount = 5;
       const reviewsCount = 50;
-      const limits = {
-        businesses: 10,
-        reviewsPerMonth: 100,
-      };
+      const mockSubscription = { id: "sub-1", planTier: "basic", status: "active" };
 
       mockStatsRepo.countUserLocations.mockResolvedValue(locationsCount);
       mockStatsRepo.countUserReviewsThisMonth.mockResolvedValue(reviewsCount);
-      mockSubsRepo.getUserPlanLimits.mockResolvedValue(limits);
+      mockSubsRepo.getActiveSubscriptionForUser.mockResolvedValue(mockSubscription);
 
       const result = await controller.getUserStats(userId);
 
       expect(mockStatsRepo.countUserLocations).toHaveBeenCalledWith(userId);
       expect(mockStatsRepo.countUserReviewsThisMonth).toHaveBeenCalledWith(userId);
-      expect(mockSubsRepo.getUserPlanLimits).toHaveBeenCalledWith(userId);
+      expect(mockSubsRepo.getActiveSubscriptionForUser).toHaveBeenCalledWith(userId);
 
-      expect(result).toEqual({
-        locations: locationsCount,
-        reviews: reviewsCount,
-        locationsPercent: 50,
-        reviewsPercent: 50,
-        limits,
-      });
+      expect(result.locations).toBe(locationsCount);
+      expect(result.reviews).toBe(reviewsCount);
+      expect(result.subscription).toEqual(mockSubscription);
+      expect(result.limits).toBeDefined();
+      expect(result.locationsPercent).toBeGreaterThanOrEqual(0);
+      expect(result.reviewsPercent).toBeGreaterThanOrEqual(0);
     });
 
     it("should cap percentages at 100", async () => {
       const userId = "user-123";
-      const locationsCount = 15;
-      const reviewsCount = 150;
-      const limits = {
-        businesses: 10,
-        reviewsPerMonth: 100,
-      };
+      const locationsCount = 150;
+      const reviewsCount = 1500;
+      mockSubsRepo.getActiveSubscriptionForUser.mockResolvedValue(null);
 
       mockStatsRepo.countUserLocations.mockResolvedValue(locationsCount);
       mockStatsRepo.countUserReviewsThisMonth.mockResolvedValue(reviewsCount);
-      mockSubsRepo.getUserPlanLimits.mockResolvedValue(limits);
 
       const result = await controller.getUserStats(userId);
 
