@@ -18,7 +18,6 @@ export function UnifiedNavbar({ variant }: { variant: "landing" | "dashboard" })
   const t = useTranslations();
   const { user } = useAuth();
   const [isSigningOut, setIsSigningOut] = useState(false);
-  const [isNavigating, setIsNavigating] = useState(false);
 
   const handleSignOut = async () => {
     setIsSigningOut(true);
@@ -90,8 +89,8 @@ export function UnifiedNavbar({ variant }: { variant: "landing" | "dashboard" })
         {variant === "landing" && user ? (
           <>
             <div className="md:hidden flex items-center gap-1">
-              <Link href="/dashboard/home" onClick={() => setIsNavigating(true)}>
-                <Button variant="ghost" size="icon" disabled={isNavigating} aria-label={t("auth.myAccount")}>
+              <Link href="/dashboard/home">
+                <Button variant="ghost" size="icon" aria-label={t("auth.myAccount")}>
                   <User className="h-5 w-5" />
                 </Button>
               </Link>
@@ -107,8 +106,8 @@ export function UnifiedNavbar({ variant }: { variant: "landing" | "dashboard" })
             </div>
 
             <div className="hidden md:flex items-center gap-2">
-              <Link href="/dashboard/home" onClick={() => setIsNavigating(true)}>
-                <Button variant="default" size="sm" disabled={isNavigating}>
+              <Link href="/dashboard/home">
+                <Button variant="default" size="sm">
                   {t("auth.myAccount")}
                 </Button>
               </Link>

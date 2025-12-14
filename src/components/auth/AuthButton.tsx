@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { UserAvatarDropdown } from "@/components/auth/UserAvatarDropdown";
@@ -14,7 +13,6 @@ interface AuthButtonProps {
 
 export function AuthButton({ size = "sm", className }: AuthButtonProps) {
   const { user, loading } = useAuth();
-  const [isNavigating, setIsNavigating] = useState(false);
   const t = useTranslations("auth");
 
   if (loading) {
@@ -26,9 +24,9 @@ export function AuthButton({ size = "sm", className }: AuthButtonProps) {
   }
 
   return (
-    <Link href="/login" onClick={() => setIsNavigating(true)}>
-      <Button size={size} className={className} disabled={isNavigating}>
-        {isNavigating ? t("loggingIn") : t("login")}
+    <Link href="/login">
+      <Button size={size} className={className}>
+        {t("login")}
       </Button>
     </Link>
   );
