@@ -64,7 +64,7 @@ export default async function LocaleLayout({
             </AuthProvider>
           </DirectionProvider>
 
-          <Script src="https://www.googletagmanager.com/gtag/js?id=G-4077J0PY28" strategy="afterInteractive" />
+          <Script src="https://www.googletagmanager.com/gtag/js?id=AW-17485891262" strategy="afterInteractive" />
           <Script id="google-analytics" strategy="afterInteractive">
             {`
               window.dataLayer = window.dataLayer || [];
