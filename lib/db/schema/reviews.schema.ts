@@ -42,6 +42,8 @@ export const reviews = pgTable(
     index("reviews_location_status_idx").on(table.locationId, table.replyStatus),
     index("reviews_received_status_idx").on(table.receivedAt, table.replyStatus),
     index("reviews_location_date_idx").on(table.locationId, table.date),
+    index("reviews_consumes_quota_received_at_idx").on(table.consumesQuota, table.receivedAt),
+    index("reviews_location_rating_idx").on(table.locationId, table.rating),
 
     check(
       "reviews_reply_status_check",

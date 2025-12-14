@@ -1,4 +1,4 @@
-import { eq, and, gte, lte, isNotNull, exists } from "drizzle-orm";
+import { eq, and, gte, lte, sql, count, avg, isNotNull } from "drizzle-orm";
 import { db } from "@/lib/db/client";
 import { reviews, accountLocations, userAccounts } from "@/lib/db/schema";
 import type {
@@ -6,7 +6,6 @@ import type {
   CategoryCount,
   ClassificationTrend,
   ClassificationCategory,
-  ReviewClassification,
 } from "@/lib/types/classification.types";
 import { CLASSIFICATION_CATEGORIES } from "@/lib/types/classification.types";
 
@@ -17,29 +16,37 @@ export class InsightsRepository {
   ) {}
 
   private getAccessCondition() {
-    return exists(
-      db
-        .select()
-        .from(accountLocations)
-        .innerJoin(userAccounts, eq(userAccounts.accountId, accountLocations.accountId))
-        .where(and(eq(accountLocations.locationId, this.locationId), eq(userAccounts.userId, this.userId)))
-    );
+    return sql`EXISTS (
+      SELECT 1 FROM ${accountLocations} al
+      INNER JOIN ${userAccounts} ua ON ua.account_id = al.account_id
+      WHERE al.location_id = ${this.locationId}
+      AND ua.user_id = ${this.userId}
+    )`;
   }
 
   async getClassificationStats(dateFrom: Date, dateTo: Date): Promise<ClassificationStats> {
-    const conditions = [
-      eq(reviews.locationId, this.locationId),
-      gte(reviews.date, dateFrom),
-      lte(reviews.date, dateTo),
-      this.getAccessCondition(),
-    ];
+    const statsResult = await db
+      .select({
+        totalReviews: count(),
+        classifiedReviews: count(reviews.classifications),
+        averageRating: avg(reviews.rating),
+        positiveCount: sql<number>`COUNT(*) FILTER (WHERE ${reviews.classifications}->>'sentiment' = 'positive')`,
+        neutralCount: sql<number>`COUNT(*) FILTER (WHERE ${reviews.classifications}->>'sentiment' = 'neutral')`,
+        negativeCount: sql<number>`COUNT(*) FILTER (WHERE ${reviews.classifications}->>'sentiment' = 'negative')`,
+      })
+      .from(reviews)
+      .where(
+        and(
+          eq(reviews.locationId, this.locationId),
+          gte(reviews.date, dateFrom),
+          lte(reviews.date, dateTo),
+          this.getAccessCondition()
+        )
+      );
 
-    const reviewsData = await db.query.reviews.findMany({
-      where: and(...conditions),
-    });
-
-    const totalReviews = reviewsData.length;
-    const classifiedReviews = reviewsData.filter((r) => r.classifications !== null).length;
+    const stats = statsResult[0];
+    const totalReviews = Number(stats?.totalReviews || 0);
+    const classifiedReviews = Number(stats?.classifiedReviews || 0);
 
     if (totalReviews === 0) {
       return {
@@ -52,41 +59,57 @@ export class InsightsRepository {
       };
     }
 
-    const averageRating = reviewsData.reduce((sum, r) => sum + r.rating, 0) / totalReviews;
+    const [positivesResult, negativesResult] = await Promise.all([
+      db.execute(sql`
+        SELECT
+          elem->>'category' as category,
+          COUNT(*)::int as count
+        FROM ${reviews},
+          jsonb_array_elements(${reviews.classifications}->'positives') as elem
+        WHERE ${reviews.locationId} = ${this.locationId}
+          AND ${reviews.date} >= ${dateFrom}
+          AND ${reviews.date} <= ${dateTo}
+          AND ${reviews.classifications} IS NOT NULL
+          AND ${this.getAccessCondition()}
+        GROUP BY elem->>'category'
+        ORDER BY count DESC
+        LIMIT 10
+      `),
+      db.execute(sql`
+        SELECT
+          elem->>'category' as category,
+          COUNT(*)::int as count
+        FROM ${reviews},
+          jsonb_array_elements(${reviews.classifications}->'negatives') as elem
+        WHERE ${reviews.locationId} = ${this.locationId}
+          AND ${reviews.date} >= ${dateFrom}
+          AND ${reviews.date} <= ${dateTo}
+          AND ${reviews.classifications} IS NOT NULL
+          AND ${this.getAccessCondition()}
+        GROUP BY elem->>'category'
+        ORDER BY count DESC
+        LIMIT 10
+      `),
+    ]);
 
-    const sentimentBreakdown = { positive: 0, neutral: 0, negative: 0 };
-    const positiveCounts = new Map<ClassificationCategory, number>();
-    const negativeCounts = new Map<ClassificationCategory, number>();
-
-    for (const review of reviewsData) {
-      const classification = review.classifications as ReviewClassification | null;
-      if (!classification) continue;
-
-      sentimentBreakdown[classification.sentiment]++;
-
-      for (const pos of classification.positives) {
-        const category = pos.category as ClassificationCategory;
-        if (CLASSIFICATION_CATEGORIES.includes(category)) {
-          positiveCounts.set(category, (positiveCounts.get(category) || 0) + 1);
-        }
-      }
-
-      for (const neg of classification.negatives) {
-        const category = neg.category as ClassificationCategory;
-        if (CLASSIFICATION_CATEGORIES.includes(category)) {
-          negativeCounts.set(category, (negativeCounts.get(category) || 0) + 1);
-        }
-      }
-    }
-
-    const topPositives = this.formatCategoryCounts(positiveCounts, classifiedReviews);
-    const topNegatives = this.formatCategoryCounts(negativeCounts, classifiedReviews);
+    const topPositives = this.formatCategoryResults(
+      positivesResult as unknown as { category: string; count: number }[],
+      classifiedReviews
+    );
+    const topNegatives = this.formatCategoryResults(
+      negativesResult as unknown as { category: string; count: number }[],
+      classifiedReviews
+    );
 
     return {
       totalReviews,
       classifiedReviews,
-      averageRating: Math.round(averageRating * 10) / 10,
-      sentimentBreakdown,
+      averageRating: Math.round(Number(stats?.averageRating || 0) * 10) / 10,
+      sentimentBreakdown: {
+        positive: Number(stats?.positiveCount || 0),
+        neutral: Number(stats?.neutralCount || 0),
+        negative: Number(stats?.negativeCount || 0),
+      },
       topPositives,
       topNegatives,
     };
@@ -97,63 +120,37 @@ export class InsightsRepository {
     dateTo: Date,
     groupBy: "day" | "week" = "day"
   ): Promise<ClassificationTrend[]> {
-    const conditions = [
-      eq(reviews.locationId, this.locationId),
-      gte(reviews.date, dateFrom),
-      lte(reviews.date, dateTo),
-      this.getAccessCondition(),
-    ];
+    const dateTrunc = groupBy === "week" ? "week" : "day";
 
-    const reviewsData = await db.query.reviews.findMany({
-      where: and(...conditions),
-      orderBy: (reviews, { asc }) => [asc(reviews.date)],
-    });
+    const result = await db
+      .select({
+        date: sql<string>`TO_CHAR(DATE_TRUNC(${sql.raw(`'${dateTrunc}'`)}, ${reviews.date}), 'YYYY-MM-DD')`,
+        totalReviews: count(),
+        averageRating: sql<number>`ROUND(AVG(${reviews.rating})::numeric, 1)`,
+        positiveCount: sql<number>`COUNT(*) FILTER (WHERE ${reviews.classifications}->>'sentiment' = 'positive')`,
+        negativeCount: sql<number>`COUNT(*) FILTER (WHERE ${reviews.classifications}->>'sentiment' = 'negative')`,
+        neutralCount: sql<number>`COUNT(*) FILTER (WHERE ${reviews.classifications}->>'sentiment' = 'neutral')`,
+      })
+      .from(reviews)
+      .where(
+        and(
+          eq(reviews.locationId, this.locationId),
+          gte(reviews.date, dateFrom),
+          lte(reviews.date, dateTo),
+          this.getAccessCondition()
+        )
+      )
+      .groupBy(sql`DATE_TRUNC(${sql.raw(`'${dateTrunc}'`)}, ${reviews.date})`)
+      .orderBy(sql`date ASC`);
 
-    const dateFormat = groupBy === "week" ? "week" : "day";
-    const groupedData = new Map<
-      string,
-      {
-        totalReviews: number;
-        totalRating: number;
-        positive: number;
-        negative: number;
-        neutral: number;
-      }
-    >();
-
-    for (const review of reviewsData) {
-      const dateKey = this.getDateKey(review.date, dateFormat);
-
-      if (!groupedData.has(dateKey)) {
-        groupedData.set(dateKey, {
-          totalReviews: 0,
-          totalRating: 0,
-          positive: 0,
-          negative: 0,
-          neutral: 0,
-        });
-      }
-
-      const group = groupedData.get(dateKey)!;
-      group.totalReviews++;
-      group.totalRating += review.rating;
-
-      const classification = review.classifications as ReviewClassification | null;
-      if (classification) {
-        group[classification.sentiment]++;
-      }
-    }
-
-    return Array.from(groupedData.entries())
-      .map(([date, data]) => ({
-        date,
-        totalReviews: data.totalReviews,
-        averageRating: Math.round((data.totalRating / data.totalReviews) * 10) / 10,
-        positiveCount: data.positive,
-        negativeCount: data.negative,
-        neutralCount: data.neutral,
-      }))
-      .sort((a, b) => a.date.localeCompare(b.date));
+    return result.map((row) => ({
+      date: row.date,
+      totalReviews: Number(row.totalReviews),
+      averageRating: Number(row.averageRating) || 0,
+      positiveCount: Number(row.positiveCount),
+      negativeCount: Number(row.negativeCount),
+      neutralCount: Number(row.neutralCount),
+    }));
   }
 
   async getTopCategories(
@@ -162,34 +159,46 @@ export class InsightsRepository {
     type: "positive" | "negative",
     limit: number = 10
   ): Promise<CategoryCount[]> {
-    const conditions = [
-      eq(reviews.locationId, this.locationId),
-      gte(reviews.date, dateFrom),
-      lte(reviews.date, dateTo),
-      isNotNull(reviews.classifications),
-      this.getAccessCondition(),
-    ];
+    const arrayField = type === "positive" ? "positives" : "negatives";
 
-    const reviewsData = await db.query.reviews.findMany({
-      where: and(...conditions),
-    });
+    const totalResult = await db
+      .select({ count: count() })
+      .from(reviews)
+      .where(
+        and(
+          eq(reviews.locationId, this.locationId),
+          gte(reviews.date, dateFrom),
+          lte(reviews.date, dateTo),
+          isNotNull(reviews.classifications),
+          this.getAccessCondition()
+        )
+      );
 
-    const counts = new Map<ClassificationCategory, number>();
+    const totalClassified = Number(totalResult[0]?.count || 0);
 
-    for (const review of reviewsData) {
-      const classification = review.classifications as ReviewClassification | null;
-      if (!classification) continue;
+    const result = await db.execute(sql`
+      SELECT
+        elem->>'category' as category,
+        COUNT(*)::int as count
+      FROM ${reviews},
+        jsonb_array_elements(${reviews.classifications}->${sql.raw(`'${arrayField}'`)}) as elem
+      WHERE ${reviews.locationId} = ${this.locationId}
+        AND ${reviews.date} >= ${dateFrom}
+        AND ${reviews.date} <= ${dateTo}
+        AND ${reviews.classifications} IS NOT NULL
+        AND ${this.getAccessCondition()}
+      GROUP BY elem->>'category'
+      ORDER BY count DESC
+      LIMIT ${limit}
+    `);
 
-      const mentions = type === "positive" ? classification.positives : classification.negatives;
-      for (const mention of mentions) {
-        const category = mention.category as ClassificationCategory;
-        if (CLASSIFICATION_CATEGORIES.includes(category)) {
-          counts.set(category, (counts.get(category) || 0) + 1);
-        }
-      }
-    }
-
-    return this.formatCategoryCounts(counts, reviewsData.length).slice(0, limit);
+    return (result as unknown as { category: string; count: number }[])
+      .filter((row) => CLASSIFICATION_CATEGORIES.includes(row.category as ClassificationCategory))
+      .map((row) => ({
+        category: row.category as ClassificationCategory,
+        count: Number(row.count),
+        percentage: totalClassified > 0 ? Math.round((Number(row.count) / totalClassified) * 100) : 0,
+      }));
   }
 
   async getReviewsByCategory(
@@ -199,48 +208,34 @@ export class InsightsRepository {
     type: "positive" | "negative",
     limit: number = 20
   ) {
-    const conditions = [
-      eq(reviews.locationId, this.locationId),
-      gte(reviews.date, dateFrom),
-      lte(reviews.date, dateTo),
-      isNotNull(reviews.classifications),
-      this.getAccessCondition(),
-    ];
+    const arrayField = type === "positive" ? "positives" : "negatives";
 
-    const reviewsData = await db.query.reviews.findMany({
-      where: and(...conditions),
+    const result = await db.query.reviews.findMany({
+      where: and(
+        eq(reviews.locationId, this.locationId),
+        gte(reviews.date, dateFrom),
+        lte(reviews.date, dateTo),
+        isNotNull(reviews.classifications),
+        sql`EXISTS (
+          SELECT 1 FROM jsonb_array_elements(${reviews.classifications}->${sql.raw(`'${arrayField}'`)}) as elem
+          WHERE elem->>'category' = ${category}
+        )`,
+        this.getAccessCondition()
+      ),
       orderBy: (reviews, { desc }) => [desc(reviews.date)],
+      limit,
     });
 
-    return reviewsData
-      .filter((review) => {
-        const classification = review.classifications as ReviewClassification | null;
-        if (!classification) return false;
-
-        const mentions = type === "positive" ? classification.positives : classification.negatives;
-        return mentions.some((m) => m.category === category);
-      })
-      .slice(0, limit);
+    return result;
   }
 
-  private formatCategoryCounts(counts: Map<ClassificationCategory, number>, total: number): CategoryCount[] {
-    return Array.from(counts.entries())
-      .map(([category, count]) => ({
-        category,
-        count,
-        percentage: total > 0 ? Math.round((count / total) * 100) : 0,
-      }))
-      .sort((a, b) => b.count - a.count);
-  }
-
-  private getDateKey(date: Date, format: "day" | "week"): string {
-    if (format === "week") {
-      const d = new Date(date);
-      const day = d.getDay();
-      const diff = d.getDate() - day;
-      d.setDate(diff);
-      return d.toISOString().split("T")[0];
-    }
-    return date.toISOString().split("T")[0];
+  private formatCategoryResults(rows: { category: string; count: number }[], totalClassified: number): CategoryCount[] {
+    return rows
+      .filter((row) => CLASSIFICATION_CATEGORIES.includes(row.category as ClassificationCategory))
+      .map((row) => ({
+        category: row.category as ClassificationCategory,
+        count: Number(row.count),
+        percentage: totalClassified > 0 ? Math.round((Number(row.count) / totalClassified) * 100) : 0,
+      }));
   }
 }

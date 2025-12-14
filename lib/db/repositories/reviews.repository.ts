@@ -30,23 +30,6 @@ export class ReviewsRepository extends BaseRepository<ReviewInsert, Review, Part
     super();
   }
 
-  private async verifyAccess(): Promise<boolean> {
-    const access = await db.query.accountLocations.findFirst({
-      where: eq(accountLocations.locationId, this.locationId),
-      with: {
-        account: {
-          with: {
-            userAccounts: {
-              where: eq(userAccounts.userId, this.userId),
-            },
-          },
-        },
-      },
-    });
-
-    return !!(access?.account.userAccounts && access.account.userAccounts.length > 0);
-  }
-
   private getAccessCondition() {
     return exists(
       db
@@ -166,7 +149,11 @@ export class ReviewsRepository extends BaseRepository<ReviewInsert, Review, Part
   }
 
   async create(data: ReviewInsert): Promise<Review> {
-    if (!(await this.verifyAccess())) {
+    const accessCheck = await db
+      .select({ hasAccess: sql<boolean>`${this.getAccessCondition()}` })
+      .from(sql`(SELECT 1) as _dummy`);
+
+    if (!accessCheck[0]?.hasAccess) {
       throw new ForbiddenError("Access denied");
     }
 

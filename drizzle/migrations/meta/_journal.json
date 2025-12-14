@@ -15,6 +15,13 @@
       "when": 1765460390483,
       "tag": "0001_naive_donald_blake",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1765703019949,
+      "tag": "0002_zippy_darkhawk",
+      "breakpoints": true
     }
   ]
 }

@@ -31,6 +31,7 @@ vi.mock("drizzle-orm", async (importOriginal) => {
     eq: vi.fn(),
     and: vi.fn(),
     inArray: vi.fn(),
+    sql: vi.fn().mockImplementation((strings, ...values) => ({ strings, values })),
   };
 });
 
@@ -44,10 +45,8 @@ describe("LocationsRepository", () => {
   });
 
   describe("get", () => {
-    it("should return location if user has access", async () => {
+    it("should return location if found (access check is inline)", async () => {
       const mockLocation = { id: "loc-1", name: "Test Location" };
-
-      (db.query.accountLocations.findMany as Mock).mockResolvedValue([{ account: { userAccounts: [{ userId }] } }]);
       (db.query.locations.findFirst as Mock).mockResolvedValue(mockLocation);
 
       const result = await repository.get("loc-1");
@@ -55,30 +54,7 @@ describe("LocationsRepository", () => {
       expect(result).toEqual(mockLocation);
     });
 
-    it("should return null if user does not have access", async () => {
-      (db.query.accountLocations.findMany as Mock).mockResolvedValue([]);
-
-      const result = await repository.get("loc-1");
-
-      expect(result).toBeNull();
-    });
-
-    it("should return location if user has access via any connected account (multi-user scenario)", async () => {
-      const mockLocation = { id: "loc-1", name: "Test Location" };
-
-      (db.query.accountLocations.findMany as Mock).mockResolvedValue([
-        { account: { userAccounts: [] } },
-        { account: { userAccounts: [{ userId }] } },
-      ]);
-      (db.query.locations.findFirst as Mock).mockResolvedValue(mockLocation);
-
-      const result = await repository.get("loc-1");
-
-      expect(result).toEqual(mockLocation);
-    });
-
-    it("should return null if location not found", async () => {
-      (db.query.accountLocations.findMany as Mock).mockResolvedValue([{ account: { userAccounts: [{ userId }] } }]);
+    it("should return null if location not found or no access", async () => {
       (db.query.locations.findFirst as Mock).mockResolvedValue(null);
 
       const result = await repository.get("loc-1");
@@ -88,13 +64,8 @@ describe("LocationsRepository", () => {
   });
 
   describe("list", () => {
-    it("should return locations for user accounts", async () => {
-      const mockUserAccounts = [{ accountId: "acc-1" }];
-      const mockAccountLocations = [{ locationId: "loc-1" }];
+    it("should return locations for user (access check is inline)", async () => {
       const mockLocations = [{ id: "loc-1", name: "Test Location" }];
-
-      (db.query.userAccounts.findMany as Mock).mockResolvedValue(mockUserAccounts);
-      (db.query.accountLocations.findMany as Mock).mockResolvedValue(mockAccountLocations);
       (db.query.locations.findMany as Mock).mockResolvedValue(mockLocations);
 
       const result = await repository.list();
@@ -102,35 +73,25 @@ describe("LocationsRepository", () => {
       expect(result).toEqual(mockLocations);
     });
 
-    it("should return empty array if user has no accounts", async () => {
-      (db.query.userAccounts.findMany as Mock).mockResolvedValue([]);
+    it("should return empty array if no locations found", async () => {
+      (db.query.locations.findMany as Mock).mockResolvedValue([]);
 
       const result = await repository.list();
 
       expect(result).toEqual([]);
     });
 
-    it("should return empty array if accounts have no locations", async () => {
-      (db.query.userAccounts.findMany as Mock).mockResolvedValue([{ accountId: "acc-1" }]);
-      (db.query.accountLocations.findMany as Mock).mockResolvedValue([]);
-
-      const result = await repository.list();
-
-      expect(result).toEqual([]);
-    });
-
-    it("should filter by connected status", async () => {
-      const mockUserAccounts = [{ accountId: "acc-1" }];
-      const mockAccountLocations = [{ locationId: "loc-1" }];
+    it("should respect limit parameter", async () => {
       const mockLocations = [{ id: "loc-1", name: "Test Location" }];
-
-      (db.query.userAccounts.findMany as Mock).mockResolvedValue(mockUserAccounts);
-      (db.query.accountLocations.findMany as Mock).mockResolvedValue(mockAccountLocations);
       (db.query.locations.findMany as Mock).mockResolvedValue(mockLocations);
 
-      await repository.list({ connected: true });
+      await repository.list({}, 10);
 
-      expect(db.query.accountLocations.findMany).toHaveBeenCalled();
+      expect(db.query.locations.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          limit: 10,
+        })
+      );
     });
   });
 
@@ -190,10 +151,8 @@ describe("LocationsRepository", () => {
   });
 
   describe("update", () => {
-    it("should update location if user has access", async () => {
+    it("should update location if access check passes (inline)", async () => {
       const updatedLocation = { id: "loc-1", name: "Updated Name" };
-
-      (db.query.accountLocations.findMany as Mock).mockResolvedValue([{ account: { userAccounts: [{ userId }] } }]);
 
       const mockUpdate = vi.fn().mockReturnValue({
         set: vi.fn().mockReturnValue({
@@ -209,15 +168,7 @@ describe("LocationsRepository", () => {
       expect(result).toEqual(updatedLocation);
     });
 
-    it("should throw NotFoundError if user does not have access", async () => {
-      (db.query.accountLocations.findMany as Mock).mockResolvedValue([]);
-
-      await expect(repository.update("loc-1", { name: "Updated" })).rejects.toThrow(NotFoundError);
-    });
-
-    it("should throw NotFoundError if location not found", async () => {
-      (db.query.accountLocations.findMany as Mock).mockResolvedValue([{ account: { userAccounts: [{ userId }] } }]);
-
+    it("should throw NotFoundError if update returns empty (no access or not found)", async () => {
       const mockUpdate = vi.fn().mockReturnValue({
         set: vi.fn().mockReturnValue({
           where: vi.fn().mockReturnValue({
@@ -232,22 +183,14 @@ describe("LocationsRepository", () => {
   });
 
   describe("delete", () => {
-    it("should throw NotFoundError if user does not have access", async () => {
-      (db.query.accountLocations.findMany as Mock).mockResolvedValueOnce([]);
-
-      await expect(repository.delete("loc-1")).rejects.toThrow(NotFoundError);
-    });
-
     it("should throw error if location has active connections", async () => {
-      (db.query.accountLocations.findMany as Mock).mockResolvedValueOnce([{ account: { userAccounts: [{ userId }] } }]);
-      (db.query.accountLocations.findMany as Mock).mockResolvedValueOnce([{ id: "al-1" }]);
+      (db.query.accountLocations.findMany as Mock).mockResolvedValue([{ id: "al-1" }]);
 
       await expect(repository.delete("loc-1")).rejects.toThrow("Cannot delete location with active connections");
     });
 
     it("should delete location if no active connections", async () => {
-      (db.query.accountLocations.findMany as Mock).mockResolvedValueOnce([{ account: { userAccounts: [{ userId }] } }]);
-      (db.query.accountLocations.findMany as Mock).mockResolvedValueOnce([]);
+      (db.query.accountLocations.findMany as Mock).mockResolvedValue([]);
 
       const mockDelete = vi.fn().mockReturnValue({
         where: vi.fn().mockReturnValue({
@@ -259,6 +202,19 @@ describe("LocationsRepository", () => {
       await repository.delete("loc-1");
 
       expect(db.delete).toHaveBeenCalled();
+    });
+
+    it("should throw NotFoundError if delete returns empty (no access or not found)", async () => {
+      (db.query.accountLocations.findMany as Mock).mockResolvedValue([]);
+
+      const mockDelete = vi.fn().mockReturnValue({
+        where: vi.fn().mockReturnValue({
+          returning: vi.fn().mockResolvedValue([]),
+        }),
+      });
+      (db.delete as Mock).mockImplementation(mockDelete);
+
+      await expect(repository.delete("loc-1")).rejects.toThrow(NotFoundError);
     });
   });
 
@@ -282,7 +238,7 @@ describe("LocationsRepository", () => {
   });
 
   describe("getWithConnections", () => {
-    it("should return location with connections if user has access", async () => {
+    it("should return location with connections (access check is inline)", async () => {
       const mockLocationWithConnections = {
         id: "loc-1",
         name: "Test Location",
@@ -300,7 +256,6 @@ describe("LocationsRepository", () => {
         ],
       };
 
-      (db.query.accountLocations.findMany as Mock).mockResolvedValue([{ account: { userAccounts: [{ userId }] } }]);
       (db.query.locations.findFirst as Mock).mockResolvedValue(mockLocationWithConnections);
 
       const result = await repository.getWithConnections("loc-1");
@@ -308,8 +263,8 @@ describe("LocationsRepository", () => {
       expect(result).toEqual(mockLocationWithConnections);
     });
 
-    it("should return null if user does not have access", async () => {
-      (db.query.accountLocations.findMany as Mock).mockResolvedValue([]);
+    it("should return null if not found or no access", async () => {
+      (db.query.locations.findFirst as Mock).mockResolvedValue(null);
 
       const result = await repository.getWithConnections("loc-1");
 
