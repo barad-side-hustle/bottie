@@ -53,15 +53,15 @@ export function ReviewCard({ review, accountId, userId, locationId, onUpdate }: 
 
   const getStatusBadge = (review: ReviewWithLatestGeneration) => {
     if (!review.consumesQuota) {
-      return <Badge variant="secondary">{t("imported")}</Badge>;
+      return <Badge variant="muted">{t("imported")}</Badge>;
     }
 
     const status = review.replyStatus as ReplyStatus;
     const statusMap = {
-      pending: { label: t("status.pending"), variant: "secondary" as const },
-      posted: { label: t("status.posted"), variant: "default" as const },
+      pending: { label: t("status.pending"), variant: "warning" as const },
+      posted: { label: t("status.posted"), variant: "success" as const },
       rejected: { label: t("status.rejected"), variant: "secondary" as const },
-      failed: { label: t("status.failed"), variant: "secondary" as const },
+      failed: { label: t("status.failed"), variant: "destructive" as const },
       quota_exceeded: { label: t("status.quotaExceeded"), variant: "destructive" as const },
     };
 
@@ -206,7 +206,7 @@ export function ReviewCard({ review, accountId, userId, locationId, onUpdate }: 
         </DashboardCardContent>
 
         <DashboardCardFooter className="flex-col sm:flex-row">
-          {(review.replyStatus === "pending" || review.replyStatus === "failed") && (
+          {(review.replyStatus === "pending" || review.replyStatus === "failed" || review.replyStatus === "posted") && (
             <div className="flex flex-col-reverse sm:flex-row gap-2 w-full sm:w-auto">
               <div className="flex gap-2">
                 <Button
@@ -247,7 +247,7 @@ export function ReviewCard({ review, accountId, userId, locationId, onUpdate }: 
                 variant="default"
                 className="w-full sm:w-auto"
               >
-                {t("actions.publish")}
+                {review.replyStatus === "posted" ? t("actions.update") : t("actions.publish")}
               </Button>
             </div>
           )}
@@ -270,10 +270,10 @@ export function ReviewCard({ review, accountId, userId, locationId, onUpdate }: 
       <ConfirmationDialog
         open={showPublishDialog}
         onOpenChange={setShowPublishDialog}
-        title={t("publishDialog.title")}
+        title={review.replyStatus === "posted" ? t("updateDialog.title") : t("publishDialog.title")}
         description={
           <div className="space-y-3">
-            <p>{t("publishDialog.description")}</p>
+            <p>{review.replyStatus === "posted" ? t("updateDialog.description") : t("publishDialog.description")}</p>
             <div className="rounded-md bg-muted p-3 space-y-2">
               <div className="flex items-center gap-2 text-sm">
                 <span className="font-medium">{t("publishDialog.reviewer")}</span>
@@ -291,11 +291,11 @@ export function ReviewCard({ review, accountId, userId, locationId, onUpdate }: 
             </div>
           </div>
         }
-        confirmText={t("publishDialog.confirm")}
-        cancelText={t("publishDialog.cancel")}
+        confirmText={review.replyStatus === "posted" ? t("updateDialog.confirm") : t("publishDialog.confirm")}
+        cancelText={review.replyStatus === "posted" ? t("updateDialog.cancel") : t("publishDialog.cancel")}
         onConfirm={handlePublishConfirm}
         variant="default"
-        loadingText={t("publishDialog.loading")}
+        loadingText={review.replyStatus === "posted" ? t("updateDialog.loading") : t("publishDialog.loading")}
       />
     </>
   );
