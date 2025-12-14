@@ -39,7 +39,7 @@ export class InsightsRepository {
         classifications: true,
       },
       orderBy: desc(reviews.date),
-      limit: limit || 2000,
+      limit: limit ?? 2000,
     });
   }
 
@@ -53,11 +53,17 @@ export class InsightsRepository {
       if (!review.classifications) continue;
 
       const mentions = review.classifications[arrayField];
-      for (const mention of mentions) {
-        if (!CLASSIFICATION_CATEGORIES.includes(mention.category)) continue;
 
-        const currentCount = categoryCounts.get(mention.category) || 0;
-        categoryCounts.set(mention.category, currentCount + 1);
+      const uniqueCategories = new Set<ClassificationCategory>();
+      for (const mention of mentions) {
+        if (CLASSIFICATION_CATEGORIES.includes(mention.category)) {
+          uniqueCategories.add(mention.category);
+        }
+      }
+
+      for (const category of uniqueCategories) {
+        const currentCount = categoryCounts.get(category) || 0;
+        categoryCounts.set(category, currentCount + 1);
       }
     }
 
@@ -115,12 +121,13 @@ export class InsightsRepository {
     }
 
     const classifiedReviewsData = await this.getClassifiedReviews(dateFrom, dateTo);
+    const sampleSize = classifiedReviewsData.length;
 
     const positiveCounts = this.countCategoriesFromReviews(classifiedReviewsData, "positives");
     const negativeCounts = this.countCategoriesFromReviews(classifiedReviewsData, "negatives");
 
-    const topPositives = this.formatCategoryCountsToTop(positiveCounts, classifiedReviews, 10);
-    const topNegatives = this.formatCategoryCountsToTop(negativeCounts, classifiedReviews, 10);
+    const topPositives = this.formatCategoryCountsToTop(positiveCounts, sampleSize, 10);
+    const topNegatives = this.formatCategoryCountsToTop(negativeCounts, sampleSize, 10);
 
     return {
       totalReviews,
@@ -180,33 +187,19 @@ export class InsightsRepository {
     type: "positive" | "negative",
     limit: number = 10
   ): Promise<CategoryCount[]> {
-    const totalResult = await db
-      .select({ count: count() })
-      .from(reviews)
-      .where(
-        and(
-          eq(reviews.locationId, this.locationId),
-          gte(reviews.date, dateFrom),
-          lte(reviews.date, dateTo),
-          isNotNull(reviews.classifications),
-          this.getAccessCondition()
-        )
-      );
+    const classifiedReviewsData = await this.getClassifiedReviews(dateFrom, dateTo);
+    const sampleSize = classifiedReviewsData.length;
 
-    const totalClassified = Number(totalResult[0]?.count || 0);
-
-    if (totalClassified === 0) {
+    if (sampleSize === 0) {
       return [];
     }
-
-    const classifiedReviewsData = await this.getClassifiedReviews(dateFrom, dateTo);
 
     const categoryCounts = this.countCategoriesFromReviews(
       classifiedReviewsData,
       type === "positive" ? "positives" : "negatives"
     );
 
-    return this.formatCategoryCountsToTop(categoryCounts, totalClassified, limit);
+    return this.formatCategoryCountsToTop(categoryCounts, sampleSize, limit);
   }
 
   async getReviewsByCategory(
