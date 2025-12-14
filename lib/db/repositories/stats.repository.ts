@@ -7,13 +7,12 @@ export class StatsRepository {
   async countUserLocations(userId: string): Promise<number> {
     try {
       const result = await db
-        .select({ locationId: accountLocations.locationId })
+        .select({ count: countDistinct(accountLocations.locationId) })
         .from(accountLocations)
         .innerJoin(userAccounts, eq(accountLocations.accountId, userAccounts.accountId))
         .where(and(eq(userAccounts.userId, userId), eq(accountLocations.connected, true)));
 
-      const uniqueLocationIds = new Set(result.map((r) => r.locationId));
-      return uniqueLocationIds.size;
+      return result[0]?.count || 0;
     } catch (error) {
       console.error("Error counting user locations:", error);
       return 0;

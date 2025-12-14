@@ -468,7 +468,8 @@
           "reject": "דחה",
           "regenerate": "צור מחדש",
           "edit": "ערוך",
-          "publish": "פרסם"
+          "publish": "פרסם",
+          "update": "עדכן"
         },
         "publishDialog": {
           "title": "פרסום תגובה לגוגל",
@@ -478,6 +479,13 @@
           "confirm": "פרסם לגוגל",
           "cancel": "ביטול",
           "loading": "מפרסם..."
+        },
+        "updateDialog": {
+          "title": "עדכון תגובה שפורסמה",
+          "description": "פעולה זו תחליף את התגובה הקיימת בגוגל. השינוי יהיה גלוי מיידית.",
+          "confirm": "עדכן תגובה",
+          "cancel": "ביטול",
+          "loading": "מעדכן..."
         },
         "dateTooltip": "תאריך פרסום הביקורת בגוגל",
         "replyDateTooltip": "תאריך פרסום התגובה בגוגל",

@@ -1,11 +1,17 @@
 "use server";
 
+import { cache } from "react";
 import { getAuthenticatedUserId } from "@/lib/api/auth";
 import { LocationsController, AccountLocationsController, SubscriptionsController } from "@/lib/controllers";
 import type { Location, LocationCreate, LocationUpdate, AccountLocation } from "@/lib/types";
 import type { Location as DBLocation } from "@/lib/db/schema";
 import { getDefaultLocationConfig } from "@/lib/utils/location-config";
 import { extractLocationId } from "@/lib/google/business-profile";
+
+const getLocationCached = cache(async (userId: string, locationId: string): Promise<Location> => {
+  const controller = new LocationsController(userId);
+  return controller.getLocation(locationId);
+});
 
 export async function getLocations(userId: string): Promise<Location[]> {
   const { userId: authenticatedUserId } = await getAuthenticatedUserId();
@@ -25,8 +31,7 @@ export async function getLocation(userId: string, locationId: string): Promise<L
     throw new Error("Forbidden: Cannot access another user's data");
   }
 
-  const controller = new LocationsController(userId);
-  return controller.getLocation(locationId);
+  return getLocationCached(userId, locationId);
 }
 
 export async function getAccountLocations(

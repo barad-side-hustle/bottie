@@ -1,4 +1,4 @@
-import { eq, and, inArray } from "drizzle-orm";
+import { eq, and, inArray, sql } from "drizzle-orm";
 import { db } from "@/lib/db/client";
 import { locations, accountLocations, userAccounts, type Location, type LocationInsert } from "@/lib/db/schema";
 import type { LocationFilters } from "@/lib/types";
@@ -12,52 +12,33 @@ export class LocationsRepository extends BaseRepository<LocationInsert, Location
     super();
   }
 
-  private async verifyAccessToLocation(locationId: string): Promise<boolean> {
-    const accessRecords = await db.query.accountLocations.findMany({
-      where: eq(accountLocations.locationId, locationId),
-      with: {
-        account: {
-          with: {
-            userAccounts: {
-              where: eq(userAccounts.userId, this.userId),
-            },
-          },
-        },
-      },
-    });
-
-    return accessRecords.some((record) => record.account.userAccounts && record.account.userAccounts.length > 0);
+  private getAccessCondition(locationIdRef: typeof locations.id | string) {
+    const locationIdValue = typeof locationIdRef === "string" ? sql`${locationIdRef}` : locationIdRef;
+    return sql`EXISTS (
+      SELECT 1 FROM ${accountLocations} al
+      INNER JOIN ${userAccounts} ua ON ua.account_id = al.account_id
+      WHERE al.location_id = ${locationIdValue}
+      AND ua.user_id = ${this.userId}
+    )`;
   }
 
   async get(locationId: string): Promise<Location | null> {
-    if (!(await this.verifyAccessToLocation(locationId))) return null;
-
     const result = await db.query.locations.findFirst({
-      where: eq(locations.id, locationId),
+      where: and(eq(locations.id, locationId), this.getAccessCondition(locationId)),
     });
 
     return result || null;
   }
 
-  async list(filters: LocationFilters = {}): Promise<Location[]> {
-    const userAccountRecords = await db.query.userAccounts.findMany({
-      where: eq(userAccounts.userId, this.userId),
-    });
-
-    const accountIds = userAccountRecords.map((ua) => ua.accountId);
-    if (accountIds.length === 0) return [];
-
-    const accountLocationRecords = await db.query.accountLocations.findMany({
-      where: and(
-        inArray(accountLocations.accountId, accountIds),
-        filters.connected !== undefined ? eq(accountLocations.connected, filters.connected) : undefined
-      ),
-    });
-
-    const locationIds = [...new Set(accountLocationRecords.map((al) => al.locationId))];
-    if (locationIds.length === 0) return [];
-
-    const conditions = [inArray(locations.id, locationIds)];
+  async list(filters: LocationFilters = {}, limit: number = 50): Promise<Location[]> {
+    const conditions = [
+      sql`${locations.id} IN (
+        SELECT al.location_id FROM ${accountLocations} al
+        INNER JOIN ${userAccounts} ua ON ua.account_id = al.account_id
+        WHERE ua.user_id = ${this.userId}
+        ${filters.connected !== undefined ? sql`AND al.connected = ${filters.connected}` : sql``}
+      )`,
+    ];
 
     if (filters.ids && filters.ids.length > 0) {
       conditions.push(inArray(locations.id, filters.ids));
@@ -65,6 +46,7 @@ export class LocationsRepository extends BaseRepository<LocationInsert, Location
 
     const results = await db.query.locations.findMany({
       where: and(...conditions),
+      limit,
     });
 
     return results;
@@ -89,14 +71,10 @@ export class LocationsRepository extends BaseRepository<LocationInsert, Location
   }
 
   async update(locationId: string, data: Partial<Location>): Promise<Location> {
-    if (!(await this.verifyAccessToLocation(locationId))) {
-      throw new NotFoundError("Access denied");
-    }
-
     const [updated] = await db
       .update(locations)
       .set({ ...data, updatedAt: new Date() })
-      .where(eq(locations.id, locationId))
+      .where(and(eq(locations.id, locationId), this.getAccessCondition(locationId)))
       .returning();
 
     if (!updated) {
@@ -107,10 +85,6 @@ export class LocationsRepository extends BaseRepository<LocationInsert, Location
   }
 
   async delete(locationId: string): Promise<void> {
-    if (!(await this.verifyAccessToLocation(locationId))) {
-      throw new NotFoundError("Access denied");
-    }
-
     const connections = await db.query.accountLocations.findMany({
       where: eq(accountLocations.locationId, locationId),
     });
@@ -119,7 +93,10 @@ export class LocationsRepository extends BaseRepository<LocationInsert, Location
       throw new Error("Cannot delete location with active connections. Disconnect all accounts first.");
     }
 
-    const [deleted] = await db.delete(locations).where(eq(locations.id, locationId)).returning();
+    const [deleted] = await db
+      .delete(locations)
+      .where(and(eq(locations.id, locationId), this.getAccessCondition(locationId)))
+      .returning();
 
     if (!deleted) {
       throw new NotFoundError("Location not found or access denied");
@@ -154,10 +131,8 @@ export class LocationsRepository extends BaseRepository<LocationInsert, Location
       })
     | null
   > {
-    if (!(await this.verifyAccessToLocation(locationId))) return null;
-
     const result = await db.query.locations.findFirst({
-      where: eq(locations.id, locationId),
+      where: and(eq(locations.id, locationId), this.getAccessCondition(locationId)),
       with: {
         accountLocations: {
           with: {

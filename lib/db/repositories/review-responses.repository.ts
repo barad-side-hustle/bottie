@@ -1,4 +1,4 @@
-import { eq, and, desc, exists } from "drizzle-orm";
+import { eq, and, desc, exists, sql } from "drizzle-orm";
 import { db } from "@/lib/db/client";
 import {
   reviewResponses,
@@ -21,13 +21,6 @@ export class ReviewResponsesRepository {
     private locationId: string
   ) {}
 
-  private async verifyAccess(): Promise<boolean> {
-    const access = await db.query.userAccounts.findFirst({
-      where: and(eq(userAccounts.userId, this.userId), eq(userAccounts.accountId, this.accountId)),
-    });
-    return !!access;
-  }
-
   private getAccessCondition() {
     return exists(
       db
@@ -39,7 +32,11 @@ export class ReviewResponsesRepository {
   }
 
   async create(data: Omit<ReviewResponseInsert, "accountId" | "locationId">): Promise<ReviewResponse> {
-    if (!(await this.verifyAccess())) {
+    const accessCheck = await db
+      .select({ hasAccess: sql<boolean>`${this.getAccessCondition()}` })
+      .from(sql`(SELECT 1) as _dummy`);
+
+    if (!accessCheck[0]?.hasAccess) {
       throw new ForbiddenError("Access denied");
     }
 
@@ -57,10 +54,6 @@ export class ReviewResponsesRepository {
   }
 
   async updateStatus(id: string, status: "draft" | "posted" | "rejected"): Promise<ReviewResponse | undefined> {
-    if (!(await this.verifyAccess())) {
-      throw new ForbiddenError("Access denied");
-    }
-
     const [updated] = await db
       .update(reviewResponses)
       .set({ status })
@@ -68,10 +61,15 @@ export class ReviewResponsesRepository {
         and(
           eq(reviewResponses.id, id),
           eq(reviewResponses.accountId, this.accountId),
-          eq(reviewResponses.locationId, this.locationId)
+          eq(reviewResponses.locationId, this.locationId),
+          this.getAccessCondition()
         )
       )
       .returning();
+
+    if (!updated) {
+      throw new ForbiddenError("Access denied or response not found");
+    }
 
     return updated;
   }

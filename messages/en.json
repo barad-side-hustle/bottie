@@ -544,7 +544,8 @@
           "reject": "Reject",
           "regenerate": "Regenerate",
           "edit": "Edit",
-          "publish": "Publish"
+          "publish": "Publish",
+          "update": "Update"
         },
         "publishDialog": {
           "title": "Publish Reply to Google",
@@ -554,6 +555,13 @@
           "confirm": "Publish to Google",
           "cancel": "Cancel",
           "loading": "Publishing..."
+        },
+        "updateDialog": {
+          "title": "Update Published Reply",
+          "description": "This will replace the existing reply on Google. The change will be visible immediately.",
+          "confirm": "Update Reply",
+          "cancel": "Cancel",
+          "loading": "Updating..."
         },
         "dateTooltip": "Date the review was published on Google",
         "replyDateTooltip": "Date the reply was posted to Google",

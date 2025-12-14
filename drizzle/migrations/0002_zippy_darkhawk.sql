@@ -1,0 +1,2 @@
+CREATE INDEX "reviews_consumes_quota_received_at_idx" ON "reviews" USING btree ("consumes_quota","received_at");--> statement-breakpoint
+CREATE INDEX "reviews_location_rating_idx" ON "reviews" USING btree ("location_id","rating");
