@@ -1,4 +1,4 @@
-import { redirect } from "@/i18n/routing";
+import { redirect } from "next/navigation";
 import { getAuthenticatedUserId } from "@/lib/api/auth";
 import { getLocation } from "@/lib/actions/locations.actions";
 import { LocationDetailsWrapper } from "@/components/onboarding/BusinessDetailsWrapper";
@@ -6,21 +6,16 @@ import { LocationDetailsWrapper } from "@/components/onboarding/BusinessDetailsW
 export const dynamic = "force-dynamic";
 
 interface PageProps {
-  params: Promise<{ locale: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export default async function LocationDetailsPage({
-  params: paramsPromise,
-  searchParams: searchParamsPromise,
-}: PageProps) {
-  const { locale } = await paramsPromise;
+export default async function LocationDetailsPage({ searchParams: searchParamsPromise }: PageProps) {
   const sp = await searchParamsPromise;
   const accountId = sp.accountId as string | undefined;
   const locationId = sp.locationId as string | undefined;
 
   if (!accountId || !locationId) {
-    redirect({ href: "/onboarding/choose-location", locale });
+    redirect("/onboarding/choose-location");
   }
 
   const { userId } = await getAuthenticatedUserId();
