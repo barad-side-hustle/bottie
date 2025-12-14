@@ -59,9 +59,9 @@ export function DateRangePicker({
     <Button
       id="date"
       variant={"outline"}
-      className={cn("w-full justify-start text-left font-normal", !date && "text-muted-foreground")}
+      className={cn("w-full justify-start text-start font-normal", !date && "text-muted-foreground")}
     >
-      <CalendarIcon className="mr-2 h-4 w-4 shrink-0" />
+      <CalendarIcon className="me-2 h-4 w-4 shrink-0" />
       {date?.from ? (
         date.to ? (
           <span className="truncate">

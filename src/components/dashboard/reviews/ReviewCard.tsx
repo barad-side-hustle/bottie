@@ -217,7 +217,7 @@ export function ReviewCard({ review, accountId, userId, locationId, onUpdate }: 
                   variant="outline"
                   className="flex-1 sm:flex-none"
                 >
-                  <Sparkles className="h-4 w-4 mr-2" />
+                  <Sparkles className="h-4 w-4 me-2" />
                   {t("actions.regenerate")}
                 </Button>
                 <Button

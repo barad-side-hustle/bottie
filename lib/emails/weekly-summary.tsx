@@ -152,7 +152,7 @@ export default function WeeklySummaryEmail({
                 {statsTitle}
               </Heading>
               <Row>
-                <Column style={{ textAlign: "center", borderRight: `1px solid ${borderSoft}` }}>
+                <Column style={{ textAlign: "center", borderInlineEnd: `1px solid ${borderSoft}` }}>
                   <Text style={{ fontSize: "32px", fontWeight: "bold", margin: 0, color: primary }}>
                     {totalReviews}
                   </Text>

@@ -141,7 +141,7 @@ export class InsightsRepository {
         )
       )
       .groupBy(sql`DATE_TRUNC(${sql.raw(`'${dateTrunc}'`)}, ${reviews.date})`)
-      .orderBy(sql`date ASC`);
+      .orderBy(sql`DATE_TRUNC(${sql.raw(`'${dateTrunc}'`)}, ${reviews.date}) ASC`);
 
     return result.map((row) => ({
       date: row.date,

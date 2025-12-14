@@ -91,7 +91,7 @@ export function ReviewFiltersForm({ filters: initialFilters, onApply, onReset }:
     <div className="space-y-6">
       <FilterSection title={t("replyStatus")}>
         {["pending", "posted", "rejected", "failed", "quota_exceeded"].map((status) => (
-          <div key={status} className="flex items-center space-x-2">
+          <div key={status} className="flex items-center gap-2">
             <Checkbox
               id={`status-${status}`}
               checked={filters.replyStatus?.includes(status as ReplyStatus)}
@@ -107,7 +107,7 @@ export function ReviewFiltersForm({ filters: initialFilters, onApply, onReset }:
       <FilterSection title={t("rating")}>
         <div className="flex flex-wrap gap-2">
           {[5, 4, 3, 2, 1].map((rating) => (
-            <div key={rating} className="flex items-center space-x-2">
+            <div key={rating} className="flex items-center gap-2">
               <Checkbox
                 id={`rating-${rating}`}
                 checked={filters.rating?.includes(rating)}
@@ -121,7 +121,7 @@ export function ReviewFiltersForm({ filters: initialFilters, onApply, onReset }:
 
       <FilterSection title={t("sentiment")}>
         {(["positive", "neutral", "negative"] as const).map((sentiment) => (
-          <div key={sentiment} className="flex items-center space-x-2">
+          <div key={sentiment} className="flex items-center gap-2">
             <Checkbox
               id={`sentiment-${sentiment}`}
               checked={filters.sentiment?.includes(sentiment)}

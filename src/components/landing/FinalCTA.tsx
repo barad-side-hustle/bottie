@@ -12,9 +12,9 @@ export function FinalCTA() {
     <section className="py-32 relative overflow-hidden">
       <div className="absolute inset-0" style={{ background: "var(--gradient-soft)" }} />
 
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-        <div className="absolute -top-[20%] -right-[10%] w-[600px] h-[600px] rounded-full bg-pastel-lavender/20 blur-3xl" />
-        <div className="absolute -bottom-[20%] -left-[10%] w-[600px] h-[600px] rounded-full bg-pastel-mint/20 blur-3xl" />
+      <div className="absolute top-0 start-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute -top-[20%] -end-[10%] w-[600px] h-[600px] rounded-full bg-pastel-lavender/20 blur-3xl" />
+        <div className="absolute -bottom-[20%] -start-[10%] w-[600px] h-[600px] rounded-full bg-pastel-mint/20 blur-3xl" />
       </div>
 
       <div className="container mx-auto px-4 text-center relative z-10">
