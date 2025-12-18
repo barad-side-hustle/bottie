@@ -3,14 +3,32 @@ import { routing } from "./src/i18n/routing";
 import { updateSession } from "@/lib/supabase/middleware";
 import { type NextRequest, NextResponse } from "next/server";
 import { initAcceptLanguage } from "@/lib/locale-detection";
-import { locales } from "@/lib/locale";
+import { locales, defaultLocale, Locale } from "@/lib/locale";
 
 initAcceptLanguage(locales);
 
 const intlMiddleware = createMiddleware(routing);
 
+function getLocaleFromPathname(pathname: string): string {
+  const segments = pathname.split("/").filter(Boolean);
+  const firstSegment = segments[0];
+  return locales.includes(firstSegment as Locale) ? firstSegment : defaultLocale;
+}
+
 export async function middleware(request: NextRequest) {
   const { supabaseResponse, user } = await updateSession(request);
+
+  const locale = getLocaleFromPathname(request.nextUrl.pathname);
+
+  if (!user) {
+    const isOnboardingRoute = request.nextUrl.pathname.includes("/onboarding");
+
+    if (isOnboardingRoute) {
+      const redirectUrl = new URL(`/${locale}/login`, request.url);
+      redirectUrl.searchParams.set("redirect", request.nextUrl.pathname);
+      return NextResponse.redirect(redirectUrl);
+    }
+  }
 
   if (user) {
     request.headers.set("x-user-id", user.id);
@@ -22,9 +40,6 @@ export async function middleware(request: NextRequest) {
       const onboardingCookie = request.cookies.get("onboarding_complete");
 
       if (onboardingCookie?.value === "false") {
-        const pathParts = request.nextUrl.pathname.split("/").filter(Boolean);
-        const locale = pathParts[0] || "en";
-
         const redirectUrl = new URL(`/${locale}/onboarding/connect-account`, request.url);
         return NextResponse.redirect(redirectUrl);
       }
