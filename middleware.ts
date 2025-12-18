@@ -39,7 +39,7 @@ export async function middleware(request: NextRequest) {
     if (isDashboardRoute && !isOnboardingRoute) {
       const onboardingCookie = request.cookies.get("onboarding_complete");
 
-      if (onboardingCookie?.value === "false") {
+      if (onboardingCookie?.value !== "true") {
         const redirectUrl = new URL(`/${locale}/onboarding/connect-account`, request.url);
         return NextResponse.redirect(redirectUrl);
       }
