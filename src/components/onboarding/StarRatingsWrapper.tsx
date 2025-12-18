@@ -13,7 +13,7 @@ import { useOnboardingStore } from "@/lib/store/onboarding-store";
 import { OnboardingCard } from "@/components/onboarding/OnboardingCard";
 import { useTranslations } from "next-intl";
 import { updateLocationConfig } from "@/lib/actions/locations.actions";
-import { triggerReviewImport } from "@/lib/actions/onboarding.actions";
+import { triggerReviewImport, updateOnboardingStatus } from "@/lib/actions/onboarding.actions";
 
 interface StarRatingsWrapperProps {
   accountId: string;
@@ -74,6 +74,8 @@ export function StarRatingsWrapper({ accountId, locationId }: StarRatingsWrapper
       triggerReviewImport(accountId, locationId).catch((error) => {
         console.error("Failed to trigger review import:", error);
       });
+
+      await updateOnboardingStatus(true);
 
       reset();
 

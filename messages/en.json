@@ -862,6 +862,7 @@
     }
   },
   "onboarding": {
+    "step": "Step {current} of {total}",
     "common": {
       "back": "Back",
       "next": "Next",
