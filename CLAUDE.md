@@ -6,7 +6,7 @@ Bottie is a Next.js 15 application that helps businesses manage Google reviews w
 
 ## Tech Stack
 
-- **Framework**: Next.js 15 with App Router, React 19, TypeScript
+- **Framework**: Next.js 16.1.0 with App Router, React 19, TypeScript
 - **Database**: PostgreSQL via Supabase with Drizzle ORM
 - **Auth**: Supabase Auth with Google OAuth
 - **AI**: Google Gemini API for reply generation
@@ -108,6 +108,7 @@ src/
 yarn dev              # Start dev server (Turbopack)
 yarn build            # Production build
 yarn test             # Run Vitest tests
+yarn analyze          # Analyze bundle size (opens browser)
 yarn db:generate      # Generate Drizzle migrations
 yarn db:push          # Push schema to database
 yarn db:studio        # Open Drizzle Studio
@@ -145,3 +146,217 @@ Required in `.env.local`:
 - Reviews are stored once per `location`, not per account
 - Multiple users can connect to the same physical location
 - AI settings (tone, language, star configs) are shared per location
+
+## SEO Optimizations
+
+### Redirect Chain (www → non-www)
+
+**File**: `vercel.json`
+
+The app uses a single redirect chain to canonicalize all traffic to the non-www domain:
+- `www.bottie.ai` → `bottie.ai` (infrastructure-level redirect)
+- Eliminates duplicate redirect chains for better SEO
+
+**Configuration**:
+```json
+{
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [{ "type": "host", "value": "www.bottie.ai" }],
+      "destination": "https://bottie.ai/:path*",
+      "permanent": true
+    }
+  ]
+}
+```
+
+### Locale Detection & Root Redirect
+
+**Files**: `middleware.ts`, `src/app/layout.tsx`
+
+- Root path (`/`) redirects to localized path (`/en` or `/he`) via middleware
+- Locale detection uses: user preferences → locale cookie → Accept-Language header → default (`en`)
+- **No `src/app/page.tsx` exists** - middleware handles the redirect before page rendering
+
+**Why this works**:
+- Next.js 16 doesn't require a page.tsx at every level when middleware redirects
+- Deleting the root page ensures middleware redirect executes cleanly
+- Root layout still provides HTML structure
+
+### Performance Optimizations
+
+#### Lazy Loading
+
+**Landing Page** (`src/app/[locale]/(landing)/page.tsx`):
+- Critical above-fold: `Hero`, `Pricing` (loaded immediately)
+- Below-fold: `Statistics`, `HowItWorks`, `Testimonials`, `FAQ`, `FinalCTA` (lazy loaded with SSR)
+- **Impact**: ~150KB reduction in initial bundle
+
+**Dashboard Charts** (`src/components/dashboard/insights/InsightsCharts.tsx`):
+- `TrendsChart` dynamically imported (ssr: false)
+- Recharts library (~180KB) only loads when insights page is accessed
+
+#### Bundle Analysis
+
+```bash
+yarn add -D @next/bundle-analyzer
+yarn analyze  # Opens bundle visualization
+```
+
+**Configuration** (`next.config.ts`):
+```typescript
+experimental: {
+  optimizePackageImports: [
+    "lucide-react",
+    "@radix-ui/react-icons",
+    "recharts",
+    "date-fns"
+  ]
+}
+```
+
+### Private Page Metadata
+
+**File**: `lib/seo/private-metadata.ts`
+
+All private pages (dashboard, auth, checkout, onboarding) have `noindex` metadata:
+```typescript
+export function generatePrivatePageMetadata(title?: string): Metadata {
+  return {
+    title: title || "Dashboard",
+    robots: {
+      index: false,
+      follow: false,
+      nocache: true,
+      nosnippet: true,
+      noimageindex: true,
+    },
+  };
+}
+```
+
+**Applied to**:
+- 6 dashboard pages
+- 3 auth/checkout pages
+- 5 onboarding pages
+
+### robots.txt Configuration
+
+**File**: `src/app/robots.ts`
+
+Locale-aware paths and AI crawler blocking:
+```typescript
+rules: [
+  {
+    userAgent: "*",
+    allow: "/",
+    disallow: [
+      "/api/", "/auth/", "/dashboard/", "/onboarding/", "/checkout/",
+      "/_next/",
+      "/*/dashboard/",      // Locale-aware
+      "/*/onboarding/",     // Locale-aware
+      "/*/checkout/",       // Locale-aware
+      "/*/auth-code-error/",
+    ],
+  },
+  {
+    userAgent: "GPTBot",
+    disallow: "/",
+  },
+]
+```
+
+## Next.js 16 Layout Architecture
+
+### Root Layout Structure
+
+**File**: `src/app/layout.tsx`
+
+The root layout provides required `<html>` and `<body>` tags (Next.js 16 requirement):
+
+```typescript
+export default function RootLayout({ children }: Props) {
+  return (
+    <html suppressHydrationWarning>
+      <body>{children}</body>
+    </html>
+  );
+}
+```
+
+**Key points**:
+- `suppressHydrationWarning` suppresses warnings from browser extensions
+- Minimal structure - delegates to locale layout for actual content
+
+### Locale Layout Structure
+
+**File**: `src/app/[locale]/layout.tsx`
+
+The locale-specific layout handles:
+- Internationalization (next-intl)
+- Font loading (Rubik for Hebrew, Nunito for Latin)
+- Providers (Auth, Direction, NextIntl)
+- Google Analytics scripts
+
+**Important**: Does NOT provide `<html>` or `<body>` tags (root layout handles this)
+
+**Pattern for setting HTML attributes**:
+
+Since the root layout provides `<html>`, we use a client component to set locale-specific attributes:
+
+**File**: `src/components/layout/HtmlAttributesSetter.tsx`
+
+```typescript
+"use client";
+
+export function HtmlAttributesSetter({ lang, dir, className }) {
+  useEffect(() => {
+    const html = document.documentElement;
+    html.lang = lang;
+    html.dir = dir;
+    html.className = className;
+  }, [lang, dir, className]);
+
+  return null;
+}
+```
+
+**Usage in locale layout**:
+```typescript
+return (
+  <>
+    <HtmlAttributesSetter
+      lang={locale}
+      dir={dir}
+      className={`${rubik.variable} ${nunito.variable} font-sans antialiased`}
+    />
+    <NextIntlClientProvider locale={locale} messages={messages}>
+      {/* ... rest of layout */}
+    </NextIntlClientProvider>
+  </>
+);
+```
+
+### Why No Root Page?
+
+**Missing**: `src/app/page.tsx` does not exist
+
+**Reason**:
+- The middleware handles root path (`/`) redirects to localized routes (`/en`, `/he`)
+- Having a page.tsx would interfere with the middleware redirect
+- Next.js 16 doesn't require a page at every level when using middleware redirects
+- The root layout still provides HTML structure for nested pages
+
+**Flow**:
+```
+User visits: bottie.ai
+    ↓
+Middleware intercepts (matcher: ["/", ...])
+    ↓
+Resolves locale (user pref → cookie → Accept-Language → "en")
+    ↓
+Redirects to: bottie.ai/en
+    ↓
+Locale layout renders with full providers
+```
