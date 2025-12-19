@@ -73,47 +73,44 @@ export function ChooseLocationForm({ accountId, availableLocations }: ChooseLoca
     }
   };
 
-  if (availableLocations.length === 0) {
-    return (
-      <OnboardingCard
-        title={t("title")}
-        description={t("description")}
-        backButton={{ onClick: handleBack, label: tCommon("back") }}
-        nextButton={{ label: tCommon("tryAgain"), onClick: () => router.refresh(), disabled: false }}
-      >
-        <div className="text-center py-8">
-          <AlertCircle className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-          <p className="text-muted-foreground">{t("errors.noBusinessesFound")}</p>
-        </div>
-      </OnboardingCard>
-    );
-  }
+  const hasNoLocations = availableLocations.length === 0;
 
   return (
     <OnboardingCard
       title={t("title")}
-      description={t("descriptionWithCount", { count: availableLocations.length })}
+      description={hasNoLocations ? t("description") : t("descriptionWithCount", { count: availableLocations.length })}
       backButton={{ onClick: handleBack, loading: connecting, label: tCommon("back") }}
-      nextButton={{
-        label: t("connectButton"),
-        loadingLabel: t("connectingButton"),
-        onClick: handleConnect,
-        disabled: !selectedLocation,
-        loading: connecting,
-      }}
+      nextButton={
+        hasNoLocations
+          ? { label: tCommon("tryAgain"), onClick: () => router.refresh(), disabled: false }
+          : {
+              label: t("connectButton"),
+              loadingLabel: t("connectingButton"),
+              onClick: handleConnect,
+              disabled: !selectedLocation,
+              loading: connecting,
+            }
+      }
     >
-      <RadioGroup
-        value={selectedLocation?.id || ""}
-        onValueChange={(value) => {
-          const location = availableLocations.find((l) => l.id === value);
-          setSelectedLocation(location || null);
-        }}
-        className="gap-3"
-      >
-        {availableLocations.map((location) => (
-          <LocationRadioItem key={location.id} location={location} selected={selectedLocation?.id === location.id} />
-        ))}
-      </RadioGroup>
+      {hasNoLocations ? (
+        <div className="text-center py-8">
+          <AlertCircle className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+          <p className="text-muted-foreground">{t("errors.noBusinessesFound")}</p>
+        </div>
+      ) : (
+        <RadioGroup
+          value={selectedLocation?.id || ""}
+          onValueChange={(value) => {
+            const location = availableLocations.find((l) => l.id === value);
+            setSelectedLocation(location || null);
+          }}
+          className="gap-3"
+        >
+          {availableLocations.map((location) => (
+            <LocationRadioItem key={location.id} location={location} selected={selectedLocation?.id === location.id} />
+          ))}
+        </RadioGroup>
+      )}
     </OnboardingCard>
   );
 }

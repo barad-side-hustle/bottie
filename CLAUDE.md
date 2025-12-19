@@ -1,8 +1,8 @@
-# RevYou - AI-Powered Google Review Management
+# Bottie - AI-Powered Google Review Management
 
 ## Project Overview
 
-RevYou is a Next.js 15 application that helps businesses manage Google reviews with AI-generated responses. The app connects to Google Business Profile accounts, monitors reviews via webhooks, and generates contextual AI replies using Google's Gemini API.
+Bottie is a Next.js 15 application that helps businesses manage Google reviews with AI-generated responses. The app connects to Google Business Profile accounts, monitors reviews via webhooks, and generates contextual AI replies using Google's Gemini API.
 
 ## Tech Stack
 
@@ -14,6 +14,18 @@ RevYou is a Next.js 15 application that helps businesses manage Google reviews w
 - **Email**: Resend with React Email templates
 - **i18n**: next-intl (Hebrew/English)
 - **Styling**: Tailwind CSS 4, Radix UI components
+
+## Requirements
+
+- **Node.js**: 22.13.0 or higher (LTS recommended)
+- **Package Manager**: Yarn 1.22.22
+
+Use `nvm` to manage Node.js versions:
+
+```bash
+nvm install 22.13.0
+nvm use 22.13.0
+```
 
 ## Database Architecture
 

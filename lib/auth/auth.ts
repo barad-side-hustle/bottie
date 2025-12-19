@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
+import { useOnboardingStatusStore } from "@/lib/store/onboarding-status-store";
 
 export async function signInWithGoogle() {
   const supabase = createClient();
@@ -39,6 +40,8 @@ export async function signOut() {
     if (error) {
       return { error: error.message, sessionDeletionFailed: true };
     }
+
+    useOnboardingStatusStore.getState().clearStatus();
 
     return { error: null, sessionDeletionFailed: false };
   } catch (error) {

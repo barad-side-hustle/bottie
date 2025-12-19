@@ -112,7 +112,7 @@ export function AccountLocationsList({ accounts }: AccountLocationsListProps) {
                         </div>
                       )}
                       {location.description && (
-                        <div className="bg-pastel-lavender/20 p-4 rounded-xl leading-relaxed text-sm text-muted-foreground line-clamp-3">
+                        <div className="bg-pastel-lavender/20 p-4 rounded-xl leading-relaxed text-sm text-muted-foreground">
                           {location.description}
                         </div>
                       )}

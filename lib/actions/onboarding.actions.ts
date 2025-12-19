@@ -155,3 +155,8 @@ export async function triggerReviewImport(accountId: string, locationId: string)
     return { success: false, error: "Failed to trigger import" };
   }
 }
+
+export async function updateOnboardingStatus(hasLocations: boolean): Promise<void> {
+  const { setOnboardingStatusCookie } = await import("@/lib/utils/onboarding-status");
+  await setOnboardingStatusCookie(hasLocations);
+}
