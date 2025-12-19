@@ -41,7 +41,7 @@ export const useOnboardingStatusStore = create<OnboardingStatusState>()(
       },
     }),
     {
-      name: "revyou-onboarding-status",
+      name: "bottie-onboarding-status",
       storage: createJSONStorage(() => localStorage),
     }
   )

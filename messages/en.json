@@ -1,7 +1,11 @@
 {
   "metadata": {
     "title": "Bottie.ai - AI Responses for Reviews - Google Review AI Reply",
-    "description": "Automatically generate professional responses to customer reviews using artificial intelligence"
+    "description": "Automatically generate professional responses to customer reviews using artificial intelligence",
+    "keywords": "AI review responses, Google Business Profile, review management, automated replies, customer engagement, business reputation, review automation",
+    "ogImage": {
+      "alt": "Bottie.ai - AI-Powered Review Management"
+    }
   },
   "common": {
     "loading": "Loading...",

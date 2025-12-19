@@ -27,13 +27,59 @@ export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
 
+export function generateViewport() {
+  return {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 5,
+    themeColor: "#8b5cf6",
+  };
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "metadata" });
 
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const localeCode = locale === "he" ? "he_IL" : "en_US";
+  const alternateLocale = locale === "he" ? "en_US" : "he_IL";
+
   return {
-    title: t("title"),
+    metadataBase: new URL(baseUrl),
+    title: {
+      default: t("title"),
+      template: `%s | ${t("title")}`,
+    },
     description: t("description"),
+    keywords: t("keywords"),
+    applicationName: "Bottie.ai",
+    category: "Business Software",
+    robots: {
+      index: true,
+      follow: true,
+    },
+    openGraph: {
+      type: "website",
+      locale: localeCode,
+      alternateLocale: alternateLocale,
+      siteName: "Bottie.ai",
+      title: t("title"),
+      description: t("description"),
+      url: `${baseUrl}/${locale}`,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: t("title"),
+      description: t("description"),
+    },
+    alternates: {
+      canonical: `${baseUrl}/${locale}`,
+      languages: {
+        en: `${baseUrl}/en`,
+        he: `${baseUrl}/he`,
+        "x-default": `${baseUrl}/en`,
+      },
+    },
   };
 }
 
