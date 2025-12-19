@@ -279,7 +279,8 @@
       "sessionCreationFailed": "לא ניתן ליצור הרשאה. אנא נסה להתחבר שוב.",
       "googleSignInFailed": "אירעה שגיאה בהתחברות עם גוגל",
       "signOutFailed": "אירעה שגיאה בהתנתקות",
-      "authStateError": "אירעה שגיאה בטעינת המשתמש"
+      "authStateError": "אירעה שגיאה בטעינת המשתמש",
+      "authCodeError": "לא ניתן לאמת את פרטי ההתחברות. אנא נסה שוב."
     }
   },
   "dashboard": {

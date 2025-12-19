@@ -258,6 +258,7 @@
   },
   "auth": {
     "signOut": "Sign Out",
+    "backToLogin": "Back to Login",
     "login": "Login",
     "loggingIn": "Logging in...",
     "myAccount": "My Account",
@@ -283,7 +284,8 @@
       "sessionCreationFailed": "Unable to create session. Please try logging in again.",
       "googleSignInFailed": "An error occurred signing in with Google",
       "signOutFailed": "An error occurred signing out",
-      "authStateError": "An error occurred loading user"
+      "authStateError": "An error occurred loading user",
+      "authCodeError": "Unable to verify login information. Please try again."
     }
   },
   "dashboard": {
