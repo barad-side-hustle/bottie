@@ -1,7 +1,7 @@
 {
   "metadata": {
-    "title": "תשובות AI לביקורות - Google Review AI Reply",
-    "description": "ייצור אוטומטי של תשובות מקצועיות לביקורות לקוחות באמצעות בינה מלאכותית",
+    "title": "Bottie - תשובות AI ותובנות ל-Google Business",
+    "description": "ייצור אוטומטי של תשובות מבוססות AI לביקורות Google Business וקבלת תובנות מעשיות ממשוב לקוחות. חסכו זמן תוך שיפור המוניטין המקוון שלכם והבנת סנטימנט הלקוחות.",
     "keywords": "תשובות AI לביקורות, Google Business Profile, ניהול ביקורות, מענה אוטומטי, מעורבות לקוחות, מוניטין עסקי, אוטומציה לביקורות",
     "ogImage": {
       "alt": "Bottie.ai - ניהול ביקורות מבוסס AI"
@@ -279,7 +279,8 @@
       "sessionCreationFailed": "לא ניתן ליצור הרשאה. אנא נסה להתחבר שוב.",
       "googleSignInFailed": "אירעה שגיאה בהתחברות עם גוגל",
       "signOutFailed": "אירעה שגיאה בהתנתקות",
-      "authStateError": "אירעה שגיאה בטעינת המשתמש"
+      "authStateError": "אירעה שגיאה בטעינת המשתמש",
+      "authCodeError": "לא ניתן לאמת את פרטי ההתחברות. אנא נסה שוב."
     }
   },
   "dashboard": {

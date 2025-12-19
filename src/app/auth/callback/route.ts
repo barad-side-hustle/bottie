@@ -57,5 +57,5 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  return await createLocaleAwareRedirect("/auth/auth-code-error");
+  return await createLocaleAwareRedirect("/auth-code-error");
 }
