@@ -1,0 +1,409 @@
+# Bottie
+
+> AI-powered Google Business Profile review management platform that automatically generates personalized responses to customer reviews
+
+Bottie helps businesses save time and improve their online reputation by using Google's Gemini AI to create professional, contextual replies to customer reviews.
+
+- **Website**: https://bottie.app
+- **For**: Small to mid-size business owners, multi-location businesses, agencies
+- **Integration**: Google Business Profile (Google My Business)
+- **AI Engine**: Google Gemini 3 Flash
+
+## What Bottie Does
+
+Bottie automatically generates and manages responses to Google Business Profile reviews, saving businesses hours every week while maintaining their unique brand voice.
+
+### The Problem We Solve
+
+- **Time Drain**: Responding to every review manually takes hours each week
+- **Inconsistent Voice**: Hard to maintain brand consistency across many responses
+- **Missed Opportunities**: Negative reviews often go unanswered, damaging reputation
+- **Lost Insights**: Reviews contain valuable feedback that's difficult to analyze
+- **Multi-Location Complexity**: Managing reviews across multiple businesses is overwhelming
+
+### Who It's For
+
+- **Small Business Owners**: Restaurants, salons, retail stores, service providers
+- **Multi-Location Businesses**: Chains managing 2-5+ locations
+- **Marketing Agencies**: Managing reviews for multiple clients
+- **Reputation Managers**: Teams focused on online presence
+- **Any Business Using Google Business Profile**: If you appear on Google Maps, Bottie can help
+
+## Core Features
+
+### 1. AI-Powered Review Responses
+
+- **Automatic Generation**: AI creates personalized responses within minutes of receiving a review
+- **Context-Aware**: Analyzes review content, rating, and sentiment to craft appropriate replies
+- **Natural Language**: Responses sound human, not robotic or templated
+- **Multi-Language**: Supports English and Hebrew with auto-detection
+
+### 2. Complete Customization
+
+#### Tone of Voice
+Choose how AI responds to your reviews:
+- **Professional**: Formal and business-appropriate
+- **Friendly**: Warm and approachable
+- **Humorous**: Light and playful (when appropriate)
+- **Formal**: Traditional and respectful
+
+#### Per-Rating Customization
+Different instructions for each star rating:
+- **5-Star Reviews**: Emphasize gratitude and encourage future visits
+- **4-Star Reviews**: Thank and address minor concerns
+- **3-Star Reviews**: Acknowledge feedback and show improvement
+- **2-Star Reviews**: Apologize and offer solutions
+- **1-Star Reviews**: Include phone number, invite offline resolution
+
+#### Response Settings
+- **Language Mode**: Auto-detect, Hebrew, or English
+- **Response Length**: 1-3 sentences (recommended: 2)
+- **Emoji Control**: Define allowed emojis for personality
+- **Custom Signature**: Personalized closing on every response
+- **Business Context**: Name, description, phone number for negative reviews
+
+### 3. Flexible Publishing Modes
+
+#### Manual Approval (Default)
+- Review every AI-generated response before publishing
+- Edit responses to add personal touches
+- Regenerate if you want a different approach
+- Reject and write your own
+
+#### Full Auto-Publish
+- Automatically publish all responses
+- AI posts replies within minutes of review arrival
+- Perfect for businesses with high review volume
+
+#### Hybrid Mode (Recommended)
+- Auto-publish positive reviews (4-5 stars)
+- Require approval for critical reviews (1-3 stars)
+- Balance automation with quality control
+
+### 4. Review Management Dashboard
+
+- **Centralized View**: All reviews from all locations in one place
+- **Advanced Filtering**:
+  - Reply status (Pending, Posted, Rejected, Failed)
+  - Star rating (1-5 stars)
+  - Sentiment (Positive, Neutral, Negative)
+  - Date ranges (Last 7/30/90 days, custom)
+- **Sorting**: By date, rating, or status
+- **Quick Actions**: Edit, publish, regenerate, or reject responses
+- **Status Tracking**: See which replies were AI-generated vs. manual
+
+### 5. Analytics & Insights (Pro Plan)
+
+Understand what customers really think:
+
+#### Overview Metrics
+- Total reviews received
+- Average rating
+- Sentiment score (positive/neutral/negative distribution)
+- Review trends over time
+
+#### Category Analysis
+See what customers mention most:
+- **Positive Categories**: Service, Quality, Value, Cleanliness, Atmosphere
+- **Improvement Areas**: Wait Time, Communication, Facilities
+- **Detailed Breakdown**: Food Quality, Menu Variety, Location, Expertise, Results
+
+#### Trend Visualization
+- Review volume over time
+- Rating trends (improving or declining)
+- Sentiment shifts
+- Date range comparison
+
+### 6. Real-Time Notifications
+
+- **Email Alerts**: Get notified instantly when new reviews arrive
+- **Weekly AI Summary** (Pro): AI-generated insights every Sunday
+  - What customers loved this week
+  - Areas needing improvement
+  - Sentiment breakdown
+  - Actionable recommendations
+
+### 7. Multi-Location Support
+
+- Connect multiple Google Business accounts
+- Manage 1-5 locations (depending on plan)
+- Per-location customization of AI settings
+- Separate analytics for each business
+- Disconnect/reconnect locations anytime
+
+### 8. Team Management
+
+- **Owner Role**: Full access to all features and settings
+- **Member Role**: Manage reviews and responses
+- Invite team members to collaborate
+- Role-based permissions
+
+## Pricing
+
+### Free Plan - $0/month
+Perfect for trying Bottie risk-free:
+- 1 business location
+- 10 reviews per month
+- Manual approval mode
+- Basic customization
+
+### Basic Plan - $29/month ($290/year)
+**Most Popular** - For growing businesses:
+- 3 business locations
+- 100 reviews per month
+- Manual + Auto-publish modes
+- Full customization
+- Email notifications
+
+### Pro Plan - $79/month ($790/year)
+For businesses serious about reputation:
+- 5 business locations
+- 250 reviews per month
+- All Basic features
+- **Analytics & Insights**
+- **Weekly AI Summary emails**
+- Priority support
+
+> **Note**: Annual billing saves 20% • No credit card required • Cancel anytime
+
+## How It Works
+
+### 1. Connect Your Google Account
+- One-click OAuth 2.0 connection
+- No passwords needed
+- Secure Google Business Profile integration
+- Instant access to your reviews
+
+### 2. Configure Your Preferences
+- Choose tone of voice (5 minutes)
+- Set response language
+- Customize per-rating instructions
+- Add business details and signature
+
+### 3. Receive Automated Responses
+- AI detects new reviews via Google Pub/Sub
+- Generates personalized response within minutes
+- Analyzes review content and sentiment
+- Applies your customization rules
+
+### 4. Review & Publish
+- Approve, edit, or regenerate AI responses
+- Publish to Google with one click
+- Or enable auto-publish for hands-free operation
+- Track all responses in dashboard
+
+## Use Cases
+
+### Restaurant Owners
+"Bottie saves us 5+ hours every week. We get 20-30 reviews weekly, and responding to each personally was impossible. Now our AI responds professionally while we focus on customers."
+
+**Configuration**:
+- Tone: Friendly
+- 5-star: Thank for dining, invite to return
+- 1-star: Apologize, offer phone call with manager
+
+### Multi-Location Retail
+"Managing reviews across 3 stores was a nightmare. Bottie centralizes everything and each location has its own AI personality."
+
+**Configuration**:
+- Store A (Downtown): Professional tone
+- Store B (Mall): Friendly tone
+- Store C (Outlet): Casual tone
+
+### Service Professionals (Salons, Clinics, Lawyers)
+"Client reviews are critical for our reputation. Bottie ensures we respond to every review with our professional brand voice, even when we're with clients."
+
+**Configuration**:
+- Tone: Professional
+- Auto-publish: 4-5 stars
+- Manual review: 1-3 stars (sensitive situations)
+
+### Agencies Managing Multiple Clients
+"We manage Google Business for 5 clients. Bottie's multi-location support means we handle all reviews from one dashboard."
+
+**Configuration**:
+- Different tone per client
+- Client-specific signatures
+- Per-client analytics
+
+## Benefits
+
+### Time Savings
+- **Before Bottie**: 10-15 minutes per review response
+- **With Bottie**: 30 seconds to approve or edit
+- **ROI**: Save 5-20 hours per month
+
+### Improved Response Rate
+- Respond to 100% of reviews (vs. typical 20-30%)
+- Reply within minutes, not days
+- Show customers you care about feedback
+
+### Better Reputation
+- Consistent brand voice across all responses
+- Professional handling of negative reviews
+- Increased engagement leads to better ratings
+
+### Customer Insights
+- Understand trends in customer feedback
+- Identify recurring issues before they escalate
+- Celebrate what customers love
+
+### Peace of Mind
+- Never miss a review again
+- Automated notifications keep you informed
+- AI handles responses even when you're busy
+
+## Integrations
+
+### Google Business Profile (Google My Business)
+- Official Google API integration
+- Real-time review notifications via Google Pub/Sub
+- Automatic reply posting
+- Multi-location support
+
+### Google Gemini AI
+- State-of-the-art language model
+- Context-aware response generation
+- Natural, human-like writing
+- Multilingual support
+
+### Email Delivery
+- Review notifications
+- Weekly AI summaries
+- Account updates
+
+### Stripe
+- Secure payment processing
+- Subscription management
+- Usage tracking
+
+## Security & Privacy
+
+- **OAuth 2.0**: Never store your Google password
+- **Data Encryption**: All data encrypted at rest and in transit
+- **GDPR Compliant**: Right to access, correction, deletion, and data portability
+- **Secure Storage**: PostgreSQL with Row-Level Security
+- **Privacy Policy**: Full transparency on data usage
+- **Terms of Service**: Clear usage guidelines
+
+## Getting Started
+
+### 5-Minute Setup
+1. Sign up at https://bottie.app
+2. Connect your Google Business account
+3. Choose your business location
+4. Configure AI preferences
+5. Start receiving automated responses
+
+### No Credit Card Required
+- Start with Free plan (10 reviews/month)
+- Upgrade when you need more capacity
+- Cancel anytime, no commitments
+
+### Onboarding Support
+- Step-by-step guided setup
+- In-app tooltips and help
+- Email support for questions
+
+## Customer Testimonials
+
+> "Bottie saves us hours every week. The responses are professional and personal - our customers love them!"
+>
+> **Sarah Cohen, Restaurant Owner**
+
+---
+
+> "The AI understands our brand tone perfectly. We went from responding to 20% of reviews to 100%."
+>
+> **David Levi, Retail Chain Manager**
+
+---
+
+> "The analytics feature helped us identify a recurring issue with wait times. We fixed it and ratings improved!"
+>
+> **Michael Chen, Cafe Owner**
+
+## Stats
+
+- **500+ Businesses** using Bottie
+- **10,000+ Responses** generated
+- **98% Customer Satisfaction**
+- **1,000+ Hours** saved for business owners
+
+## Language Support
+
+### User Interface
+- English (en)
+- Hebrew (he)
+- Fully localized dashboard and settings
+
+### AI Responses
+- English
+- Hebrew
+- Auto-detect (responds in review's language)
+
+### RTL Support
+Full right-to-left layout for Hebrew users
+
+## Common Questions
+
+### What types of businesses use Bottie?
+Any business with a Google Business Profile: restaurants, retail stores, salons, clinics, law firms, agencies, service providers, multi-location chains.
+
+### Does the AI sound robotic?
+No. Bottie uses Google's Gemini 2.5 Flash, which generates natural, context-aware responses. You can customize tone and style to match your brand.
+
+### Can I edit AI responses before publishing?
+Yes. The default mode requires manual approval. You can edit, regenerate, or reject any response before it goes live.
+
+### What if I want full automation?
+Enable auto-publish mode to automatically post all responses, or use hybrid mode to auto-publish positive reviews only.
+
+### Do you store my Google password?
+No. We use OAuth 2.0, which means you log in through Google directly. We never see or store your password.
+
+### Can I manage multiple locations?
+Yes. Plans include 1-5 locations depending on tier. Each location can have custom AI settings.
+
+### What happens to my data if I cancel?
+You can export your data anytime. After cancellation, data is retained for 30 days then permanently deleted.
+
+### Is there a free trial?
+The Free plan is available forever with 10 reviews/month. Upgrade when you need more capacity.
+
+### What if AI generates an inappropriate response?
+Extremely rare, but that's why manual approval mode exists. Review before publishing. You can also regenerate or reject.
+
+### Can I use this for platforms besides Google?
+Currently, Bottie focuses exclusively on Google Business Profile reviews for the best integration experience.
+
+## Support
+
+### Getting Help
+- **Email**: support@bottie.app
+- **Documentation**: Help center in dashboard
+- **Response Time**: Within 24 hours (priority for Pro users)
+
+### Feature Requests
+We actively listen to customer feedback. Request features at support@bottie.app or through the dashboard.
+
+## Roadmap
+
+Upcoming features:
+- More integrations (Yelp, Facebook, TripAdvisor)
+- Bulk actions for review management
+- Custom AI training on your brand voice
+- Advanced analytics with competitor comparison
+- Mobile app (iOS/Android)
+
+## About Bottie
+
+Bottie was built to solve a real problem: business owners drowning in review management. We believe every review deserves a response, and AI can help businesses maintain their reputation without sacrificing hours every week.
+
+Our mission is to make professional review management accessible to businesses of all sizes, using cutting-edge AI while maintaining the human touch that customers appreciate.
+
+---
+
+**Start managing your reviews smarter, not harder.**
+
+Try Bottie free at https://bottie.app - No credit card required.
