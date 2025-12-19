@@ -3,7 +3,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { AccountLocationsList } from "@/components/dashboard/home/AccountLocationsList";
 import { getTranslations } from "next-intl/server";
 import { getAccountsWithLocations } from "@/lib/actions/accounts.actions";
-import { redirect } from "@/i18n/routing";
+import { RedirectToOnboarding } from "@/components/dashboard/home/RedirectToOnboarding";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +17,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const hasLocations = accountsWithLocations.length > 0;
 
   if (!hasLocations) {
-    redirect({ href: "/onboarding/connect-account", locale });
+    return <RedirectToOnboarding href="/onboarding/connect-account" />;
   }
 
   return (
