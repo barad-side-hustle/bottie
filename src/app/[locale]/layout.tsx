@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { DirectionProvider } from "@/contexts/DirectionProvider";
 import { Toaster } from "@/components/ui/sonner";
 import { locales, getLocaleDir, type Locale } from "@/lib/locale";
+import { HtmlAttributesSetter } from "@/components/layout/HtmlAttributesSetter";
 import "../globals.css";
 import Script from "next/script";
 
@@ -100,28 +101,31 @@ export default async function LocaleLayout({
   const dir = getLocaleDir(locale as Locale);
 
   return (
-    <html lang={locale} dir={dir} className={`${rubik.variable} ${nunito.variable}`}>
-      <body className="font-sans antialiased">
-        <NextIntlClientProvider locale={locale} messages={messages}>
-          <DirectionProvider initialDir={dir}>
-            <AuthProvider>
-              {children}
-              <Toaster dir={dir} richColors />
-            </AuthProvider>
-          </DirectionProvider>
+    <>
+      <HtmlAttributesSetter
+        lang={locale}
+        dir={dir}
+        className={`${rubik.variable} ${nunito.variable} font-sans antialiased`}
+      />
+      <NextIntlClientProvider locale={locale} messages={messages}>
+        <DirectionProvider initialDir={dir}>
+          <AuthProvider>
+            {children}
+            <Toaster dir={dir} richColors />
+          </AuthProvider>
+        </DirectionProvider>
 
-          <Script src="https://www.googletagmanager.com/gtag/js?id=AW-17485891262" strategy="afterInteractive" />
-          <Script id="google-analytics" strategy="afterInteractive">
-            {`
+        <Script src="https://www.googletagmanager.com/gtag/js?id=AW-17485891262" strategy="afterInteractive" />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
               window.dataLayer = window.dataLayer || [];
               function gtag(){dataLayer.push(arguments);}
               gtag('js', new Date());
               gtag('config', 'AW-17485891262');
               gtag('config', 'G-4077J0PY28');
             `}
-          </Script>
-        </NextIntlClientProvider>
-      </body>
-    </html>
+        </Script>
+      </NextIntlClientProvider>
+    </>
   );
 }

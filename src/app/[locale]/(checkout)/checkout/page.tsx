@@ -1,6 +1,9 @@
 import { CheckoutForm } from "@/components/checkout/CheckoutForm";
 import type { PlanTier } from "@/lib/subscriptions/plans";
 import type { BillingInterval } from "@/lib/types/subscription.types";
+import { generatePrivatePageMetadata } from "@/lib/seo/private-metadata";
+
+export const metadata = generatePrivatePageMetadata("Checkout");
 
 export default async function CheckoutPage({
   params,

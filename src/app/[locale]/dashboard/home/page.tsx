@@ -4,8 +4,11 @@ import { AccountLocationsList } from "@/components/dashboard/home/AccountLocatio
 import { getTranslations } from "next-intl/server";
 import { getAccountsWithLocations } from "@/lib/actions/accounts.actions";
 import { RedirectToOnboarding } from "@/components/dashboard/home/RedirectToOnboarding";
+import { generatePrivatePageMetadata } from "@/lib/seo/private-metadata";
 
 export const dynamic = "force-dynamic";
+
+export const metadata = generatePrivatePageMetadata("Dashboard");
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

@@ -2,8 +2,11 @@ import { redirect } from "next/navigation";
 import { getAuthenticatedUserId } from "@/lib/api/auth";
 import { getGoogleBusinesses } from "@/lib/actions/google.actions";
 import { ChooseLocationForm } from "@/components/onboarding/ChooseBusinessForm";
+import { generatePrivatePageMetadata } from "@/lib/seo/private-metadata";
 
 export const dynamic = "force-dynamic";
+
+export const metadata = generatePrivatePageMetadata("Onboarding");
 
 interface PageProps {
   params: Promise<{ locale: string }>;

@@ -35,11 +35,13 @@ export function CenteredErrorState({
   onAction,
 }: CenteredErrorStateProps) {
   const IconComponent = defaultIcons[variant];
+  const role = variant === "error" ? "alert" : "status";
+  const ariaLive = variant === "error" ? "assertive" : "polite";
 
   return (
     <div className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-card px-4 py-8 shadow sm:rounded-lg sm:px-10 text-center">
+        <div className="bg-card px-4 py-8 shadow sm:rounded-lg sm:px-10 text-center" role={role} aria-live={ariaLive}>
           <div
             className={cn(
               "mx-auto flex h-12 w-12 items-center justify-center rounded-full",

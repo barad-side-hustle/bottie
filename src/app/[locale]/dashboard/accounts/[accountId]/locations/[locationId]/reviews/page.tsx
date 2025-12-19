@@ -9,8 +9,11 @@ import { getAuthenticatedUserId } from "@/lib/api/auth";
 import { ReviewsList } from "@/components/dashboard/reviews/ReviewsList";
 import { ReviewsFilterBar } from "@/components/dashboard/reviews/filters/ReviewsFilterBar";
 import { parseFiltersFromSearchParams } from "@/lib/utils/filter-utils";
+import { generatePrivatePageMetadata } from "@/lib/seo/private-metadata";
 
 export const dynamic = "force-dynamic";
+
+export const metadata = generatePrivatePageMetadata("Reviews");
 
 interface LocationReviewsPageProps {
   params: Promise<{ locale: string; accountId: string; locationId: string }>;

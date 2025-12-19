@@ -1,12 +1,8 @@
 import type { Metadata } from "next";
+import dynamic from "next/dynamic";
 import { getTranslations } from "next-intl/server";
 import { Hero } from "@/components/landing/Hero";
-import { Statistics } from "@/components/landing/Statistics";
-import { HowItWorks } from "@/components/landing/HowItWorks";
 import { Pricing } from "@/components/landing/Pricing";
-import { Testimonials } from "@/components/landing/Testimonials";
-import { FAQ } from "@/components/landing/FAQ";
-import { FinalCTA } from "@/components/landing/FinalCTA";
 import { StructuredData } from "@/components/seo/StructuredData";
 import {
   generateOrganizationSchema,
@@ -14,6 +10,34 @@ import {
   generateFAQPageSchema,
 } from "@/lib/seo/structured-data";
 import { type Locale } from "@/lib/locale";
+
+const Statistics = dynamic(
+  () => import("@/components/landing/Statistics").then((mod) => ({ default: mod.Statistics })),
+  {
+    ssr: true,
+  }
+);
+
+const HowItWorks = dynamic(
+  () => import("@/components/landing/HowItWorks").then((mod) => ({ default: mod.HowItWorks })),
+  {
+    ssr: true,
+  }
+);
+
+const Testimonials = dynamic(
+  () => import("@/components/landing/Testimonials").then((mod) => ({ default: mod.Testimonials })),
+  { ssr: true }
+);
+
+const FAQ = dynamic(() => import("@/components/landing/FAQ").then((mod) => ({ default: mod.FAQ })), {
+  ssr: true,
+  loading: () => <div className="h-96 animate-pulse bg-muted rounded-lg" />,
+});
+
+const FinalCTA = dynamic(() => import("@/components/landing/FinalCTA").then((mod) => ({ default: mod.FinalCTA })), {
+  ssr: true,
+});
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;

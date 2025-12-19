@@ -2,8 +2,11 @@ import { redirect } from "next/navigation";
 import { AISettingsWrapper } from "@/components/onboarding/AISettingsWrapper";
 import { getAuthenticatedUserId } from "@/lib/api/auth";
 import { SubscriptionsController } from "@/lib/controllers/subscriptions.controller";
+import { generatePrivatePageMetadata } from "@/lib/seo/private-metadata";
 
 export const dynamic = "force-dynamic";
+
+export const metadata = generatePrivatePageMetadata("Onboarding");
 
 interface PageProps {
   params: Promise<{ locale: string }>;

@@ -10,8 +10,11 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { subDays } from "date-fns";
 import { SubscriptionsController } from "@/lib/controllers/subscriptions.controller";
 import { FeatureLockedState } from "@/components/dashboard/FeatureLockedState";
+import { generatePrivatePageMetadata } from "@/lib/seo/private-metadata";
 
 export const dynamic = "force-dynamic";
+
+export const metadata = generatePrivatePageMetadata("Insights");
 
 interface InsightsPageProps {
   params: Promise<{ locale: string; accountId: string; locationId: string }>;

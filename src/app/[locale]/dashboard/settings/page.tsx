@@ -3,8 +3,11 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { getTranslations } from "next-intl/server";
 import { getUserSettings } from "@/lib/actions/users.actions";
 import { SettingsForm } from "@/components/dashboard/settings/SettingsForm";
+import { generatePrivatePageMetadata } from "@/lib/seo/private-metadata";
 
 export const dynamic = "force-dynamic";
+
+export const metadata = generatePrivatePageMetadata("Settings");
 
 export default async function SettingsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

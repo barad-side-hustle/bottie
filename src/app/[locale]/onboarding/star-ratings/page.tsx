@@ -1,7 +1,10 @@
 import { redirect } from "next/navigation";
 import { StarRatingsWrapper } from "@/components/onboarding/StarRatingsWrapper";
+import { generatePrivatePageMetadata } from "@/lib/seo/private-metadata";
 
 export const dynamic = "force-dynamic";
+
+export const metadata = generatePrivatePageMetadata("Onboarding");
 
 interface PageProps {
   params: Promise<{ locale: string }>;

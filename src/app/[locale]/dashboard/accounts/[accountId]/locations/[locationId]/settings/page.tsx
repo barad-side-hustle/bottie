@@ -7,8 +7,11 @@ import { getLocation, getAccountLocations } from "@/lib/actions/locations.action
 import { getAuthenticatedUserId } from "@/lib/api/auth";
 import { LocationSettingsActions } from "./LocationSettingsActions";
 import { SubscriptionsController } from "@/lib/controllers/subscriptions.controller";
+import { generatePrivatePageMetadata } from "@/lib/seo/private-metadata";
 
 export const dynamic = "force-dynamic";
+
+export const metadata = generatePrivatePageMetadata("Location Settings");
 
 export default async function LocationSettingsPage({
   params,

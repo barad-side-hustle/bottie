@@ -5,5 +5,9 @@ type Props = {
 };
 
 export default function RootLayout({ children }: Props) {
-  return children;
+  return (
+    <html suppressHydrationWarning>
+      <body>{children}</body>
+    </html>
+  );
 }

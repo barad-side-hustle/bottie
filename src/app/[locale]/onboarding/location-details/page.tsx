@@ -2,8 +2,11 @@ import { redirect } from "next/navigation";
 import { getAuthenticatedUserId } from "@/lib/api/auth";
 import { getLocation } from "@/lib/actions/locations.actions";
 import { LocationDetailsWrapper } from "@/components/onboarding/BusinessDetailsWrapper";
+import { generatePrivatePageMetadata } from "@/lib/seo/private-metadata";
 
 export const dynamic = "force-dynamic";
+
+export const metadata = generatePrivatePageMetadata("Onboarding");
 
 interface PageProps {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;

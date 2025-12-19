@@ -2,7 +2,7 @@ import createMiddleware from "next-intl/middleware";
 import { routing } from "./src/i18n/routing";
 import { updateSession } from "@/lib/supabase/middleware";
 import { type NextRequest, NextResponse } from "next/server";
-import { initAcceptLanguage } from "@/lib/locale-detection";
+import { initAcceptLanguage, resolveLocale } from "@/lib/locale-detection";
 import { locales, defaultLocale, Locale } from "@/lib/locale";
 
 initAcceptLanguage(locales);
@@ -17,6 +17,13 @@ function getLocaleFromPathname(pathname: string): string {
 
 export async function middleware(request: NextRequest) {
   const { supabaseResponse, user } = await updateSession(request);
+
+  if (request.nextUrl.pathname === "/") {
+    const userId = user?.id;
+    const locale = await resolveLocale({ userId });
+    const redirectUrl = new URL(`/${locale}`, request.url);
+    return NextResponse.redirect(redirectUrl);
+  }
 
   const locale = getLocaleFromPathname(request.nextUrl.pathname);
 
@@ -58,5 +65,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/(.+)/dashboard/:path*", "/(.+)/onboarding/:path*", "/(.+)/checkout/:path*", "/(.+)/settings/:path*"],
+  matcher: ["/", "/(.+)/dashboard/:path*", "/(.+)/onboarding/:path*", "/(.+)/checkout/:path*", "/(.+)/settings/:path*"],
 };

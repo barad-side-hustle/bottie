@@ -6,8 +6,11 @@ import { getAuthenticatedUserId } from "@/lib/api/auth";
 import type { PlanTier } from "@/lib/subscriptions/plans";
 import { SubscriptionInfo } from "@/components/dashboard/dashboard/SubscriptionInfo";
 import { UpgradeButton } from "@/components/dashboard/subscription/UpgradeButton";
+import { generatePrivatePageMetadata } from "@/lib/seo/private-metadata";
 
 export const dynamic = "force-dynamic";
+
+export const metadata = generatePrivatePageMetadata("Subscription");
 
 export default async function SubscriptionPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
