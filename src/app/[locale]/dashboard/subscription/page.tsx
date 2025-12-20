@@ -6,6 +6,7 @@ import { getAuthenticatedUserId } from "@/lib/api/auth";
 import type { PlanTier } from "@/lib/subscriptions/plans";
 import { SubscriptionInfo } from "@/components/dashboard/dashboard/SubscriptionInfo";
 import { UpgradeButton } from "@/components/dashboard/subscription/UpgradeButton";
+import { SubscriptionSuccessToast } from "@/components/dashboard/subscription/SubscriptionSuccessToast";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +21,7 @@ export default async function SubscriptionPage({ params }: { params: Promise<{ l
 
   return (
     <PageContainer>
+      <SubscriptionSuccessToast />
       <PageHeader title={t("title")} description={t("description")} />
 
       <div className="space-y-6">
