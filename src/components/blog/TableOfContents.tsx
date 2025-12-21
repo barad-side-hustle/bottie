@@ -21,7 +21,9 @@ export function TableOfContents() {
       level: parseInt(heading.tagName[1]),
     }));
 
-    setHeadings(articleHeadings);
+    requestAnimationFrame(() => {
+      setHeadings(articleHeadings);
+    });
 
     const observer = new IntersectionObserver(
       (entries) => {
