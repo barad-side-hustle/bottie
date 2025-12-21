@@ -65,6 +65,11 @@ export function Footer() {
             <h4 className="text-sm font-semibold text-foreground mb-4">{t("legal.title")}</h4>
             <ul className="space-y-2">
               <li>
+                <a href="/blog" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  {t("legal.blog")}
+                </a>
+              </li>
+              <li>
                 <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                   {t("legal.privacy")}
                 </Link>

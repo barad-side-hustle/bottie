@@ -236,6 +236,7 @@
       },
       "legal": {
         "title": "מידע משפטי",
+        "blog": "בלוג",
         "privacy": "מדיניות פרטיות",
         "terms": "תנאי שימוש"
       },
@@ -967,6 +968,25 @@
       "recommendationsTitle": "המלצות",
       "viewDashboardButton": "צפייה בלוח הבקרה",
       "footer": "נשלח על ידי Bottie"
+    }
+  },
+  "blog": {
+    "title": "בלוג",
+    "subtitle": "למד כיצד להגיב אוטומטית לביקורות Google עם AI",
+    "readMore": "קרא עוד",
+    "readingTime": "{minutes} דקות קריאה",
+    "publishedOn": "פורסם ב-{date}",
+    "backToBlog": "חזרה לבלוג",
+    "relatedPosts": "מאמרים קשורים",
+    "share": "שתף",
+    "tableOfContents": "תוכן עניינים",
+    "categories": {
+      "automation": "אוטומציה",
+      "ai": "בינה מלאכותית",
+      "reviews": "ביקורות",
+      "tutorials": "מדריכים",
+      "guides": "מדריכים",
+      "best-practices": "שיטות עבודה מומלצות"
     }
   },
   "errors": {

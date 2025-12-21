@@ -1,0 +1,37 @@
+"use client";
+
+import {
+  FacebookShareButton,
+  LinkedinShareButton,
+  TwitterShareButton,
+  FacebookIcon,
+  LinkedinIcon,
+  XIcon,
+} from "react-share";
+
+interface SocialShareButtonsProps {
+  url: string;
+  title: string;
+  description: string;
+}
+
+export function SocialShareButtons({ url, title, description }: SocialShareButtonsProps) {
+  return (
+    <div className="flex items-center gap-3">
+      <span className="text-sm font-medium text-muted-foreground">Share:</span>
+      <div className="flex items-center gap-2">
+        <TwitterShareButton url={url} title={title}>
+          <XIcon size={32} round />
+        </TwitterShareButton>
+
+        <LinkedinShareButton url={url} title={title} summary={description}>
+          <LinkedinIcon size={32} round />
+        </LinkedinShareButton>
+
+        <FacebookShareButton url={url} hashtag="#AI">
+          <FacebookIcon size={32} round />
+        </FacebookShareButton>
+      </div>
+    </div>
+  );
+}
