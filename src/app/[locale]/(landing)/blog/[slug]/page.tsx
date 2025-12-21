@@ -11,16 +11,30 @@ import { StructuredData } from "@/components/seo/StructuredData";
 import { BlogPostLayout } from "@/components/blog/BlogPostLayout";
 
 export async function generateStaticParams() {
-  const slugs = getAllSlugs();
+  const locales = ["en", "he"];
+  const params = [];
 
-  return slugs.map((slug) => ({ slug }));
+  for (const locale of locales) {
+    const slugs = getAllSlugs(locale);
+    for (const slug of slugs) {
+      params.push({ locale, slug });
+    }
+  }
+
+  return params;
 }
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
-  const { slug } = await params;
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string; locale: string }>;
+}): Promise<Metadata> {
+  const { slug, locale } = await params;
 
   try {
-    const post = getPostBySlug(slug);
+    const post = getPostBySlug(slug, locale);
+    if (!post) return {};
+
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
     return {
@@ -31,7 +45,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       openGraph: {
         title: post.title,
         description: post.excerpt,
-        url: `${baseUrl}/blog/${slug}`,
+        url: `${baseUrl}/${locale}/blog/${slug}`,
         siteName: "Bottie.ai",
         type: "article",
         publishedTime: post.publishedAt,
@@ -53,7 +67,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
         images: [post.ogImage],
       },
       alternates: {
-        canonical: `${baseUrl}/blog/${slug}`,
+        canonical: `${baseUrl}/${locale}/blog/${slug}`,
       },
       robots: {
         index: true,
@@ -65,12 +79,15 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 }
 
-export default async function BlogPostPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
+export default async function BlogPostPage({ params }: { params: Promise<{ slug: string; locale: string }> }) {
+  const { slug, locale } = await params;
 
   let post;
   try {
-    post = getPostBySlug(slug);
+    post = getPostBySlug(slug, locale);
+    if (!post) {
+      notFound();
+    }
   } catch (error) {
     console.error(`Error loading blog post ${slug}:`, error);
     notFound();
@@ -81,7 +98,7 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
   return (
     <>
       <StructuredData data={schema} />
-      <BlogPostLayout post={post}>
+      <BlogPostLayout post={post} locale={locale}>
         <MDXRemote
           source={post.content}
           options={{

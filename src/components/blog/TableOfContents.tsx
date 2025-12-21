@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 
 interface Heading {
   id: string;
@@ -9,6 +10,7 @@ interface Heading {
 }
 
 export function TableOfContents() {
+  const t = useTranslations("blog");
   const [headings, setHeadings] = useState<Heading[]>([]);
   const [activeId, setActiveId] = useState<string>("");
 
@@ -44,10 +46,10 @@ export function TableOfContents() {
 
   return (
     <nav className="space-y-1">
-      <h3 className="font-semibold text-sm mb-3">Table of Contents</h3>
+      <h3 className="font-semibold text-sm mb-3">{t("tableOfContents")}</h3>
       <ul className="space-y-2 text-sm">
-        {headings.map((heading) => (
-          <li key={heading.id} className={heading.level === 3 ? "ms-4" : ""}>
+        {headings.map((heading, index) => (
+          <li key={`${heading.id}-${index}`} className={heading.level === 3 ? "ms-4" : ""}>
             <a
               href={`#${heading.id}`}
               className={`block py-1 border-s-2 ps-3 transition-colors ${

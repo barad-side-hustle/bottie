@@ -974,7 +974,7 @@
     "title": "בלוג",
     "subtitle": "למד כיצד להגיב אוטומטית לביקורות Google עם AI",
     "readMore": "קרא עוד",
-    "readingTime": "{minutes} דקות קריאה",
+    "minRead": "{time} דקות קריאה",
     "publishedOn": "פורסם ב-{date}",
     "backToBlog": "חזרה לבלוג",
     "relatedPosts": "מאמרים קשורים",
@@ -986,7 +986,8 @@
       "reviews": "ביקורות",
       "tutorials": "מדריכים",
       "guides": "מדריכים",
-      "best-practices": "שיטות עבודה מומלצות"
+      "best-practices": "שיטות עבודה מומלצות",
+      "general": "כללי"
     }
   },
   "errors": {

@@ -960,7 +960,7 @@
     "title": "Blog",
     "subtitle": "Learn how to automate your Google review responses with AI",
     "readMore": "Read More",
-    "readingTime": "{minutes} min read",
+    "minRead": "{time} min read",
     "publishedOn": "Published on {date}",
     "backToBlog": "Back to Blog",
     "relatedPosts": "Related Articles",
@@ -972,7 +972,8 @@
       "reviews": "Reviews",
       "tutorials": "Tutorials",
       "guides": "Guides",
-      "best-practices": "Best Practices"
+      "best-practices": "Best Practices",
+      "general": "General"
     }
   }
 }

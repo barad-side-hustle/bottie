@@ -18,9 +18,14 @@ export interface BlogPost {
 
 const CONTENT_DIR = path.join(process.cwd(), "content/blog");
 
-export function getPostBySlug(slug: string): BlogPost {
-  const mdxPath = path.join(CONTENT_DIR, `${slug}.mdx`);
-  const metaPath = path.join(CONTENT_DIR, `${slug}.meta.json`);
+export function getPostBySlug(slug: string, locale: string = "en"): BlogPost | null {
+  const localeDir = path.join(CONTENT_DIR, locale);
+  const mdxPath = path.join(localeDir, `${slug}.mdx`);
+  const metaPath = path.join(localeDir, `${slug}.meta.json`);
+
+  if (!fs.existsSync(mdxPath) || !fs.existsSync(metaPath)) {
+    return null;
+  }
 
   const content = fs.readFileSync(mdxPath, "utf8");
   const metadata = JSON.parse(fs.readFileSync(metaPath, "utf8"));
@@ -40,25 +45,30 @@ export function getPostBySlug(slug: string): BlogPost {
   };
 }
 
-export function getAllPosts(): BlogPost[] {
-  if (!fs.existsSync(CONTENT_DIR)) {
+export function getAllPosts(locale: string = "en"): BlogPost[] {
+  const localeDir = path.join(CONTENT_DIR, locale);
+
+  if (!fs.existsSync(localeDir)) {
     return [];
   }
 
-  const files = fs.readdirSync(CONTENT_DIR).filter((f) => f.endsWith(".mdx"));
+  const files = fs.readdirSync(localeDir).filter((f) => f.endsWith(".mdx"));
 
   return files
-    .map((file) => getPostBySlug(file.replace(/\.mdx$/, "")))
+    .map((file) => getPostBySlug(file.replace(/\.mdx$/, ""), locale))
+    .filter((post): post is BlogPost => post !== null)
     .sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime());
 }
 
-export function getAllSlugs(): string[] {
-  if (!fs.existsSync(CONTENT_DIR)) {
+export function getAllSlugs(locale: string = "en"): string[] {
+  const localeDir = path.join(CONTENT_DIR, locale);
+
+  if (!fs.existsSync(localeDir)) {
     return [];
   }
 
   return fs
-    .readdirSync(CONTENT_DIR)
+    .readdirSync(localeDir)
     .filter((f) => f.endsWith(".mdx"))
     .map((f) => f.replace(/\.mdx$/, ""));
 }

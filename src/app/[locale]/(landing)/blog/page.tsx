@@ -4,7 +4,8 @@ import { generateBlogSchema } from "@/lib/blog/schema";
 import { StructuredData } from "@/components/seo/StructuredData";
 import { BlogCard } from "@/components/blog/BlogCard";
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
   return {
@@ -15,7 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       title: "Blog | Bottie.ai",
       description: "Learn how to automate your Google review responses with AI",
-      url: `${baseUrl}/blog`,
+      url: `${baseUrl}/${locale}/blog`,
       siteName: "Bottie.ai",
       type: "website",
       images: [
@@ -34,7 +35,7 @@ export async function generateMetadata(): Promise<Metadata> {
       images: [`/images/blog/og-default.jpg`],
     },
     alternates: {
-      canonical: `${baseUrl}/blog`,
+      canonical: `${baseUrl}/${locale}/blog`,
     },
     robots: {
       index: true,
@@ -43,8 +44,9 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function BlogIndexPage() {
-  const posts = getAllPosts();
+export default async function BlogIndexPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const posts = getAllPosts(locale);
   const schema = generateBlogSchema();
 
   return (
@@ -63,7 +65,7 @@ export default async function BlogIndexPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
             {posts.map((post) => (
-              <BlogCard key={post.slug} post={post} />
+              <BlogCard key={post.slug} post={post} locale={locale} />
             ))}
           </div>
         )}

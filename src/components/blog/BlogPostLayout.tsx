@@ -1,26 +1,30 @@
 import { type BlogPost } from "@/lib/blog/posts";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { Link } from "@/i18n/routing";
 import { ArrowLeft, Calendar, Clock } from "lucide-react";
 import { TableOfContents } from "./TableOfContents";
 import { RelatedPosts } from "./RelatedPosts";
 import { SocialShareButtons } from "./SocialShareButtons";
+import { getTranslations } from "next-intl/server";
 
 interface BlogPostLayoutProps {
   post: BlogPost;
   children: React.ReactNode;
+  locale: string;
 }
 
-export async function BlogPostLayout({ post, children }: BlogPostLayoutProps) {
+export async function BlogPostLayout({ post, children, locale }: BlogPostLayoutProps) {
+  const t = await getTranslations({ locale, namespace: "blog" });
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-  const url = `${baseUrl}/blog/${post.slug}`;
+  const url = `${baseUrl}/${locale}/blog/${post.slug}`;
 
-  const categoryLabels: Record<string, string> = {
-    automation: "Automation",
-    ai: "AI",
-    reviews: "Reviews",
-    general: "General",
+  const getCategoryLabel = (category: string) => {
+    try {
+      return t(`categories.${category}`);
+    } catch {
+      return category;
+    }
   };
 
   return (
@@ -28,14 +32,14 @@ export async function BlogPostLayout({ post, children }: BlogPostLayoutProps) {
       <Button asChild variant="ghost" className="mb-8">
         <Link href="/blog">
           <ArrowLeft className="me-2 h-4 w-4" />
-          Back to Blog
+          {t("backToBlog")}
         </Link>
       </Button>
 
       <article className="max-w-4xl mx-auto">
         <header className="mb-12">
           <Badge variant="secondary" className="mb-4">
-            {categoryLabels[post.category] || post.category}
+            {getCategoryLabel(post.category)}
           </Badge>
 
           <h1 className="text-4xl md:text-5xl font-bold mb-4 leading-tight">{post.title}</h1>
@@ -47,12 +51,18 @@ export async function BlogPostLayout({ post, children }: BlogPostLayoutProps) {
               <div className="flex items-center gap-2">
                 <Calendar className="h-4 w-4" />
                 <time dateTime={post.publishedAt}>
-                  Published on {new Date(post.publishedAt).toLocaleDateString("en-US")}
+                  {t("publishedOn", {
+                    date: new Date(post.publishedAt).toLocaleDateString(locale === "he" ? "he-IL" : "en-US", {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    }),
+                  })}
                 </time>
               </div>
               <div className="flex items-center gap-2">
                 <Clock className="h-4 w-4" />
-                <span>{post.readingTime} min read</span>
+                <span>{t("minRead", { time: post.readingTime })}</span>
               </div>
             </div>
 
