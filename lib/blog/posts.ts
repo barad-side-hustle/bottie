@@ -7,6 +7,7 @@ export interface BlogPost {
   title: string;
   excerpt: string;
   author: string;
+  authorOrg?: boolean;
   publishedAt: string;
   updatedAt?: string;
   keywords: string[];
@@ -14,6 +15,7 @@ export interface BlogPost {
   readingTime: number;
   ogImage: string;
   content: string;
+  locale: string;
 }
 
 const CONTENT_DIR = path.join(process.cwd(), "content/blog");
@@ -35,6 +37,7 @@ export function getPostBySlug(slug: string, locale: string = "en"): BlogPost | n
     title: metadata.title,
     excerpt: metadata.excerpt,
     author: metadata.author,
+    authorOrg: metadata.authorOrg,
     publishedAt: metadata.publishedAt,
     updatedAt: metadata.updatedAt,
     keywords: metadata.keywords || [],
@@ -42,6 +45,7 @@ export function getPostBySlug(slug: string, locale: string = "en"): BlogPost | n
     readingTime: Math.ceil(readingTime(content).minutes),
     ogImage: metadata.ogImage || `/images/blog/${slug}/og-image.jpg`,
     content,
+    locale,
   };
 }
 

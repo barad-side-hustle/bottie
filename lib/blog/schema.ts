@@ -9,8 +9,8 @@ export function generateBlogPostingSchema(post: BlogPost) {
     headline: post.title,
     description: post.excerpt,
     author: {
-      "@type": "Organization",
-      name: post.author,
+      "@type": post.authorOrg ? "Organization" : "Person",
+      name: post.author || "Bottie",
     },
     datePublished: post.publishedAt,
     dateModified: post.updatedAt || post.publishedAt,
@@ -18,7 +18,7 @@ export function generateBlogPostingSchema(post: BlogPost) {
     url: `${baseUrl}/blog/${post.slug}`,
     keywords: post.keywords.join(", "),
     articleSection: post.category,
-    inLanguage: "en-US",
+    inLanguage: post.locale || "en-US",
     publisher: {
       "@type": "Organization",
       name: "Bottie.ai",
@@ -30,7 +30,7 @@ export function generateBlogPostingSchema(post: BlogPost) {
   };
 }
 
-export function generateBlogSchema() {
+export function generateBlogSchema(locale: string = "en-US") {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
   return {
@@ -38,7 +38,7 @@ export function generateBlogSchema() {
     "@type": "Blog",
     name: "Bottie Blog",
     description: "Learn how to automate Google review responses with AI",
-    url: `${baseUrl}/blog`,
-    inLanguage: "en-US",
+    url: `${baseUrl}/${locale}/blog`,
+    inLanguage: locale,
   };
 }

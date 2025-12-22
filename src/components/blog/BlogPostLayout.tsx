@@ -81,7 +81,7 @@ export async function BlogPostLayout({ post, children, locale }: BlogPostLayoutP
         </div>
 
         <div className="mt-16 pt-16 border-t border-border">
-          <RelatedPosts currentSlug={post.slug} category={post.category} />
+          <RelatedPosts currentSlug={post.slug} category={post.category} locale={locale} />
         </div>
       </article>
     </div>

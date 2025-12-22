@@ -3,19 +3,20 @@ import { getAllPosts } from "@/lib/blog/posts";
 import { generateBlogSchema } from "@/lib/blog/schema";
 import { StructuredData } from "@/components/seo/StructuredData";
 import { BlogCard } from "@/components/blog/BlogCard";
+import { getTranslations } from "next-intl/server";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "blog" });
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
   return {
-    title: "Blog | Bottie.ai",
-    description: "Learn how to automate your Google review responses with AI",
-    keywords:
-      "ai review automation, google business reviews, automated responses, review management, ai tool to respond to google reviews, automatically reply to google reviews",
+    title: t("metadata.title"),
+    description: t("metadata.description"),
+    keywords: t("metadata.keywords"),
     openGraph: {
-      title: "Blog | Bottie.ai",
-      description: "Learn how to automate your Google review responses with AI",
+      title: t("metadata.title"),
+      description: t("metadata.description"),
       url: `${baseUrl}/${locale}/blog`,
       siteName: "Bottie.ai",
       type: "website",
@@ -24,14 +25,14 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
           url: `/images/blog/og-default.jpg`,
           width: 1200,
           height: 630,
-          alt: "Bottie Blog",
+          alt: t("metadata.title"),
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      title: "Blog | Bottie.ai",
-      description: "Learn how to automate your Google review responses with AI",
+      title: t("metadata.title"),
+      description: t("metadata.description"),
       images: [`/images/blog/og-default.jpg`],
     },
     alternates: {
@@ -47,7 +48,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function BlogIndexPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const posts = getAllPosts(locale);
-  const schema = generateBlogSchema();
+  const schema = generateBlogSchema(locale);
 
   return (
     <>
