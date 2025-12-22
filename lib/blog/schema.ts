@@ -15,7 +15,7 @@ export function generateBlogPostingSchema(post: BlogPost) {
     datePublished: post.publishedAt,
     dateModified: post.updatedAt || post.publishedAt,
     image: `${baseUrl}${post.ogImage}`,
-    url: `${baseUrl}/blog/${post.slug}`,
+    url: `${baseUrl}/${post.locale || "en"}/blog/${post.slug}`,
     keywords: post.keywords.join(", "),
     articleSection: post.category,
     inLanguage: post.locale || "en-US",
