@@ -32,12 +32,12 @@ describe("UsersController", () => {
   describe("getUserConfig", () => {
     it("should get or create user config without locale parameter", async () => {
       const userId = "user-123";
-      const mockConfig = { userId, configs: { LOCALE: "en", EMAIL_ON_NEW_REVIEW: true, WEEKLY_SUMMARY_ENABLED: true } };
+      const mockConfig = { userId, configs: { EMAIL_ON_NEW_REVIEW: true, WEEKLY_SUMMARY_ENABLED: true } };
       mockRepo.getOrCreate.mockResolvedValue(mockConfig);
 
       const result = await controller.getUserConfig(userId);
 
-      expect(mockRepo.getOrCreate).toHaveBeenCalledWith(userId, undefined);
+      expect(mockRepo.getOrCreate).toHaveBeenCalledWith(userId);
       expect(result).toBe(mockConfig);
     });
 
@@ -73,8 +73,8 @@ describe("UsersController", () => {
   describe("updateUserConfig", () => {
     it("should update user config", async () => {
       const userId = "user-123";
-      const data = { locale: "he" as const };
-      const mockConfig = { userId, configs: { LOCALE: "he", EMAIL_ON_NEW_REVIEW: true, WEEKLY_SUMMARY_ENABLED: true } };
+      const data = { EMAIL_ON_NEW_REVIEW: false };
+      const mockConfig = { userId, configs: { EMAIL_ON_NEW_REVIEW: false, WEEKLY_SUMMARY_ENABLED: true } };
       mockRepo.updateConfigs.mockResolvedValue(mockConfig);
 
       const result = await controller.updateUserConfig(userId, data as unknown as Partial<UserConfigMap>);
