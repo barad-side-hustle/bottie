@@ -2,17 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { exchangeCodeForTokens, encryptToken, getUserInfo } from "@/lib/google/oauth";
 import { getAuthenticatedUserId, createLocaleAwareRedirect } from "@/lib/api/auth";
 import { AccountsController, UsersController } from "@/lib/controllers";
-import { resolveLocale } from "@/lib/locale-detection";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-const redirectToLocations = async (success?: boolean, accountId?: string, userId?: string) => {
+const redirectToLocations = async (success?: boolean, accountId?: string) => {
   if (success && accountId) {
-    return await createLocaleAwareRedirect("/onboarding/choose-location", { accountId }, userId);
+    return await createLocaleAwareRedirect("/onboarding/choose-location", { accountId });
   }
 
-  return await createLocaleAwareRedirect("/onboarding/connect-account", undefined, userId);
+  return await createLocaleAwareRedirect("/onboarding/connect-account");
 };
 
 export async function GET(request: NextRequest) {
@@ -85,8 +84,7 @@ export async function GET(request: NextRequest) {
     } else {
       const userInfo = await getUserInfo(tokens.access_token);
 
-      const detectedLocale = await resolveLocale();
-      await usersController.getUserConfig(authenticatedUserId, detectedLocale);
+      await usersController.getUserConfig(authenticatedUserId);
 
       const existingAccount = await accountsController.findByEmail(userInfo.email);
 
@@ -106,7 +104,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    return redirectToLocations(true, accountId, authenticatedUserId);
+    return redirectToLocations(true, accountId);
   } catch (error) {
     console.error("OAuth callback - Error:", error);
     return redirectToLocations(false, undefined);

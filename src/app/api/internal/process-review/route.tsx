@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { Resend } from "resend";
-import { getTranslations } from "next-intl/server";
 import { ReviewsRepository } from "@/lib/db/repositories/reviews.repository";
 import { LocationsRepository } from "@/lib/db/repositories/locations.repository";
 import { AccountsRepository } from "@/lib/db/repositories/accounts.repository";
@@ -10,7 +9,6 @@ import { SubscriptionsController } from "@/lib/controllers/subscriptions.control
 import { ReviewsController } from "@/lib/controllers/reviews.controller";
 import type { ReplyStatus, StarConfig } from "@/lib/types";
 import type { ReviewNotificationEmailProps } from "@/lib/emails/review-notification";
-import { resolveLocale } from "@/lib/locale-detection";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -217,33 +215,31 @@ export async function POST(request: NextRequest) {
               continue;
             }
 
-            const locale = await resolveLocale({ userId: currentUserId, userConfig });
+            const locale = "en";
             const status = replyStatus as "pending" | "posted";
 
-            const t = await getTranslations({ locale, namespace: "emails.reviewNotification" });
             const reviewPageUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/dashboard/accounts/${accountId}/locations/${location.id}/reviews/${reviewId}`;
 
             const emailProps: ReviewNotificationEmailProps = {
-              title: t("title"),
-              greeting: t("greeting", { name: recipientName || recipientEmail }),
-              body: t("body", { businessName: location.name }),
+              title: "New Review Received",
+              greeting: `Hi ${recipientName || recipientEmail},`,
+              body: "You received a new review for",
               businessName: location.name,
-              noReviewText: t("noReviewText"),
-              aiReplyHeader: t("aiReplyHeader"),
-              statusText: status === "pending" ? t("statusPending") : t("statusPosted"),
-              viewReviewButton: t("viewReviewButton"),
-              footer: t("footer"),
+              noReviewText: "No review text provided",
+              aiReplyHeader: "AI Generated Reply",
+              statusText: status === "pending" ? "Pending Approval" : "Posted",
+              viewReviewButton: "View Review",
+              footer: "You're receiving this email because you enabled notifications for new reviews",
               reviewerName: review.name,
               rating: review.rating,
               reviewText: review.text || "",
               aiReply,
               status,
               reviewPageUrl,
-              locale,
             };
 
             const emailComponent = <ReviewNotificationEmailComponent {...emailProps} />;
-            const subject = t("subject", { rating: review.rating, businessName: location.name });
+            const subject = `New ${review.rating}-star review for ${location.name}`;
 
             const resend = new Resend(process.env.RESEND_API_KEY!);
             await resend.emails.send({

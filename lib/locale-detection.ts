@@ -1,10 +1,7 @@
 import { cookies, headers } from "next/headers";
 import { unstable_noStore } from "next/cache";
 import acceptLanguage from "accept-language";
-import { UsersConfigsRepository } from "@/lib/db/repositories/users-configs.repository";
 import { defaultLocale, isValidLocale, type Locale } from "./locale";
-import type { UsersConfig } from "@/lib/db/schema/users-configs.schema";
-import { getUserIdFromHeaders } from "@/lib/user-context";
 
 let initialized = false;
 
@@ -17,45 +14,16 @@ export function initAcceptLanguage(locales: string[]): void {
 
 interface ResolveLocaleOptions {
   urlLocale?: string;
-  userId?: string;
-  userConfig?: UsersConfig;
 }
 
 export async function resolveLocale(options?: ResolveLocaleOptions): Promise<Locale> {
-  const { urlLocale, userId, userConfig } = options || {};
+  const { urlLocale } = options || {};
 
   if (urlLocale && isValidLocale(urlLocale)) {
     return urlLocale;
   }
 
-  if (userConfig) {
-    if (userConfig.configs.LOCALE && isValidLocale(userConfig.configs.LOCALE)) {
-      return userConfig.configs.LOCALE as Locale;
-    }
-    return defaultLocale;
-  }
-
   unstable_noStore();
-
-  try {
-    let targetUserId: string | undefined;
-
-    if (userId) {
-      targetUserId = userId;
-    } else {
-      targetUserId = await getUserIdFromHeaders();
-    }
-
-    if (targetUserId) {
-      const repo = new UsersConfigsRepository();
-      const config = await repo.get(targetUserId);
-      if (config?.configs.LOCALE && isValidLocale(config.configs.LOCALE)) {
-        return config.configs.LOCALE as Locale;
-      }
-    }
-  } catch (error) {
-    console.error("Error fetching user locale from database:", error);
-  }
 
   try {
     const cookieStore = await cookies();

@@ -5,7 +5,6 @@ import { authUsers } from "./auth.schema";
 
 export const USER_CONFIG_KEYS = {
   EMAIL_ON_NEW_REVIEW: "EMAIL_ON_NEW_REVIEW",
-  LOCALE: "LOCALE",
   WEEKLY_SUMMARY_ENABLED: "WEEKLY_SUMMARY_ENABLED",
 } as const;
 
@@ -13,7 +12,6 @@ export type UserConfigKey = keyof typeof USER_CONFIG_KEYS;
 
 export type UserConfigMap = {
   EMAIL_ON_NEW_REVIEW: boolean;
-  LOCALE: "en" | "he";
   WEEKLY_SUMMARY_ENABLED: boolean;
 };
 
