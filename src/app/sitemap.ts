@@ -31,24 +31,30 @@ export default function sitemap(): MetadataRoute.Sitemap {
     return entries;
   });
 
-  const blogEntries: MetadataRoute.Sitemap = [
-    {
-      url: `${baseUrl}/blog`,
+  const blogEntries: MetadataRoute.Sitemap = [];
+
+  for (const locale of locales) {
+    const blogIndexUrl = `${baseUrl}/${locale}/blog`;
+    blogEntries.push({
+      url: blogIndexUrl,
       lastModified: new Date(),
       changeFrequency: "weekly",
       priority: 0.8,
-    },
-  ];
-
-  const blogSlugs = getAllSlugs();
-  blogSlugs.forEach((slug) => {
-    blogEntries.push({
-      url: `${baseUrl}/blog/${slug}`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
+      alternates: {
+        languages: Object.fromEntries(locales.map((l) => [l, `${baseUrl}/${l}/blog`])),
+      },
     });
-  });
+
+    const posts = getAllSlugs(locale);
+    for (const slug of posts) {
+      blogEntries.push({
+        url: `${baseUrl}/${locale}/blog/${slug}`,
+        lastModified: new Date(),
+        changeFrequency: "monthly",
+        priority: 0.7,
+      });
+    }
+  }
 
   return [...localizedEntries, ...blogEntries];
 }

@@ -47,6 +47,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 export default async function BlogIndexPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "blog" });
   const posts = getAllPosts(locale);
   const schema = generateBlogSchema(locale);
 
@@ -55,13 +56,13 @@ export default async function BlogIndexPage({ params }: { params: Promise<{ loca
       <StructuredData data={schema} />
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-3xl mx-auto text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Blog</h1>
-          <p className="text-xl text-muted-foreground">Learn how to automate your Google review responses with AI</p>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">{t("title")}</h1>
+          <p className="text-xl text-muted-foreground">{t("subtitle")}</p>
         </div>
 
         {posts.length === 0 ? (
           <div className="max-w-2xl mx-auto text-center py-12">
-            <p className="text-muted-foreground">No blog posts yet. Check back soon!</p>
+            <p className="text-muted-foreground">{t("noPosts")}</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">

@@ -977,7 +977,16 @@
     "minRead": "{time} דקות קריאה",
     "publishedOn": "פורסם ב-{date}",
     "backToBlog": "חזרה לבלוג",
-    "relatedPosts": "מאמרים קשורים",
+    "relatedArticles": "מאמרים קשורים",
+    "noPosts": "אין עדיין פוסטים בבלוג. בדקו שוב בקרוב!",
+    "metadata": {
+      "title": "בלוג | Bottie.ai",
+      "description": "למדו איך להפוך את המענה לביקורות Google לאוטומטי עם AI",
+      "keywords": "אוטומציה לביקורות, תגובות גוגל לעסקים, מענה אוטומטי, ניהול ביקורות, כלי AI למענה לביקורות גוגל",
+      "ogImage": {
+        "alt": "בלוג Bottie.ai"
+      }
+    },
     "share": "שתף",
     "tableOfContents": "תוכן עניינים",
     "categories": {
