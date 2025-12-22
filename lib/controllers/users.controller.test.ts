@@ -45,27 +45,27 @@ describe("UsersController", () => {
       const userId = "user-123";
       const mockConfig = {
         userId,
-        configs: { LOCALE: "he", EMAIL_ON_NEW_REVIEW: true, WEEKLY_SUMMARY_ENABLED: true },
+        configs: { EMAIL_ON_NEW_REVIEW: true, WEEKLY_SUMMARY_ENABLED: true },
       };
       mockRepo.getOrCreate.mockResolvedValue(mockConfig);
 
-      const result = await controller.getUserConfig(userId, "he");
+      const result = await controller.getUserConfig(userId);
 
-      expect(mockRepo.getOrCreate).toHaveBeenCalledWith(userId, "he");
+      expect(mockRepo.getOrCreate).toHaveBeenCalledWith(userId);
       expect(result).toBe(mockConfig);
     });
 
-    it("should create user config with detected English locale", async () => {
+    it("should create user config", async () => {
       const userId = "user-123";
       const mockConfig = {
         userId,
-        configs: { LOCALE: "en", EMAIL_ON_NEW_REVIEW: true, WEEKLY_SUMMARY_ENABLED: true },
+        configs: { EMAIL_ON_NEW_REVIEW: true, WEEKLY_SUMMARY_ENABLED: true },
       };
       mockRepo.getOrCreate.mockResolvedValue(mockConfig);
 
-      const result = await controller.getUserConfig(userId, "en");
+      const result = await controller.getUserConfig(userId);
 
-      expect(mockRepo.getOrCreate).toHaveBeenCalledWith(userId, "en");
+      expect(mockRepo.getOrCreate).toHaveBeenCalledWith(userId);
       expect(result).toBe(mockConfig);
     });
   });

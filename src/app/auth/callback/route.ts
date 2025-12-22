@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
         }
       }
 
-      return await createLocaleAwareRedirect(next, undefined, userId);
+      return await createLocaleAwareRedirect(next);
     }
   }
 

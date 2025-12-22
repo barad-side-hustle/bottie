@@ -35,8 +35,6 @@ export interface WeeklySummaryEmailProps {
   viewDashboardButton: string;
   dashboardUrl: string;
   footer: string;
-
-  locale: "en" | "he";
 }
 
 export default function WeeklySummaryEmail({
@@ -59,13 +57,9 @@ export default function WeeklySummaryEmail({
   viewDashboardButton,
   dashboardUrl,
   footer,
-  locale,
 }: WeeklySummaryEmailProps) {
-  const dir = locale === "he" ? "rtl" : "ltr";
-  const fontFamily =
-    locale === "he"
-      ? "Rubik, 'Segoe UI', Helvetica, Arial, sans-serif"
-      : "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
+  const dir = "ltr";
+  const fontFamily = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
 
   const primary = "#2A5E77";
   const bgOuter = "#F4F3EE";
@@ -78,7 +72,7 @@ export default function WeeklySummaryEmail({
   const recommendationColor = "#3b82f6";
 
   return (
-    <Html lang={locale} dir={dir}>
+    <Html lang="en" dir={dir}>
       <Head>
         <meta name="color-scheme" content="light" />
       </Head>
@@ -315,35 +309,34 @@ export default function WeeklySummaryEmail({
 }
 
 WeeklySummaryEmail.PreviewProps = {
-  title: "סיכום שבועי",
-  dateRange: "17 נוב - 23 נוב",
-  businessName: "עסק לדוגמה",
-  statsTitle: "סקירה שבועית",
-  totalReviewsLabel: "סה״כ ביקורות",
-  averageRatingLabel: "דירוג ממוצע",
+  title: "Weekly Summary",
+  dateRange: "Nov 17 - Nov 23",
+  businessName: "Example Business",
+  statsTitle: "Weekly Overview",
+  totalReviewsLabel: "Total Reviews",
+  averageRatingLabel: "Average Rating",
   totalReviews: 15,
   averageRating: "4.8",
-  sentimentTitle: "התפלגות סנטימנט",
+  sentimentTitle: "Sentiment Breakdown",
   sentiment: {
     positive: 12,
     neutral: 2,
     negative: 1,
-    positiveLabel: "חיובי",
-    neutralLabel: "ניטרלי",
-    negativeLabel: "שלילי",
+    positiveLabel: "Positive",
+    neutralLabel: "Neutral",
+    negativeLabel: "Negative",
   },
-  positiveThemesTitle: "נקודות חוזק",
-  positiveThemes: ["שירות מעולה ומהיר", "אוכל טעים", "אווירה נעימה"],
-  negativeThemesTitle: "נקודות לשיפור",
-  negativeThemes: ["זמן המתנה ארוך בערב", "מוזיקה רועשת מדי"],
-  recommendationsTitle: "המלצות לפעולה",
+  positiveThemesTitle: "Strengths",
+  positiveThemes: ["Excellent and fast service", "Delicious food", "Pleasant atmosphere"],
+  negativeThemesTitle: "Areas for Improvement",
+  negativeThemes: ["Long wait time in the evening", "Music too loud"],
+  recommendationsTitle: "Recommended Actions",
   recommendations: [
-    "כדאי להוסיף עוד מלצר במשמרת ערב",
-    "מומלץ להנמיך את המוזיקה בשעות העומס",
-    "המשיכו לשמור על רמת השירות הגבוהה",
+    "Consider adding more staff during evening shifts",
+    "Reduce music volume during peak hours",
+    "Continue maintaining the high level of service",
   ],
-  viewDashboardButton: "מעבר ללוח הבקרה",
+  viewDashboardButton: "View Dashboard",
   dashboardUrl: "https://www.bottie.ai",
-  footer: "נשלח באמצעות Bottie",
-  locale: "he",
+  footer: "Sent by Bottie.ai",
 } as WeeklySummaryEmailProps;

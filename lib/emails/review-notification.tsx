@@ -17,8 +17,6 @@ export interface ReviewNotificationEmailProps {
   aiReply: string;
   status: "pending" | "posted";
   reviewPageUrl: string;
-
-  locale: "en" | "he";
 }
 
 export default function ReviewNotificationEmail({
@@ -37,14 +35,9 @@ export default function ReviewNotificationEmail({
   aiReply,
   status,
   reviewPageUrl,
-  locale,
 }: ReviewNotificationEmailProps) {
-  const dir = locale === "he" ? "rtl" : "ltr";
-
-  const fontFamily =
-    locale === "he"
-      ? "Rubik, 'Segoe UI', Helvetica, Arial, sans-serif"
-      : "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
+  const dir = "ltr";
+  const fontFamily = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
 
   const primary = "#2A5E77";
   const bgOuter = "#F4F3EE";
@@ -69,7 +62,7 @@ export default function ReviewNotificationEmail({
   ));
 
   return (
-    <Html lang={locale} dir={dir}>
+    <Html lang="en" dir={dir}>
       <Head>
         <meta name="color-scheme" content="light" />
       </Head>
@@ -295,21 +288,19 @@ export default function ReviewNotificationEmail({
 }
 
 ReviewNotificationEmail.PreviewProps = {
-  title: "התקבלה ביקורת חדשה",
-  greeting: "שלום אלון,",
-  body: "התקבלה ביקורת חדשה עבור חמישִׁים ושְׁמונֶה",
-  businessName: "עסק חמישִׁים ושְׁמונֶה",
-  noReviewText: "הלקוח לא השאיר טקסט בביקורת",
-  aiReplyHeader: "תגובת הבינה המלאכותית",
-  statusText: "ממתינה לאישור",
-  statusPosted: "פורסמה",
-  viewReviewButton: "צפייה בביקורת",
-  footer: "קיבלת הודעת דוא״ל זו כי הפעלת התראות עבור ביקורות חדשות",
-  reviewerName: "אלון בורגר",
+  title: "New Review Received",
+  greeting: "Hi Alon,",
+  body: "You received a new review for",
+  businessName: "Example Business",
+  noReviewText: "No review text provided",
+  aiReplyHeader: "AI Generated Reply",
+  statusText: "Pending Approval",
+  viewReviewButton: "View Review",
+  footer: "You're receiving this email because you enabled notifications for new reviews",
+  reviewerName: "John Doe",
   rating: 5,
-  reviewText: "מצוין! מומלץ בחום",
-  aiReply: "תודה רבה על המשוב הנהדר!",
+  reviewText: "Excellent! Highly recommended",
+  aiReply: "Thank you so much for the great feedback!",
   status: "pending",
-  reviewPageUrl: "https://bottie.ai/he/dashboard/accounts/123/businesses/456/reviews/789",
-  locale: "he",
-};
+  reviewPageUrl: "https://bottie.ai/en/dashboard/accounts/123/businesses/456/reviews/789",
+} as ReviewNotificationEmailProps;

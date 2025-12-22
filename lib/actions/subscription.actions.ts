@@ -68,7 +68,7 @@ export async function createCheckoutSession(
     }
 
     const priceId = getStripePriceId(plan, interval);
-    const locale = await resolveLocale({ userId: user.id });
+    const locale = await resolveLocale();
 
     let discountObj: { coupon?: string; promotion_code?: string } | undefined;
 

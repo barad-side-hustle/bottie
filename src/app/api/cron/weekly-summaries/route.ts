@@ -8,9 +8,6 @@ import { InsightsRepository } from "@/lib/db/repositories/insights.repository";
 import { Resend } from "resend";
 import WeeklySummaryEmail from "@/lib/emails/weekly-summary";
 import { UsersConfigsRepository } from "@/lib/db/repositories/users-configs.repository";
-import { getTranslations } from "next-intl/server";
-import { resolveLocale } from "@/lib/locale-detection";
-import { Locale } from "@/lib/locale";
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 const weeklySummariesRepo = new WeeklySummariesRepository();
@@ -67,8 +64,7 @@ export async function GET(req: NextRequest) {
           continue;
         }
 
-        const locale = await resolveLocale({ userId, userConfig: userConfig ?? undefined });
-        const t = await getTranslations({ locale, namespace: "emails.weeklySummary" });
+        const locale = "en";
 
         const [user] = await db.select().from(authUsers).where(eq(authUsers.id, userId));
         if (!user || !user.email) continue;
@@ -108,9 +104,9 @@ export async function GET(req: NextRequest) {
                 stats,
                 topPositives,
                 topNegatives,
-                language: locale as "en" | "he",
+                language: "en",
               })
-            : await generateWeeklySummary(location.name, locationReviews, locale as "en" | "he");
+            : await generateWeeklySummary(location.name, locationReviews, "en");
 
           const averageRating = locationReviews.reduce((acc, r) => acc + r.rating, 0) / locationReviews.length;
 
@@ -132,18 +128,18 @@ export async function GET(req: NextRequest) {
           summariesGenerated++;
 
           if (resend) {
-            const dateRangeStr = `${lastSunday.toLocaleDateString(locale, { day: "numeric", month: "short" })} - ${lastSaturday.toLocaleDateString(locale, { day: "numeric", month: "short" })}`;
+            const dateRangeStr = `${lastSunday.toLocaleDateString("en", { day: "numeric", month: "short" })} - ${lastSaturday.toLocaleDateString("en", { day: "numeric", month: "short" })}`;
 
-            const subject = t("subject", { businessName: location.name });
+            const subject = `Weekly Summary for ${location.name}`;
 
             const sentimentData = hasClassifications
               ? {
                   positive: stats.sentimentBreakdown.positive,
                   neutral: stats.sentimentBreakdown.neutral,
                   negative: stats.sentimentBreakdown.negative,
-                  positiveLabel: t("sentimentPositive"),
-                  neutralLabel: t("sentimentNeutral"),
-                  negativeLabel: t("sentimentNegative"),
+                  positiveLabel: "Positive",
+                  neutralLabel: "Neutral",
+                  negativeLabel: "Negative",
                 }
               : undefined;
 
@@ -152,26 +148,25 @@ export async function GET(req: NextRequest) {
               to: user.email,
               subject: subject,
               react: WeeklySummaryEmail({
-                title: t("title"),
+                title: "Weekly Summary",
                 dateRange: dateRangeStr,
                 businessName: location.name,
-                statsTitle: t("statsTitle"),
-                totalReviewsLabel: t("totalReviewsLabel"),
-                averageRatingLabel: t("averageRatingLabel"),
+                statsTitle: "Weekly Overview",
+                totalReviewsLabel: "Total Reviews",
+                averageRatingLabel: "Average Rating",
                 totalReviews: locationReviews.length,
                 averageRating: averageRating.toFixed(1),
-                sentimentTitle: hasClassifications ? t("sentimentTitle") : undefined,
+                sentimentTitle: hasClassifications ? "Sentiment Breakdown" : undefined,
                 sentiment: sentimentData,
-                positiveThemesTitle: t("positiveThemesTitle"),
+                positiveThemesTitle: "Strengths",
                 positiveThemes: summaryData.positiveThemes,
-                negativeThemesTitle: t("negativeThemesTitle"),
+                negativeThemesTitle: "Areas for Improvement",
                 negativeThemes: summaryData.negativeThemes,
-                recommendationsTitle: t("recommendationsTitle"),
+                recommendationsTitle: "Recommended Actions",
                 recommendations: summaryData.recommendations,
-                viewDashboardButton: t("viewDashboardButton"),
+                viewDashboardButton: "View Dashboard",
                 dashboardUrl: `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/dashboard/home`,
-                footer: t("footer"),
-                locale: locale as Locale,
+                footer: "Sent by Bottie.ai",
               }),
             });
             emailsSent++;

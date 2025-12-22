@@ -26,7 +26,7 @@ export async function POST(_req: NextRequest) {
       );
     }
 
-    const locale = await resolveLocale({ userId: user.id });
+    const locale = await resolveLocale();
 
     const session = await getStripe().billingPortal.sessions.create({
       customer: subscription.stripeCustomerId,

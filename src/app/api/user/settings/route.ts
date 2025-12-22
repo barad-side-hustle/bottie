@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { UsersController } from "@/lib/controllers/users.controller";
 import type { UserConfigUpdate } from "@/lib/types/user.types";
-import { isValidLocale } from "@/lib/locale";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -23,8 +22,8 @@ export async function GET() {
     const config = await controller.getUserConfig(user.id);
 
     return NextResponse.json({
-      locale: config.configs.LOCALE,
       emailOnNewReview: config.configs.EMAIL_ON_NEW_REVIEW,
+      weeklySummaryEnabled: config.configs.WEEKLY_SUMMARY_ENABLED ?? false,
     });
   } catch (error) {
     console.error("Error fetching user settings:", error);
@@ -47,13 +46,6 @@ export async function PATCH(request: NextRequest) {
     const body = await request.json();
     const updates: UserConfigUpdate = {};
 
-    if (body.locale !== undefined) {
-      if (!isValidLocale(body.locale)) {
-        return NextResponse.json({ error: "Invalid locale" }, { status: 400 });
-      }
-      updates.LOCALE = body.locale;
-    }
-
     if (body.emailOnNewReview !== undefined) {
       if (typeof body.emailOnNewReview !== "boolean") {
         return NextResponse.json({ error: "Invalid emailOnNewReview value" }, { status: 400 });
@@ -61,23 +53,20 @@ export async function PATCH(request: NextRequest) {
       updates.EMAIL_ON_NEW_REVIEW = body.emailOnNewReview;
     }
 
+    if (body.weeklySummaryEnabled !== undefined) {
+      if (typeof body.weeklySummaryEnabled !== "boolean") {
+        return NextResponse.json({ error: "Invalid weeklySummaryEnabled value" }, { status: 400 });
+      }
+      updates.WEEKLY_SUMMARY_ENABLED = body.weeklySummaryEnabled;
+    }
+
     const controller = new UsersController();
     const updatedConfig = await controller.updateUserConfig(user.id, updates);
 
-    const response = NextResponse.json({
-      locale: updatedConfig.configs.LOCALE,
+    return NextResponse.json({
       emailOnNewReview: updatedConfig.configs.EMAIL_ON_NEW_REVIEW,
+      weeklySummaryEnabled: updatedConfig.configs.WEEKLY_SUMMARY_ENABLED ?? false,
     });
-
-    if (body.locale !== undefined && updatedConfig.configs.LOCALE) {
-      response.cookies.set("NEXT_LOCALE", updatedConfig.configs.LOCALE, {
-        maxAge: 365 * 24 * 60 * 60,
-        path: "/",
-        sameSite: "lax",
-      });
-    }
-
-    return response;
   } catch (error) {
     console.error("Error updating user settings:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });

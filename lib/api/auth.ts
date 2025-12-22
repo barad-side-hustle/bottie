@@ -23,10 +23,9 @@ export async function getAuthenticatedUserId(): Promise<{ userId: string }> {
 
 export async function createLocaleAwareRedirect(
   path: string,
-  searchParams?: Record<string, string>,
-  userId?: string
+  searchParams?: Record<string, string>
 ): Promise<NextResponse> {
-  const locale = await resolveLocale({ userId });
+  const locale = await resolveLocale();
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL!;
 
   const localePath = `/${locale}${path}`;
