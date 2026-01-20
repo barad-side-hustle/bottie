@@ -1,343 +1,200 @@
-# Bottie
+# RevYou (Bottie.ai)
 
 **AI-Powered Google Review Management Platform**
 
-Bottie is a SaaS platform that automates responses to Google Business Profile reviews using AI. Help businesses manage their online reputation by generating personalized, AI-powered replies to customer reviews with smart customization and multi-language support.
+RevYou (also known as Bottie.ai) is a SaaS platform that automates responses to Google Business Profile reviews using AI. It helps businesses manage their online reputation by generating personalized, AI-powered replies to customer reviews with smart customization, sentiment analysis, and multi-language support.
 
-## Features
+![Project Status](https://img.shields.io/badge/status-active-success.svg)
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
-### AI-Powered Review Responses
+## 🚀 Features
 
-- **Smart AI Generation** - Powered by Google's Gemini 2.0 Flash model for natural, context-aware replies
-- **Customizable Tone** - Choose from friendly, formal, humorous, or professional tones
-- **Multi-Language Support** - English and Hebrew with automatic language detection and RTL support
-- **Star-Rating Specific** - Custom instructions for each rating level (1-5 stars)
-- **Personalization** - Name transliteration, emoji support, and custom signatures
-- **Auto-Post or Approve** - Automatically post replies or review before publishing
+### 🤖 AI-Powered Review Responses
 
-### Google Business Profile Integration
+- **Smart AI Generation**: Powered by **Google Gemini 3.0 Flash Preview** for natural, context-aware replies.
+- **Customizable Tone**: Choose from Professional, Friendly, Formal, or Humorous tones.
+- **Multi-Language Support**: Full support for **English and Hebrew** with automatic language detection and RTL layouts.
+- **Star-Rating Logic**: Define specific instructions for each rating level (e.g., "Apologize for 1-star", "Thank warmly for 5-stars").
+- **Personalization**: Name transliteration, emoji customization, and custom signatures.
+- **Approval Modes**:
+  - **Manual Approval**: Review every response before posting.
+  - **Auto-Publish**: Automatically post replies for specific star ratings.
 
-- **OAuth 2.0 Authentication** - Secure Google account connection
-- **Real-Time Notifications** - Instant review alerts via Google Pub/Sub webhooks
-- **Auto-Fetch Reviews** - Automatic review synchronization
-- **Direct Posting** - Post replies directly to Google Business Profile
-- **Multi-Location Support** - Manage multiple business locations from one account
+### 📍 Google Business Profile Integration
 
-### Subscription Management
+- **OAuth 2.0 Authentication**: Secure connection to manage business profiles.
+- **Real-Time Notifications**: Instant updates via **Google Cloud Pub/Sub** webhooks when a new review is posted.
+- **Multi-Location Support**: Manage multiple business locations from a single dashboard.
+- **Direct Posting**: Publish replies directly to Google Maps/Search.
 
-Three flexible pricing tiers powered by Paddle:
+### 📊 Analytics & Insights
 
-- **Free Tier** - 1 business, 10 reviews/month, manual approval required
-- **Basic Tier** - 3 businesses, 100 reviews/month, auto-post enabled
-- **Pro Tier** - Unlimited businesses and reviews
+- **Sentiment Analysis**: Analyze positive, neutral, and negative sentiment trends.
+- **Weekly Email Summaries**: Automated weekly reports with performance stats, sentiment breakdown, and AI-driven recommendations.
+- **Dashboard**: comprehensive view of review volume, ratings, and response times.
 
-### Multi-Business Management
+### 💳 Subscription Management
 
-- Multiple Google Business Profile accounts
-- Multiple locations per account
-- Per-business AI configuration
-- Business-specific star rating settings
-- Independent connection management
+- **Stripe Integration**: Secure billing and subscription handling.
+- **Tiered Plans**:
+  - **Free**: Basic features for a single business.
+  - **Basic/Pro**: tiered limits on reviews and businesses.
+- **Usage Tracking**: Monitor review quotas and limits.
 
-### Intuitive Onboarding
-
-1. Connect your Google account
-2. Choose business locations to manage
-3. Configure AI settings (tone, language, emojis)
-4. Set up star rating preferences
-5. Start receiving and responding to reviews
-
-### Comprehensive Dashboard
-
-- Review monitoring and management
-- Review statistics and analytics
-- AI reply approval and editing workflow
-- Business settings configuration
-- Subscription management
-- User preferences
-
-## Tech Stack
+## 🛠 Tech Stack
 
 ### Frontend
 
-- **Next.js 15.5.6** - React framework with App Router
-- **React 19.1** - UI library
-- **TypeScript 5.9.3** - Type safety
-- **Tailwind CSS 4** - Styling with shadcn/ui components
-- **Radix UI** - Accessible component primitives
-- **Framer Motion** - Animations
-- **Zustand** - State management
-- **next-intl** - Internationalization (i18n)
-- **Recharts** - Data visualization
+- **Framework**: [Next.js 16](https://nextjs.org/) (App Router, Turbopack)
+- **Language**: TypeScript 5.9
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/), [Shadcn/UI](https://ui.shadcn.com/)
+- **State Management**: Zustand
+- **Internationalization**: `next-intl` (Authored for English & Hebrew)
+- **Components**: Radix UI, Framer Motion, Lucide React
 
 ### Backend
 
-- **Next.js API Routes** - Serverless functions
-- **Supabase** - Authentication and database
-- **Drizzle ORM** - Type-safe PostgreSQL ORM
-- **PostgreSQL** - Database with Row Level Security
+- **Database**: PostgreSQL (via Supabase) with [Drizzle ORM](https://orm.drizzle.team/)
+- **Auth**: Supabase Auth (SSR)
+- **API**: Next.js Server Actions & API Routes
+- **Validation**: Zod
+- **Email**: [Resend](https://resend.com/) + [React Email](https://react.email/)
 
-### External Services
+### Services
 
-- **Google Gemini AI** - AI response generation
-- **Google OAuth 2.0** - Account authentication
-- **Google Business Profile API** - Business data and reviews
-- **Google Pub/Sub** - Real-time review notifications
-- **Paddle** - Subscription billing and payments
-- **Resend** - Email notifications
+- **AI**: Google Generative AI (Gemini)
+- **Payments**: Stripe
+- **Cloud**: Google Cloud Platform (Pub/Sub)
+- **Deployment**: Vercel (recommended)
 
-## Project Structure
+## 📂 Project Structure
 
 ```
-Bottie/
+RevYou/
 ├── src/
-│   ├── app/                        # Next.js App Router
-│   │   ├── [locale]/              # Internationalized routes
-│   │   │   ├── (landing)/         # Landing page
-│   │   │   ├── (auth)/            # Authentication pages
-│   │   │   ├── (checkout)/        # Checkout flow
-│   │   │   ├── dashboard/         # Dashboard pages
-│   │   │   └── onboarding/        # Onboarding flow
-│   │   ├── api/                   # API routes
-│   │   │   ├── google/            # Google OAuth callbacks
-│   │   │   ├── internal/          # Internal processing
-│   │   │   ├── user/              # User endpoints
-│   │   │   └── webhooks/          # External webhooks
-│   │   └── auth/                  # Auth callbacks
-│   ├── components/                # React components
-│   │   ├── ui/                    # shadcn/ui components
-│   │   ├── landing/               # Landing page components
-│   │   ├── dashboard/             # Dashboard components
-│   │   └── onboarding/            # Onboarding components
-│   ├── contexts/                  # React contexts
-│   ├── hooks/                     # Custom React hooks
-│   └── i18n/                      # i18n configuration
-├── lib/                           # Shared utilities
-│   ├── actions/                   # Server actions
-│   ├── ai/                        # AI integration & prompts
-│   ├── auth/                      # Authentication helpers
-│   ├── controllers/               # Business logic
-│   ├── db/                        # Database layer
-│   │   ├── schema/                # Drizzle schemas
-│   │   └── repositories/          # Data access layer
-│   ├── google/                    # Google API integration
-│   ├── store/                     # Zustand stores
-│   ├── subscriptions/             # Subscription logic
-│   └── supabase/                  # Supabase clients
-├── messages/                      # i18n translations
-│   ├── en.json                    # English
-│   └── he.json                    # Hebrew
-├── scripts/                       # Build & utility scripts
-└── drizzle.config.ts              # Database configuration
+│   ├── app/                        # Next.js App Router (Pages & API)
+│   │   ├── [locale]/              # i18n routes (dashboard, landing, auth)
+│   │   └── api/                   # API Routes (webhooks, cron, internal)
+│   ├── components/                # UI Components (Shadcn, Feature-specific)
+│   ├── hooks/                     # Custom React Hooks
+│   ├── contexts/                  # React Contexts (Auth, Direction)
+│   └── i18n/                      # Internationalization config
+├── lib/                           # Core Business Logic
+│   ├── ai/                        # Gemini AI prompts & integration
+│   ├── db/                        # Drizzle Schema & Data Access
+│   ├── emails/                    # React Email templates
+│   ├── google/                    # Google APIs (MyBusiness, PubSub)
+│   ├── stripe/                    # Stripe helpers
+│   ├── supabase/                  # Supabase Setup
+│   └── utils/                     # Helper functions
+├── messages/                      # Translation files (en.json, he.json)
+├── drizzle/                       # Database migrations
+├── scripts/                       # Utility scripts (cron triggers, webhooks)
+└── public/                        # Static assets
 ```
 
-## Environment Setup
-
-Before running the application, configure your environment variables in `.env.local`:
-
-### Required Configuration
-
-The application requires several service integrations:
-
-1. **Paddle Configuration** (Billing):
-   - Create subscription plans in Paddle Dashboard
-   - Set up price IDs for Starter and Pro plans (monthly and yearly)
-   - Configure webhook secret for payment events
-
-2. **Google Cloud Services**:
-   - Google OAuth credentials (for Google Business Profile integration)
-   - Google Pub/Sub (for review notifications)
-   - Gemini API key (for AI reply generation)
-
-3. **Supabase** (Authentication & Database):
-   - PostgreSQL database with Drizzle ORM
-   - Authentication with Supabase Auth
-
-4. **Resend** (Email Service):
-   - API key for sending email notifications
-   - Verified sender domain
-
-5. **Internal Services**:
-   - Token encryption secret
-   - Internal API secret (for webhook processing)
-
-See [`.env.example`](.env.example) for a complete list of required environment variables.
-
-## Getting Started
+## 🏁 Getting Started
 
 ### Prerequisites
 
-- Node.js 20.9.0+
-- npm, yarn, pnpm, or bun
-- PostgreSQL database (via Supabase)
-- Google Cloud project with required APIs enabled
-- Paddle account for billing
+- **Node.js** 20.9+
+- **Yarn** (Package Manager)
+- **Supabase Project** (Postgres DB & Auth)
+- **Google Cloud Project** (With My Business & Pub/Sub APIs enabled)
+- **Stripe Account** (For billing)
 
 ### Installation
 
-1. Clone the repository:
+1. **Clone the repository:**
 
-```bash
-git clone <repository-url>
-cd Bottie
-```
+   ```bash
+   git clone <repository-url>
+   cd revyou
+   ```
 
-2. Install dependencies:
+2. **Install dependencies:**
 
-```bash
-npm install
-# or
-yarn install
-# or
-pnpm install
-# or
-bun install
-```
+   ```bash
+   yarn install
+   ```
 
-3. Set up environment variables:
+   _Note: This project uses Yarn. Please stick to it to respect the lockfile._
 
-```bash
-cp .env.example .env.local
-# Edit .env.local with your configuration
-```
+3. **Environment Setup:**
+   Copy the example environment file:
 
-4. Run database migrations:
+   ```bash
+   cp .env.example .env.local
+   ```
 
-```bash
-npm run db:push
-# or
-yarn db:push
-```
+   Now, fill in the required variables in `.env.local`.
 
-5. Start the development server:
+   **Critical Variables:**
+   - `DATABASE_URL`: Connection string from Supabase (Transaction Pooler - port 6543).
+   - `NEXT_PUBLIC_SUPABASE_URL` / `ANON_KEY`: From Supabase settings.
+   - `GOOGLE_CLIENT_ID` / `SECRET`: OAuth credentials.
+   - `GEMINI_API_KEY`: Google AI Studio key.
+   - `STRIPE_SECRET_KEY` / `WEBHOOK_SECRET`: Stripe config.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+4. **Database Setup:**
+   Push the schema to your Supabase instance:
 
-6. Open [http://localhost:3000](http://localhost:3000) in your browser
+   ```bash
+   yarn db:push
+   ```
 
-### Database Setup
+   This will create the necessary tables in your Postgres database.
 
-The project uses Drizzle ORM with PostgreSQL via Supabase:
+5. **Run the Development Server:**
+   ```bash
+   yarn dev
+   ```
+   Open [http://localhost:3000](http://localhost:3000) to view the app.
 
-```bash
-# Push schema changes to database
-npm run db:push
+## 💻 Development Workflows
 
-# Generate migrations
-npm run db:generate
+### Database (Drizzle ORM)
 
-# Open Drizzle Studio (database GUI)
-npm run db:studio
-```
+- **Update Schema**: Modify `lib/db/schema/index.ts`.
+- **Push Changes**: `yarn db:push` (Syncs schema with DB).
+- **View Data**: `yarn db:studio` (Opens Drizzle Studio GUI).
+- **Generate Migrations**: `yarn db:generate`.
 
-## Development
+### Email Templates
 
-### Available Scripts
+We use **React Email** for designing transactional emails.
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run start` - Start production server
-- `npm run lint` - Run ESLint
-- `npm run db:push` - Push schema to database
-- `npm run db:generate` - Generate migrations
-- `npm run db:studio` - Open Drizzle Studio
+- **Preview Emails**: `yarn email:dev`
+  This starts a local server at [http://localhost:3000](http://localhost:3000) (or 3001) where you can interactively test templates.
 
-### Code Quality
+### Webhooks & Scripts
 
-The project uses:
+The `scripts/` folder contains utilities for testing:
 
-- **ESLint** - Code linting
-- **Prettier** - Code formatting
-- **TypeScript** - Type checking
-- **Knip** - Unused code detection
+- **Trigger Review Webhook**: `yarn webhook:trigger` (Simulates a Google review event).
+- **Trigger Weekly Summary**: `yarn cron:trigger` (Runs the weekly email summary logic).
 
-## Key Workflows
+### Testing
 
-### Review Processing Flow
+- **Run Tests**: `yarn test` (Vitest).
+- **Coverage**: `yarn test:coverage`.
 
-1. Google sends webhook to `/api/webhooks/google-reviews`
-2. Application fetches full review data from Google API
-3. Review is stored in database
-4. Internal processing endpoint is triggered
-5. User subscription quota is checked
-6. AI reply is generated using Gemini
-7. Reply is auto-posted (if enabled) or saved for approval
-8. Email notification is sent to user
+## 🚢 Deployment
 
-### Authentication Flow
+### Vercel
 
-- Supabase Auth for user authentication
-- Google OAuth for business profile access
-- Encrypted token storage using @hapi/iron
-- Middleware protection for authenticated routes
-- Row Level Security (RLS) for data isolation
+1. Connect your repository to Vercel.
+2. Add all environment variables from `.env.local` to Vercel Project Settings.
+3. **Build Command**: `yarn build`
+4. **Install Command**: `yarn install`
+5. Deploy!
 
-## Internationalization
+> **Note**: This project relies on Cron Jobs (defined in `vercel.json`) for sending weekly summaries. Vercel automatically picks this up.
 
-The application supports multiple languages:
+## 📄 License
 
-- **English (en)** - Default language
-- **Hebrew (he)** - Full RTL support
-
-Language detection is based on route locale (`/en/*` or `/he/*`).
-
-Translation files are located in the [`messages/`](messages/) directory.
-
-## Security
-
-- **Row Level Security (RLS)** on all database tables
-- **Encrypted OAuth tokens** using @hapi/iron
-- **Supabase Auth** for user authentication
-- **Environment-based secrets** for API keys
-- **Webhook signature verification** for external webhooks
-- **Policy-based access control** for multi-tenant data
-
-## Deployment
-
-### Vercel (Recommended)
-
-The easiest way to deploy is using the [Vercel Platform](https://vercel.com/new):
-
-1. Push your code to GitHub
-2. Import your repository in Vercel
-3. Configure environment variables
-4. Deploy
-
-See [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
-
-### Environment Variables
-
-Ensure all required environment variables are configured in your deployment platform:
-
-- Database connection strings
-- API keys and secrets
-- OAuth credentials
-- Webhook URLs
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-## License
-
-[Add your license here]
-
-## Support
-
-For support, email [your-email] or open an issue in the repository.
+[MIT License](LICENSE)
 
 ---
 
-Built with Next.js and powered by Google Gemini AI
+**RevYou** — Turning Reviews into Relationships.

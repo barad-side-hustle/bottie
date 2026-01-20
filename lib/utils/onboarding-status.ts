@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 
-const COOKIE_NAME = "onboarding_complete";
-const COOKIE_MAX_AGE = 24 * 60 * 60;
+export const COOKIE_NAME = "onboarding_complete";
+export const COOKIE_MAX_AGE = 24 * 60 * 60;
 
 export async function setOnboardingStatusCookie(hasLocations: boolean): Promise<void> {
   const cookieStore = await cookies();

@@ -3,7 +3,7 @@ import { GoogleGenerativeAI, ResponseSchema } from "@google/generative-ai";
 export async function generateWithGemini(
   apiKey: string,
   prompt: string,
-  modelName: string = "gemini-2.5-flash",
+  modelName: string = "gemini-3-flash-preview",
   maxOutputTokens: number = 8192,
   schema?: ResponseSchema,
   responseMimeType?: string

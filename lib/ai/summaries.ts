@@ -75,7 +75,7 @@ export async function generateWeeklySummary(
     const key = process.env.GEMINI_API_KEY;
     if (!key) throw new Error("Missing GEMINI_API_KEY");
 
-    const response = await generateWithGemini(key, prompt, "gemini-3-pro-preview", 8192, summarySchema);
+    const response = await generateWithGemini(key, prompt, "gemini-3-flash-preview", 8192, summarySchema);
 
     const data = JSON.parse(response) as WeeklySummaryData;
 
@@ -134,7 +134,7 @@ export async function generateWeeklySummaryFromClassifications(
     const key = process.env.GEMINI_API_KEY;
     if (!key) throw new Error("Missing GEMINI_API_KEY");
 
-    const response = await generateWithGemini(key, prompt, "gemini-2.5-flash", 4096, summarySchema);
+    const response = await generateWithGemini(key, prompt, "gemini-3-flash-preview", 4096, summarySchema);
 
     const data = JSON.parse(response) as WeeklySummaryData;
 

@@ -15,7 +15,7 @@ const replySchema: ResponseSchema = {
 export async function generateAIReply(prompt: string): Promise<string> {
   try {
     const key = process.env.GEMINI_API_KEY!;
-    const response = await generateWithGemini(key, prompt, "gemini-2.5-flash", 8192, replySchema);
+    const response = await generateWithGemini(key, prompt, "gemini-3-flash-preview", 8192, replySchema);
     const data = JSON.parse(response) as { reply: string };
     return data.reply;
   } catch (error) {

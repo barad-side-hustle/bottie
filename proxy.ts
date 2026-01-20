@@ -1,9 +1,10 @@
 import createMiddleware from "next-intl/middleware";
 import { routing } from "./src/i18n/routing";
-import { updateSession } from "@/lib/supabase/middleware";
+import { updateSession, checkOnboardingStatus } from "@/lib/supabase/middleware";
 import { type NextRequest, NextResponse } from "next/server";
 import { initAcceptLanguage } from "@/lib/locale-detection";
 import { locales, defaultLocale, Locale } from "@/lib/locale";
+import { COOKIE_NAME, COOKIE_MAX_AGE } from "@/lib/utils/onboarding-status";
 
 initAcceptLanguage(locales);
 
@@ -15,8 +16,8 @@ function getLocaleFromPathname(pathname: string): string {
   return locales.includes(firstSegment as Locale) ? firstSegment : defaultLocale;
 }
 
-export async function middleware(request: NextRequest) {
-  const { supabaseResponse, user } = await updateSession(request);
+export async function proxy(request: NextRequest) {
+  const { supabaseResponse, user, supabase } = await updateSession(request);
 
   const locale = getLocaleFromPathname(request.nextUrl.pathname);
 
@@ -37,11 +38,23 @@ export async function middleware(request: NextRequest) {
     const isOnboardingRoute = request.nextUrl.pathname.includes("/onboarding");
 
     if (isDashboardRoute && !isOnboardingRoute) {
-      const onboardingCookie = request.cookies.get("onboarding_complete");
+      const onboardingCookie = request.cookies.get(COOKIE_NAME);
 
       if (onboardingCookie?.value !== "true") {
-        const redirectUrl = new URL(`/${locale}/onboarding/connect-account`, request.url);
-        return NextResponse.redirect(redirectUrl);
+        const isOnboarded = await checkOnboardingStatus(supabase, user.id);
+
+        if (isOnboarded) {
+          supabaseResponse.cookies.set(COOKIE_NAME, "true", {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
+            maxAge: COOKIE_MAX_AGE,
+            path: "/",
+          });
+        } else {
+          const redirectUrl = new URL(`/${locale}/onboarding/connect-account`, request.url);
+          return NextResponse.redirect(redirectUrl);
+        }
       }
     }
   }

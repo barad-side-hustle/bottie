@@ -14,10 +14,7 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  experimental: {
-    optimizePackageImports: ["lucide-react", "@radix-ui/react-icons"],
-    browserDebugInfoInTerminal: true,
-  },
+  experimental: {},
   serverExternalPackages: ["@react-email/components", "@react-email/render"],
   reactStrictMode: true,
   logging: {

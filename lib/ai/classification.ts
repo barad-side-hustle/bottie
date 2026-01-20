@@ -5,7 +5,7 @@ import type { ReviewClassification, CategoryMention, ClassificationCategory } fr
 import { CLASSIFICATION_CATEGORIES } from "@/lib/types/classification.types";
 import { SchemaType, type ResponseSchema } from "@google/generative-ai";
 
-const MODEL_VERSION = "gemini-2.5-flash";
+const MODEL_VERSION = "gemini-3-flash-preview";
 
 const classificationSchema: ResponseSchema = {
   type: SchemaType.OBJECT,
