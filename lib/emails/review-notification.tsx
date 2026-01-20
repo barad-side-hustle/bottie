@@ -1,4 +1,19 @@
-import { Body, Button, Container, Head, Heading, Hr, Html, Section, Text } from "@react-email/components";
+import {
+  Body,
+  Button,
+  Container,
+  Head,
+  Heading,
+  Hr,
+  Html,
+  Preview,
+  Section,
+  Text,
+  Tailwind,
+  Font,
+  Row,
+  Column,
+} from "@react-email/components";
 
 export interface ReviewNotificationEmailProps {
   title: string;
@@ -36,25 +51,15 @@ export default function ReviewNotificationEmail({
   status,
   reviewPageUrl,
 }: ReviewNotificationEmailProps) {
-  const dir = "ltr";
-  const fontFamily = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
-
-  const primary = "#2A5E77";
-  const bgOuter = "#F4F3EE";
-  const bgContent = "#FFFFFF";
-  const textDark = "#141414";
-  const starColor = "#DFA45C";
-  const borderSoft = "#E2E2E0";
-
-  const statusColor = status === "pending" ? primary : "#10b981";
+  const previewText = `${reviewerName} left a ${rating}-star review`;
 
   const stars = Array.from({ length: 5 }).map((_, i) => (
     <span
       key={i}
       style={{
-        color: i < rating ? starColor : "#d1d5db",
-        fontSize: "22px",
-        marginInlineEnd: "2px",
+        color: i < rating ? "#eab308" : "#525252",
+        fontSize: "18px",
+        marginRight: "2px",
       }}
     >
       ★
@@ -62,227 +67,129 @@ export default function ReviewNotificationEmail({
   ));
 
   return (
-    <Html lang="en" dir={dir}>
-      <Head>
-        <meta name="color-scheme" content="light" />
-      </Head>
-
-      <Body
-        style={{
-          margin: 0,
-          padding: 0,
-          backgroundColor: bgOuter,
-          fontFamily,
+    <Html>
+      <Tailwind
+        config={{
+          theme: {
+            extend: {
+              colors: {
+                background: "#0f172a",
+                foreground: "#e0e7ff",
+                primary: "#3a93e6",
+                card: "#1e1b4b",
+                border: "#2e1065",
+                muted: "#cbd5e1",
+                success: "#22c55e",
+                warning: "#eab308",
+              },
+              fontFamily: {
+                sans: ["Tomorrow", "sans-serif"],
+              },
+            },
+          },
         }}
       >
-        <Container
-          style={{
-            margin: "40px auto",
-            maxWidth: "600px",
-            backgroundColor: bgContent,
-            borderRadius: "12px",
-            border: `1px solid ${borderSoft}`,
-            boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
-            overflow: "hidden",
-          }}
-        >
-          <Section
-            style={{
-              backgroundColor: primary,
-              padding: "28px 24px",
-              textAlign: "center",
+        <Head>
+          <Font
+            fontFamily="Tomorrow"
+            fallbackFontFamily="sans-serif"
+            webFont={{
+              url: "https://fonts.gstatic.com/s/tomorrow/v19/WBLmrETPbHuZ_Zmsng56.woff2",
+              format: "woff2",
             }}
-          >
-            <Heading
-              style={{
-                color: "#FFFFFF",
-                fontSize: "24px",
-                fontWeight: 600,
-                lineHeight: 1.25,
-                margin: 0,
-              }}
-            >
-              {title}
-            </Heading>
-          </Section>
-
-          <Section
-            style={{
-              padding: "32px 24px",
-              color: textDark,
+            fontWeight={400}
+            fontStyle="normal"
+          />
+          <Font
+            fontFamily="Tomorrow"
+            fallbackFontFamily="sans-serif"
+            webFont={{
+              url: "https://fonts.gstatic.com/s/tomorrow/v19/WBLmrETPbHuZ_Zmsng56.woff2",
+              format: "woff2",
             }}
-          >
-            <Text
-              style={{
-                fontSize: "18px",
-                fontWeight: 600,
-                margin: "0 0 16px 0",
-                lineHeight: 1.4,
-              }}
-            >
-              {greeting}
-            </Text>
+            fontWeight={600}
+            fontStyle="normal"
+          />
+        </Head>
+        <Preview>{previewText}</Preview>
+        <Body className="bg-background my-auto mx-auto font-sans px-2 text-foreground">
+          <Container className="border border-solid border-border rounded-lg my-[40px] mx-auto p-[20px] max-w-[600px] bg-card">
+            <Section className="mt-4 mb-6 text-center">
+              <Text className="text-primary text-xs font-bold uppercase tracking-wider mb-2">New Activity</Text>
+              <Heading className="text-foreground text-2xl font-bold p-0 m-0">{title}</Heading>
+            </Section>
 
-            <Text
-              style={{
-                fontSize: "16px",
-                lineHeight: 1.6,
-                margin: "0 0 24px 0",
-              }}
-            >
-              {body} <strong style={{ fontWeight: 600 }}>{businessName}</strong>
-            </Text>
+            <Hr className="border-border opacity-50 mx-0 w-full" />
 
-            <Section
-              style={{
-                backgroundColor: "#FFFFFF",
-                borderRadius: "8px",
-                padding: "20px",
-                border: `1px solid ${borderSoft}`,
-                marginBottom: "24px",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: "12px",
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: "20px",
-                    fontWeight: 600,
-                    color: primary,
-                    margin: 0,
-                    lineHeight: 1.3,
-                  }}
-                >
-                  {reviewerName}
-                </Text>
+            <Section className="my-6">
+              <Text className="text-foreground text-base font-bold m-0 mb-2">{greeting}</Text>
+              <Text className="text-muted text-sm m-0 mb-6">
+                {body} <span className="text-foreground font-bold">{businessName}</span>
+              </Text>
 
-                <div
-                  style={{
-                    direction: "ltr",
-                    whiteSpace: "nowrap",
-                    fontSize: 0,
-                  }}
-                >
-                  {stars}
+              <div className="bg-[#1e1b4b] border border-solid border-[#2e1065] rounded-xl overflow-hidden mb-8 shadow-sm">
+                <div className="bg-[#2e1065]/50 px-6 py-4 border-b border-[#2e1065]">
+                  <Row>
+                    <Column className="align-middle">
+                      <Text className="text-lg font-bold text-foreground m-0">{reviewerName}</Text>
+                    </Column>
+                    <Column className="align-middle text-right" style={{ width: "140px" }}>
+                      <div className="inline-block bg-black/20 rounded px-3 py-1">
+                        <div className="text-yellow-500 tracking-widest text-lg leading-none">{stars}</div>
+                      </div>
+                    </Column>
+                  </Row>
+                </div>
+                <div className="p-6">
+                  <Text className="text-muted text-lg leading-relaxed m-0 italic font-medium">
+                    &ldquo;{reviewText || noReviewText}&rdquo;
+                  </Text>
                 </div>
               </div>
 
-              <Text
-                style={{
-                  fontSize: "16px",
-                  lineHeight: 1.6,
-                  margin: 0,
-                  color: reviewText ? textDark : "#999",
-                  fontStyle: reviewText ? "normal" : "italic",
-                  whiteSpace: "pre-wrap",
-                  wordBreak: "break-word",
-                  overflowWrap: "anywhere",
-                }}
-              >
-                {reviewText || noReviewText}
-              </Text>
-            </Section>
+              <div className="bg-background border border-solid border-border rounded-xl p-6 mb-8 relative">
+                <Row className="mb-4">
+                  <Column className="align-middle">
+                    <Text className="text-xs font-bold uppercase text-primary m-0 tracking-wider">{aiReplyHeader}</Text>
+                  </Column>
+                  <Column className="align-middle text-right">
+                    <Button
+                      className={`text-[10px] font-bold px-3 py-1 rounded-full no-underline cursor-default ${
+                        status === "posted"
+                          ? "text-green-400 bg-green-900/30 border border-green-800"
+                          : "text-blue-400 bg-blue-900/30 border border-blue-800"
+                      }`}
+                    >
+                      {statusText}
+                    </Button>
+                  </Column>
+                </Row>
 
-            <Section
-              style={{
-                backgroundColor: "#FFFFFF",
-                borderRadius: "8px",
-                border: `1px solid ${borderSoft}`,
-                padding: "20px",
-                marginBottom: "24px",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  marginBottom: "12px",
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: "16px",
-                    fontWeight: 600,
-                    color: primary,
-                    margin: 0,
-                    letterSpacing: "0.2px",
-                  }}
-                >
-                  {aiReplyHeader}
-                </Text>
-
-                <span
-                  style={{
-                    display: "inline-block",
-                    padding: "4px 10px",
-                    borderRadius: "12px",
-                    fontSize: "13px",
-                    fontWeight: 600,
-                    color: "#FFFFFF",
-                    backgroundColor: statusColor,
-                  }}
-                >
-                  {statusText}
-                </span>
+                <div className="pl-4 border-l-2 border-primary">
+                  <Text className="text-foreground text-sm leading-relaxed m-0 whitespace-pre-wrap font-sans">
+                    {aiReply}
+                  </Text>
+                </div>
               </div>
 
-              <div
-                style={{
-                  backgroundColor: "#FFFFFF",
-                  padding: "16px",
-                  borderRadius: "6px",
-                  border: `1px solid ${borderSoft}`,
-                  fontSize: "15px",
-                  lineHeight: 1.6,
-                  color: primary,
-                  whiteSpace: "pre-wrap",
-                }}
-              >
-                {aiReply}
+              <div className="text-center mt-6">
+                <Button
+                  href={reviewPageUrl}
+                  className="bg-primary text-white rounded-md px-6 py-3 text-sm font-bold no-underline"
+                >
+                  {viewReviewButton}
+                </Button>
               </div>
             </Section>
 
-            <Section style={{ textAlign: "center", paddingTop: "8px" }}>
-              <Button
-                href={reviewPageUrl}
-                style={{
-                  backgroundColor: primary,
-                  color: "#FFFFFF",
-                  borderRadius: "12px",
-                  padding: "14px 48px",
-                  fontSize: "16px",
-                  fontWeight: 600,
-                  textDecoration: "none",
-                  display: "inline-block",
-                }}
-              >
-                {viewReviewButton}
-              </Button>
-            </Section>
-          </Section>
+            <Hr className="border-border opacity-50 mx-0 w-full mt-6" />
 
-          <Section style={{ padding: "0 24px 24px 24px" }}>
-            <Hr style={{ borderColor: borderSoft, margin: "0 0 16px 0" }} />
-            <Text
-              style={{
-                fontSize: "13px",
-                lineHeight: 1.5,
-                color: "#6b7280",
-                textAlign: "center",
-                margin: 0,
-              }}
-            >
-              {footer}
-            </Text>
-          </Section>
-        </Container>
-      </Body>
+            <Section className="mt-6">
+              <Text className="text-muted text-xs text-center">{footer}</Text>
+            </Section>
+          </Container>
+        </Body>
+      </Tailwind>
     </Html>
   );
 }

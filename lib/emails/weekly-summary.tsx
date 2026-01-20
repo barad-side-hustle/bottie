@@ -1,4 +1,19 @@
-import { Body, Button, Container, Head, Heading, Hr, Html, Section, Text, Column, Row } from "@react-email/components";
+import {
+  Heading,
+  Hr,
+  Html,
+  Preview,
+  Section,
+  Text,
+  Tailwind,
+  Font,
+  Body,
+  Container,
+  Button,
+  Head,
+  Row,
+  Column,
+} from "@react-email/components";
 
 export interface SentimentData {
   positive: number;
@@ -13,25 +28,19 @@ export interface WeeklySummaryEmailProps {
   title: string;
   dateRange: string;
   businessName: string;
-
   statsTitle: string;
   totalReviewsLabel: string;
   averageRatingLabel: string;
   totalReviews: number;
   averageRating: string;
-
   sentimentTitle?: string;
   sentiment?: SentimentData;
-
   positiveThemesTitle: string;
   positiveThemes: string[];
-
   negativeThemesTitle: string;
   negativeThemes: string[];
-
   recommendationsTitle: string;
   recommendations: string[];
-
   viewDashboardButton: string;
   dashboardUrl: string;
   footer: string;
@@ -58,252 +67,200 @@ export default function WeeklySummaryEmail({
   dashboardUrl,
   footer,
 }: WeeklySummaryEmailProps) {
-  const dir = "ltr";
-  const fontFamily = "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif";
-
-  const primary = "#2A5E77";
-  const bgOuter = "#F4F3EE";
-  const bgContent = "#FFFFFF";
-  const textDark = "#141414";
-  const borderSoft = "#E2E2E0";
-
-  const positiveColor = "#10b981";
-  const negativeColor = "#ef4444";
-  const recommendationColor = "#3b82f6";
+  const previewText = `Weekly Summary for ${businessName}: ${dateRange}`;
 
   return (
-    <Html lang="en" dir={dir}>
-      <Head>
-        <meta name="color-scheme" content="light" />
-      </Head>
-
-      <Body
-        style={{
-          margin: 0,
-          padding: 0,
-          backgroundColor: bgOuter,
-          fontFamily,
+    <Html>
+      <Tailwind
+        config={{
+          theme: {
+            extend: {
+              colors: {
+                background: "#0f172a",
+                foreground: "#e0e7ff",
+                primary: "#3a93e6",
+                card: "#1e1b4b",
+                border: "#2e1065",
+                muted: "#cbd5e1",
+                success: "#22c55e",
+                warning: "#eab308",
+                destructive: "#ef4444",
+              },
+              fontFamily: {
+                sans: ["Tomorrow", "sans-serif"],
+              },
+            },
+          },
         }}
       >
-        <Container
-          style={{
-            margin: "40px auto",
-            maxWidth: "600px",
-            backgroundColor: bgContent,
-            borderRadius: "12px",
-            border: `1px solid ${borderSoft}`,
-            boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
-            overflow: "hidden",
-          }}
-        >
-          <Section
-            style={{
-              backgroundColor: primary,
-              padding: "28px 24px",
-              textAlign: "center",
+        <Head>
+          <Font
+            fontFamily="Tomorrow"
+            fallbackFontFamily="sans-serif"
+            webFont={{
+              url: "https://fonts.gstatic.com/s/tomorrow/v19/WBLmrETPbHuZ_Zmsng56.woff2",
+              format: "woff2",
             }}
-          >
-            <Heading
-              style={{
-                color: "#FFFFFF",
-                fontSize: "24px",
-                fontWeight: 600,
-                lineHeight: 1.25,
-                margin: 0,
-              }}
-            >
-              {title}
-            </Heading>
-            <Text
-              style={{
-                color: "rgba(255,255,255,0.9)",
-                fontSize: "16px",
-                margin: "8px 0 0 0",
-              }}
-            >
-              {businessName} • {dateRange}
-            </Text>
-          </Section>
-
-          <Section style={{ padding: "32px 24px", color: textDark }}>
-            <Section
-              style={{
-                backgroundColor: "#F8FAFC",
-                borderRadius: "8px",
-                padding: "20px",
-                border: `1px solid ${borderSoft}`,
-                marginBottom: "32px",
-              }}
-            >
-              <Heading
-                as="h3"
-                style={{
-                  fontSize: "18px",
-                  margin: "0 0 16px 0",
-                  color: textDark,
-                }}
-              >
-                {statsTitle}
-              </Heading>
-              <Row>
-                <Column style={{ textAlign: "center", borderInlineEnd: `1px solid ${borderSoft}` }}>
-                  <Text style={{ fontSize: "32px", fontWeight: "bold", margin: 0, color: primary }}>
-                    {totalReviews}
-                  </Text>
-                  <Text style={{ fontSize: "14px", color: "#64748b", margin: "4px 0 0 0" }}>{totalReviewsLabel}</Text>
-                </Column>
-                <Column style={{ textAlign: "center" }}>
-                  <Text style={{ fontSize: "32px", fontWeight: "bold", margin: 0, color: primary }}>
-                    {averageRating}
-                  </Text>
-                  <Text style={{ fontSize: "14px", color: "#64748b", margin: "4px 0 0 0" }}>{averageRatingLabel}</Text>
-                </Column>
-              </Row>
+            fontWeight={400}
+            fontStyle="normal"
+          />
+          <Font
+            fontFamily="Tomorrow"
+            fallbackFontFamily="sans-serif"
+            webFont={{
+              url: "https://fonts.gstatic.com/s/tomorrow/v19/WBLmrETPbHuZ_Zmsng56.woff2",
+              format: "woff2",
+            }}
+            fontWeight={600}
+            fontStyle="normal"
+          />
+        </Head>
+        <Preview>{previewText}</Preview>
+        <Body className="bg-background my-auto mx-auto font-sans px-2 text-foreground">
+          <Container className="border border-solid border-border rounded-lg my-[40px] mx-auto p-[20px] max-w-[600px] bg-card">
+            <Section className="mt-4 mb-6 text-center">
+              <Text className="text-primary text-xs font-bold uppercase tracking-wider mb-2">Performance Report</Text>
+              <Heading className="text-foreground text-2xl font-bold p-0 m-0 leading-tight">{title}</Heading>
+              <Text className="text-muted text-sm m-0 mt-2">
+                {businessName} • {dateRange}
+              </Text>
             </Section>
 
-            {sentiment && sentimentTitle && (
-              <Section
-                style={{
-                  backgroundColor: "#F8FAFC",
-                  borderRadius: "8px",
-                  padding: "20px",
-                  border: `1px solid ${borderSoft}`,
-                  marginBottom: "32px",
-                }}
-              >
+            <Hr className="border-border opacity-50 mx-0 w-full" />
+
+            <Section className="my-6">
+              <div className="bg-[#1e1b4b] border border-solid border-[#2e1065] rounded-xl p-6 mb-8">
                 <Heading
                   as="h3"
-                  style={{
-                    fontSize: "18px",
-                    margin: "0 0 16px 0",
-                    color: textDark,
-                  }}
+                  className="text-foreground text-sm font-bold uppercase tracking-widest m-0 mb-6 border-b border-[#2e1065] pb-2"
                 >
-                  {sentimentTitle}
+                  {statsTitle}
                 </Heading>
+
                 <Row>
-                  <Column style={{ textAlign: "center" }}>
-                    <Text style={{ fontSize: "24px", fontWeight: "bold", margin: 0, color: positiveColor }}>
-                      {sentiment.positive}
-                    </Text>
-                    <Text style={{ fontSize: "13px", color: "#64748b", margin: "4px 0 0 0" }}>
-                      {sentiment.positiveLabel}
+                  <Column className="w-1/2 align-top text-center border-r border-[#2e1065]">
+                    <Text className="text-4xl font-bold text-primary m-0 mb-1">{totalReviews}</Text>
+                    <Text className="text-[10px] text-muted font-bold uppercase tracking-widest m-0">
+                      {totalReviewsLabel}
                     </Text>
                   </Column>
-                  <Column style={{ textAlign: "center" }}>
-                    <Text style={{ fontSize: "24px", fontWeight: "bold", margin: 0, color: "#64748b" }}>
-                      {sentiment.neutral}
-                    </Text>
-                    <Text style={{ fontSize: "13px", color: "#64748b", margin: "4px 0 0 0" }}>
-                      {sentiment.neutralLabel}
-                    </Text>
-                  </Column>
-                  <Column style={{ textAlign: "center" }}>
-                    <Text style={{ fontSize: "24px", fontWeight: "bold", margin: 0, color: negativeColor }}>
-                      {sentiment.negative}
-                    </Text>
-                    <Text style={{ fontSize: "13px", color: "#64748b", margin: "4px 0 0 0" }}>
-                      {sentiment.negativeLabel}
+                  <Column className="w-1/2 align-top text-center">
+                    <Text className="text-4xl font-bold text-white m-0 mb-1">{averageRating}</Text>
+                    <Text className="text-[10px] text-muted font-bold uppercase tracking-widest m-0">
+                      {averageRatingLabel}
                     </Text>
                   </Column>
                 </Row>
-              </Section>
-            )}
+              </div>
 
-            {positiveThemes.length > 0 && (
-              <Section style={{ marginBottom: "24px" }}>
-                <Heading as="h3" style={{ fontSize: "18px", margin: "0 0 12px 0", color: textDark }}>
-                  <span style={{ color: positiveColor, marginInlineEnd: "8px" }}>●</span>
-                  {positiveThemesTitle}
-                </Heading>
-                <ul style={{ paddingInlineStart: "20px", margin: 0 }}>
-                  {positiveThemes.map((theme, i) => (
-                    <li key={i} style={{ marginBottom: "8px", fontSize: "16px", lineHeight: "1.5" }}>
-                      {theme}
-                    </li>
-                  ))}
-                </ul>
-              </Section>
-            )}
-
-            {negativeThemes.length > 0 && (
-              <Section style={{ marginBottom: "24px" }}>
-                <Heading as="h3" style={{ fontSize: "18px", margin: "0 0 12px 0", color: textDark }}>
-                  <span style={{ color: negativeColor, marginInlineEnd: "8px" }}>●</span>
-                  {negativeThemesTitle}
-                </Heading>
-                <ul style={{ paddingInlineStart: "20px", margin: 0 }}>
-                  {negativeThemes.map((theme, i) => (
-                    <li key={i} style={{ marginBottom: "8px", fontSize: "16px", lineHeight: "1.5" }}>
-                      {theme}
-                    </li>
-                  ))}
-                </ul>
-              </Section>
-            )}
-
-            {recommendations.length > 0 && (
-              <Section style={{ marginBottom: "32px" }}>
-                <Heading as="h3" style={{ fontSize: "18px", margin: "0 0 12px 0", color: textDark }}>
-                  <span style={{ color: recommendationColor, marginInlineEnd: "8px" }}>●</span>
-                  {recommendationsTitle}
-                </Heading>
-                <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                  {recommendations.map((rec, i) => (
-                    <div
-                      key={i}
-                      style={{
-                        backgroundColor: "#EFF6FF",
-                        padding: "12px",
-                        borderRadius: "6px",
-                        fontSize: "15px",
-                        lineHeight: "1.5",
-                        marginBottom: "8px",
-                        color: "#1e3a8a",
-                      }}
-                    >
-                      {rec}
-                    </div>
-                  ))}
+              {sentiment && sentimentTitle && (
+                <div className="bg-background border border-solid border-border rounded-xl p-6 mb-8">
+                  <Heading
+                    as="h3"
+                    className="text-foreground text-sm font-bold uppercase tracking-widest m-0 mb-6 border-b border-border pb-2"
+                  >
+                    {sentimentTitle}
+                  </Heading>
+                  <Row>
+                    <Column className="w-1/3 align-top text-center">
+                      <Text className="text-2xl font-bold text-[#22c55e] m-0 mb-1">{sentiment.positive}</Text>
+                      <Text className="text-[10px] text-muted font-bold uppercase tracking-widest m-0">
+                        {sentiment.positiveLabel}
+                      </Text>
+                    </Column>
+                    <Column className="w-1/3 align-top text-center">
+                      <Text className="text-2xl font-bold text-gray-500 m-0 mb-1">{sentiment.neutral}</Text>
+                      <Text className="text-[10px] text-muted font-bold uppercase tracking-widest m-0">
+                        {sentiment.neutralLabel}
+                      </Text>
+                    </Column>
+                    <Column className="w-1/3 align-top text-center">
+                      <Text className="text-2xl font-bold text-[#ef4444] m-0 mb-1">{sentiment.negative}</Text>
+                      <Text className="text-[10px] text-muted font-bold uppercase tracking-widest m-0">
+                        {sentiment.negativeLabel}
+                      </Text>
+                    </Column>
+                  </Row>
                 </div>
-              </Section>
-            )}
+              )}
 
-            <Section style={{ textAlign: "center", paddingTop: "8px" }}>
-              <Button
-                href={dashboardUrl}
-                style={{
-                  backgroundColor: primary,
-                  color: "#FFFFFF",
-                  borderRadius: "12px",
-                  padding: "14px 48px",
-                  fontSize: "16px",
-                  fontWeight: 600,
-                  textDecoration: "none",
-                  display: "inline-block",
-                }}
-              >
-                {viewDashboardButton}
-              </Button>
+              {(positiveThemes.length > 0 || negativeThemes.length > 0) && (
+                <div className="mb-8">
+                  {positiveThemes.length > 0 && (
+                    <div className="mb-6">
+                      <Text className="text-xs font-bold uppercase text-[#22c55e] tracking-widest mb-3 border-b border-[#22c55e]/20 pb-1">
+                        {positiveThemesTitle}
+                      </Text>
+                      <div className="inline-block">
+                        {positiveThemes.map((theme, i) => (
+                          <span
+                            key={i}
+                            className="inline-block bg-[#22c55e]/10 text-[#22c55e] text-xs font-bold px-3 py-1 rounded-full mr-2 mb-2 border border-[#22c55e]/20"
+                          >
+                            {theme}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {negativeThemes.length > 0 && (
+                    <div className="mb-2">
+                      <Text className="text-xs font-bold uppercase text-[#ef4444] tracking-widest mb-3 border-b border-[#ef4444]/20 pb-1">
+                        {negativeThemesTitle}
+                      </Text>
+                      <div className="inline-block">
+                        {negativeThemes.map((theme, i) => (
+                          <span
+                            key={i}
+                            className="inline-block bg-[#ef4444]/10 text-[#ef4444] text-xs font-bold px-3 py-1 rounded-full mr-2 mb-2 border border-[#ef4444]/20"
+                          >
+                            {theme}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {recommendations.length > 0 && (
+                <div className="mb-6">
+                  <Heading as="h3" className="text-base text-foreground font-bold uppercase tracking-wider m-0 mb-3">
+                    <span className="text-primary mr-2">●</span>
+                    {recommendationsTitle}
+                  </Heading>
+                  <div className="flex flex-col gap-2">
+                    {recommendations.map((rec, i) => (
+                      <div
+                        key={i}
+                        className="bg-blue-900/20 border border-blue-900/50 rounded-lg p-3 text-sm text-blue-200"
+                      >
+                        {rec}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="text-center mt-8">
+                <Button
+                  href={dashboardUrl}
+                  className="bg-primary text-white rounded-md px-6 py-3 text-sm font-bold no-underline"
+                >
+                  {viewDashboardButton}
+                </Button>
+              </div>
             </Section>
-          </Section>
 
-          <Section style={{ padding: "0 24px 24px 24px" }}>
-            <Hr style={{ borderColor: borderSoft, margin: "0 0 16px 0" }} />
-            <Text
-              style={{
-                fontSize: "13px",
-                lineHeight: 1.5,
-                color: "#6b7280",
-                textAlign: "center",
-                margin: 0,
-              }}
-            >
-              {footer}
-            </Text>
-          </Section>
-        </Container>
-      </Body>
+            <Hr className="border-border opacity-50 mx-0 w-full mt-6" />
+
+            <Section className="mt-6">
+              <Text className="text-muted text-xs text-center">{footer}</Text>
+            </Section>
+          </Container>
+        </Body>
+      </Tailwind>
     </Html>
   );
 }

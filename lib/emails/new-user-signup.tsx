@@ -1,4 +1,17 @@
-import { Body, Button, Container, Head, Heading, Hr, Html, Section, Text } from "@react-email/components";
+import {
+  Body,
+  Container,
+  Head,
+  Heading,
+  Html,
+  Preview,
+  Section,
+  Text,
+  Tailwind,
+  Font,
+  Hr,
+  Button,
+} from "@react-email/components";
 
 export interface NewUserSignupEmailProps {
   userName: string;
@@ -15,224 +28,104 @@ export default function NewUserSignupEmail({
   signupTimestamp,
   dashboardUrl,
 }: NewUserSignupEmailProps) {
-  const primary = "#2A5E77";
-  const bgOuter = "#F4F3EE";
-  const bgContent = "#FFFFFF";
-  const textDark = "#141414";
-  const borderSoft = "#E2E2E0";
-
   const formattedDate = new Intl.DateTimeFormat("en-US", {
     dateStyle: "full",
     timeStyle: "short",
   }).format(signupTimestamp);
 
-  return (
-    <Html lang="en">
-      <Head>
-        <meta name="color-scheme" content="light" />
-      </Head>
+  const previewText = `New user signup: ${userName}`;
 
-      <Body
-        style={{
-          margin: 0,
-          padding: 0,
-          backgroundColor: bgOuter,
-          fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+  return (
+    <Html>
+      <Tailwind
+        config={{
+          theme: {
+            extend: {
+              colors: {
+                background: "#0f172a",
+                foreground: "#e0e7ff",
+                primary: "#3a93e6",
+                card: "#1e1b4b",
+                border: "#2e1065",
+                muted: "#cbd5e1",
+              },
+              fontFamily: {
+                sans: ["Tomorrow", "sans-serif"],
+              },
+            },
+          },
         }}
       >
-        <Container
-          style={{
-            margin: "40px auto",
-            maxWidth: "600px",
-            backgroundColor: bgContent,
-            borderRadius: "12px",
-            border: `1px solid ${borderSoft}`,
-            boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
-            overflow: "hidden",
-          }}
-        >
-          <Section
-            style={{
-              backgroundColor: primary,
-              padding: "28px 24px",
-              textAlign: "center",
+        <Head>
+          <Font
+            fontFamily="Tomorrow"
+            fallbackFontFamily="sans-serif"
+            webFont={{
+              url: "https://fonts.gstatic.com/s/tomorrow/v19/WBLmrETPbHuZ_Zmsng56.woff2",
+              format: "woff2",
             }}
-          >
-            <Heading
-              style={{
-                color: "#FFFFFF",
-                fontSize: "24px",
-                fontWeight: 600,
-                lineHeight: 1.25,
-                margin: 0,
-              }}
-            >
-              New User Signup
-            </Heading>
-          </Section>
-
-          <Section
-            style={{
-              padding: "32px 24px",
-              color: textDark,
+            fontWeight={400}
+            fontStyle="normal"
+          />
+          <Font
+            fontFamily="Tomorrow"
+            fallbackFontFamily="sans-serif"
+            webFont={{
+              url: "https://fonts.gstatic.com/s/tomorrow/v19/WBLmrETPbHuZ_Zmsng56.woff2",
+              format: "woff2",
             }}
-          >
-            <Text
-              style={{
-                fontSize: "18px",
-                fontWeight: 600,
-                margin: "0 0 16px 0",
-                lineHeight: 1.4,
-              }}
-            >
-              Hi Alon,
-            </Text>
-
-            <Text
-              style={{
-                fontSize: "16px",
-                lineHeight: 1.6,
-                margin: "0 0 24px 0",
-              }}
-            >
-              A new user has just signed up for Bottie.ai!
-            </Text>
-
-            <Section
-              style={{
-                backgroundColor: "#FFFFFF",
-                borderRadius: "8px",
-                padding: "20px",
-                border: `1px solid ${borderSoft}`,
-                marginBottom: "24px",
-              }}
-            >
-              <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                <tbody>
-                  <tr>
-                    <td
-                      style={{
-                        padding: "8px 0",
-                        fontSize: "14px",
-                        color: "#6b7280",
-                        fontWeight: 600,
-                      }}
-                    >
-                      Name:
-                    </td>
-                    <td
-                      style={{
-                        padding: "8px 0",
-                        fontSize: "16px",
-                        color: textDark,
-                      }}
-                    >
-                      {userName}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td
-                      style={{
-                        padding: "8px 0",
-                        fontSize: "14px",
-                        color: "#6b7280",
-                        fontWeight: 600,
-                      }}
-                    >
-                      Email:
-                    </td>
-                    <td
-                      style={{
-                        padding: "8px 0",
-                        fontSize: "16px",
-                        color: textDark,
-                      }}
-                    >
-                      {userEmail}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td
-                      style={{
-                        padding: "8px 0",
-                        fontSize: "14px",
-                        color: "#6b7280",
-                        fontWeight: 600,
-                      }}
-                    >
-                      User ID:
-                    </td>
-                    <td
-                      style={{
-                        padding: "8px 0",
-                        fontSize: "14px",
-                        color: "#6b7280",
-                        fontFamily: "monospace",
-                      }}
-                    >
-                      {userId}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td
-                      style={{
-                        padding: "8px 0",
-                        fontSize: "14px",
-                        color: "#6b7280",
-                        fontWeight: 600,
-                      }}
-                    >
-                      Signup Time:
-                    </td>
-                    <td
-                      style={{
-                        padding: "8px 0",
-                        fontSize: "14px",
-                        color: textDark,
-                      }}
-                    >
-                      {formattedDate}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+            fontWeight={600}
+            fontStyle="normal"
+          />
+        </Head>
+        <Preview>{previewText}</Preview>
+        <Body className="bg-background my-auto mx-auto font-sans px-2 text-foreground">
+          <Container className="border border-solid border-border rounded-lg my-[40px] mx-auto p-[20px] max-w-[600px] bg-card">
+            <Section className="mt-8 mb-8 text-center">
+              <Heading className="text-foreground text-2xl font-bold p-0 m-0 leading-tight">New User Signup</Heading>
+              <Text className="text-muted text-sm m-0 mt-2">A new user has joined the platform</Text>
             </Section>
 
-            <Section style={{ textAlign: "center", paddingTop: "8px" }}>
+            <Hr className="border-border opacity-50 mx-0 w-full" />
+
+            <Section className="my-6 p-6 bg-background rounded-xl border border-border border-solid">
+              <div className="mb-4 text-center sm:text-left">
+                <Text className="text-muted text-xs font-bold uppercase tracking-wider m-0 mb-1">Name</Text>
+                <Text className="text-foreground text-lg font-bold m-0">{userName}</Text>
+              </div>
+              <div className="mb-4 text-center sm:text-left">
+                <Text className="text-muted text-xs font-bold uppercase tracking-wider m-0 mb-1">Email</Text>
+                <Text className="text-primary text-base m-0 font-medium no-underline">{userEmail}</Text>
+              </div>
+              <div className="mb-4 text-center sm:text-left">
+                <Text className="text-muted text-xs font-bold uppercase tracking-wider m-0 mb-1">User ID</Text>
+                <Text className="text-foreground text-sm font-mono m-0 bg-black/20 p-1 rounded inline-block">
+                  {userId}
+                </Text>
+              </div>
+              <div className="text-center sm:text-left">
+                <Text className="text-muted text-xs font-bold uppercase tracking-wider m-0 mb-1">Signed Up At</Text>
+                <Text className="text-foreground text-sm m-0">{formattedDate}</Text>
+              </div>
+            </Section>
+
+            <Section className="text-center mt-8">
               <Button
                 href={dashboardUrl}
-                style={{
-                  backgroundColor: primary,
-                  color: "#FFFFFF",
-                  borderRadius: "12px",
-                  padding: "14px 48px",
-                  fontSize: "16px",
-                  fontWeight: 600,
-                  textDecoration: "none",
-                  display: "inline-block",
-                }}
+                className="bg-primary text-white rounded-md px-6 py-3 text-sm font-bold no-underline shadow-lg transiton-all hover:bg-blue-600"
               >
-                View User in Dashboard
+                View User Dashboard
               </Button>
             </Section>
-          </Section>
 
-          <Section style={{ padding: "0 24px 24px 24px" }}>
-            <Hr style={{ borderColor: borderSoft, margin: "0 0 16px 0" }} />
-            <Text
-              style={{
-                fontSize: "13px",
-                lineHeight: 1.5,
-                color: "#6b7280",
-                textAlign: "center",
-                margin: 0,
-              }}
-            >
-              This is an automated notification from Bottie.ai
-            </Text>
-          </Section>
-        </Container>
-      </Body>
+            <Hr className="border-border opacity-50 mx-0 w-full mt-8" />
+
+            <Section className="mt-6">
+              <Text className="text-muted text-xs text-center">Bottie.ai System Notification</Text>
+            </Section>
+          </Container>
+        </Body>
+      </Tailwind>
     </Html>
   );
 }
