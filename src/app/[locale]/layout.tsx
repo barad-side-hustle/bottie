@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { DirectionProvider } from "@/contexts/DirectionProvider";
 import { Toaster } from "@/components/ui/sonner";
+import { RybbitProvider } from "@/components/RybbitProvider";
 import { locales, getLocaleDir, type Locale } from "@/lib/locale";
 import "../globals.css";
 import Script from "next/script";
@@ -105,6 +106,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider locale={locale} messages={messages}>
           <DirectionProvider initialDir={dir}>
             <AuthProvider>
+              <RybbitProvider />
               {children}
               <Toaster dir={dir} richColors />
             </AuthProvider>

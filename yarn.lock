@@ -2736,6 +2736,11 @@
   resolved "https://registry.yarnpkg.com/@rtsao/scc/-/scc-1.1.0.tgz#927dd2fae9bc3361403ac2c7a00c32ddce9ad7e8"
   integrity sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==
 
+"@rybbit/js@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@rybbit/js/-/js-0.5.0.tgz#9a7db85fb80287f7b33837e69484b860e2cdefb9"
+  integrity sha512-1tvqZtVfTGZ5FPXuqrmRq4RFQfQ5B/qAZUllROgHSPZ7Fp9nuk7cvjG4rCLpQ/XLk3nY69jEVdkjAXfV9nNS3Q==
+
 "@schummar/icu-type-parser@1.21.5":
   version "1.21.5"
   resolved "https://registry.yarnpkg.com/@schummar/icu-type-parser/-/icu-type-parser-1.21.5.tgz#75989085bbbf80ee325874a0137437bde77e9baf"
