@@ -13,17 +13,6 @@ const getLocationCached = cache(async (userId: string, locationId: string): Prom
   return controller.getLocation(locationId);
 });
 
-export async function getLocations(userId: string): Promise<Location[]> {
-  const { userId: authenticatedUserId } = await getAuthenticatedUserId();
-
-  if (authenticatedUserId !== userId) {
-    throw new Error("Forbidden: Cannot access another user's data");
-  }
-
-  const controller = new LocationsController(userId);
-  return controller.getLocations();
-}
-
 export async function getLocation(userId: string, locationId: string): Promise<Location> {
   const { userId: authenticatedUserId } = await getAuthenticatedUserId();
 
@@ -87,17 +76,6 @@ export async function connectLocation(
   }
 }
 
-export async function updateLocation(userId: string, locationId: string, data: LocationUpdate): Promise<Location> {
-  const { userId: authenticatedUserId } = await getAuthenticatedUserId();
-
-  if (authenticatedUserId !== userId) {
-    throw new Error("Forbidden: Cannot update another user's location");
-  }
-
-  const controller = new LocationsController(userId);
-  return controller.updateLocation(locationId, data);
-}
-
 export async function updateLocationConfig(
   userId: string,
   locationId: string,
@@ -126,19 +104,4 @@ export async function disconnectLocation(
 
   const controller = new AccountLocationsController(userId, accountId);
   return controller.disconnectLocation(accountLocationId);
-}
-
-export async function checkLocationExists(
-  userId: string,
-  accountId: string,
-  googleBusinessId: string
-): Promise<boolean> {
-  const { userId: authenticatedUserId } = await getAuthenticatedUserId();
-
-  if (authenticatedUserId !== userId) {
-    throw new Error("Forbidden: Cannot access another user's data");
-  }
-
-  const controller = new AccountLocationsController(userId, accountId);
-  return controller.checkExists(googleBusinessId);
 }

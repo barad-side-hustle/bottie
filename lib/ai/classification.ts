@@ -158,26 +158,3 @@ function createRatingBasedClassification(rating: number): ReviewClassification {
     modelVersion: `rating-only-${rating}`,
   };
 }
-
-export async function classifyReviews(
-  reviews: Array<{ id: string; rating: number; text: string | null }>
-): Promise<Map<string, ReviewClassification>> {
-  const results = new Map<string, ReviewClassification>();
-
-  for (const review of reviews) {
-    try {
-      const classification = await classifyReview({
-        rating: review.rating,
-        text: review.text,
-      });
-      results.set(review.id, classification);
-
-      await new Promise((resolve) => setTimeout(resolve, 100));
-    } catch (error) {
-      console.error(`Failed to classify review ${review.id}:`, error);
-      results.set(review.id, createRatingBasedClassification(review.rating));
-    }
-  }
-
-  return results;
-}

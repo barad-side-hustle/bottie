@@ -29,7 +29,6 @@
     "stripe:webhook": "stripe listen --forward-to localhost:3000/api/stripe/webhook"
   },
   "dependencies": {
-    "@google-cloud/pubsub": "^4.10.0",
     "@google/generative-ai": "^0.24.1",
     "@hapi/iron": "^7.0.1",
     "@radix-ui/react-avatar": "^1.1.11",
@@ -45,12 +44,10 @@
     "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-slot": "^1.2.3",
     "@radix-ui/react-switch": "^1.2.6",
-    "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/react-tooltip": "^1.2.8",
     "@react-email/components": "^0.0.32",
     "@react-email/render": "^1.0.1",
     "@rybbit/js": "^0.5.0",
-    "@stripe/stripe-js": "^8.5.2",
     "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.81.1",
     "accept-language": "^3.0.20",
@@ -60,9 +57,7 @@
     "drizzle-orm": "^0.44.7",
     "emoji-picker-element": "^1.27.0",
     "emoji-regex": "^10.6.0",
-    "framer-motion": "^12.23.24",
     "google-auth-library": "^10.4.1",
-    "lottie-react": "^2.4.1",
     "lucide-react": "^0.552.0",
     "mustache": "^4.2.0",
     "next": "^16.0.10",
@@ -92,9 +87,7 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.3.1",
     "@inquirer/prompts": "^8.0.1",
-    "@lingual/i18n-check": "^0.8.13",
     "@tailwindcss/postcss": "^4",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
@@ -109,7 +102,6 @@
     "@types/react-dom": "^19",
     "@vitejs/plugin-react": "^5.1.1",
     "@vitest/coverage-v8": "^4.0.13",
-    "baseline-browser-mapping": "^2.8.32",
     "decomment": "^0.9.5",
     "dotenv": "^17.2.3",
     "dotenv-cli": "^11.0.0",
@@ -118,7 +110,6 @@
     "eslint-config-next": "^16.0.0",
     "eslint-plugin-unused-imports": "^4.3.0",
     "glob": "^11.0.3",
-    "googleapis": "^165.0.0",
     "happy-dom": "^20.0.10",
     "knip": "^5.66.3",
     "prettier": "^3.6.2",
@@ -129,18 +120,5 @@
     "typescript-eslint": "^8.46.3",
     "vitest": "^4.0.13"
   },
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e",
-  "knip": {
-    "ignore": [
-      "src/i18n/request.ts"
-    ],
-    "ignoreBinaries": [
-      "stripe"
-    ],
-    "rules": {
-      "dependencies": "off",
-      "exports": "off",
-      "types": "off"
-    }
-  }
+  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

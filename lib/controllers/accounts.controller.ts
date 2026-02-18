@@ -3,6 +3,7 @@ import type { AccountFilters, AccountLocationFilters, Account, AccountCreate, Ac
 export type { AccountWithLocations };
 import { AccountsRepository } from "@/lib/db/repositories";
 import { db } from "@/lib/db/client";
+import { NotFoundError } from "@/lib/api/errors";
 import { accountLocations, userAccounts } from "@/lib/db/schema";
 import { eq, and, inArray, type SQL } from "drizzle-orm";
 
@@ -21,7 +22,7 @@ export class AccountsController {
 
   async getAccount(accountId: string): Promise<Account> {
     const account = await this.repository.get(accountId);
-    if (!account) throw new Error("Account not found");
+    if (!account) throw new NotFoundError("Account not found");
     return account;
   }
 

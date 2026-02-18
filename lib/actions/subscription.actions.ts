@@ -19,26 +19,6 @@ export async function getActiveSubscription(): Promise<Subscription | null> {
   }
 }
 
-export async function cancelSubscription(): Promise<{
-  success: boolean;
-  error?: string;
-}> {
-  try {
-    const { userId } = await getAuthenticatedUserId();
-
-    const repo = new SubscriptionsRepository();
-    await repo.cancel(userId);
-
-    return { success: true };
-  } catch (error) {
-    console.error("Error canceling subscription:", error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : "Unknown error",
-    };
-  }
-}
-
 export async function createCheckoutSession(
   plan: "basic" | "pro",
   interval: "monthly" | "yearly",

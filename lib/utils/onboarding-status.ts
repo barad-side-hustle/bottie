@@ -14,16 +14,3 @@ export async function setOnboardingStatusCookie(hasLocations: boolean): Promise<
     path: "/",
   });
 }
-
-export async function getOnboardingStatusFromCookie(): Promise<boolean | null> {
-  const cookieStore = await cookies();
-  const cookie = cookieStore.get(COOKIE_NAME);
-
-  if (!cookie) return null;
-  return cookie.value === "true";
-}
-
-export async function clearOnboardingStatusCookie(): Promise<void> {
-  const cookieStore = await cookies();
-  cookieStore.delete(COOKIE_NAME);
-}

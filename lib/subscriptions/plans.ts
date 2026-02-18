@@ -8,7 +8,7 @@ export interface PlanLimits {
   analytics: boolean;
 }
 
-export interface PlanFeature {
+interface PlanFeature {
   text: string;
   included: boolean;
 }
@@ -23,7 +23,7 @@ export interface Plan {
   limits: PlanLimits;
 }
 
-export const PLANS: Record<PlanTier, Plan> = {
+const PLANS: Record<PlanTier, Plan> = {
   free: {
     id: "free",
     name: "Free",
@@ -148,13 +148,6 @@ export function getAllPlans(t: (key: string, params?: Record<string, string | nu
       features,
     };
   });
-}
-
-export function calculateYearlySavings(planTier: PlanTier): number {
-  const plan = PLANS[planTier];
-  const monthlyTotal = plan.monthlyPrice * 12;
-  const yearlySavings = monthlyTotal - plan.yearlyPrice;
-  return yearlySavings;
 }
 
 export function calculateYearlySavingsPercentage(planTier: PlanTier): number {

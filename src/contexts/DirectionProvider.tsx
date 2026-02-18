@@ -3,7 +3,7 @@
 import * as React from "react";
 import { DirectionProvider as RadixDirectionProvider } from "@radix-ui/react-direction";
 
-export type Direction = "ltr" | "rtl";
+type Direction = "ltr" | "rtl";
 
 interface DirectionContextValue {
   dir: Direction;

@@ -209,19 +209,3 @@ html {
   --image-gradient-soft: var(--gradient-soft);
   --image-gradient-mesh: var(--gradient-mesh);
 }
-
-/* Onboarding card entrance animation */
-@keyframes onboarding-card-enter {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.onboarding-card-enter {
-  animation: onboarding-card-enter 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-}

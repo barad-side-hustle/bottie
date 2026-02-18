@@ -66,28 +66,3 @@ export interface ClassificationTrend {
   negativeCount: number;
   neutralCount: number;
 }
-
-export interface InsightsDateRange {
-  dateFrom: Date;
-  dateTo: Date;
-}
-
-export const CATEGORY_TRANSLATION_KEYS: Record<ClassificationCategory, string> = {
-  service: "categories.service",
-  quality: "categories.quality",
-  value: "categories.value",
-  cleanliness: "categories.cleanliness",
-  atmosphere: "categories.atmosphere",
-  professionalism: "categories.professionalism",
-  communication: "categories.communication",
-  wait_time: "categories.waitTime",
-  location: "categories.location",
-  facilities: "categories.facilities",
-  food_quality: "categories.foodQuality",
-  menu_variety: "categories.menuVariety",
-  product_selection: "categories.productSelection",
-  return_policy: "categories.returnPolicy",
-  expertise: "categories.expertise",
-  results: "categories.results",
-  safety: "categories.safety",
-};

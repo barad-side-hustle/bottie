@@ -5,5 +5,3 @@ export type ReplyStatus = "pending" | "rejected" | "posted" | "failed" | "quota_
 export type Review = DrizzleReview;
 
 export type ReviewCreate = Omit<ReviewInsert, "id" | "receivedAt" | "updateTime">;
-
-export type ReviewUpdate = Partial<Pick<ReviewInsert, "replyStatus" | "updateTime">>;

@@ -9,6 +9,7 @@ import { AccountsRepository } from "@/lib/db/repositories/accounts.repository";
 import { verifyPubSubToken, getPubSubWebhookAudience } from "@/lib/google/pubsub-auth";
 import { isDuplicateKeyError, getPostgresErrorCode, getPostgresErrorDetail } from "@/lib/db/error-handlers";
 import { classifyReview } from "@/lib/ai/classification";
+import { env } from "@/lib/env";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -178,12 +179,7 @@ export async function POST(request: NextRequest) {
     const refreshToken = await decryptToken(encryptedToken);
 
     console.log("Fetching review from Google API:", reviewName);
-    const googleReview = await getReview(
-      reviewName,
-      refreshToken,
-      process.env.GOOGLE_CLIENT_ID!,
-      process.env.GOOGLE_CLIENT_SECRET!
-    );
+    const googleReview = await getReview(reviewName, refreshToken, env.GOOGLE_CLIENT_ID, env.GOOGLE_CLIENT_SECRET);
     console.log("Fetched Google review:", {
       reviewId: googleReview.reviewId,
       rating: googleReview.starRating,
@@ -293,7 +289,7 @@ export async function POST(request: NextRequest) {
           });
         });
 
-      const processReviewUrl = `${process.env.NEXT_PUBLIC_APP_URL}/api/internal/process-review`;
+      const processReviewUrl = `${env.NEXT_PUBLIC_APP_URL}/api/internal/process-review`;
       console.log("Triggering review processing:", {
         url: processReviewUrl,
         reviewId: newReview.id,
@@ -307,7 +303,7 @@ export async function POST(request: NextRequest) {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            "X-Internal-Secret": process.env.INTERNAL_API_SECRET!,
+            "X-Internal-Secret": env.INTERNAL_API_SECRET,
           },
           body: JSON.stringify({
             userId,

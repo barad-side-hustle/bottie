@@ -16,7 +16,6 @@ import { MapPin, BarChart3, Settings2, Star } from "lucide-react";
 import Image from "next/image";
 import { EmptyState } from "@/components/ui/empty-state";
 import { AccountAvatarDropdown } from "./AccountAvatarDropdown";
-import { motion } from "framer-motion";
 
 interface AccountLocationsListProps {
   accounts: AccountWithLocations[];
@@ -73,19 +72,10 @@ export function AccountLocationsList({ accounts }: AccountLocationsListProps) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {account.accountLocations.map((accountLocation, index) => {
+            {account.accountLocations.map((accountLocation) => {
               const location = accountLocation.location;
               return (
-                <motion.div
-                  key={accountLocation.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{
-                    duration: 0.3,
-                    delay: index * 0.05,
-                    ease: "easeOut",
-                  }}
-                >
+                <div key={accountLocation.id}>
                   <DashboardCard>
                     <DashboardCardHeader>
                       {location.photoUrl && (
@@ -156,7 +146,7 @@ export function AccountLocationsList({ accounts }: AccountLocationsListProps) {
                       </div>
                     </DashboardCardContent>
                   </DashboardCard>
-                </motion.div>
+                </div>
               );
             })}
           </div>

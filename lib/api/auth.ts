@@ -1,6 +1,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import { resolveLocale } from "@/lib/locale-detection";
+import { env } from "@/lib/env";
 
 export async function getAuthenticatedUserId(): Promise<{ userId: string }> {
   try {
@@ -26,7 +27,7 @@ export async function createLocaleAwareRedirect(
   searchParams?: Record<string, string>
 ): Promise<NextResponse> {
   const locale = await resolveLocale();
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL!;
+  const baseUrl = env.NEXT_PUBLIC_APP_URL;
 
   const localePath = `/${locale}${path}`;
 

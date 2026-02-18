@@ -10,7 +10,7 @@ import {
 } from "@/lib/db/schema";
 import { NotFoundError } from "@/lib/api/errors";
 
-export type { AccountLocation, AccountLocationInsert };
+export type { AccountLocation };
 
 export class AccountLocationsRepository {
   constructor(

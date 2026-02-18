@@ -49,23 +49,3 @@ Instructions:
 
 Output only valid JSON matching this schema - no markdown, no explanation.
 `;
-
-export const REVIEW_CLASSIFICATION_CATEGORIES = [
-  "service",
-  "quality",
-  "value",
-  "cleanliness",
-  "atmosphere",
-  "professionalism",
-  "communication",
-  "wait_time",
-  "location",
-  "facilities",
-  "food_quality",
-  "menu_variety",
-  "product_selection",
-  "return_policy",
-  "expertise",
-  "results",
-  "safety",
-] as const;

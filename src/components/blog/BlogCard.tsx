@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Link } from "@/i18n/routing";
 import { type BlogPost } from "@/lib/blog/posts";
 import { Calendar, Clock } from "lucide-react";
-import { motion } from "framer-motion";
 import { useLocale, useTranslations } from "next-intl";
 
 interface BlogCardProps {
@@ -27,12 +26,7 @@ export function BlogCard({ post }: BlogCardProps) {
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5 }}
-    >
+    <div>
       <Card className="h-full flex flex-col hover:shadow-lg transition-shadow">
         <CardHeader>
           <div className="flex items-center gap-2 mb-2">
@@ -67,6 +61,6 @@ export function BlogCard({ post }: BlogCardProps) {
           </Button>
         </CardContent>
       </Card>
-    </motion.div>
+    </div>
   );
 }

@@ -1,5 +1,6 @@
 import type { LocationUpdate } from "@/lib/types";
 import { LocationsRepository, type Location } from "@/lib/db/repositories";
+import { NotFoundError } from "@/lib/api/errors";
 
 export class LocationsController {
   private repository: LocationsRepository;
@@ -14,7 +15,7 @@ export class LocationsController {
 
   async getLocation(locationId: string): Promise<Location> {
     const location = await this.repository.get(locationId);
-    if (!location) throw new Error("Location not found");
+    if (!location) throw new NotFoundError("Location not found");
     return location;
   }
 

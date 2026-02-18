@@ -1,6 +1,7 @@
 import { OAuth2Client } from "google-auth-library";
 import * as Iron from "@hapi/iron";
 import { GoogleBusinessProfileLocation } from "@/lib/types";
+import { env } from "@/lib/env";
 
 const GOOGLE_MY_BUSINESS_API_BASE = "https://mybusinessbusinessinformation.googleapis.com/v1";
 
@@ -53,9 +54,9 @@ interface BusinessesResponse {
 }
 
 function createOAuthClient(accessToken: string, clientId?: string, clientSecret?: string): OAuth2Client {
-  const oauthClientId = clientId || process.env.GOOGLE_CLIENT_ID!;
-  const oauthClientSecret = clientSecret || process.env.GOOGLE_CLIENT_SECRET!;
-  const redirectUri = `${process.env.NEXT_PUBLIC_APP_URL}/api/google/callback`;
+  const oauthClientId = clientId || env.GOOGLE_CLIENT_ID;
+  const oauthClientSecret = clientSecret || env.GOOGLE_CLIENT_SECRET;
+  const redirectUri = `${env.NEXT_PUBLIC_APP_URL}/api/google/callback`;
 
   const oauth2Client = new OAuth2Client(oauthClientId, oauthClientSecret, redirectUri);
   oauth2Client.setCredentials({ access_token: accessToken });
@@ -212,7 +213,7 @@ export async function listAllBusinesses(refreshToken: string): Promise<GoogleBus
 }
 
 export async function decryptToken(encryptedToken: string, secret?: string): Promise<string> {
-  const encryptionSecret = secret || process.env.TOKEN_ENCRYPTION_SECRET!;
+  const encryptionSecret = secret || env.TOKEN_ENCRYPTION_SECRET;
 
   try {
     const unsealed = await Iron.unseal(encryptedToken, encryptionSecret, Iron.defaults);
@@ -223,7 +224,7 @@ export async function decryptToken(encryptedToken: string, secret?: string): Pro
   }
 }
 
-export type NotificationType =
+type NotificationType =
   | "GOOGLE_UPDATE"
   | "NEW_REVIEW"
   | "UPDATED_REVIEW"
@@ -233,12 +234,6 @@ export type NotificationType =
   | "NEW_ANSWER"
   | "UPDATED_ANSWER"
   | "UPDATED_LOCATION_STATE";
-
-interface NotificationSettings {
-  name: string;
-  notificationTypes: NotificationType[];
-  pubsubTopic: string;
-}
 
 export async function subscribeToNotifications(
   accountName: string,
@@ -274,63 +269,5 @@ export async function subscribeToNotifications(
   } catch (error) {
     console.error("Error subscribing to notifications:", error);
     throw new Error("Failed to subscribe to Google My Business notifications");
-  }
-}
-
-export async function unsubscribeFromNotifications(accountName: string, refreshToken: string): Promise<void> {
-  try {
-    const accessToken = await getAccessTokenFromRefreshToken(refreshToken);
-    const url = `https://mybusinessnotifications.googleapis.com/v1/${accountName}/notificationSetting`;
-
-    const response = await fetch(url, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Error unsubscribing from notifications:", response.status, errorText);
-      throw new Error(`Failed to unsubscribe from notifications: ${response.status}`);
-    }
-
-    console.log("Successfully unsubscribed from notifications for", accountName);
-  } catch (error) {
-    console.error("Error unsubscribing from notifications:", error);
-    throw new Error("Failed to unsubscribe from Google My Business notifications");
-  }
-}
-
-export async function getNotificationSettings(
-  accountName: string,
-  refreshToken: string
-): Promise<NotificationSettings | null> {
-  try {
-    const accessToken = await getAccessTokenFromRefreshToken(refreshToken);
-    const url = `https://mybusinessnotifications.googleapis.com/v1/${accountName}/notificationSetting`;
-
-    const response = await fetch(url, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-        "Content-Type": "application/json",
-      },
-    });
-
-    if (response.status === 404) {
-      return null;
-    }
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error("Error getting notification settings:", response.status, errorText);
-      throw new Error(`Failed to get notification settings: ${response.status}`);
-    }
-
-    return response.json();
-  } catch (error) {
-    console.error("Error getting notification settings:", error);
-    throw new Error("Failed to get Google My Business notification settings");
   }
 }

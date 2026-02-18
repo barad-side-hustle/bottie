@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
-import { motion } from "framer-motion";
 
 export function FinalCTA() {
   const t = useTranslations("landing.finalCTA");
@@ -18,12 +17,7 @@ export function FinalCTA() {
       </div>
 
       <div className="container mx-auto px-4 text-center relative z-10">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
+        <div>
           <h2 className="text-5xl md:text-6xl font-bold mb-8 tracking-tight">{t("title")}</h2>
           <p className="text-xl text-muted-foreground mb-12 max-w-2xl mx-auto leading-relaxed">{t("description")}</p>
 
@@ -34,7 +28,7 @@ export function FinalCTA() {
           </Link>
 
           <p className="mt-8 text-sm text-muted-foreground">{t("noCreditCard")}</p>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

@@ -40,7 +40,7 @@ export function OnboardingCard({
   hideNavigation = false,
 }: OnboardingCardProps) {
   return (
-    <div className="onboarding-card-enter">
+    <div>
       <DashboardCard>
         <DashboardCardHeader>
           <DashboardCardTitle>{title}</DashboardCardTitle>

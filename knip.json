@@ -1,0 +1,17 @@
+{
+  "ignore": ["src/i18n/request.ts"],
+  "ignoreBinaries": ["stripe"],
+  "ignoreDependencies": [
+    "@testing-library/dom",
+    "@testing-library/react",
+    "@types/glob",
+    "@types/mdx",
+    "react-email",
+    "typescript-eslint"
+  ],
+  "rules": {
+    "dependencies": "warn",
+    "exports": "warn",
+    "types": "warn"
+  }
+}

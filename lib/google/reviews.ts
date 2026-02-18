@@ -2,7 +2,7 @@ import { getAccessTokenFromRefreshToken } from "./business-profile";
 
 const GOOGLE_MY_BUSINESS_API_BASE = "https://mybusiness.googleapis.com/v4";
 
-export enum StarRating {
+enum StarRating {
   STAR_RATING_UNSPECIFIED = "STAR_RATING_UNSPECIFIED",
   ONE = "ONE",
   TWO = "TWO",

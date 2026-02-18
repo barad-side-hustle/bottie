@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Check, X } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { motion, AnimatePresence } from "framer-motion";
 import { getAllPlans, type Plan, calculateYearlySavingsPercentage } from "@/lib/subscriptions/plans";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/routing";
@@ -98,166 +97,85 @@ export function PricingCards() {
           </div>
         </div>
 
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={billingPeriod}
-            className="grid grid-cols-1 md:grid-cols-[1fr_1.15fr_1fr] gap-8 md:gap-6 max-w-6xl mx-auto"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3, ease: "easeInOut" }}
-          >
-            {plans.map((plan, index) => {
-              const isRecommended = plan.id === "basic";
-              const showYearlyDiscount = billingPeriod === "yearly" && plan.monthlyPrice > 0;
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_1.15fr_1fr] gap-8 md:gap-6 max-w-6xl mx-auto">
+          {plans.map((plan) => {
+            const isRecommended = plan.id === "basic";
+            const showYearlyDiscount = billingPeriod === "yearly" && plan.monthlyPrice > 0;
 
-              return (
-                <motion.div
-                  key={plan.id}
-                  className={`relative p-8 flex flex-col rounded-lg group text-card-foreground touch-manipulation ${
+            return (
+              <div
+                key={plan.id}
+                className={cn(
+                  "relative p-8 flex flex-col rounded-lg group text-card-foreground touch-manipulation hover:-translate-y-2 transition-all duration-300",
+                  isRecommended
+                    ? "border-2 border-pastel-lavender shadow-xl bg-linear-to-br from-pastel-lavender/10 via-background to-background scale-[1.02] hover:shadow-2xl"
+                    : "border border-border/40 shadow-sm bg-card hover:shadow-lg"
+                )}
+              >
+                <div
+                  className={`absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none ${
                     isRecommended
-                      ? "border-2 border-pastel-lavender shadow-xl bg-linear-to-br from-pastel-lavender/10 via-background to-background"
-                      : "border border-border/40 shadow-sm bg-card hover:shadow-lg transition-all duration-300"
+                      ? "bg-linear-to-br from-primary/15 via-primary/8 to-primary/15"
+                      : "bg-linear-to-br from-primary/5 via-transparent to-primary/10"
                   }`}
-                  initial={{ opacity: 0, y: 20, scale: 0.9 }}
-                  animate={{
-                    opacity: 1,
-                    y: 0,
-                    scale: isRecommended ? 1.02 : 1,
-                  }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{
-                    duration: 0.3,
-                    delay: index * 0.05,
-                    ease: [0.16, 1, 0.3, 1],
-                    opacity: { duration: 0.3, ease: "easeOut" },
-                    scale: { duration: 0.3, ease: [0.16, 1, 0.3, 1] },
-                  }}
-                  whileHover={{
-                    scale: isRecommended ? 1.03 : 1.02,
-                    y: -8,
-                    transition: {
-                      duration: 0.3,
-                      ease: [0.16, 1, 0.3, 1],
-                    },
-                  }}
-                >
-                  <motion.div
-                    className={`absolute inset-0 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none ${
-                      isRecommended
-                        ? "bg-linear-to-br from-primary/15 via-primary/8 to-primary/15"
-                        : "bg-linear-to-br from-primary/5 via-transparent to-primary/10"
-                    }`}
-                    initial={false}
-                  />
+                />
 
-                  <motion.div
-                    className={`absolute inset-0 border-2 rounded-lg transition-all duration-500 pointer-events-none ${
-                      isRecommended
-                        ? "border-primary/0 group-hover:border-primary/40"
-                        : "border-primary/0 group-hover:border-primary/20"
-                    }`}
-                    initial={false}
-                  />
+                <div
+                  className={`absolute inset-0 border-2 rounded-lg transition-all duration-500 pointer-events-none ${
+                    isRecommended
+                      ? "border-primary/0 group-hover:border-primary/40"
+                      : "border-primary/0 group-hover:border-primary/20"
+                  }`}
+                />
 
-                  <div className="mb-6 relative">
-                    <motion.h3
-                      className="text-2xl font-bold text-foreground mb-2"
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{
-                        delay: index * 0.05 + 0.1,
-                        duration: 0.3,
-                        ease: "easeOut",
-                      }}
-                    >
-                      {plan.name}
-                    </motion.h3>
-                    <motion.p
-                      className="text-sm text-muted-foreground mb-4"
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{
-                        delay: index * 0.05 + 0.15,
-                        duration: 0.3,
-                        ease: "easeOut",
-                      }}
-                    >
-                      {plan.description}
-                    </motion.p>
-                    <motion.div
-                      className="flex flex-col"
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{
-                        delay: index * 0.05 + 0.2,
-                        duration: 0.3,
-                        ease: "easeOut",
-                      }}
-                    >
-                      {showYearlyDiscount && (
-                        <span className="text-sm text-muted-foreground line-through mb-1">${plan.monthlyPrice}</span>
-                      )}
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-4xl font-bold text-foreground">{formatPrice(plan)}</span>
-                        <span className="text-muted-foreground">{t("perMonth")}</span>
-                      </div>
-                      {showYearlyDiscount && getSavingsPercentage(plan) > 0 && (
-                        <span className="text-xs text-primary mt-1">
-                          {t("yearlySavings", { percentage: getSavingsPercentage(plan) })}
-                        </span>
-                      )}
-                    </motion.div>
+                <div className="mb-6 relative">
+                  <h3 className="text-2xl font-bold text-foreground mb-2">{plan.name}</h3>
+                  <p className="text-sm text-muted-foreground mb-4">{plan.description}</p>
+                  <div className="flex flex-col">
+                    {showYearlyDiscount && (
+                      <span className="text-sm text-muted-foreground line-through mb-1">${plan.monthlyPrice}</span>
+                    )}
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-4xl font-bold text-foreground">{formatPrice(plan)}</span>
+                      <span className="text-muted-foreground">{t("perMonth")}</span>
+                    </div>
+                    {showYearlyDiscount && getSavingsPercentage(plan) > 0 && (
+                      <span className="text-xs text-primary mt-1">
+                        {t("yearlySavings", { percentage: getSavingsPercentage(plan) })}
+                      </span>
+                    )}
                   </div>
+                </div>
 
-                  <ul className="space-y-3 mb-8 grow">
-                    {plan.features.map((feature, featureIndex) => (
-                      <motion.li
-                        key={featureIndex}
-                        className="flex items-start gap-2"
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{
-                          delay: index * 0.05 + 0.25 + featureIndex * 0.03,
-                          duration: 0.3,
-                          ease: "easeOut",
-                        }}
-                      >
-                        {feature.included ? (
-                          <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                        ) : (
-                          <X className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
-                        )}
-                        <span className={cn("text-sm", feature.included ? "text-foreground" : "text-muted-foreground")}>
-                          {feature.text}
-                        </span>
-                      </motion.li>
-                    ))}
-                  </ul>
+                <ul className="space-y-3 mb-8 grow">
+                  {plan.features.map((feature, featureIndex) => (
+                    <li key={featureIndex} className="flex items-start gap-2">
+                      {feature.included ? (
+                        <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                      ) : (
+                        <X className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
+                      )}
+                      <span className={cn("text-sm", feature.included ? "text-foreground" : "text-muted-foreground")}>
+                        {feature.text}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
 
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{
-                      delay: index * 0.05 + 0.25 + plan.features.length * 0.03,
-                      duration: 0.3,
-                      ease: "easeOut",
-                    }}
+                <div>
+                  <Button
+                    className="w-full"
+                    variant={isRecommended ? "default" : "outline"}
+                    onClick={() => handleCheckout(plan)}
+                    disabled={loadingPlanId === plan.id}
                   >
-                    <Button
-                      className="w-full"
-                      variant={isRecommended ? "default" : "outline"}
-                      onClick={() => handleCheckout(plan)}
-                      disabled={loadingPlanId === plan.id}
-                    >
-                      {loadingPlanId === plan.id ? t("loading") : plan.id === "free" ? t("freeCta") : t("paidCta")}
-                    </Button>
-                  </motion.div>
-                </motion.div>
-              );
-            })}
-          </motion.div>
-        </AnimatePresence>
+                    {loadingPlanId === plan.id ? t("loading") : plan.id === "free" ? t("freeCta") : t("paidCta")}
+                  </Button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

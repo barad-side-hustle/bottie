@@ -6,11 +6,11 @@ vi.mock("@/lib/db/repositories");
 
 type MockSubsRepo = {
   getUserPlanLimits: Mock;
-  countUserReviewsThisMonth: Mock;
 };
 
 type MockStatsRepo = {
   countUserLocations: Mock;
+  countUserReviewsThisMonth: Mock;
 };
 
 describe("SubscriptionsController", () => {
@@ -23,11 +23,11 @@ describe("SubscriptionsController", () => {
 
     mockSubsRepo = {
       getUserPlanLimits: vi.fn(),
-      countUserReviewsThisMonth: vi.fn(),
     };
 
     mockStatsRepo = {
       countUserLocations: vi.fn(),
+      countUserReviewsThisMonth: vi.fn(),
     };
 
     (SubscriptionsRepository as unknown as Mock).mockImplementation(function () {
@@ -100,7 +100,7 @@ describe("SubscriptionsController", () => {
     it("should return allowed true if limit is -1 (unlimited)", async () => {
       const userId = "user-123";
       mockSubsRepo.getUserPlanLimits.mockResolvedValue({ reviewsPerMonth: -1 });
-      mockSubsRepo.countUserReviewsThisMonth.mockResolvedValue(100);
+      mockStatsRepo.countUserReviewsThisMonth.mockResolvedValue(100);
 
       const result = await controller.checkReviewQuota(userId);
 
@@ -114,7 +114,7 @@ describe("SubscriptionsController", () => {
     it("should return allowed true if count is less than limit", async () => {
       const userId = "user-123";
       mockSubsRepo.getUserPlanLimits.mockResolvedValue({ reviewsPerMonth: 50 });
-      mockSubsRepo.countUserReviewsThisMonth.mockResolvedValue(49);
+      mockStatsRepo.countUserReviewsThisMonth.mockResolvedValue(49);
 
       const result = await controller.checkReviewQuota(userId);
 
@@ -128,7 +128,7 @@ describe("SubscriptionsController", () => {
     it("should return allowed false if count is equal to limit", async () => {
       const userId = "user-123";
       mockSubsRepo.getUserPlanLimits.mockResolvedValue({ reviewsPerMonth: 50 });
-      mockSubsRepo.countUserReviewsThisMonth.mockResolvedValue(50);
+      mockStatsRepo.countUserReviewsThisMonth.mockResolvedValue(50);
 
       const result = await controller.checkReviewQuota(userId);
 

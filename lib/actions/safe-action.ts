@@ -1,7 +1,7 @@
 import { getAuthenticatedUserId } from "@/lib/api/auth";
 import { z } from "zod";
 
-export type ActionContext = {
+type ActionContext = {
   userId: string;
 };
 
