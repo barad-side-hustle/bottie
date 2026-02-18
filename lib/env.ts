@@ -18,7 +18,12 @@ const serverEnvSchema = z.object({
   NEXT_PUBLIC_APP_URL: z.string().url(),
 });
 
-function createEnv() {
+type Env = z.infer<typeof serverEnvSchema>;
+
+let _env: Env | null = null;
+
+function getEnv(): Env {
+  if (_env) return _env;
   const result = serverEnvSchema.safeParse(process.env);
   if (!result.success) {
     const formatted = result.error.format();
@@ -28,7 +33,12 @@ function createEnv() {
       .join("\n");
     throw new Error(`Missing or invalid environment variables:\n${missing}`);
   }
-  return result.data;
+  _env = result.data;
+  return _env;
 }
 
-export const env = createEnv();
+export const env: Env = new Proxy({} as Env, {
+  get(_, prop: string) {
+    return getEnv()[prop as keyof Env];
+  },
+});
