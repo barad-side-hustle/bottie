@@ -268,7 +268,6 @@
       },
       "legal": {
         "title": "Legal",
-        "blog": "Blog",
         "privacy": "Privacy Policy",
         "terms": "Terms of Service"
       },
@@ -1035,35 +1034,6 @@
       "recommendationsTitle": "Recommendations",
       "viewDashboardButton": "View Dashboard",
       "footer": "Sent by Bottie"
-    }
-  },
-  "blog": {
-    "title": "Blog",
-    "subtitle": "Learn how to automate your Google review responses with AI",
-    "readMore": "Read More",
-    "minRead": "{time} min read",
-    "publishedOn": "Published on {date}",
-    "backToBlog": "Back to Blog",
-    "relatedArticles": "Related Articles",
-    "noPosts": "No blog posts yet. Check back soon!",
-    "metadata": {
-      "title": "Blog | Bottie.ai",
-      "description": "Learn how to automate your Google review responses with AI",
-      "keywords": "ai review automation, google business reviews, automated responses, review management, ai tool to respond to google reviews, automatically reply to google reviews",
-      "ogImage": {
-        "alt": "Bottie.ai - AI-Powered Review Management"
-      }
-    },
-    "share": "Share",
-    "tableOfContents": "Table of Contents",
-    "categories": {
-      "automation": "Automation",
-      "ai": "AI",
-      "reviews": "Reviews",
-      "tutorials": "Tutorials",
-      "guides": "Guides",
-      "best-practices": "Best Practices",
-      "general": "General"
     }
   }
 }
