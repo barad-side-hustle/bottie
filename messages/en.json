@@ -67,7 +67,25 @@
       "pricing": "Pricing",
       "testimonials": "Testimonials",
       "faq": "FAQ"
+    },
+    "sidebar": {
+      "reviews": "Reviews",
+      "insights": "Insights",
+      "locationSettings": "Location Settings",
+      "overview": "Overview",
+      "billing": "Billing",
+      "account": "Account",
+      "locationLabel": "Location",
+      "generalLabel": "General",
+      "addLocation": "Add Location",
+      "selectLocation": "Select Location"
     }
+  },
+  "breadcrumbs": {
+    "overview": "Overview",
+    "reviews": "Reviews",
+    "insights": "Insights",
+    "settings": "Settings"
   },
   "landing": {
     "hero": {
@@ -343,9 +361,19 @@
     }
   },
   "dashboard": {
+    "overview": {
+      "pendingReviews": "Pending Reviews",
+      "averageRating": "Average Rating",
+      "reviewsThisMonth": "Reviews This Month",
+      "totalLocations": "Locations",
+      "pendingBanner": "You have {count, plural, one {# review} other {# reviews}} awaiting response",
+      "reviewNow": "Review Now",
+      "yourLocations": "Your Locations",
+      "pendingBadge": "{count} pending"
+    },
     "home": {
-      "title": "Home",
-      "description": "Manage your accounts and businesses",
+      "title": "Overview",
+      "description": "Your business at a glance",
       "accountBusinessesList": {
         "noConnectedAccounts": "No connected accounts",
         "noConnectedAccountsDescription": "You have no connected accounts",

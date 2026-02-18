@@ -3,7 +3,7 @@
 import { useSyncExternalStore } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { signOut } from "@/lib/auth/auth";
-import { dashboardNavItems, landingNavItems, getNavigationVariant, getIsActive } from "@/lib/navigation";
+import { landingNavItems, getIsActive } from "@/lib/navigation";
 import { usePathname, useRouter } from "@/i18n/routing";
 
 function subscribe(callback: () => void) {
@@ -19,15 +19,14 @@ function getServerSnapshot() {
   return "";
 }
 
-export function useNavigation(variant?: "landing" | "dashboard") {
+export function useNavigation() {
   const { user } = useAuth();
   const pathname = usePathname();
   const router = useRouter();
 
   const hash = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
-  const navigationVariant = variant || getNavigationVariant(pathname);
-  const navItems = navigationVariant === "dashboard" ? dashboardNavItems : landingNavItems;
+  const navItems = landingNavItems;
 
   const handleSignOut = async () => {
     const { error } = await signOut();
@@ -68,7 +67,6 @@ export function useNavigation(variant?: "landing" | "dashboard") {
     pathname,
     router,
     hash,
-    variant: navigationVariant,
     navItems,
     handleSignOut,
     scrollToSection,

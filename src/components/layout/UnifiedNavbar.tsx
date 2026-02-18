@@ -12,8 +12,8 @@ import { User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { signOut } from "@/lib/auth/auth";
 
-export function UnifiedNavbar({ variant }: { variant: "landing" | "dashboard" }) {
-  const { navItems, scrollToSection, isActive } = useNavigation(variant);
+export function UnifiedNavbar() {
+  const { navItems, scrollToSection, isActive } = useNavigation();
   const t = useTranslations();
   const { user } = useAuth();
   const [isSigningOut, setIsSigningOut] = useState(false);
@@ -33,7 +33,7 @@ export function UnifiedNavbar({ variant }: { variant: "landing" | "dashboard" })
         {navItems.map((item) => {
           const isItemActive = isActive(item.href);
 
-          if (variant === "landing" && item.href.startsWith("/#")) {
+          if (item.href.startsWith("/#")) {
             return (
               <button
                 key={item.label}
@@ -65,7 +65,7 @@ export function UnifiedNavbar({ variant }: { variant: "landing" | "dashboard" })
       </nav>
 
       <div className="flex items-center gap-2 shrink-0 pe-2">
-        {variant === "landing" && user ? (
+        {user ? (
           <>
             <div className="md:hidden flex items-center gap-1">
               <Link href="/dashboard/home">

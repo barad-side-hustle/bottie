@@ -1,13 +1,26 @@
 "use client";
 
-import { AppLayout } from "@/components/layout/AppLayout";
-import { UpgradeBanner } from "@/components/dashboard/utils/UpgradeBanner";
+import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { SidebarDataProvider, type SidebarLocation } from "@/contexts/SidebarDataContext";
+import { AppSidebar } from "@/components/layout/AppSidebar";
+import { DashboardTopBar } from "@/components/layout/DashboardTopBar";
 
-export function DashboardLayoutClient({ children }: { children: React.ReactNode }) {
+export function DashboardLayoutClient({
+  locations,
+  children,
+}: {
+  locations: SidebarLocation[];
+  children: React.ReactNode;
+}) {
   return (
-    <AppLayout variant="dashboard">
-      {children}
-      <UpgradeBanner />
-    </AppLayout>
+    <SidebarDataProvider locations={locations}>
+      <SidebarProvider>
+        <AppSidebar />
+        <SidebarInset>
+          <DashboardTopBar />
+          <main className="flex-1 overflow-y-auto px-4 md:px-6 lg:px-8 py-6">{children}</main>
+        </SidebarInset>
+      </SidebarProvider>
+    </SidebarDataProvider>
   );
 }

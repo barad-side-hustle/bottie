@@ -1,7 +1,6 @@
 import { Suspense } from "react";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { BackButton } from "@/components/ui/back-button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { getTranslations } from "next-intl/server";
 import { getLocation } from "@/lib/actions/locations.actions";
@@ -10,6 +9,8 @@ import { getAuthenticatedUserId } from "@/lib/api/auth";
 import { ReviewsList } from "@/components/dashboard/reviews/ReviewsList";
 import { ReviewsFilterBar } from "@/components/dashboard/reviews/filters/ReviewsFilterBar";
 import { parseFiltersFromSearchParams } from "@/lib/utils/filter-utils";
+import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
+import { buildLocationBreadcrumbs } from "@/lib/utils/breadcrumbs";
 
 export const dynamic = "force-dynamic";
 
@@ -24,7 +25,7 @@ export default async function LocationReviewsPage({ params, searchParams }: Loca
   const filters = parseFiltersFromSearchParams(resolvedSearchParams);
   const { userId } = await getAuthenticatedUserId();
   const t = await getTranslations({ locale, namespace: "dashboard.reviews" });
-  const tCommon = await getTranslations({ locale, namespace: "common" });
+  const tBreadcrumbs = await getTranslations({ locale, namespace: "breadcrumbs" });
   const [location, reviews] = await Promise.all([
     getLocation({ locationId }),
     getReviews({
@@ -39,8 +40,16 @@ export default async function LocationReviewsPage({ params, searchParams }: Loca
 
   return (
     <PageContainer>
-      <div className="mb-6">
-        <BackButton label={tCommon("back")} />
+      <div className="mb-4">
+        <Breadcrumbs
+          items={buildLocationBreadcrumbs({
+            locationName: location.name,
+            accountId,
+            locationId,
+            currentSection: "reviews",
+            t: tBreadcrumbs,
+          })}
+        />
       </div>
 
       <PageHeader title={t("reviewsFor", { businessName: location.name })} description={t("allReviews")} />

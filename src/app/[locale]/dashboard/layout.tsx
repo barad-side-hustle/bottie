@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
+import { getAccountsWithLocations } from "@/lib/actions/accounts.actions";
 import { DashboardLayoutClient } from "./DashboardLayoutClient";
+import type { SidebarLocation } from "@/contexts/SidebarDataContext";
 
 export default async function DashboardLayout({
   children,
@@ -19,5 +21,17 @@ export default async function DashboardLayout({
     redirect(`/${locale}/login`);
   }
 
-  return <DashboardLayoutClient>{children}</DashboardLayoutClient>;
+  const accounts = await getAccountsWithLocations();
+  const locations: SidebarLocation[] = accounts.flatMap((account) =>
+    account.accountLocations.map((al) => ({
+      accountId: account.id,
+      accountName: account.accountName ?? account.email,
+      locationId: al.location.id,
+      locationName: al.location.name,
+      photoUrl: al.location.photoUrl,
+      connected: al.connected,
+    }))
+  );
+
+  return <DashboardLayoutClient locations={locations}>{children}</DashboardLayoutClient>;
 }

@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:is(.dark *));
+
 html {
   scroll-behavior: smooth;
   scroll-padding-top: 80px; /* Offset for sticky navbar */
@@ -22,8 +24,8 @@ html {
   --accent-foreground: oklch(0.42 0 0);
   --destructive: oklch(0.6368 0.2078 25.3313);
   --destructive-foreground: oklch(1 0 0);
-  --border: oklch(0.9299 0.0334 272.7879);
-  --input: oklch(0.9299 0.0334 272.7879);
+  --border: oklch(0.9299 0.012 272.7879);
+  --input: oklch(0.9299 0.012 272.7879);
   --ring: oklch(0.55 0.15 250);
   --sidebar: oklch(0.9691 0.0161 293.7558);
   --sidebar-foreground: oklch(0.25 0 0);
@@ -31,7 +33,7 @@ html {
   --sidebar-primary-foreground: oklch(1 0 0);
   --sidebar-accent: oklch(0.9319 0.0316 255.5855);
   --sidebar-accent-foreground: oklch(0.42 0 0);
-  --sidebar-border: oklch(0.9299 0.0334 272.7879);
+  --sidebar-border: oklch(0.9299 0.012 272.7879);
   --sidebar-ring: oklch(0.55 0.15 250);
   --font-sans: var(--font-rubik), sans-serif;
   --font-serif: Playfair Display, serif;
@@ -109,8 +111,8 @@ html {
   --accent-foreground: oklch(0.93 0 0);
   --destructive: oklch(0.6368 0.2078 25.3313);
   --destructive-foreground: oklch(1 0 0);
-  --border: oklch(0.2827 0.1351 291.0894);
-  --input: oklch(0.2827 0.1351 291.0894);
+  --border: oklch(0.2827 0.04 291.0894);
+  --input: oklch(0.2827 0.04 291.0894);
   --ring: oklch(0.65 0.15 250);
   --sidebar: oklch(0.2077 0.0398 265.7549);
   --sidebar-foreground: oklch(0.9299 0.0334 272.7879);
@@ -118,7 +120,7 @@ html {
   --sidebar-primary-foreground: oklch(1 0 0);
   --sidebar-accent: oklch(0.4568 0.2146 277.0229);
   --sidebar-accent-foreground: oklch(0.9299 0.0334 272.7879);
-  --sidebar-border: oklch(0.2827 0.1351 291.0894);
+  --sidebar-border: oklch(0.2827 0.04 291.0894);
   --sidebar-ring: oklch(0.65 0.15 250);
   --font-sans: var(--font-rubik), sans-serif;
   --font-serif: Playfair Display, serif;

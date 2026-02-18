@@ -53,7 +53,25 @@
       "pricing": "מחירון",
       "testimonials": "המלצות",
       "faq": "שאלות"
+    },
+    "sidebar": {
+      "reviews": "ביקורות",
+      "insights": "תובנות",
+      "locationSettings": "הגדרות עסק",
+      "overview": "סקירה",
+      "billing": "חיוב",
+      "account": "חשבון",
+      "locationLabel": "עסק",
+      "generalLabel": "כללי",
+      "addLocation": "הוסף עסק",
+      "selectLocation": "בחר עסק"
     }
+  },
+  "breadcrumbs": {
+    "overview": "סקירה",
+    "reviews": "ביקורות",
+    "insights": "תובנות",
+    "settings": "הגדרות"
   },
   "landing": {
     "hero": {
@@ -339,9 +357,19 @@
   },
   "dashboard": {
     "welcome": "ברוכים הבאים",
+    "overview": {
+      "pendingReviews": "ביקורות ממתינות",
+      "averageRating": "דירוג ממוצע",
+      "reviewsThisMonth": "ביקורות החודש",
+      "totalLocations": "עסקים",
+      "pendingBanner": "יש לך {count, plural, one {ביקורת אחת} other {# ביקורות}} שממתינות למענה",
+      "reviewNow": "צפה עכשיו",
+      "yourLocations": "העסקים שלך",
+      "pendingBadge": "{count} ממתינות"
+    },
     "home": {
-      "title": "בית",
-      "description": "נהל את החשבונות והעסקים שלך",
+      "title": "סקירה",
+      "description": "העסק שלך במבט אחד",
       "accountBusinessesList": {
         "noConnectedAccounts": "אין חשבונות מחוברים",
         "noConnectedAccountsDescription": "אין לך חשבונות מחוברים",
