@@ -1,8 +1,9 @@
 import { Suspense } from "react";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { BackButton } from "@/components/ui/back-button";
 import { getTranslations } from "next-intl/server";
+import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
+import { buildLocationBreadcrumbs } from "@/lib/utils/breadcrumbs";
 import { getLocation } from "@/lib/actions/locations.actions";
 import { getInsights, getInsightsTrends } from "@/lib/actions/insights.actions";
 import { getAuthenticatedUserId } from "@/lib/api/auth";
@@ -20,23 +21,33 @@ interface InsightsPageProps {
 }
 
 export default async function InsightsPage({ params, searchParams }: InsightsPageProps) {
-  const { locale, locationId } = await params;
+  const { locale, accountId, locationId } = await params;
   const resolvedSearchParams = await searchParams;
 
   const { userId } = await getAuthenticatedUserId();
   const t = await getTranslations({ locale, namespace: "dashboard.insights" });
-  const tCommon = await getTranslations({ locale, namespace: "common" });
+  const tBreadcrumbs = await getTranslations({ locale, namespace: "breadcrumbs" });
 
   const subscriptionsController = new SubscriptionsController();
   const analyticsAccess = await subscriptionsController.checkFeatureAccess(userId, "analytics");
 
+  const location = await getLocation({ locationId });
+
   if (!analyticsAccess.hasAccess) {
     return (
       <PageContainer>
-        <div className="mb-6">
-          <BackButton label={tCommon("back")} />
+        <div className="mb-4">
+          <Breadcrumbs
+            items={buildLocationBreadcrumbs({
+              locationName: location.name,
+              accountId,
+              locationId,
+              currentSection: "insights",
+              t: tBreadcrumbs,
+            })}
+          />
         </div>
-        <PageHeader title={t("title", { businessName: "Insights" })} description={t("description")} />
+        <PageHeader title={t("title", { businessName: location.name })} description={t("description")} />
         <div className="mt-6">
           <FeatureLockedState feature="analytics" requiredPlan={analyticsAccess.requiredPlan} />
         </div>
@@ -57,8 +68,7 @@ export default async function InsightsPage({ params, searchParams }: InsightsPag
     dateFrom = subDays(dateTo, 30);
   }
 
-  const [location, insights, trends] = await Promise.all([
-    getLocation({ locationId }),
+  const [insights, trends] = await Promise.all([
     getInsights({ locationId, dateFrom, dateTo }),
     getInsightsTrends({ locationId, dateFrom, dateTo, groupBy: "day" }),
   ]);
@@ -67,8 +77,16 @@ export default async function InsightsPage({ params, searchParams }: InsightsPag
 
   return (
     <PageContainer>
-      <div className="mb-6">
-        <BackButton label={tCommon("back")} />
+      <div className="mb-4">
+        <Breadcrumbs
+          items={buildLocationBreadcrumbs({
+            locationName: location.name,
+            accountId,
+            locationId,
+            currentSection: "insights",
+            t: tBreadcrumbs,
+          })}
+        />
       </div>
 
       <PageHeader title={t("title", { businessName: location.name })} description={t("description")} />

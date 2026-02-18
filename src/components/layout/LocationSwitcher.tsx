@@ -1,0 +1,129 @@
+"use client";
+
+import { ChevronsUpDown, MapPin, Plus } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/routing";
+import { useSidebarData } from "@/contexts/SidebarDataContext";
+import { useActiveLocation } from "@/hooks/use-active-location";
+import { useDirection } from "@/contexts/DirectionProvider";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar";
+import Image from "next/image";
+
+export function LocationSwitcher() {
+  const t = useTranslations();
+  const router = useRouter();
+  const { locations } = useSidebarData();
+  const locationCtx = useActiveLocation();
+  const { isMobile } = useSidebar();
+  const { dir } = useDirection();
+
+  const currentLocation = locationCtx ? locations.find((l) => l.locationId === locationCtx.locationId) : null;
+
+  const currentSection = locationCtx?.section || "reviews";
+
+  const handleSelectLocation = (accountId: string, locationId: string) => {
+    router.push(`/dashboard/accounts/${accountId}/locations/${locationId}/${currentSection}`);
+  };
+
+  const handleAddLocation = () => {
+    router.push("/onboarding/connect-account");
+  };
+
+  const grouped = locations.reduce<Record<string, typeof locations>>(
+    (acc, loc) => {
+      const key = loc.accountName;
+      if (!acc[key]) acc[key] = [];
+      acc[key].push(loc);
+      return acc;
+    },
+    {} as Record<string, typeof locations>
+  );
+
+  return (
+    <SidebarMenu>
+      <SidebarMenuItem>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <SidebarMenuButton
+              size="lg"
+              className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+            >
+              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground overflow-hidden">
+                {currentLocation?.photoUrl ? (
+                  <Image
+                    src={currentLocation.photoUrl}
+                    alt={currentLocation.locationName}
+                    width={32}
+                    height={32}
+                    className="size-full object-cover"
+                  />
+                ) : (
+                  <MapPin className="size-4" />
+                )}
+              </div>
+              <div className="grid flex-1 text-start text-sm leading-tight">
+                <span className="truncate font-semibold">
+                  {currentLocation?.locationName || t("navigation.sidebar.selectLocation")}
+                </span>
+                {currentLocation && (
+                  <span className="truncate text-xs text-muted-foreground">{currentLocation.accountName}</span>
+                )}
+              </div>
+              <ChevronsUpDown className="ms-auto" />
+            </SidebarMenuButton>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+            align="start"
+            side={isMobile ? "bottom" : dir === "rtl" ? "left" : "right"}
+            sideOffset={4}
+          >
+            {Object.entries(grouped).map(([accountName, locs]) => (
+              <DropdownMenuGroup key={accountName}>
+                <DropdownMenuLabel className="text-xs text-muted-foreground">{accountName}</DropdownMenuLabel>
+                {locs.map((loc) => (
+                  <DropdownMenuItem
+                    key={loc.locationId}
+                    onClick={() => handleSelectLocation(loc.accountId, loc.locationId)}
+                    className="gap-2 p-2"
+                  >
+                    <div className="flex size-6 items-center justify-center rounded-sm border overflow-hidden">
+                      {loc.photoUrl ? (
+                        <Image
+                          src={loc.photoUrl}
+                          alt={loc.locationName}
+                          width={24}
+                          height={24}
+                          className="size-full object-cover"
+                        />
+                      ) : (
+                        <MapPin className="size-4 shrink-0" />
+                      )}
+                    </div>
+                    <span className="truncate">{loc.locationName}</span>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuGroup>
+            ))}
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleAddLocation} className="gap-2 p-2">
+              <div className="flex size-6 items-center justify-center rounded-md border bg-background">
+                <Plus className="size-4" />
+              </div>
+              <span>{t("navigation.sidebar.addLocation")}</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </SidebarMenuItem>
+    </SidebarMenu>
+  );
+}

@@ -1,6 +1,7 @@
 "use client";
 
 import { DashboardCard, DashboardCardContent } from "@/components/ui/dashboard-card";
+import { cn } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -22,16 +23,16 @@ export function StatCard({
   valueColor,
 }: StatCardProps) {
   return (
-    <DashboardCard>
-      <DashboardCardContent className="p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium text-muted-foreground">{label}</p>
-            <p className={`text-3xl font-bold mt-1 ${valueColor || ""}`}>{value}</p>
+    <DashboardCard className="transition-shadow hover:shadow-md">
+      <DashboardCardContent className="p-5">
+        <div className="flex items-center justify-between gap-4">
+          <div className="min-w-0">
+            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{label}</p>
+            <p className={cn("text-2xl font-bold mt-2 tabular-nums", valueColor)}>{value}</p>
           </div>
           {Icon && (
-            <div className={`h-12 w-12 rounded-full ${iconBgColor} flex items-center justify-center`}>
-              <Icon className={`h-6 w-6 ${iconColor}`} />
+            <div className={cn("size-11 rounded-xl shrink-0 flex items-center justify-center", iconBgColor)}>
+              <Icon className={cn("size-5", iconColor)} />
             </div>
           )}
         </div>

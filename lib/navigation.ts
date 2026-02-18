@@ -6,6 +6,10 @@ import {
   CreditCard,
   Settings,
   MessageSquareQuote,
+  Star,
+  BarChart3,
+  Settings2,
+  LayoutDashboard,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -15,12 +19,6 @@ interface NavItem {
   icon: LucideIcon;
 }
 
-export const dashboardNavItems: NavItem[] = [
-  { href: "/dashboard/home", label: "navigation.dashboard.home", icon: Home },
-  { href: "/dashboard/subscription", label: "navigation.dashboard.subscription", icon: CreditCard },
-  { href: "/dashboard/settings", label: "navigation.dashboard.settings", icon: Settings },
-];
-
 export const landingNavItems: NavItem[] = [
   { href: "/#hero", label: "navigation.landing.home", icon: Home },
   { href: "/#how-it-works", label: "navigation.landing.howItWorks", icon: Rocket },
@@ -29,11 +27,50 @@ export const landingNavItems: NavItem[] = [
   { href: "/#faq", label: "navigation.landing.faq", icon: ShieldQuestionMarkIcon },
 ];
 
-export function getNavigationVariant(pathname: string): "dashboard" | "landing" {
-  return pathname.startsWith("/dashboard") ? "dashboard" : "landing";
+export interface SidebarNavItem {
+  href: string | ((ctx: { accountId: string; locationId: string }) => string);
+  label: string;
+  icon: LucideIcon;
+  scope: "location" | "global";
 }
 
-export function isAnchorLink(href: string): boolean {
+export const sidebarLocationItems: SidebarNavItem[] = [
+  {
+    href: (ctx) => `/dashboard/accounts/${ctx.accountId}/locations/${ctx.locationId}/reviews`,
+    label: "navigation.sidebar.reviews",
+    icon: Star,
+    scope: "location",
+  },
+  {
+    href: (ctx) => `/dashboard/accounts/${ctx.accountId}/locations/${ctx.locationId}/insights`,
+    label: "navigation.sidebar.insights",
+    icon: BarChart3,
+    scope: "location",
+  },
+  {
+    href: (ctx) => `/dashboard/accounts/${ctx.accountId}/locations/${ctx.locationId}/settings`,
+    label: "navigation.sidebar.locationSettings",
+    icon: Settings2,
+    scope: "location",
+  },
+];
+
+export const sidebarGlobalItems: SidebarNavItem[] = [
+  { href: "/dashboard/home", label: "navigation.sidebar.overview", icon: LayoutDashboard, scope: "global" },
+  { href: "/dashboard/subscription", label: "navigation.sidebar.billing", icon: CreditCard, scope: "global" },
+  { href: "/dashboard/settings", label: "navigation.sidebar.account", icon: Settings, scope: "global" },
+];
+
+export function resolveHref(
+  item: SidebarNavItem,
+  ctx: { accountId: string; locationId: string } | null
+): string | null {
+  if (typeof item.href === "string") return item.href;
+  if (!ctx) return null;
+  return item.href(ctx);
+}
+
+function isAnchorLink(href: string): boolean {
   return href.startsWith("/#");
 }
 

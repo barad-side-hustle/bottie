@@ -1,7 +1,8 @@
 import { PageContainer } from "@/components/layout/PageContainer";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { BackButton } from "@/components/ui/back-button";
 import { Badge } from "@/components/ui/badge";
+import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
+import { buildLocationBreadcrumbs } from "@/lib/utils/breadcrumbs";
 import { getTranslations } from "next-intl/server";
 import { getLocation, getAccountLocations } from "@/lib/actions/locations.actions";
 import { getAuthenticatedUserId } from "@/lib/api/auth";
@@ -19,6 +20,7 @@ export default async function LocationSettingsPage({
   const { userId } = await getAuthenticatedUserId();
   const t = await getTranslations({ locale, namespace: "dashboard.settings" });
   const tCommon = await getTranslations({ locale, namespace: "common" });
+  const tBreadcrumbs = await getTranslations({ locale, namespace: "breadcrumbs" });
 
   const [location, accountLocations, limits] = await Promise.all([
     getLocation({ locationId }),
@@ -31,7 +33,15 @@ export default async function LocationSettingsPage({
   return (
     <PageContainer>
       <div className="mb-4">
-        <BackButton label={tCommon("back")} />
+        <Breadcrumbs
+          items={buildLocationBreadcrumbs({
+            locationName: location.name,
+            accountId,
+            locationId,
+            currentSection: "settings",
+            t: tBreadcrumbs,
+          })}
+        />
       </div>
 
       <PageHeader

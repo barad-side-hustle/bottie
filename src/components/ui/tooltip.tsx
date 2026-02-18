@@ -1,8 +1,8 @@
 "use client";
 
+import * as React from "react";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
 import { Info, X } from "lucide-react";
-import * as React from "react";
 
 import {
   Drawer,
@@ -17,7 +17,9 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
 const TooltipProvider = TooltipPrimitive.Provider;
+
 const Tooltip = TooltipPrimitive.Root;
+
 const TooltipTrigger = TooltipPrimitive.Trigger;
 
 const TooltipContent = React.forwardRef<
@@ -92,4 +94,4 @@ const TooltipIcon = ({ text, additionalInfoLabel, closeLabel }: TooltipIconProps
   );
 };
 
-export { TooltipIcon };
+export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider, TooltipIcon };
