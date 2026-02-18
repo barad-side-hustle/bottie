@@ -1,7 +1,6 @@
-import { pgTable, timestamp, uuid, index, pgPolicy, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, uuid, index, pgPolicy, jsonb } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
-import { authenticatedRole, authUid } from "./roles";
-import { authUsers } from "./auth.schema";
+import { user } from "./auth.schema";
 
 export const USER_CONFIG_KEYS = {
   EMAIL_ON_NEW_REVIEW: "EMAIL_ON_NEW_REVIEW",
@@ -21,10 +20,10 @@ export const usersConfigs = pgTable(
   "users_configs",
   {
     id: uuid("id").defaultRandom().primaryKey(),
-    userId: uuid("user_id")
+    userId: text("user_id")
       .notNull()
       .unique()
-      .references(() => authUsers.id, { onDelete: "cascade" }),
+      .references(() => user.id, { onDelete: "cascade" }),
 
     configs: jsonb("configs")
       .$type<UserConfigMap>()
@@ -37,25 +36,11 @@ export const usersConfigs = pgTable(
   (table) => [
     index("users_configs_user_id_idx").on(table.userId),
 
-    pgPolicy("users_configs_select_own", {
-      for: "select",
-      to: authenticatedRole,
-      using: sql`${authUid()} = ${table.userId}`,
-    }),
-    pgPolicy("users_configs_insert_own", {
-      for: "insert",
-      to: authenticatedRole,
-      withCheck: sql`${authUid()} = ${table.userId}`,
-    }),
-    pgPolicy("users_configs_update_own", {
-      for: "update",
-      to: authenticatedRole,
-      using: sql`${authUid()} = ${table.userId}`,
-    }),
-    pgPolicy("users_configs_delete_own", {
-      for: "delete",
-      to: authenticatedRole,
-      using: sql`${authUid()} = ${table.userId}`,
+    pgPolicy("users_configs_service_role_access", {
+      for: "all",
+      to: ["postgres", "service_role"],
+      using: sql`true`,
+      withCheck: sql`true`,
     }),
   ]
 );

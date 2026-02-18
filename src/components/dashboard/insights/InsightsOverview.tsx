@@ -25,7 +25,7 @@ export function InsightsOverview({ stats }: InsightsOverviewProps) {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       <StatCard label={t("totalReviews")} value={stats.totalReviews} icon={MessageSquare} />
 
-      <DashboardCard className="hover:scale-100 hover:-translate-y-0">
+      <DashboardCard>
         <DashboardCardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>

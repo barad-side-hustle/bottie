@@ -5,7 +5,8 @@ import { getAuthenticatedUserId } from "@/lib/api/auth";
 import { SubscriptionsRepository } from "@/lib/db/repositories";
 import type { Subscription } from "@/lib/db/schema";
 import { getStripe, getStripePriceId } from "@/lib/stripe/config";
-import { createClient } from "@/lib/supabase/server";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 import { resolveLocale } from "@/lib/locale-detection";
 
 export async function getActiveSubscription(): Promise<Subscription | null> {
@@ -25,15 +26,15 @@ export async function createCheckoutSession(
   couponCode?: string
 ): Promise<{ url?: string; error?: string }> {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.getUser();
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
 
-    if (error || !user) {
+    if (!session?.user) {
       return { error: "Unauthorized" };
     }
+
+    const user = session.user;
 
     if (!plan || !interval) {
       return { error: "Missing plan or interval" };
@@ -103,13 +104,13 @@ export async function createCheckoutSession(
       sessionConfig.allow_promotion_codes = true;
     }
 
-    const session = await getStripe().checkout.sessions.create(sessionConfig);
+    const stripeSession = await getStripe().checkout.sessions.create(sessionConfig);
 
-    if (!session.url) {
+    if (!stripeSession.url) {
       return { error: "Failed to create checkout session" };
     }
 
-    return { url: session.url };
+    return { url: stripeSession.url };
   } catch (error) {
     console.error("Error creating checkout session:", error);
     return { error: "Failed to create checkout session" };

@@ -31,7 +31,7 @@ export function CategoriesCard({ topPositives, topNegatives, onCategoryClick }: 
 
   if (combinedCategories.length === 0) {
     return (
-      <DashboardCard className="hover:scale-100 hover:-translate-y-0">
+      <DashboardCard>
         <DashboardCardHeader>
           <DashboardCardTitle>{t("sections.categories")}</DashboardCardTitle>
         </DashboardCardHeader>
@@ -43,7 +43,7 @@ export function CategoriesCard({ topPositives, topNegatives, onCategoryClick }: 
   }
 
   return (
-    <DashboardCard className="hover:scale-100 hover:-translate-y-0">
+    <DashboardCard>
       <DashboardCardHeader>
         <DashboardCardTitle>{t("sections.categories")}</DashboardCardTitle>
       </DashboardCardHeader>

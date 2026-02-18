@@ -1,11 +1,10 @@
 import { pgTable, text, timestamp, uuid, index, pgPolicy } from "drizzle-orm/pg-core";
 import { sql, relations } from "drizzle-orm";
-import { authenticatedRole, authUid } from "./roles";
 import { accountLocations } from "./account-locations.schema";
 import { userAccounts } from "./user-accounts.schema";
 
-export const accounts = pgTable(
-  "accounts",
+export const googleAccounts = pgTable(
+  "google_accounts",
   {
     id: uuid("id").defaultRandom().primaryKey(),
 
@@ -19,50 +18,22 @@ export const accounts = pgTable(
     lastSynced: timestamp("last_synced", { withTimezone: true }),
   },
   (table) => [
-    index("accounts_email_idx").on(table.email),
-    index("accounts_connected_at_idx").on(table.connectedAt),
+    index("google_accounts_email_idx").on(table.email),
+    index("google_accounts_connected_at_idx").on(table.connectedAt),
 
-    pgPolicy("accounts_select_associated", {
-      for: "select",
-      to: authenticatedRole,
-      using: sql`EXISTS (
-        SELECT 1 FROM user_accounts ua
-        WHERE ua.account_id = ${table.id}
-        AND ua.user_id = ${authUid()}
-      )`,
-    }),
-    pgPolicy("accounts_insert_authenticated", {
-      for: "insert",
-      to: authenticatedRole,
+    pgPolicy("google_accounts_service_role_access", {
+      for: "all",
+      to: ["postgres", "service_role"],
+      using: sql`true`,
       withCheck: sql`true`,
-    }),
-    pgPolicy("accounts_update_owner", {
-      for: "update",
-      to: authenticatedRole,
-      using: sql`EXISTS (
-        SELECT 1 FROM user_accounts ua
-        WHERE ua.account_id = ${table.id}
-        AND ua.user_id = ${authUid()}
-        AND ua.role = 'owner'
-      )`,
-    }),
-    pgPolicy("accounts_delete_owner", {
-      for: "delete",
-      to: authenticatedRole,
-      using: sql`EXISTS (
-        SELECT 1 FROM user_accounts ua
-        WHERE ua.account_id = ${table.id}
-        AND ua.user_id = ${authUid()}
-        AND ua.role = 'owner'
-      )`,
     }),
   ]
 );
 
-export const accountsRelations = relations(accounts, ({ many }) => ({
+export const googleAccountsRelations = relations(googleAccounts, ({ many }) => ({
   accountLocations: many(accountLocations),
   userAccounts: many(userAccounts),
 }));
 
-export type Account = typeof accounts.$inferSelect;
-export type AccountInsert = typeof accounts.$inferInsert;
+export type GoogleAccount = typeof googleAccounts.$inferSelect;
+export type GoogleAccountInsert = typeof googleAccounts.$inferInsert;

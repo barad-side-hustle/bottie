@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import {
@@ -17,17 +16,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "@/i18n/routing";
-import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 
-export function LoginForm() {
-  const t = useTranslations("auth.loginPage");
-  const router = useRouter();
+export function SignUpForm() {
+  const t = useTranslations("auth.signUpPage");
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true);
@@ -39,30 +38,56 @@ export function LoginForm() {
     });
 
     if (error) {
-      toast.error(error.message || "An error occurred signing in with Google");
+      setError(error.message || "An error occurred signing in with Google");
       setIsGoogleLoading(false);
     }
   };
 
-  const handleEmailSignIn = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    setIsLoading(true);
+    setLoading(true);
 
-    const { error } = await authClient.signIn.email({
+    const { error } = await authClient.signUp.email({
+      name,
       email,
       password,
     });
 
     if (error) {
-      setError(error.message || "Sign in failed. Please try again.");
-      setIsLoading(false);
+      setError(error.message || "Sign up failed. Please try again.");
+      setLoading(false);
       return;
     }
 
-    router.push("/dashboard/home");
-    router.refresh();
+    setSuccess(true);
+    setLoading(false);
   };
+
+  if (success) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-linear-to-b from-background to-muted p-4">
+        <div className="w-full max-w-md">
+          <div className="text-center mb-8">
+            <Logo className="justify-center mb-4" href={"/"} size="xl" variant="full" />
+          </div>
+          <DashboardCard>
+            <DashboardCardHeader className="text-center">
+              <DashboardCardTitle className="justify-center">{t("checkEmailTitle")}</DashboardCardTitle>
+              <DashboardCardDescription>{t("checkEmailDescription", { email })}</DashboardCardDescription>
+            </DashboardCardHeader>
+            <DashboardCardContent>
+              <Link href="/login">
+                <Button variant="outline" className="w-full cursor-pointer">
+                  {t("goToSignIn")}
+                </Button>
+              </Link>
+            </DashboardCardContent>
+          </DashboardCard>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-linear-to-b from-background to-muted p-4">
@@ -94,7 +119,18 @@ export function LoginForm() {
               </div>
             </div>
 
-            <form onSubmit={handleEmailSignIn} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="name">{t("nameLabel")}</Label>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder={t("namePlaceholder")}
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="email">{t("emailLabel")}</Label>
                 <Input
@@ -107,48 +143,34 @@ export function LoginForm() {
                 />
               </div>
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="password">{t("passwordLabel")}</Label>
-                  <Link href="/forgot-password" className="text-muted-foreground hover:text-primary text-xs">
-                    {t("forgotPassword")}
-                  </Link>
-                </div>
+                <Label htmlFor="password">{t("passwordLabel")}</Label>
                 <Input
                   id="password"
                   type="password"
+                  placeholder={t("passwordPlaceholder")}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  minLength={8}
                   required
                 />
               </div>
 
               {error && <p className="text-destructive text-sm">{error}</p>}
 
-              <Button type="submit" className="w-full cursor-pointer" disabled={isLoading}>
-                {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
-                {t("signInButton")}
+              <Button type="submit" className="w-full cursor-pointer" disabled={loading}>
+                {loading && <Loader2 className="h-4 w-4 animate-spin" />}
+                {t("createAccountButton")}
               </Button>
             </form>
 
             <p className="text-muted-foreground text-center text-sm">
-              {t("noAccount")}{" "}
-              <Link href="/sign-up" className="text-primary hover:underline">
-                {t("signUpLink")}
+              {t("hasAccount")}{" "}
+              <Link href="/login" className="text-primary hover:underline">
+                {t("signInLink")}
               </Link>
             </p>
           </DashboardCardContent>
         </DashboardCard>
-
-        <p className="text-center text-sm text-muted-foreground mt-6">
-          {t("termsPrefix")}{" "}
-          <Link href="/terms" className="text-primary hover:underline transition-all">
-            {t("termsLink")}
-          </Link>{" "}
-          {t("termsMiddle")}{" "}
-          <Link href="/privacy" className="text-primary hover:underline transition-all">
-            {t("privacyLink")}
-          </Link>
-        </p>
       </div>
     </div>
   );

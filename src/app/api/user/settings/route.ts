@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/lib/supabase/server";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 import { UsersController } from "@/lib/controllers/users.controller";
 import type { UserConfigUpdate } from "@/lib/types/user.types";
 
@@ -7,18 +8,16 @@ export const runtime = "nodejs";
 
 export async function GET() {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
 
-    if (authError || !user) {
+    if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const controller = new UsersController();
-    const config = await controller.getUserConfig(user.id);
+    const config = await controller.getUserConfig(session.user.id);
 
     return NextResponse.json({
       emailOnNewReview: config.configs.EMAIL_ON_NEW_REVIEW,
@@ -32,13 +31,11 @@ export async function GET() {
 
 export async function PATCH(request: NextRequest) {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
 
-    if (authError || !user) {
+    if (!session?.user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -60,7 +57,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     const controller = new UsersController();
-    const updatedConfig = await controller.updateUserConfig(user.id, updates);
+    const updatedConfig = await controller.updateUserConfig(session.user.id, updates);
 
     return NextResponse.json({
       emailOnNewReview: updatedConfig.configs.EMAIL_ON_NEW_REVIEW,

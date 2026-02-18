@@ -1,7 +1,6 @@
 import { pgTable, text, timestamp, uuid, index, pgPolicy, jsonb } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
-import { authenticatedRole, authUid } from "./roles";
-import { authUsers } from "./auth.schema";
+import { user } from "./auth.schema";
 
 export type FeatureOverrides = {
   analytics?: boolean;
@@ -11,10 +10,10 @@ export const subscriptions = pgTable(
   "subscriptions",
   {
     id: uuid("id").defaultRandom().primaryKey(),
-    userId: uuid("user_id")
+    userId: text("user_id")
       .notNull()
       .unique()
-      .references(() => authUsers.id, { onDelete: "cascade" }),
+      .references(() => user.id, { onDelete: "cascade" }),
 
     planTier: text("plan_tier").notNull().default("free"),
     status: text("status").notNull().default("active"),
@@ -32,25 +31,11 @@ export const subscriptions = pgTable(
     index("subscriptions_status_idx").on(table.status),
     index("subscriptions_user_status_idx").on(table.userId, table.status),
 
-    pgPolicy("subscriptions_select_own", {
-      for: "select",
-      to: authenticatedRole,
-      using: sql`${authUid()} = ${table.userId}`,
-    }),
-    pgPolicy("subscriptions_insert_own", {
-      for: "insert",
-      to: authenticatedRole,
-      withCheck: sql`${authUid()} = ${table.userId}`,
-    }),
-    pgPolicy("subscriptions_update_own", {
-      for: "update",
-      to: authenticatedRole,
-      using: sql`${authUid()} = ${table.userId}`,
-    }),
-    pgPolicy("subscriptions_delete_own", {
-      for: "delete",
-      to: authenticatedRole,
-      using: sql`${authUid()} = ${table.userId}`,
+    pgPolicy("subscriptions_service_role_access", {
+      for: "all",
+      to: ["postgres", "service_role"],
+      using: sql`true`,
+      withCheck: sql`true`,
     }),
   ]
 );

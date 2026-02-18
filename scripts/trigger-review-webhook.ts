@@ -34,8 +34,8 @@ interface AccountLocationWithLocation {
 async function main() {
   try {
     console.log("🔍 Finding accounts...");
-    const accounts = await db.query.accounts.findMany({
-      columns: { id: true, email: true, accountName: true },
+    const accounts = await db.query.googleAccounts.findMany({
+      columns: { id: true, email: true, googleAccountName: true },
     });
 
     if (accounts.length === 0) {
@@ -46,7 +46,7 @@ async function main() {
     const selectedAccountId = await select({
       message: "Select an account:",
       choices: accounts.map((a) => ({
-        name: `${a.email} (${a.accountName})`,
+        name: `${a.email} (${a.googleAccountName})`,
         value: a.id,
       })),
     });
@@ -78,8 +78,8 @@ async function main() {
       console.warn("⚠️ This location is marked as not connected. Fetching reviews might fail.");
     }
 
-    const account = await db.query.accounts.findFirst({
-      where: eq(schema.accounts.id, selectedAccountId),
+    const account = await db.query.googleAccounts.findFirst({
+      where: eq(schema.googleAccounts.id, selectedAccountId),
       columns: { googleRefreshToken: true },
     });
 

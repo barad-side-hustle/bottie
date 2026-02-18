@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
-import { createAdminClient } from "@/lib/supabase/admin";
 import { ReviewsRepository } from "@/lib/db/repositories/reviews.repository";
 import { LocationsRepository } from "@/lib/db/repositories/locations.repository";
 import { AccountsRepository } from "@/lib/db/repositories/accounts.repository";
@@ -190,8 +189,9 @@ export async function POST(request: NextRequest) {
 
         console.log(`Found ${uniqueUserIds.length} unique users connected to location ${locationId}`);
 
-        const supabase = createAdminClient();
         const usersConfigsRepo = new UsersConfigsRepository();
+        const { user: userTable } = await import("@/lib/db/schema/auth.schema");
+        const { eq: eqOp } = await import("drizzle-orm");
 
         const { default: ReviewNotificationEmailComponent } = await import("@/lib/emails/review-notification");
 
@@ -203,15 +203,19 @@ export async function POST(request: NextRequest) {
             return;
           }
 
-          const { data: userData } = await supabase.auth.admin.getUserById(currentUserId);
+          const [userData] = await db
+            .select({ email: userTable.email, name: userTable.name })
+            .from(userTable)
+            .where(eqOp(userTable.id, currentUserId))
+            .limit(1);
 
-          if (!userData.user) {
-            console.error("User not found in Supabase Auth", { userId: currentUserId });
+          if (!userData) {
+            console.error("User not found", { userId: currentUserId });
             return;
           }
 
-          const recipientEmail = userData.user.email;
-          const recipientName = userData.user.user_metadata?.display_name || userData.user.email;
+          const recipientEmail = userData.email;
+          const recipientName = userData.name || userData.email;
 
           if (!recipientEmail) {
             console.error("User email not found", { userId: currentUserId });

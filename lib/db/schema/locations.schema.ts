@@ -1,6 +1,5 @@
 import { integer, jsonb, pgTable, text, timestamp, uuid, index, pgPolicy } from "drizzle-orm/pg-core";
 import { sql, relations } from "drizzle-orm";
-import { authenticatedRole, authUid } from "./roles";
 import { reviews } from "./reviews.schema";
 import { accountLocations } from "./account-locations.schema";
 
@@ -48,38 +47,11 @@ export const locations = pgTable(
   (table) => [
     index("locations_google_location_id_idx").on(table.googleLocationId),
 
-    pgPolicy("locations_select_connected", {
-      for: "select",
-      to: authenticatedRole,
-      using: sql`EXISTS (
-        SELECT 1 FROM account_locations al
-        INNER JOIN user_accounts ua ON ua.account_id = al.account_id
-        WHERE al.location_id = ${table.id}
-        AND ua.user_id = ${authUid()}
-      )`,
-    }),
-    pgPolicy("locations_insert_authenticated", {
-      for: "insert",
-      to: authenticatedRole,
+    pgPolicy("locations_service_role_access", {
+      for: "all",
+      to: ["postgres", "service_role"],
+      using: sql`true`,
       withCheck: sql`true`,
-    }),
-    pgPolicy("locations_update_connected", {
-      for: "update",
-      to: authenticatedRole,
-      using: sql`EXISTS (
-        SELECT 1 FROM account_locations al
-        INNER JOIN user_accounts ua ON ua.account_id = al.account_id
-        WHERE al.location_id = ${table.id}
-        AND ua.user_id = ${authUid()}
-      )`,
-    }),
-    pgPolicy("locations_delete_orphan", {
-      for: "delete",
-      to: authenticatedRole,
-      using: sql`NOT EXISTS (
-        SELECT 1 FROM account_locations al
-        WHERE al.location_id = ${table.id}
-      )`,
     }),
   ]
 );

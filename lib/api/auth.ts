@@ -1,21 +1,20 @@
-import { createClient } from "@/lib/supabase/server";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
 import { NextResponse } from "next/server";
 import { resolveLocale } from "@/lib/locale-detection";
 import { env } from "@/lib/env";
 
 export async function getAuthenticatedUserId(): Promise<{ userId: string }> {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.getUser();
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
 
-    if (error || !user) {
+    if (!session?.user) {
       throw new Error("User not authenticated");
     }
 
-    return { userId: user.id };
+    return { userId: session.user.id };
   } catch (error) {
     console.error("Failed to authenticate user:", error);
     throw new Error("Failed to authenticate user");

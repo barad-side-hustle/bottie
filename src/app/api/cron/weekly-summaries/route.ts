@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
-import { authUsers, subscriptions, locations, accountLocations, userAccounts, reviews } from "@/lib/db/schema";
+import { user as userTable, subscriptions, locations, accountLocations, userAccounts, reviews } from "@/lib/db/schema";
 import { eq, and, gte, lte } from "drizzle-orm";
 import { generateWeeklySummary, generateWeeklySummaryFromClassifications } from "@/lib/ai/summaries";
 import { WeeklySummariesRepository } from "@/lib/db/repositories/weekly-summaries.repository";
@@ -69,8 +69,8 @@ export async function GET(req: NextRequest) {
 
         const locale = "en";
 
-        const [user] = await db.select().from(authUsers).where(eq(authUsers.id, userId));
-        if (!user || !user.email) continue;
+        const [dbUser] = await db.select().from(userTable).where(eq(userTable.id, userId));
+        if (!dbUser || !dbUser.email) continue;
 
         const userLocations = await db
           .select({
@@ -168,7 +168,7 @@ export async function GET(req: NextRequest) {
               footer: "Sent by Bottie.ai",
             });
 
-            const result = await sendEmail(user.email, subject, emailComponent);
+            const result = await sendEmail(dbUser.email, subject, emailComponent);
             if (result.success) {
               emailsSent++;
             }

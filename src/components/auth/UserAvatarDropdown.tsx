@@ -48,8 +48,8 @@ export function UserAvatarDropdown() {
     return null;
   }
 
-  const displayName = user.user_metadata?.full_name || user.user_metadata?.name;
-  const photoURL = user.user_metadata?.avatar_url || user.user_metadata?.picture;
+  const displayName = user.name;
+  const photoURL = user.image;
 
   const getInitials = () => {
     if (displayName) {
