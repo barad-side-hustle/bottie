@@ -9,22 +9,15 @@ import type { PlanLimits } from "@/lib/subscriptions/plans";
 
 interface LocationDetailsCardProps {
   location: Location;
-  userId: string;
   limits: PlanLimits;
   loading?: boolean;
   onUpdate: () => Promise<void>;
 }
 
-export default function LocationDetailsCard({
-  location,
-  userId,
-  limits,
-  loading = false,
-  onUpdate,
-}: LocationDetailsCardProps) {
+export default function LocationDetailsCard({ location, limits, loading = false, onUpdate }: LocationDetailsCardProps) {
   const handleSaveSection = async (partialData: Partial<Location>) => {
     try {
-      await updateLocationConfig(userId, location.id, partialData);
+      await updateLocationConfig({ locationId: location.id, config: partialData });
       await onUpdate();
     } catch (error) {
       console.error("Error saving config:", error);

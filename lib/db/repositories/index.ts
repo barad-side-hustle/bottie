@@ -1,3 +1,4 @@
+export * from "./access-conditions";
 export * from "./review-responses.repository";
 export * from "./reviews.repository";
 export * from "./base.repository";

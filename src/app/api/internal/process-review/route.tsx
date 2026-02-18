@@ -13,7 +13,6 @@ import { env } from "@/lib/env";
 import { sendEmail } from "@/lib/utils/email-service";
 
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 interface ProcessReviewRequest {
@@ -87,7 +86,7 @@ export async function POST(request: NextRequest) {
       });
 
       await reviewsRepo.update(reviewId, {
-        replyStatus: "quota_exceeded" as ReplyStatus,
+        replyStatus: "quota_exceeded",
       });
 
       console.log("Review saved without AI reply due to quota limit", { reviewId });
@@ -118,7 +117,7 @@ export async function POST(request: NextRequest) {
     } catch (error) {
       console.error("Failed to generate AI reply", { error });
       await reviewsRepo.update(reviewId, {
-        replyStatus: "failed" as ReplyStatus,
+        replyStatus: "failed",
       });
       return NextResponse.json(
         {
@@ -137,7 +136,7 @@ export async function POST(request: NextRequest) {
       if (!encryptedToken) {
         console.error("Cannot auto-post: no refresh token available");
         await reviewsRepo.update(reviewId, {
-          replyStatus: "failed" as ReplyStatus,
+          replyStatus: "failed",
         });
         replyStatus = "failed";
       } else {
@@ -152,7 +151,7 @@ export async function POST(request: NextRequest) {
           });
 
           await reviewsRepo.update(reviewId, {
-            replyStatus: "failed" as ReplyStatus,
+            replyStatus: "failed",
           });
 
           replyStatus = "failed";
@@ -160,7 +159,7 @@ export async function POST(request: NextRequest) {
       }
     } else {
       await reviewsRepo.update(reviewId, {
-        replyStatus: "pending" as ReplyStatus,
+        replyStatus: "pending",
       });
       console.log("AI reply awaiting approval", { reviewId });
     }

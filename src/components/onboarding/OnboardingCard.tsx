@@ -55,7 +55,7 @@ export function OnboardingCard({
                 <Button
                   onClick={backButton.onClick}
                   variant="outline"
-                  className="flex-1 hover:bg-pastel-lavender/10 transition-all duration-300"
+                  className="flex-1"
                   disabled={backButton.disabled || backButton.loading}
                 >
                   {backButton.loading ? backButton.loadingLabel || backButton.label : backButton.label}

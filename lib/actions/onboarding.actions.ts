@@ -10,6 +10,7 @@ import { decryptToken } from "@/lib/google/business-profile";
 import { ReviewInsert, ReviewResponseInsert } from "@/lib/db/schema";
 import { isDuplicateKeyError } from "@/lib/db/error-handlers";
 import { classifyReview } from "@/lib/ai/classification";
+import { safeBackground } from "@/lib/utils/safe-background";
 
 export async function triggerReviewImport(accountId: string, locationId: string) {
   const { userId } = await getAuthenticatedUserId();
@@ -75,16 +76,10 @@ export async function triggerReviewImport(accountId: string, locationId: string)
             const newReview = await reviewsRepo.create(reviewData);
             importedCount++;
 
-            classifyReview({
-              rating: reviewData.rating,
-              text: reviewData.text || null,
-            })
-              .then((classification) => {
-                reviewsRepo
-                  .update(newReview.id, { classifications: classification })
-                  .catch((err) => console.error("Failed to save classification:", err));
-              })
-              .catch((err) => console.error("Failed to classify review:", err));
+            safeBackground(`classify imported review ${newReview.id}`, async () => {
+              const classification = await classifyReview({ rating: reviewData.rating, text: reviewData.text || null });
+              await reviewsRepo.update(newReview.id, { classifications: classification });
+            });
 
             if (hasReply && googleReview.reviewReply && googleReview.reviewReply.comment) {
               const responseData: Omit<ReviewResponseInsert, "accountId" | "locationId"> = {

@@ -1,14 +1,8 @@
-import { eq, and, desc, exists, sql } from "drizzle-orm";
+import { eq, and, desc, sql } from "drizzle-orm";
 import { db } from "@/lib/db/client";
-import {
-  reviewResponses,
-  userAccounts,
-  accountLocations,
-  type ReviewResponse,
-  type ReviewResponseInsert,
-  type Review,
-} from "@/lib/db/schema";
+import { reviewResponses, type ReviewResponse, type ReviewResponseInsert, type Review } from "@/lib/db/schema";
 import { ForbiddenError } from "@/lib/api/errors";
+import { createLocationAccessCondition } from "./access-conditions";
 
 export type ReviewResponseWithReview = ReviewResponse & {
   review: Review;
@@ -22,13 +16,7 @@ export class ReviewResponsesRepository {
   ) {}
 
   private getAccessCondition() {
-    return exists(
-      db
-        .select()
-        .from(userAccounts)
-        .innerJoin(accountLocations, eq(accountLocations.accountId, userAccounts.accountId))
-        .where(and(eq(userAccounts.userId, this.userId), eq(accountLocations.locationId, this.locationId)))
-    );
+    return createLocationAccessCondition(this.userId, this.locationId);
   }
 
   async create(data: Omit<ReviewResponseInsert, "accountId" | "locationId">): Promise<ReviewResponse> {

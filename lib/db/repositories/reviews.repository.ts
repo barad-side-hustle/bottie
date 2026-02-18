@@ -1,17 +1,11 @@
-import { eq, and, inArray, gte, lte, exists, desc, asc, sql } from "drizzle-orm";
+import { eq, and, inArray, gte, lte, desc, asc, sql } from "drizzle-orm";
 import { db } from "@/lib/db/client";
-import {
-  reviews,
-  reviewResponses,
-  userAccounts,
-  accountLocations,
-  type Review,
-  type ReviewInsert,
-} from "@/lib/db/schema";
+import { reviews, reviewResponses, type Review, type ReviewInsert } from "@/lib/db/schema";
 import type { ReviewFilters } from "@/lib/types";
 import { BaseRepository } from "./base.repository";
 import { NotFoundError, ForbiddenError } from "@/lib/api/errors";
 import { type ReviewResponseWithReview } from "./review-responses.repository";
+import { createLocationAccessCondition } from "./access-conditions";
 
 export type ReviewWithLatestGeneration = Review & {
   latestAiReply?: string;
@@ -31,13 +25,7 @@ export class ReviewsRepository extends BaseRepository<ReviewInsert, Review, Part
   }
 
   private getAccessCondition() {
-    return exists(
-      db
-        .select()
-        .from(accountLocations)
-        .innerJoin(userAccounts, eq(userAccounts.accountId, accountLocations.accountId))
-        .where(and(eq(accountLocations.locationId, this.locationId), eq(userAccounts.userId, this.userId)))
-    );
+    return createLocationAccessCondition(this.userId, this.locationId);
   }
 
   async get(reviewId: string): Promise<ReviewWithLatestGeneration | null> {

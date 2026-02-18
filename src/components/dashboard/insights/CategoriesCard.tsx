@@ -51,7 +51,7 @@ export function CategoriesCard({ topPositives, topNegatives, onCategoryClick }: 
         <div className="space-y-1">
           {combinedCategories.map((cat) => {
             const Icon = cat.type === "positive" ? TrendingUp : TrendingDown;
-            const colorClass = cat.type === "positive" ? "text-green-600" : "text-red-600";
+            const colorClass = cat.type === "positive" ? "text-success" : "text-destructive";
 
             return (
               <button

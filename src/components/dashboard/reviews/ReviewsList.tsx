@@ -6,7 +6,8 @@ import { useSearchParams } from "next/navigation";
 import { ReviewCard } from "@/components/dashboard/reviews/ReviewCard";
 import { getReviews } from "@/lib/actions/reviews.actions";
 import { useInView } from "react-intersection-observer";
-import { Loading } from "@/components/ui/loading";
+import { Skeleton } from "@/components/ui/skeleton";
+import { DashboardCard, DashboardCardHeader, DashboardCardContent } from "@/components/ui/dashboard-card";
 import type { ReviewWithLatestGeneration } from "@/lib/db/repositories";
 import { parseFiltersFromSearchParams } from "@/lib/utils/filter-utils";
 
@@ -82,10 +83,54 @@ export function ReviewsList({ reviews: initialReviews, accountId, locationId, us
       ))}
 
       {hasMore && (
-        <div ref={ref} className="flex justify-center py-4">
-          {isLoading && <Loading size="md" />}
+        <div ref={ref}>
+          {isLoading && (
+            <div className="space-y-4">
+              {Array.from({ length: 2 }).map((_, i) => (
+                <ReviewCardSkeleton key={i} />
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
+  );
+}
+
+function ReviewCardSkeleton() {
+  return (
+    <DashboardCard className="w-full">
+      <DashboardCardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-10 w-10 rounded-full" />
+            <div className="space-y-1.5">
+              <Skeleton className="h-4 w-28" />
+              <Skeleton className="h-3 w-20" />
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Skeleton className="h-4 w-20" />
+            <Skeleton className="h-5 w-16 rounded-full" />
+          </div>
+        </div>
+      </DashboardCardHeader>
+      <DashboardCardContent className="space-y-4">
+        <div>
+          <Skeleton className="h-3 w-16 mb-2" />
+          <div className="rounded-md bg-muted/50 p-3 space-y-2">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-3/4" />
+          </div>
+        </div>
+        <div>
+          <Skeleton className="h-3 w-20 mb-2" />
+          <div className="rounded-md border border-primary/20 bg-primary/5 p-3 space-y-2">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-2/3" />
+          </div>
+        </div>
+      </DashboardCardContent>
+    </DashboardCard>
   );
 }

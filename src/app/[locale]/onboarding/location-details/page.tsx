@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import { getAuthenticatedUserId } from "@/lib/api/auth";
 import { getLocation } from "@/lib/actions/locations.actions";
 import { LocationDetailsWrapper } from "@/components/onboarding/BusinessDetailsWrapper";
 
@@ -18,8 +17,7 @@ export default async function LocationDetailsPage({ searchParams: searchParamsPr
     redirect("/onboarding/choose-location");
   }
 
-  const { userId } = await getAuthenticatedUserId();
-  const location = await getLocation(userId!, locationId!);
+  const location = await getLocation({ locationId: locationId! });
 
   return <LocationDetailsWrapper accountId={accountId!} locationId={locationId!} location={location} />;
 }

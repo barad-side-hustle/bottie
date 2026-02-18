@@ -64,17 +64,19 @@ export class ReviewsController {
 
   async generateReply(reviewId: string): Promise<{ review: ReviewWithLatestGeneration; aiReply: string }> {
     const review = await this.getReview(reviewId);
-    const location = await this.locationsRepo.get(review.locationId);
-    if (!location) throw new NotFoundError("Location not found");
 
-    const approvedGenerations = await this.responsesRepo.getRecent("posted", 5);
+    const [location, approvedGenerations, rejectedGenerations] = await Promise.all([
+      this.locationsRepo.get(review.locationId),
+      this.responsesRepo.getRecent("posted", 5),
+      this.responsesRepo.getRecent("rejected", 5),
+    ]);
+    if (!location) throw new NotFoundError("Location not found");
 
     const approvedSamples: PromptSample[] = approvedGenerations.map((g) => ({
       review: g.review,
       reply: g.text,
     }));
 
-    const rejectedGenerations = await this.responsesRepo.getRecent("rejected", 5);
     const rejectedSamples: PromptSample[] = rejectedGenerations.map((g) => ({
       review: g.review,
       reply: g.text,

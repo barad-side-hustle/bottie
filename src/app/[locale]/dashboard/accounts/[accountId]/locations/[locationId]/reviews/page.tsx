@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { BackButton } from "@/components/ui/back-button";
@@ -25,7 +26,7 @@ export default async function LocationReviewsPage({ params, searchParams }: Loca
   const t = await getTranslations({ locale, namespace: "dashboard.reviews" });
   const tCommon = await getTranslations({ locale, namespace: "common" });
   const [location, reviews] = await Promise.all([
-    getLocation(userId, locationId),
+    getLocation({ locationId }),
     getReviews({
       accountId,
       locationId,
@@ -45,11 +46,15 @@ export default async function LocationReviewsPage({ params, searchParams }: Loca
       <PageHeader title={t("reviewsFor", { businessName: location.name })} description={t("allReviews")} />
 
       <div className="space-y-4 mt-6">
-        <ReviewsFilterBar />
+        <Suspense>
+          <ReviewsFilterBar />
+        </Suspense>
         {reviews.length === 0 ? (
           <EmptyState title={t("noReviews")} description={t("noReviewsDescription")} />
         ) : (
-          <ReviewsList reviews={reviews} accountId={accountId} locationId={locationId} userId={userId} />
+          <Suspense>
+            <ReviewsList reviews={reviews} accountId={accountId} locationId={locationId} userId={userId} />
+          </Suspense>
         )}
       </div>
     </PageContainer>

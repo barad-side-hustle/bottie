@@ -40,7 +40,7 @@ export function UnifiedNavbar({ variant }: { variant: "landing" | "dashboard" })
                 type="button"
                 onClick={() => scrollToSection(item.href)}
                 className={`relative text-sm font-medium px-4 py-2 rounded-lg cursor-pointer ${
-                  isItemActive ? "text-gray-900 font-semibold" : "text-gray-700 hover:text-gray-900"
+                  isItemActive ? "text-foreground font-semibold" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {t(item.label)}
@@ -54,7 +54,7 @@ export function UnifiedNavbar({ variant }: { variant: "landing" | "dashboard" })
               key={item.label}
               href={item.href}
               className={`relative text-sm font-medium px-4 py-2 rounded-lg cursor-pointer ${
-                isItemActive ? "text-gray-900 font-semibold" : "text-gray-700 hover:text-gray-900"
+                isItemActive ? "text-foreground font-semibold" : "text-muted-foreground hover:text-foreground"
               }`}
             >
               {t(item.label)}

@@ -69,7 +69,7 @@ export function StarRatingsWrapper({ accountId, locationId }: StarRatingsWrapper
 
       const config = getCombinedConfig();
 
-      await updateLocationConfig(user.id, locationId, config);
+      await updateLocationConfig({ locationId, config });
 
       triggerReviewImport(accountId, locationId).catch((error) => {
         console.error("Failed to trigger review import:", error);

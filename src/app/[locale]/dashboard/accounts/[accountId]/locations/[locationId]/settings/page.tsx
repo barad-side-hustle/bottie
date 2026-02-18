@@ -21,8 +21,8 @@ export default async function LocationSettingsPage({
   const tCommon = await getTranslations({ locale, namespace: "common" });
 
   const [location, accountLocations, limits] = await Promise.all([
-    getLocation(userId, locationId),
-    getAccountLocations(userId, accountId),
+    getLocation({ locationId }),
+    getAccountLocations({ accountId }),
     new SubscriptionsController().getUserPlanLimits(userId),
   ]);
 
@@ -44,7 +44,6 @@ export default async function LocationSettingsPage({
         location={location}
         accountId={accountId}
         accountLocationId={accountLocation?.id}
-        userId={userId}
         limits={limits}
         translations={{
           disconnectLocation: t("deleteBusiness"),

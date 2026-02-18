@@ -4,7 +4,6 @@ import { UsersController } from "@/lib/controllers/users.controller";
 import type { UserConfigUpdate } from "@/lib/types/user.types";
 
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {

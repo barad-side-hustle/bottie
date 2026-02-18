@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { getTranslations } from "next-intl/server";
@@ -21,7 +22,9 @@ export default async function SubscriptionPage({ params }: { params: Promise<{ l
 
   return (
     <PageContainer>
-      <SubscriptionSuccessToast />
+      <Suspense>
+        <SubscriptionSuccessToast />
+      </Suspense>
       <PageHeader title={t("title")} description={t("description")} />
 
       <div className="space-y-6">

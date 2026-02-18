@@ -43,18 +43,18 @@ export function InsightsOverview({ stats }: InsightsOverviewProps) {
         label={t("positiveSentiment")}
         value={`${positivePercent}%`}
         icon={TrendingUp}
-        iconBgColor="bg-green-100"
-        iconColor="text-green-600"
-        valueColor="text-green-600"
+        iconBgColor="bg-success/10"
+        iconColor="text-success"
+        valueColor="text-success"
       />
 
       <StatCard
         label={t("negativeSentiment")}
         value={`${negativePercent}%`}
         icon={TrendingDown}
-        iconBgColor="bg-red-100"
-        iconColor="text-red-600"
-        valueColor="text-red-600"
+        iconBgColor="bg-destructive/10"
+        iconColor="text-destructive"
+        valueColor="text-destructive"
       />
     </div>
   );

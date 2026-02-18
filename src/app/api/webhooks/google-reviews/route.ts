@@ -9,10 +9,10 @@ import { AccountsRepository } from "@/lib/db/repositories/accounts.repository";
 import { verifyPubSubToken, getPubSubWebhookAudience } from "@/lib/google/pubsub-auth";
 import { isDuplicateKeyError, getPostgresErrorCode, getPostgresErrorDetail } from "@/lib/db/error-handlers";
 import { classifyReview } from "@/lib/ai/classification";
+import { safeBackground } from "@/lib/utils/safe-background";
 import { env } from "@/lib/env";
 
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
 
 interface PubSubMessage {
   message: {
@@ -204,23 +204,11 @@ export async function POST(request: NextRequest) {
             isAnonymous: googleReview.reviewer.isAnonymous || false,
           });
 
-          classifyReview({
-            rating: newRating,
-            text: newText || null,
-          })
-            .then((classification) => {
-              reviewsRepo
-                .update(existingReview.id, { classifications: classification })
-                .then(() => {
-                  console.log("Updated review re-classified successfully:", existingReview.id);
-                })
-                .catch((err) => {
-                  console.error("Failed to save updated classification:", err);
-                });
-            })
-            .catch((err) => {
-              console.error("Failed to re-classify updated review:", err);
-            });
+          safeBackground(`classify updated review ${existingReview.id}`, async () => {
+            const classification = await classifyReview({ rating: newRating, text: newText || null });
+            await reviewsRepo.update(existingReview.id, { classifications: classification });
+            console.log("Updated review re-classified successfully:", existingReview.id);
+          });
 
           console.log("Review updated successfully:", updatedReview.id);
           return NextResponse.json(
@@ -260,34 +248,16 @@ export async function POST(request: NextRequest) {
       const newReview = await reviewsRepo.create(reviewData);
       console.log("Review created successfully:", newReview.id);
 
-      classifyReview({
-        rating: reviewData.rating,
-        text: reviewData.text || null,
-      })
-        .then((classification) => {
-          reviewsRepo
-            .update(newReview.id, { classifications: classification })
-            .then(() => {
-              console.log("Review classified successfully:", {
-                reviewId: newReview.id,
-                sentiment: classification.sentiment,
-                positives: classification.positives.length,
-                negatives: classification.negatives.length,
-              });
-            })
-            .catch((err) => {
-              console.error("Failed to save classification:", {
-                reviewId: newReview.id,
-                error: err instanceof Error ? err.message : String(err),
-              });
-            });
-        })
-        .catch((err) => {
-          console.error("Failed to classify review:", {
-            reviewId: newReview.id,
-            error: err instanceof Error ? err.message : String(err),
-          });
+      safeBackground(`classify new review ${newReview.id}`, async () => {
+        const classification = await classifyReview({ rating: reviewData.rating, text: reviewData.text || null });
+        await reviewsRepo.update(newReview.id, { classifications: classification });
+        console.log("Review classified successfully:", {
+          reviewId: newReview.id,
+          sentiment: classification.sentiment,
+          positives: classification.positives.length,
+          negatives: classification.negatives.length,
         });
+      });
 
       const processReviewUrl = `${env.NEXT_PUBLIC_APP_URL}/api/internal/process-review`;
       console.log("Triggering review processing:", {
