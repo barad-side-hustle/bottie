@@ -5,13 +5,13 @@ import type { Review } from "@/lib/db/schema";
 import { SchemaType, type ResponseSchema } from "@google/generative-ai";
 import type { ClassificationStats, CategoryCount } from "../types/classification.types";
 
-export interface WeeklySummaryData {
+interface WeeklySummaryData {
   positiveThemes: string[];
   negativeThemes: string[];
   recommendations: string[];
 }
 
-export interface ClassificationSummaryInput {
+interface ClassificationSummaryInput {
   businessName: string;
   stats: ClassificationStats;
   topPositives: CategoryCount[];

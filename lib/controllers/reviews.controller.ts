@@ -1,4 +1,6 @@
 import type { ReviewFilters, Review, ReviewCreate } from "@/lib/types";
+import { env } from "@/lib/env";
+import { NotFoundError } from "@/lib/api/errors";
 import {
   ReviewsRepository,
   ReviewResponsesRepository,
@@ -35,7 +37,7 @@ export class ReviewsController {
 
   async getReview(reviewId: string): Promise<ReviewWithLatestGeneration> {
     const review = await this.repository.get(reviewId);
-    if (!review) throw new Error("Review not found");
+    if (!review) throw new NotFoundError("Review not found");
     return review;
   }
 
@@ -62,17 +64,19 @@ export class ReviewsController {
 
   async generateReply(reviewId: string): Promise<{ review: ReviewWithLatestGeneration; aiReply: string }> {
     const review = await this.getReview(reviewId);
-    const location = await this.locationsRepo.get(review.locationId);
-    if (!location) throw new Error("Location not found");
 
-    const approvedGenerations = await this.responsesRepo.getRecent("posted", 5);
+    const [location, approvedGenerations, rejectedGenerations] = await Promise.all([
+      this.locationsRepo.get(review.locationId),
+      this.responsesRepo.getRecent("posted", 5),
+      this.responsesRepo.getRecent("rejected", 5),
+    ]);
+    if (!location) throw new NotFoundError("Location not found");
 
     const approvedSamples: PromptSample[] = approvedGenerations.map((g) => ({
       review: g.review,
       reply: g.text,
     }));
 
-    const rejectedGenerations = await this.responsesRepo.getRecent("rejected", 5);
     const rejectedSamples: PromptSample[] = rejectedGenerations.map((g) => ({
       review: g.review,
       reply: g.text,
@@ -146,13 +150,13 @@ export class ReviewsController {
     }
 
     const location = await this.locationsRepo.get(review.locationId);
-    if (!location) throw new Error("Location not found");
+    if (!location) throw new NotFoundError("Location not found");
 
     const accountLocation = await this.accountLocationsRepo.getByLocationId(review.locationId);
-    if (!accountLocation) throw new Error("Account location connection not found");
+    if (!accountLocation) throw new NotFoundError("Account location connection not found");
 
     const account = await this.accountsRepo.get(accountLocation.accountId);
-    if (!account) throw new Error("Account not found");
+    if (!account) throw new NotFoundError("Account not found");
 
     const refreshToken = await decryptToken(account.googleRefreshToken);
 
@@ -160,8 +164,8 @@ export class ReviewsController {
       review.googleReviewName || review.googleReviewId,
       replyToPost,
       refreshToken,
-      process.env.GOOGLE_CLIENT_ID!,
-      process.env.GOOGLE_CLIENT_SECRET!
+      env.GOOGLE_CLIENT_ID,
+      env.GOOGLE_CLIENT_SECRET
     );
 
     const updatedReview = await this.markAsPosted(reviewId);

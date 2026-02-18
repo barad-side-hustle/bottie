@@ -7,8 +7,8 @@ Bottie is a Next.js 15 application that helps businesses manage Google reviews w
 ## Tech Stack
 
 - **Framework**: Next.js 15 with App Router, React 19, TypeScript
-- **Database**: PostgreSQL via Supabase with Drizzle ORM
-- **Auth**: Supabase Auth with Google OAuth
+- **Database**: PostgreSQL with Drizzle ORM
+- **Auth**: Better Auth (email/password + Google OAuth)
 - **AI**: Google Gemini API for reply generation
 - **Payments**: Stripe for subscriptions
 - **Email**: Resend with React Email templates
@@ -33,8 +33,8 @@ nvm use 22.13.0
 
 - **`locations`**: Shared Google Business location data + AI settings (keyed by `googleLocationId`)
 - **`account_locations`**: Join table linking Google accounts to locations (many-to-many)
-- **`accounts`**: Google OAuth accounts with refresh tokens
-- **`user_accounts`**: Links Supabase users to accounts
+- **`google_accounts`**: Google OAuth accounts with refresh tokens
+- **`user_accounts`**: Links users to Google accounts
 - **`reviews`**: Reviews stored once per location (linked via `locationId`)
 - **`review_responses`**: AI-generated and posted replies
 - **`subscriptions`**: Stripe subscription data
@@ -42,9 +42,9 @@ nvm use 22.13.0
 ### Key Relationships
 
 ```
-users (Supabase auth.users)
+users (Better Auth user table)
   └── user_accounts (many-to-many)
-        └── accounts (Google OAuth)
+        └── google_accounts (Google OAuth)
               └── account_locations (many-to-many)
                     └── locations (shared business data)
                           └── reviews
@@ -119,9 +119,8 @@ yarn format:write     # Prettier format
 
 Required in `.env.local`:
 
-- `NEXT_PUBLIC_SUPABASE_URL`
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `SUPABASE_SERVICE_ROLE_KEY`
+- `BETTER_AUTH_SECRET`
+- `BETTER_AUTH_URL`
 - `DATABASE_URL`
 - `GOOGLE_CLIENT_ID`
 - `GOOGLE_CLIENT_SECRET`
@@ -140,7 +139,7 @@ Required in `.env.local`:
 
 ## Important Notes
 
-- All database access goes through repositories (RLS enabled)
+- All database access goes through repositories (service_role-only RLS, auth enforced at app level)
 - Server actions handle auth verification
 - Reviews are stored once per `location`, not per account
 - Multiple users can connect to the same physical location

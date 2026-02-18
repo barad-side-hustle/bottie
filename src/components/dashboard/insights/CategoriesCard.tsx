@@ -31,7 +31,7 @@ export function CategoriesCard({ topPositives, topNegatives, onCategoryClick }: 
 
   if (combinedCategories.length === 0) {
     return (
-      <DashboardCard className="hover:scale-100 hover:-translate-y-0">
+      <DashboardCard>
         <DashboardCardHeader>
           <DashboardCardTitle>{t("sections.categories")}</DashboardCardTitle>
         </DashboardCardHeader>
@@ -43,7 +43,7 @@ export function CategoriesCard({ topPositives, topNegatives, onCategoryClick }: 
   }
 
   return (
-    <DashboardCard className="hover:scale-100 hover:-translate-y-0">
+    <DashboardCard>
       <DashboardCardHeader>
         <DashboardCardTitle>{t("sections.categories")}</DashboardCardTitle>
       </DashboardCardHeader>
@@ -51,7 +51,7 @@ export function CategoriesCard({ topPositives, topNegatives, onCategoryClick }: 
         <div className="space-y-1">
           {combinedCategories.map((cat) => {
             const Icon = cat.type === "positive" ? TrendingUp : TrendingDown;
-            const colorClass = cat.type === "positive" ? "text-green-600" : "text-red-600";
+            const colorClass = cat.type === "positive" ? "text-success" : "text-destructive";
 
             return (
               <button

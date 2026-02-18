@@ -1,11 +1,18 @@
 "use client";
 
 import { createContext, useContext, ReactNode } from "react";
-import { User } from "@supabase/supabase-js";
-import { useAuth as useSupabaseAuth } from "@/lib/auth/auth";
+import { authClient } from "@/lib/auth-client";
+
+interface AuthUser {
+  id: string;
+  email: string;
+  name: string;
+  image: string | null;
+  emailVerified: boolean;
+}
 
 interface AuthContextType {
-  user: User | null;
+  user: AuthUser | null;
   loading: boolean;
   error: string | null;
 }
@@ -17,9 +24,23 @@ const AuthContext = createContext<AuthContextType>({
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const auth = useSupabaseAuth();
+  const { data: session, isPending, error } = authClient.useSession();
 
-  return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
+  const user: AuthUser | null = session?.user
+    ? {
+        id: session.user.id,
+        email: session.user.email,
+        name: session.user.name,
+        image: session.user.image ?? null,
+        emailVerified: session.user.emailVerified,
+      }
+    : null;
+
+  return (
+    <AuthContext.Provider value={{ user, loading: isPending, error: error?.message ?? null }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 
 export function useAuth() {

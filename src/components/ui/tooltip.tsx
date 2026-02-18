@@ -92,4 +92,4 @@ const TooltipIcon = ({ text, additionalInfoLabel, closeLabel }: TooltipIconProps
   );
 };
 
-export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider, TooltipIcon };
+export { TooltipIcon };

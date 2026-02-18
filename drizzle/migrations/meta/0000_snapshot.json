@@ -1,22 +1,76 @@
 {
-  "id": "6e7424b1-79d5-4642-aa44-b124e0d535ba",
+  "id": "98551a56-84ec-4466-a894-2db2ec2b2862",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "auth.users": {
-      "name": "users",
-      "schema": "auth",
+    "public.account": {
+      "name": "account",
+      "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": true,
           "notNull": true
         },
-        "email": {
-          "name": "email",
-          "type": "varchar(255)",
+        "account_id": {
+          "name": "account_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "provider_id": {
+          "name": "provider_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "access_token": {
+          "name": "access_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "refresh_token": {
+          "name": "refresh_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "id_token": {
+          "name": "id_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "access_token_expires_at": {
+          "name": "access_token_expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "refresh_token_expires_at": {
+          "name": "refresh_token_expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "scope": {
+          "name": "scope",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "password": {
+          "name": "password",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
@@ -24,16 +78,304 @@
           "name": "created_at",
           "type": "timestamp with time zone",
           "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "account_user_id_user_id_fk": {
+          "name": "account_user_id_user_id_fk",
+          "tableFrom": "account",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "account_service_role_access": {
+          "name": "account_service_role_access",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "postgres",
+            "service_role"
+          ],
+          "using": "true",
+          "withCheck": "true"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.session": {
+      "name": "session",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "token": {
+          "name": "token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "ip_address": {
+          "name": "ip_address",
+          "type": "text",
+          "primaryKey": false,
           "notNull": false
+        },
+        "user_agent": {
+          "name": "user_agent",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "session_user_id_user_id_fk": {
+          "name": "session_user_id_user_id_fk",
+          "tableFrom": "session",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "session_token_unique": {
+          "name": "session_token_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "token"
+          ]
+        }
+      },
+      "policies": {
+        "session_service_role_access": {
+          "name": "session_service_role_access",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "postgres",
+            "service_role"
+          ],
+          "using": "true",
+          "withCheck": "true"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": true
+    },
+    "public.user": {
+      "name": "user",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email_verified": {
+          "name": "email_verified",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "image": {
+          "name": "image",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
         }
       },
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "policies": {},
+      "uniqueConstraints": {
+        "user_email_unique": {
+          "name": "user_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      },
+      "policies": {
+        "user_service_role_access": {
+          "name": "user_service_role_access",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "postgres",
+            "service_role"
+          ],
+          "using": "true",
+          "withCheck": "true"
+        }
+      },
       "checkConstraints": {},
-      "isRLSEnabled": false
+      "isRLSEnabled": true
+    },
+    "public.verification": {
+      "name": "verification",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "identifier": {
+          "name": "identifier",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "value": {
+          "name": "value",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "verification_identifier_idx": {
+          "name": "verification_identifier_idx",
+          "columns": [
+            {
+              "expression": "identifier",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "verification_service_role_access": {
+          "name": "verification_service_role_access",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": [
+            "postgres",
+            "service_role"
+          ],
+          "using": "true",
+          "withCheck": "true"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": true
     },
     "public.users_configs": {
       "name": "users_configs",
@@ -48,7 +390,7 @@
         },
         "user_id": {
           "name": "user_id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -91,13 +433,16 @@
         }
       },
       "foreignKeys": {
-        "users_configs_user_id_users_id_fk": {
-          "name": "users_configs_user_id_users_id_fk",
+        "users_configs_user_id_user_id_fk": {
+          "name": "users_configs_user_id_user_id_fk",
           "tableFrom": "users_configs",
-          "tableTo": "users",
-          "schemaTo": "auth",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -107,44 +452,29 @@
         "users_configs_user_id_unique": {
           "name": "users_configs_user_id_unique",
           "nullsNotDistinct": false,
-          "columns": ["user_id"]
+          "columns": [
+            "user_id"
+          ]
         }
       },
       "policies": {
-        "users_configs_select_own": {
-          "name": "users_configs_select_own",
+        "users_configs_service_role_access": {
+          "name": "users_configs_service_role_access",
           "as": "PERMISSIVE",
-          "for": "SELECT",
-          "to": ["authenticated"],
-          "using": "(auth.uid()) = \"users_configs\".\"user_id\""
-        },
-        "users_configs_insert_own": {
-          "name": "users_configs_insert_own",
-          "as": "PERMISSIVE",
-          "for": "INSERT",
-          "to": ["authenticated"],
-          "withCheck": "(auth.uid()) = \"users_configs\".\"user_id\""
-        },
-        "users_configs_update_own": {
-          "name": "users_configs_update_own",
-          "as": "PERMISSIVE",
-          "for": "UPDATE",
-          "to": ["authenticated"],
-          "using": "(auth.uid()) = \"users_configs\".\"user_id\""
-        },
-        "users_configs_delete_own": {
-          "name": "users_configs_delete_own",
-          "as": "PERMISSIVE",
-          "for": "DELETE",
-          "to": ["authenticated"],
-          "using": "(auth.uid()) = \"users_configs\".\"user_id\""
+          "for": "ALL",
+          "to": [
+            "postgres",
+            "service_role"
+          ],
+          "using": "true",
+          "withCheck": "true"
         }
       },
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.accounts": {
-      "name": "accounts",
+    "public.google_accounts": {
+      "name": "google_accounts",
       "schema": "",
       "columns": {
         "id": {
@@ -193,8 +523,8 @@
         }
       },
       "indexes": {
-        "accounts_email_idx": {
-          "name": "accounts_email_idx",
+        "google_accounts_email_idx": {
+          "name": "google_accounts_email_idx",
           "columns": [
             {
               "expression": "email",
@@ -208,8 +538,8 @@
           "method": "btree",
           "with": {}
         },
-        "accounts_connected_at_idx": {
-          "name": "accounts_connected_at_idx",
+        "google_accounts_connected_at_idx": {
+          "name": "google_accounts_connected_at_idx",
           "columns": [
             {
               "expression": "connected_at",
@@ -228,33 +558,16 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {
-        "accounts_select_associated": {
-          "name": "accounts_select_associated",
+        "google_accounts_service_role_access": {
+          "name": "google_accounts_service_role_access",
           "as": "PERMISSIVE",
-          "for": "SELECT",
-          "to": ["authenticated"],
-          "using": "EXISTS (\n        SELECT 1 FROM user_accounts ua\n        WHERE ua.account_id = \"accounts\".\"id\"\n        AND ua.user_id = (auth.uid())\n      )"
-        },
-        "accounts_insert_authenticated": {
-          "name": "accounts_insert_authenticated",
-          "as": "PERMISSIVE",
-          "for": "INSERT",
-          "to": ["authenticated"],
+          "for": "ALL",
+          "to": [
+            "postgres",
+            "service_role"
+          ],
+          "using": "true",
           "withCheck": "true"
-        },
-        "accounts_update_owner": {
-          "name": "accounts_update_owner",
-          "as": "PERMISSIVE",
-          "for": "UPDATE",
-          "to": ["authenticated"],
-          "using": "EXISTS (\n        SELECT 1 FROM user_accounts ua\n        WHERE ua.account_id = \"accounts\".\"id\"\n        AND ua.user_id = (auth.uid())\n        AND ua.role = 'owner'\n      )"
-        },
-        "accounts_delete_owner": {
-          "name": "accounts_delete_owner",
-          "as": "PERMISSIVE",
-          "for": "DELETE",
-          "to": ["authenticated"],
-          "using": "EXISTS (\n        SELECT 1 FROM user_accounts ua\n        WHERE ua.account_id = \"accounts\".\"id\"\n        AND ua.user_id = (auth.uid())\n        AND ua.role = 'owner'\n      )"
         }
       },
       "checkConstraints": {},
@@ -266,7 +579,7 @@
       "columns": {
         "user_id": {
           "name": "user_id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -324,22 +637,29 @@
         }
       },
       "foreignKeys": {
-        "user_accounts_user_id_users_id_fk": {
-          "name": "user_accounts_user_id_users_id_fk",
+        "user_accounts_user_id_user_id_fk": {
+          "name": "user_accounts_user_id_user_id_fk",
           "tableFrom": "user_accounts",
-          "tableTo": "users",
-          "schemaTo": "auth",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "user_accounts_account_id_accounts_id_fk": {
-          "name": "user_accounts_account_id_accounts_id_fk",
+        "user_accounts_account_id_google_accounts_id_fk": {
+          "name": "user_accounts_account_id_google_accounts_id_fk",
           "tableFrom": "user_accounts",
-          "tableTo": "accounts",
-          "columnsFrom": ["account_id"],
-          "columnsTo": ["id"],
+          "tableTo": "google_accounts",
+          "columnsFrom": [
+            "account_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -347,38 +667,24 @@
       "compositePrimaryKeys": {
         "user_accounts_user_id_account_id_pk": {
           "name": "user_accounts_user_id_account_id_pk",
-          "columns": ["user_id", "account_id"]
+          "columns": [
+            "user_id",
+            "account_id"
+          ]
         }
       },
       "uniqueConstraints": {},
       "policies": {
-        "user_accounts_select_own": {
-          "name": "user_accounts_select_own",
+        "user_accounts_service_role_access": {
+          "name": "user_accounts_service_role_access",
           "as": "PERMISSIVE",
-          "for": "SELECT",
-          "to": ["authenticated"],
-          "using": "(auth.uid()) = \"user_accounts\".\"user_id\""
-        },
-        "user_accounts_insert_owner": {
-          "name": "user_accounts_insert_owner",
-          "as": "PERMISSIVE",
-          "for": "INSERT",
-          "to": ["authenticated"],
-          "withCheck": "EXISTS (\n        SELECT 1 FROM user_accounts ua\n        WHERE ua.account_id = \"user_accounts\".\"account_id\"\n        AND ua.user_id = (auth.uid())\n        AND ua.role = 'owner'\n      )"
-        },
-        "user_accounts_update_owner": {
-          "name": "user_accounts_update_owner",
-          "as": "PERMISSIVE",
-          "for": "UPDATE",
-          "to": ["authenticated"],
-          "using": "EXISTS (\n        SELECT 1 FROM user_accounts ua\n        WHERE ua.account_id = \"user_accounts\".\"account_id\"\n        AND ua.user_id = (auth.uid())\n        AND ua.role = 'owner'\n      )"
-        },
-        "user_accounts_delete_owner": {
-          "name": "user_accounts_delete_owner",
-          "as": "PERMISSIVE",
-          "for": "DELETE",
-          "to": ["authenticated"],
-          "using": "EXISTS (\n        SELECT 1 FROM user_accounts ua\n        WHERE ua.account_id = \"user_accounts\".\"account_id\"\n        AND ua.user_id = (auth.uid())\n        AND ua.role = 'owner'\n      )"
+          "for": "ALL",
+          "to": [
+            "postgres",
+            "service_role"
+          ],
+          "using": "true",
+          "withCheck": "true"
         }
       },
       "checkConstraints": {},
@@ -397,7 +703,7 @@
         },
         "user_id": {
           "name": "user_id",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -430,6 +736,12 @@
         "stripe_price_id": {
           "name": "stripe_price_id",
           "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "feature_overrides": {
+          "name": "feature_overrides",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": false
         },
@@ -495,13 +807,16 @@
         }
       },
       "foreignKeys": {
-        "subscriptions_user_id_users_id_fk": {
-          "name": "subscriptions_user_id_users_id_fk",
+        "subscriptions_user_id_user_id_fk": {
+          "name": "subscriptions_user_id_user_id_fk",
           "tableFrom": "subscriptions",
-          "tableTo": "users",
-          "schemaTo": "auth",
-          "columnsFrom": ["user_id"],
-          "columnsTo": ["id"],
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -511,37 +826,22 @@
         "subscriptions_user_id_unique": {
           "name": "subscriptions_user_id_unique",
           "nullsNotDistinct": false,
-          "columns": ["user_id"]
+          "columns": [
+            "user_id"
+          ]
         }
       },
       "policies": {
-        "subscriptions_select_own": {
-          "name": "subscriptions_select_own",
+        "subscriptions_service_role_access": {
+          "name": "subscriptions_service_role_access",
           "as": "PERMISSIVE",
-          "for": "SELECT",
-          "to": ["authenticated"],
-          "using": "(auth.uid()) = \"subscriptions\".\"user_id\""
-        },
-        "subscriptions_insert_own": {
-          "name": "subscriptions_insert_own",
-          "as": "PERMISSIVE",
-          "for": "INSERT",
-          "to": ["authenticated"],
-          "withCheck": "(auth.uid()) = \"subscriptions\".\"user_id\""
-        },
-        "subscriptions_update_own": {
-          "name": "subscriptions_update_own",
-          "as": "PERMISSIVE",
-          "for": "UPDATE",
-          "to": ["authenticated"],
-          "using": "(auth.uid()) = \"subscriptions\".\"user_id\""
-        },
-        "subscriptions_delete_own": {
-          "name": "subscriptions_delete_own",
-          "as": "PERMISSIVE",
-          "for": "DELETE",
-          "to": ["authenticated"],
-          "using": "(auth.uid()) = \"subscriptions\".\"user_id\""
+          "for": "ALL",
+          "to": [
+            "postgres",
+            "service_role"
+          ],
+          "using": "true",
+          "withCheck": "true"
         }
       },
       "checkConstraints": {},
@@ -711,37 +1011,22 @@
         "locations_google_location_id_unique": {
           "name": "locations_google_location_id_unique",
           "nullsNotDistinct": false,
-          "columns": ["google_location_id"]
+          "columns": [
+            "google_location_id"
+          ]
         }
       },
       "policies": {
-        "locations_select_connected": {
-          "name": "locations_select_connected",
+        "locations_service_role_access": {
+          "name": "locations_service_role_access",
           "as": "PERMISSIVE",
-          "for": "SELECT",
-          "to": ["authenticated"],
-          "using": "EXISTS (\n        SELECT 1 FROM account_locations al\n        INNER JOIN user_accounts ua ON ua.account_id = al.account_id\n        WHERE al.location_id = \"locations\".\"id\"\n        AND ua.user_id = (auth.uid())\n      )"
-        },
-        "locations_insert_authenticated": {
-          "name": "locations_insert_authenticated",
-          "as": "PERMISSIVE",
-          "for": "INSERT",
-          "to": ["authenticated"],
+          "for": "ALL",
+          "to": [
+            "postgres",
+            "service_role"
+          ],
+          "using": "true",
           "withCheck": "true"
-        },
-        "locations_update_connected": {
-          "name": "locations_update_connected",
-          "as": "PERMISSIVE",
-          "for": "UPDATE",
-          "to": ["authenticated"],
-          "using": "EXISTS (\n        SELECT 1 FROM account_locations al\n        INNER JOIN user_accounts ua ON ua.account_id = al.account_id\n        WHERE al.location_id = \"locations\".\"id\"\n        AND ua.user_id = (auth.uid())\n      )"
-        },
-        "locations_delete_orphan": {
-          "name": "locations_delete_orphan",
-          "as": "PERMISSIVE",
-          "for": "DELETE",
-          "to": ["authenticated"],
-          "using": "NOT EXISTS (\n        SELECT 1 FROM account_locations al\n        WHERE al.location_id = \"locations\".\"id\"\n      )"
         }
       },
       "checkConstraints": {},
@@ -861,12 +1146,16 @@
         }
       },
       "foreignKeys": {
-        "account_locations_account_id_accounts_id_fk": {
-          "name": "account_locations_account_id_accounts_id_fk",
+        "account_locations_account_id_google_accounts_id_fk": {
+          "name": "account_locations_account_id_google_accounts_id_fk",
           "tableFrom": "account_locations",
-          "tableTo": "accounts",
-          "columnsFrom": ["account_id"],
-          "columnsTo": ["id"],
+          "tableTo": "google_accounts",
+          "columnsFrom": [
+            "account_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -874,8 +1163,12 @@
           "name": "account_locations_location_id_locations_id_fk",
           "tableFrom": "account_locations",
           "tableTo": "locations",
-          "columnsFrom": ["location_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "location_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -885,37 +1178,23 @@
         "account_locations_account_location_unique": {
           "name": "account_locations_account_location_unique",
           "nullsNotDistinct": false,
-          "columns": ["account_id", "location_id"]
+          "columns": [
+            "account_id",
+            "location_id"
+          ]
         }
       },
       "policies": {
-        "account_locations_select_associated": {
-          "name": "account_locations_select_associated",
+        "account_locations_service_role_access": {
+          "name": "account_locations_service_role_access",
           "as": "PERMISSIVE",
-          "for": "SELECT",
-          "to": ["authenticated"],
-          "using": "EXISTS (\n        SELECT 1 FROM user_accounts ua\n        WHERE ua.account_id = \"account_locations\".\"account_id\"\n        AND ua.user_id = (auth.uid())\n      )"
-        },
-        "account_locations_insert_associated": {
-          "name": "account_locations_insert_associated",
-          "as": "PERMISSIVE",
-          "for": "INSERT",
-          "to": ["authenticated"],
-          "withCheck": "EXISTS (\n        SELECT 1 FROM user_accounts ua\n        WHERE ua.account_id = \"account_locations\".\"account_id\"\n        AND ua.user_id = (auth.uid())\n      )"
-        },
-        "account_locations_update_associated": {
-          "name": "account_locations_update_associated",
-          "as": "PERMISSIVE",
-          "for": "UPDATE",
-          "to": ["authenticated"],
-          "using": "EXISTS (\n        SELECT 1 FROM user_accounts ua\n        WHERE ua.account_id = \"account_locations\".\"account_id\"\n        AND ua.user_id = (auth.uid())\n      )"
-        },
-        "account_locations_delete_owner": {
-          "name": "account_locations_delete_owner",
-          "as": "PERMISSIVE",
-          "for": "DELETE",
-          "to": ["authenticated"],
-          "using": "EXISTS (\n        SELECT 1 FROM user_accounts ua\n        WHERE ua.account_id = \"account_locations\".\"account_id\"\n        AND ua.user_id = (auth.uid())\n        AND ua.role = 'owner'\n      )"
+          "for": "ALL",
+          "to": [
+            "postgres",
+            "service_role"
+          ],
+          "using": "true",
+          "withCheck": "true"
         }
       },
       "checkConstraints": {},
@@ -1144,6 +1423,48 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
+        },
+        "reviews_consumes_quota_received_at_idx": {
+          "name": "reviews_consumes_quota_received_at_idx",
+          "columns": [
+            {
+              "expression": "consumes_quota",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "received_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "reviews_location_rating_idx": {
+          "name": "reviews_location_rating_idx",
+          "columns": [
+            {
+              "expression": "location_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "rating",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {
@@ -1151,8 +1472,12 @@
           "name": "reviews_location_id_locations_id_fk",
           "tableFrom": "reviews",
           "tableTo": "locations",
-          "columnsFrom": ["location_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "location_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1162,37 +1487,22 @@
         "reviews_google_review_id_unique": {
           "name": "reviews_google_review_id_unique",
           "nullsNotDistinct": false,
-          "columns": ["google_review_id"]
+          "columns": [
+            "google_review_id"
+          ]
         }
       },
       "policies": {
-        "reviews_select_connected": {
-          "name": "reviews_select_connected",
+        "reviews_service_role_access": {
+          "name": "reviews_service_role_access",
           "as": "PERMISSIVE",
-          "for": "SELECT",
-          "to": ["authenticated"],
-          "using": "EXISTS (\n        SELECT 1 FROM account_locations al\n        INNER JOIN user_accounts ua ON ua.account_id = al.account_id\n        WHERE al.location_id = \"reviews\".\"location_id\"\n        AND ua.user_id = (auth.uid())\n      )"
-        },
-        "reviews_insert_connected": {
-          "name": "reviews_insert_connected",
-          "as": "PERMISSIVE",
-          "for": "INSERT",
-          "to": ["authenticated"],
-          "withCheck": "EXISTS (\n        SELECT 1 FROM account_locations al\n        INNER JOIN user_accounts ua ON ua.account_id = al.account_id\n        WHERE al.location_id = \"reviews\".\"location_id\"\n        AND ua.user_id = (auth.uid())\n      )"
-        },
-        "reviews_update_connected": {
-          "name": "reviews_update_connected",
-          "as": "PERMISSIVE",
-          "for": "UPDATE",
-          "to": ["authenticated"],
-          "using": "EXISTS (\n        SELECT 1 FROM account_locations al\n        INNER JOIN user_accounts ua ON ua.account_id = al.account_id\n        WHERE al.location_id = \"reviews\".\"location_id\"\n        AND ua.user_id = (auth.uid())\n      )"
-        },
-        "reviews_delete_connected_owner": {
-          "name": "reviews_delete_connected_owner",
-          "as": "PERMISSIVE",
-          "for": "DELETE",
-          "to": ["authenticated"],
-          "using": "EXISTS (\n        SELECT 1 FROM account_locations al\n        INNER JOIN user_accounts ua ON ua.account_id = al.account_id\n        WHERE al.location_id = \"reviews\".\"location_id\"\n        AND ua.user_id = (auth.uid())\n        AND ua.role = 'owner'\n      )"
+          "for": "ALL",
+          "to": [
+            "postgres",
+            "service_role"
+          ],
+          "using": "true",
+          "withCheck": "true"
         }
       },
       "checkConstraints": {
@@ -1253,13 +1563,13 @@
         },
         "generated_by": {
           "name": "generated_by",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
         "posted_by": {
           "name": "posted_by",
-          "type": "uuid",
+          "type": "text",
           "primaryKey": false,
           "notNull": false
         },
@@ -1378,8 +1688,12 @@
           "name": "review_responses_review_id_reviews_id_fk",
           "tableFrom": "review_responses",
           "tableTo": "reviews",
-          "columnsFrom": ["review_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "review_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1387,37 +1701,51 @@
           "name": "review_responses_location_id_locations_id_fk",
           "tableFrom": "review_responses",
           "tableTo": "locations",
-          "columnsFrom": ["location_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "location_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "review_responses_account_id_accounts_id_fk": {
-          "name": "review_responses_account_id_accounts_id_fk",
+        "review_responses_account_id_google_accounts_id_fk": {
+          "name": "review_responses_account_id_google_accounts_id_fk",
           "tableFrom": "review_responses",
-          "tableTo": "accounts",
-          "columnsFrom": ["account_id"],
-          "columnsTo": ["id"],
+          "tableTo": "google_accounts",
+          "columnsFrom": [
+            "account_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "review_responses_generated_by_users_id_fk": {
-          "name": "review_responses_generated_by_users_id_fk",
+        "review_responses_generated_by_user_id_fk": {
+          "name": "review_responses_generated_by_user_id_fk",
           "tableFrom": "review_responses",
-          "tableTo": "users",
-          "schemaTo": "auth",
-          "columnsFrom": ["generated_by"],
-          "columnsTo": ["id"],
+          "tableTo": "user",
+          "columnsFrom": [
+            "generated_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
-        "review_responses_posted_by_users_id_fk": {
-          "name": "review_responses_posted_by_users_id_fk",
+        "review_responses_posted_by_user_id_fk": {
+          "name": "review_responses_posted_by_user_id_fk",
           "tableFrom": "review_responses",
-          "tableTo": "users",
-          "schemaTo": "auth",
-          "columnsFrom": ["posted_by"],
-          "columnsTo": ["id"],
+          "tableTo": "user",
+          "columnsFrom": [
+            "posted_by"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -1425,19 +1753,16 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {
-        "review_responses_select_connected": {
-          "name": "review_responses_select_connected",
+        "review_responses_service_role_access": {
+          "name": "review_responses_service_role_access",
           "as": "PERMISSIVE",
-          "for": "SELECT",
-          "to": ["authenticated"],
-          "using": "EXISTS (\n        SELECT 1 FROM \"account_locations\" al\n        INNER JOIN \"user_accounts\" ua ON ua.account_id = al.account_id\n        WHERE al.location_id = \"review_responses\".\"location_id\"\n        AND ua.user_id = (auth.uid())\n      )"
-        },
-        "review_responses_insert_connected": {
-          "name": "review_responses_insert_connected",
-          "as": "PERMISSIVE",
-          "for": "INSERT",
-          "to": ["authenticated"],
-          "withCheck": "EXISTS (\n        SELECT 1 FROM \"account_locations\" al\n        INNER JOIN \"user_accounts\" ua ON ua.account_id = al.account_id\n        WHERE al.location_id = \"review_responses\".\"location_id\"\n        AND ua.user_id = (auth.uid())\n      )"
+          "for": "ALL",
+          "to": [
+            "postgres",
+            "service_role"
+          ],
+          "using": "true",
+          "withCheck": "true"
         }
       },
       "checkConstraints": {
@@ -1552,8 +1877,12 @@
           "name": "weekly_summaries_location_id_locations_id_fk",
           "tableFrom": "weekly_summaries",
           "tableTo": "locations",
-          "columnsFrom": ["location_id"],
-          "columnsTo": ["id"],
+          "columnsFrom": [
+            "location_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1563,16 +1892,24 @@
         "weekly_summaries_location_week_unique": {
           "name": "weekly_summaries_location_week_unique",
           "nullsNotDistinct": false,
-          "columns": ["location_id", "week_start_date", "week_end_date"]
+          "columns": [
+            "location_id",
+            "week_start_date",
+            "week_end_date"
+          ]
         }
       },
       "policies": {
-        "weekly_summaries_select_connected": {
-          "name": "weekly_summaries_select_connected",
+        "weekly_summaries_service_role_access": {
+          "name": "weekly_summaries_service_role_access",
           "as": "PERMISSIVE",
-          "for": "SELECT",
-          "to": ["authenticated"],
-          "using": "EXISTS (\n        SELECT 1 FROM \"account_locations\" al\n        JOIN \"user_accounts\" ua ON ua.account_id = al.account_id\n        WHERE al.location_id = \"weekly_summaries\".\"location_id\"\n        AND ua.user_id = (auth.uid())\n      )"
+          "for": "ALL",
+          "to": [
+            "postgres",
+            "service_role"
+          ],
+          "using": "true",
+          "withCheck": "true"
         }
       },
       "checkConstraints": {},
@@ -1580,9 +1917,7 @@
     }
   },
   "enums": {},
-  "schemas": {
-    "auth": "auth"
-  },
+  "schemas": {},
   "sequences": {},
   "roles": {},
   "policies": {},

@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { BackButton } from "@/components/ui/back-button";
@@ -57,7 +58,7 @@ export default async function InsightsPage({ params, searchParams }: InsightsPag
   }
 
   const [location, insights, trends] = await Promise.all([
-    getLocation(userId, locationId),
+    getLocation({ locationId }),
     getInsights({ locationId, dateFrom, dateTo }),
     getInsightsTrends({ locationId, dateFrom, dateTo, groupBy: "day" }),
   ]);
@@ -73,7 +74,9 @@ export default async function InsightsPage({ params, searchParams }: InsightsPag
       <PageHeader title={t("title", { businessName: location.name })} description={t("description")} />
 
       <div className="mt-6 space-y-6">
-        <InsightsDateFilter dateFrom={dateFrom} dateTo={dateTo} />
+        <Suspense>
+          <InsightsDateFilter dateFrom={dateFrom} dateTo={dateTo} />
+        </Suspense>
 
         {!hasData ? (
           <EmptyState title={t("noData")} description={t("noDataDescription")} />

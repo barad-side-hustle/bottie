@@ -26,7 +26,7 @@ export function FeatureLockedState({ feature, requiredPlan }: FeatureLockedState
   };
 
   return (
-    <DashboardCard className="border-dashed hover:translate-y-0 hover:scale-100">
+    <DashboardCard className="border-dashed">
       <DashboardCardHeader className="text-center items-center">
         <div className="mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-muted">
           <Lock className="h-6 w-6 text-muted-foreground" />

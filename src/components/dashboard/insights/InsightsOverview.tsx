@@ -25,7 +25,7 @@ export function InsightsOverview({ stats }: InsightsOverviewProps) {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       <StatCard label={t("totalReviews")} value={stats.totalReviews} icon={MessageSquare} />
 
-      <DashboardCard className="hover:scale-100 hover:-translate-y-0">
+      <DashboardCard>
         <DashboardCardContent className="p-6">
           <div className="flex items-center justify-between">
             <div>
@@ -43,18 +43,18 @@ export function InsightsOverview({ stats }: InsightsOverviewProps) {
         label={t("positiveSentiment")}
         value={`${positivePercent}%`}
         icon={TrendingUp}
-        iconBgColor="bg-green-100"
-        iconColor="text-green-600"
-        valueColor="text-green-600"
+        iconBgColor="bg-success/10"
+        iconColor="text-success"
+        valueColor="text-success"
       />
 
       <StatCard
         label={t("negativeSentiment")}
         value={`${negativePercent}%`}
         icon={TrendingDown}
-        iconBgColor="bg-red-100"
-        iconColor="text-red-600"
-        valueColor="text-red-600"
+        iconBgColor="bg-destructive/10"
+        iconColor="text-destructive"
+        valueColor="text-destructive"
       />
     </div>
   );

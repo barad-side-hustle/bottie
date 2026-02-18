@@ -5,7 +5,7 @@ import type { LocationFilters } from "@/lib/types";
 import { BaseRepository } from "./base.repository";
 import { NotFoundError } from "@/lib/api/errors";
 
-export type { Location, LocationInsert };
+export type { Location };
 
 export class LocationsRepository extends BaseRepository<LocationInsert, Location, Partial<Location>> {
   constructor(private userId: string) {

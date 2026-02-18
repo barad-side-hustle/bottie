@@ -1,6 +1,6 @@
 import createMiddleware from "next-intl/middleware";
 import { routing } from "./src/i18n/routing";
-import { updateSession, checkOnboardingStatus } from "@/lib/supabase/middleware";
+import { getSessionFromRequest, checkOnboardingStatus } from "@/lib/auth/middleware";
 import { type NextRequest, NextResponse } from "next/server";
 import { initAcceptLanguage } from "@/lib/locale-detection";
 import { locales, defaultLocale, Locale } from "@/lib/locale";
@@ -17,7 +17,8 @@ function getLocaleFromPathname(pathname: string): string {
 }
 
 export async function proxy(request: NextRequest) {
-  const { supabaseResponse, user, supabase } = await updateSession(request);
+  const session = await getSessionFromRequest(request);
+  const user = session?.user ?? null;
 
   const locale = getLocaleFromPathname(request.nextUrl.pathname);
 
@@ -31,6 +32,8 @@ export async function proxy(request: NextRequest) {
     }
   }
 
+  const intlResponse = intlMiddleware(request);
+
   if (user) {
     request.headers.set("x-user-id", user.id);
 
@@ -41,10 +44,10 @@ export async function proxy(request: NextRequest) {
       const onboardingCookie = request.cookies.get(COOKIE_NAME);
 
       if (onboardingCookie?.value !== "true") {
-        const isOnboarded = await checkOnboardingStatus(supabase, user.id);
+        const isOnboarded = await checkOnboardingStatus(user.id);
 
         if (isOnboarded) {
-          supabaseResponse.cookies.set(COOKIE_NAME, "true", {
+          intlResponse.cookies.set(COOKIE_NAME, "true", {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
             sameSite: "lax",
@@ -57,14 +60,6 @@ export async function proxy(request: NextRequest) {
         }
       }
     }
-  }
-
-  const intlResponse = intlMiddleware(request);
-
-  if (supabaseResponse.cookies.getAll().length > 0) {
-    supabaseResponse.cookies.getAll().forEach((cookie) => {
-      intlResponse.cookies.set(cookie.name, cookie.value);
-    });
   }
 
   return intlResponse;

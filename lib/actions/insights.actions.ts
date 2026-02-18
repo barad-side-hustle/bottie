@@ -20,11 +20,6 @@ const GetTrendsSchema = ContextSchema.merge(DateRangeSchema).extend({
   groupBy: z.enum(["day", "week"]).optional(),
 });
 
-const GetTopCategoriesSchema = ContextSchema.merge(DateRangeSchema).extend({
-  type: z.enum(["positive", "negative"]),
-  limit: z.number().min(1).max(50).optional(),
-});
-
 const GetReviewsByCategorySchema = ContextSchema.merge(DateRangeSchema).extend({
   category: z.string(),
   type: z.enum(["positive", "negative"]),
@@ -41,14 +36,6 @@ export const getInsightsTrends = createSafeAction(
   async ({ locationId, dateFrom, dateTo, groupBy }, { userId }) => {
     const repo = new InsightsRepository(userId, locationId);
     return repo.getClassificationTrends(dateFrom, dateTo, groupBy || "day");
-  }
-);
-
-export const getTopCategories = createSafeAction(
-  GetTopCategoriesSchema,
-  async ({ locationId, dateFrom, dateTo, type, limit }, { userId }) => {
-    const repo = new InsightsRepository(userId, locationId);
-    return repo.getTopCategories(dateFrom, dateTo, type, limit || 10);
   }
 );
 

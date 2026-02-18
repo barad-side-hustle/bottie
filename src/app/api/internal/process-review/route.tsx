@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAdminClient } from "@/lib/supabase/admin";
-import { Resend } from "resend";
+import crypto from "crypto";
 import { ReviewsRepository } from "@/lib/db/repositories/reviews.repository";
 import { LocationsRepository } from "@/lib/db/repositories/locations.repository";
 import { AccountsRepository } from "@/lib/db/repositories/accounts.repository";
@@ -9,9 +8,10 @@ import { SubscriptionsController } from "@/lib/controllers/subscriptions.control
 import { ReviewsController } from "@/lib/controllers/reviews.controller";
 import type { ReplyStatus, StarConfig } from "@/lib/types";
 import type { ReviewNotificationEmailProps } from "@/lib/emails/review-notification";
+import { env } from "@/lib/env";
+import { sendEmail } from "@/lib/utils/email-service";
 
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 interface ProcessReviewRequest {
@@ -19,6 +19,13 @@ interface ProcessReviewRequest {
   accountId: string;
   locationId: string;
   reviewId: string;
+}
+
+function secureCompare(a: string, b: string): boolean {
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  if (bufA.length !== bufB.length) return false;
+  return crypto.timingSafeEqual(bufA, bufB);
 }
 
 export async function POST(request: NextRequest) {
@@ -33,7 +40,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: "Unauthorized: Missing authentication header" }, { status: 401 });
       }
 
-      if (internalSecret !== process.env.INTERNAL_API_SECRET) {
+      if (!secureCompare(internalSecret, env.INTERNAL_API_SECRET)) {
         console.error("Forbidden internal API call: X-Internal-Secret header invalid");
         return NextResponse.json({ error: "Forbidden: Invalid authentication credentials" }, { status: 403 });
       }
@@ -78,7 +85,7 @@ export async function POST(request: NextRequest) {
       });
 
       await reviewsRepo.update(reviewId, {
-        replyStatus: "quota_exceeded" as ReplyStatus,
+        replyStatus: "quota_exceeded",
       });
 
       console.log("Review saved without AI reply due to quota limit", { reviewId });
@@ -109,7 +116,7 @@ export async function POST(request: NextRequest) {
     } catch (error) {
       console.error("Failed to generate AI reply", { error });
       await reviewsRepo.update(reviewId, {
-        replyStatus: "failed" as ReplyStatus,
+        replyStatus: "failed",
       });
       return NextResponse.json(
         {
@@ -128,7 +135,7 @@ export async function POST(request: NextRequest) {
       if (!encryptedToken) {
         console.error("Cannot auto-post: no refresh token available");
         await reviewsRepo.update(reviewId, {
-          replyStatus: "failed" as ReplyStatus,
+          replyStatus: "failed",
         });
         replyStatus = "failed";
       } else {
@@ -143,7 +150,7 @@ export async function POST(request: NextRequest) {
           });
 
           await reviewsRepo.update(reviewId, {
-            replyStatus: "failed" as ReplyStatus,
+            replyStatus: "failed",
           });
 
           replyStatus = "failed";
@@ -151,7 +158,7 @@ export async function POST(request: NextRequest) {
       }
     } else {
       await reviewsRepo.update(reviewId, {
-        replyStatus: "pending" as ReplyStatus,
+        replyStatus: "pending",
       });
       console.log("AI reply awaiting approval", { reviewId });
     }
@@ -166,102 +173,106 @@ export async function POST(request: NextRequest) {
 
         const { db } = await import("@/lib/db/client");
         const { accountLocations, userAccounts } = await import("@/lib/db/schema");
-        const { eq } = await import("drizzle-orm");
+        const { eq, inArray } = await import("drizzle-orm");
 
         const locationConnections = await db.query.accountLocations.findMany({
           where: eq(accountLocations.locationId, locationId),
         });
 
         const accountIds = [...new Set(locationConnections.map((lc) => lc.accountId))];
-        const allUserAccounts = [];
 
-        for (const accId of accountIds) {
-          const usersForAccount = await db.query.userAccounts.findMany({
-            where: eq(userAccounts.accountId, accId),
-          });
-          allUserAccounts.push(...usersForAccount);
-        }
+        const allUserAccounts = await db.query.userAccounts.findMany({
+          where: inArray(userAccounts.accountId, accountIds),
+        });
 
         const uniqueUserIds = [...new Set(allUserAccounts.map((ua) => ua.userId))];
 
         console.log(`Found ${uniqueUserIds.length} unique users connected to location ${locationId}`);
 
-        const supabase = createAdminClient();
         const usersConfigsRepo = new UsersConfigsRepository();
+        const { user: userTable } = await import("@/lib/db/schema/auth.schema");
+        const { eq: eqOp } = await import("drizzle-orm");
 
         const { default: ReviewNotificationEmailComponent } = await import("@/lib/emails/review-notification");
 
-        for (const currentUserId of uniqueUserIds) {
-          try {
-            const userConfig = await usersConfigsRepo.getOrCreate(currentUserId);
+        const emailPromises = uniqueUserIds.map(async (currentUserId) => {
+          const userConfig = await usersConfigsRepo.getOrCreate(currentUserId);
 
-            if (!userConfig.configs.EMAIL_ON_NEW_REVIEW) {
-              console.log(`User ${currentUserId} has email notifications disabled, skipping`);
-              continue;
-            }
+          if (!userConfig.configs.EMAIL_ON_NEW_REVIEW) {
+            console.log(`User ${currentUserId} has email notifications disabled, skipping`);
+            return;
+          }
 
-            const { data: userData } = await supabase.auth.admin.getUserById(currentUserId);
+          const [userData] = await db
+            .select({ email: userTable.email, name: userTable.name })
+            .from(userTable)
+            .where(eqOp(userTable.id, currentUserId))
+            .limit(1);
 
-            if (!userData.user) {
-              console.error("User not found in Supabase Auth", { userId: currentUserId });
-              continue;
-            }
+          if (!userData) {
+            console.error("User not found", { userId: currentUserId });
+            return;
+          }
 
-            const recipientEmail = userData.user.email;
-            const recipientName = userData.user.user_metadata?.display_name || userData.user.email;
+          const recipientEmail = userData.email;
+          const recipientName = userData.name || userData.email;
 
-            if (!recipientEmail) {
-              console.error("User email not found", { userId: currentUserId });
-              continue;
-            }
+          if (!recipientEmail) {
+            console.error("User email not found", { userId: currentUserId });
+            return;
+          }
 
-            const locale = "en";
-            const status = replyStatus as "pending" | "posted";
+          const locale = "en";
+          const status = replyStatus as "pending" | "posted";
 
-            const reviewPageUrl = `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/dashboard/accounts/${accountId}/locations/${location.id}/reviews/${reviewId}`;
+          const reviewPageUrl = `${env.NEXT_PUBLIC_APP_URL}/${locale}/dashboard/accounts/${accountId}/locations/${location.id}/reviews/${reviewId}`;
 
-            const emailProps: ReviewNotificationEmailProps = {
-              title: "New Review Received",
-              greeting: `Hi ${recipientName || recipientEmail},`,
-              body: "You received a new review for",
-              businessName: location.name,
-              noReviewText: "No review text provided",
-              aiReplyHeader: "AI Generated Reply",
-              statusText: status === "pending" ? "Pending Approval" : "Posted",
-              viewReviewButton: "View Review",
-              footer: "You're receiving this email because you enabled notifications for new reviews",
-              reviewerName: review.name,
-              rating: review.rating,
-              reviewText: review.text || "",
-              aiReply,
-              status,
-              reviewPageUrl,
-            };
+          const emailProps: ReviewNotificationEmailProps = {
+            title: "New Review Received",
+            greeting: `Hi ${recipientName || recipientEmail},`,
+            body: "You received a new review for",
+            businessName: location.name,
+            noReviewText: "No review text provided",
+            aiReplyHeader: "AI Generated Reply",
+            statusText: status === "pending" ? "Pending Approval" : "Posted",
+            viewReviewButton: "View Review",
+            footer: "You're receiving this email because you enabled notifications for new reviews",
+            reviewerName: review.name,
+            rating: review.rating,
+            reviewText: review.text || "",
+            aiReply,
+            status,
+            reviewPageUrl,
+          };
 
-            const emailComponent = <ReviewNotificationEmailComponent {...emailProps} />;
-            const subject = `New ${review.rating}-star review for ${location.name}`;
+          const emailComponent = <ReviewNotificationEmailComponent {...emailProps} />;
+          const subject = `New ${review.rating}-star review for ${location.name}`;
 
-            const resend = new Resend(process.env.RESEND_API_KEY!);
-            await resend.emails.send({
-              from: process.env.RESEND_FROM_EMAIL!,
-              to: recipientEmail,
-              subject,
-              react: emailComponent,
-            });
+          const result = await sendEmail(recipientEmail, subject, emailComponent);
 
+          if (result.success) {
             console.log("Email sent successfully", {
               userId: currentUserId,
               reviewId,
               replyStatus,
               locale,
             });
-          } catch (emailError) {
+          } else {
             console.error("Failed to send email to user", {
               userId: currentUserId,
               reviewId,
-              error: emailError,
+              error: result.error,
             });
           }
+        });
+
+        const results = await Promise.allSettled(emailPromises);
+        const failures = results.filter((r) => r.status === "rejected");
+        if (failures.length > 0) {
+          console.error(`${failures.length} email(s) failed to send`, {
+            reviewId,
+            errors: failures.map((f) => (f as PromiseRejectedResult).reason),
+          });
         }
 
         console.log("Finished sending email notifications to all opted-in users");

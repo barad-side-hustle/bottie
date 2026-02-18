@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { getStripe, getPlanTierFromPriceId } from "@/lib/stripe/config";
 import { SubscriptionsRepository } from "@/lib/db/repositories/subscriptions.repository";
+import { env } from "@/lib/env";
 
 export const runtime = "nodejs";
 
@@ -20,7 +21,7 @@ export async function POST(req: NextRequest) {
   let event: Stripe.Event;
 
   try {
-    event = getStripe().webhooks.constructEvent(body, signature, process.env.STRIPE_WEBHOOK_SECRET!);
+    event = getStripe().webhooks.constructEvent(body, signature, env.STRIPE_WEBHOOK_SECRET);
   } catch (error) {
     console.error("Webhook signature verification failed:", error);
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });

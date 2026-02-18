@@ -7,8 +7,6 @@ import { CheckIcon, ChevronDownIcon, ChevronUpIcon } from "@radix-ui/react-icons
 
 const Select = SelectPrimitive.Root;
 
-export const SelectGroup = SelectPrimitive.Group;
-
 const SelectValue = SelectPrimitive.Value;
 
 const SelectTrigger = React.forwardRef<

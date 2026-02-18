@@ -5,7 +5,7 @@ import {
   type Location,
   type AccountLocation,
 } from "@/lib/db/repositories";
-import { ForbiddenError } from "@/lib/api/errors";
+import { ForbiddenError, NotFoundError } from "@/lib/api/errors";
 
 export class AccountLocationsController {
   private repository: AccountLocationsRepository;
@@ -26,7 +26,7 @@ export class AccountLocationsController {
 
   async getAccountLocation(accountLocationId: string): Promise<AccountLocation> {
     const accountLocation = await this.repository.get(accountLocationId);
-    if (!accountLocation) throw new Error("Account location not found");
+    if (!accountLocation) throw new NotFoundError("Account location not found");
     return accountLocation;
   }
 

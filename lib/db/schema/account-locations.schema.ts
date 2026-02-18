@@ -1,7 +1,6 @@
 import { boolean, pgTable, text, timestamp, uuid, index, pgPolicy, unique } from "drizzle-orm/pg-core";
 import { sql, relations } from "drizzle-orm";
-import { authenticatedRole, authUid } from "./roles";
-import { accounts } from "./accounts.schema";
+import { googleAccounts } from "./accounts.schema";
 import { locations } from "./locations.schema";
 
 export const accountLocations = pgTable(
@@ -11,7 +10,7 @@ export const accountLocations = pgTable(
 
     accountId: uuid("account_id")
       .notNull()
-      .references(() => accounts.id, { onDelete: "cascade" }),
+      .references(() => googleAccounts.id, { onDelete: "cascade" }),
     locationId: uuid("location_id")
       .notNull()
       .references(() => locations.id, { onDelete: "cascade" }),
@@ -30,50 +29,19 @@ export const accountLocations = pgTable(
     index("account_locations_connected_idx").on(table.connected),
     index("account_locations_google_business_id_idx").on(table.googleBusinessId),
 
-    pgPolicy("account_locations_select_associated", {
-      for: "select",
-      to: authenticatedRole,
-      using: sql`EXISTS (
-        SELECT 1 FROM user_accounts ua
-        WHERE ua.account_id = ${table.accountId}
-        AND ua.user_id = ${authUid()}
-      )`,
-    }),
-    pgPolicy("account_locations_insert_associated", {
-      for: "insert",
-      to: authenticatedRole,
-      withCheck: sql`EXISTS (
-        SELECT 1 FROM user_accounts ua
-        WHERE ua.account_id = ${table.accountId}
-        AND ua.user_id = ${authUid()}
-      )`,
-    }),
-    pgPolicy("account_locations_update_associated", {
-      for: "update",
-      to: authenticatedRole,
-      using: sql`EXISTS (
-        SELECT 1 FROM user_accounts ua
-        WHERE ua.account_id = ${table.accountId}
-        AND ua.user_id = ${authUid()}
-      )`,
-    }),
-    pgPolicy("account_locations_delete_owner", {
-      for: "delete",
-      to: authenticatedRole,
-      using: sql`EXISTS (
-        SELECT 1 FROM user_accounts ua
-        WHERE ua.account_id = ${table.accountId}
-        AND ua.user_id = ${authUid()}
-        AND ua.role = 'owner'
-      )`,
+    pgPolicy("account_locations_service_role_access", {
+      for: "all",
+      to: ["postgres", "service_role"],
+      using: sql`true`,
+      withCheck: sql`true`,
     }),
   ]
 );
 
 export const accountLocationsRelations = relations(accountLocations, ({ one }) => ({
-  account: one(accounts, {
+  account: one(googleAccounts, {
     fields: [accountLocations.accountId],
-    references: [accounts.id],
+    references: [googleAccounts.id],
   }),
   location: one(locations, {
     fields: [accountLocations.locationId],

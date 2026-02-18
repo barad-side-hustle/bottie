@@ -21,7 +21,7 @@ export default async function ReviewPage({ params }: ReviewPageProps) {
   const tCommon = await getTranslations({ locale, namespace: "common" });
 
   const [location, review] = await Promise.all([
-    getLocation(userId, locationId),
+    getLocation({ locationId }),
     getReview({ accountId, locationId, reviewId }) as Promise<ReviewWithLatestGeneration>,
   ]);
 

@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Loading } from "@/components/ui/loading";
 import { useTranslations } from "next-intl";
 import { useRouter, usePathname } from "@/i18n/routing";
 import { useSearchParams } from "next/navigation";
 
-export default function CheckoutLayout({ children }: { children: React.ReactNode }) {
+function CheckoutGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const { user, loading } = useAuth();
   const pathname = usePathname();
@@ -31,4 +31,12 @@ export default function CheckoutLayout({ children }: { children: React.ReactNode
   }
 
   return <>{children}</>;
+}
+
+export default function CheckoutLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <Suspense>
+      <CheckoutGuard>{children}</CheckoutGuard>
+    </Suspense>
+  );
 }

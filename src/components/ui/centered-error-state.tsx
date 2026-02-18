@@ -21,8 +21,8 @@ const defaultIcons = {
 
 const iconContainerVariants = {
   error: "bg-destructive/10 text-destructive",
-  warning: "bg-yellow-500/10 text-yellow-600 dark:text-yellow-500",
-  info: "bg-blue-500/10 text-blue-600 dark:text-blue-500",
+  warning: "bg-warning/10 text-warning-foreground",
+  info: "bg-info/10 text-info-foreground",
 };
 
 export function CenteredErrorState({

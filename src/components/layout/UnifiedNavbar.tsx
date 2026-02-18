@@ -7,7 +7,6 @@ import { NavbarContainer } from "./NavbarContainer";
 import { useNavigation } from "@/hooks/use-navigation";
 import { AuthButton } from "@/components/auth/AuthButton";
 import { useTranslations } from "next-intl";
-import { motion } from "framer-motion";
 import { useAuth } from "@/contexts/AuthContext";
 import { User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -41,21 +40,11 @@ export function UnifiedNavbar({ variant }: { variant: "landing" | "dashboard" })
                 type="button"
                 onClick={() => scrollToSection(item.href)}
                 className={`relative text-sm font-medium px-4 py-2 rounded-lg cursor-pointer ${
-                  isItemActive ? "text-gray-900 font-semibold" : "text-gray-700 hover:text-gray-900"
+                  isItemActive ? "text-foreground font-semibold" : "text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {t(item.label)}
-                {isItemActive && (
-                  <motion.div
-                    layoutId="navbar-active-indicator"
-                    className="absolute bottom-1 inset-x-0 h-[2px] bg-primary rounded-full mx-2"
-                    transition={{
-                      type: "spring",
-                      stiffness: 500,
-                      damping: 30,
-                    }}
-                  />
-                )}
+                {isItemActive && <div className="absolute bottom-1 inset-x-0 h-[2px] bg-primary rounded-full mx-2" />}
               </button>
             );
           }
@@ -65,21 +54,11 @@ export function UnifiedNavbar({ variant }: { variant: "landing" | "dashboard" })
               key={item.label}
               href={item.href}
               className={`relative text-sm font-medium px-4 py-2 rounded-lg cursor-pointer ${
-                isItemActive ? "text-gray-900 font-semibold" : "text-gray-700 hover:text-gray-900"
+                isItemActive ? "text-foreground font-semibold" : "text-muted-foreground hover:text-foreground"
               }`}
             >
               {t(item.label)}
-              {isItemActive && (
-                <motion.div
-                  layoutId="navbar-active-indicator"
-                  className="absolute bottom-1 inset-x-0 h-[2px] bg-primary rounded-full mx-2"
-                  transition={{
-                    type: "spring",
-                    stiffness: 500,
-                    damping: 30,
-                  }}
-                />
-              )}
+              {isItemActive && <div className="absolute bottom-1 inset-x-0 h-[2px] bg-primary rounded-full mx-2" />}
             </Link>
           );
         })}

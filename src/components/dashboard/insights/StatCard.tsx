@@ -22,7 +22,7 @@ export function StatCard({
   valueColor,
 }: StatCardProps) {
   return (
-    <DashboardCard className="hover:scale-100 hover:-translate-y-0">
+    <DashboardCard>
       <DashboardCardContent className="p-6">
         <div className="flex items-center justify-between">
           <div>

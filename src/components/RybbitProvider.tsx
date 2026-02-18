@@ -23,7 +23,7 @@ export function RybbitProvider() {
     if (user) {
       rybbit.identify(user.id, {
         email: user.email,
-        name: user.user_metadata?.full_name || user.user_metadata?.name,
+        name: user.name,
       });
     } else {
       rybbit.clearUserId();

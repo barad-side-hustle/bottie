@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import { getAuthenticatedUserId } from "@/lib/api/auth";
 import { getGoogleBusinesses } from "@/lib/actions/google.actions";
 import { ChooseLocationForm } from "@/components/onboarding/ChooseBusinessForm";
 
@@ -18,8 +17,7 @@ export default async function ChooseLocationPage({ searchParams }: PageProps) {
     redirect("/onboarding/connect-account");
   }
 
-  const { userId } = await getAuthenticatedUserId();
-  const availableLocations = await getGoogleBusinesses(userId, accountId);
+  const availableLocations = await getGoogleBusinesses({ accountId });
 
   return <ChooseLocationForm accountId={accountId} availableLocations={availableLocations} />;
 }

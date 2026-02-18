@@ -24,8 +24,9 @@ export class SubscriptionsController {
 
   async checkReviewQuota(userId: string): Promise<{ allowed: boolean; currentCount: number; limit: number }> {
     const repo = new SubscriptionsRepository();
+    const statsRepo = new StatsRepository();
     const limits = await repo.getUserPlanLimits(userId);
-    const currentCount = await repo.countUserReviewsThisMonth(userId);
+    const currentCount = await statsRepo.countUserReviewsThisMonth(userId);
 
     const allowed = limits.reviewsPerMonth === -1 || currentCount < limits.reviewsPerMonth;
 

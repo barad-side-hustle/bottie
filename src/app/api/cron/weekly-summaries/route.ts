@@ -1,28 +1,31 @@
+import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
-import { authUsers, subscriptions, locations, accountLocations, userAccounts, reviews } from "@/lib/db/schema";
+import { user as userTable, subscriptions, locations, accountLocations, userAccounts, reviews } from "@/lib/db/schema";
 import { eq, and, gte, lte } from "drizzle-orm";
 import { generateWeeklySummary, generateWeeklySummaryFromClassifications } from "@/lib/ai/summaries";
 import { WeeklySummariesRepository } from "@/lib/db/repositories/weekly-summaries.repository";
 import { InsightsRepository } from "@/lib/db/repositories/insights.repository";
-import { Resend } from "resend";
 import WeeklySummaryEmail from "@/lib/emails/weekly-summary";
 import { UsersConfigsRepository } from "@/lib/db/repositories/users-configs.repository";
-
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+import { env } from "@/lib/env";
+import { sendEmail } from "@/lib/utils/email-service";
 const weeklySummariesRepo = new WeeklySummariesRepository();
 const usersConfigsRepo = new UsersConfigsRepository();
 
 export const maxDuration = 300;
 
-export async function GET(req: NextRequest) {
-  if (!process.env.CRON_SECRET) {
-    console.error("CRON_SECRET is not set - endpoint is misconfigured");
-    return new NextResponse("Internal Server Error", { status: 500 });
-  }
+function secureCompare(a: string, b: string): boolean {
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  if (bufA.length !== bufB.length) return false;
+  return crypto.timingSafeEqual(bufA, bufB);
+}
 
+export async function GET(req: NextRequest) {
   const authHeader = req.headers.get("authorization");
-  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+  const expected = `Bearer ${env.CRON_SECRET}`;
+  if (!authHeader || !secureCompare(authHeader, expected)) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
 
@@ -66,8 +69,8 @@ export async function GET(req: NextRequest) {
 
         const locale = "en";
 
-        const [user] = await db.select().from(authUsers).where(eq(authUsers.id, userId));
-        if (!user || !user.email) continue;
+        const [dbUser] = await db.select().from(userTable).where(eq(userTable.id, userId));
+        if (!dbUser || !dbUser.email) continue;
 
         const userLocations = await db
           .select({
@@ -127,7 +130,7 @@ export async function GET(req: NextRequest) {
 
           summariesGenerated++;
 
-          if (resend) {
+          {
             const dateRangeStr = `${lastSunday.toLocaleDateString("en", { day: "numeric", month: "short" })} - ${lastSaturday.toLocaleDateString("en", { day: "numeric", month: "short" })}`;
 
             const subject = `Weekly Summary for ${location.name}`;
@@ -143,33 +146,32 @@ export async function GET(req: NextRequest) {
                 }
               : undefined;
 
-            await resend.emails.send({
-              from: process.env.RESEND_FROM_EMAIL!,
-              to: user.email,
-              subject: subject,
-              react: WeeklySummaryEmail({
-                title: "Weekly Summary",
-                dateRange: dateRangeStr,
-                businessName: location.name,
-                statsTitle: "Weekly Overview",
-                totalReviewsLabel: "Total Reviews",
-                averageRatingLabel: "Average Rating",
-                totalReviews: locationReviews.length,
-                averageRating: averageRating.toFixed(1),
-                sentimentTitle: hasClassifications ? "Sentiment Breakdown" : undefined,
-                sentiment: sentimentData,
-                positiveThemesTitle: "Strengths",
-                positiveThemes: summaryData.positiveThemes,
-                negativeThemesTitle: "Areas for Improvement",
-                negativeThemes: summaryData.negativeThemes,
-                recommendationsTitle: "Recommended Actions",
-                recommendations: summaryData.recommendations,
-                viewDashboardButton: "View Dashboard",
-                dashboardUrl: `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/dashboard/home`,
-                footer: "Sent by Bottie.ai",
-              }),
+            const emailComponent = WeeklySummaryEmail({
+              title: "Weekly Summary",
+              dateRange: dateRangeStr,
+              businessName: location.name,
+              statsTitle: "Weekly Overview",
+              totalReviewsLabel: "Total Reviews",
+              averageRatingLabel: "Average Rating",
+              totalReviews: locationReviews.length,
+              averageRating: averageRating.toFixed(1),
+              sentimentTitle: hasClassifications ? "Sentiment Breakdown" : undefined,
+              sentiment: sentimentData,
+              positiveThemesTitle: "Strengths",
+              positiveThemes: summaryData.positiveThemes,
+              negativeThemesTitle: "Areas for Improvement",
+              negativeThemes: summaryData.negativeThemes,
+              recommendationsTitle: "Recommended Actions",
+              recommendations: summaryData.recommendations,
+              viewDashboardButton: "View Dashboard",
+              dashboardUrl: `${env.NEXT_PUBLIC_APP_URL}/${locale}/dashboard/home`,
+              footer: "Sent by Bottie.ai",
             });
-            emailsSent++;
+
+            const result = await sendEmail(dbUser.email, subject, emailComponent);
+            if (result.success) {
+              emailsSent++;
+            }
           }
         }
       } catch (err) {

@@ -12,7 +12,6 @@ interface LocationSettingsActionsProps {
   location: Location;
   accountId: string;
   accountLocationId?: string;
-  userId: string;
   limits: PlanLimits;
   translations: {
     disconnectLocation: string;
@@ -32,7 +31,6 @@ export function LocationSettingsActions({
   location,
   accountId,
   accountLocationId,
-  userId,
   limits,
   translations,
 }: LocationSettingsActionsProps) {
@@ -46,7 +44,7 @@ export function LocationSettingsActions({
   const handleDisconnect = async () => {
     if (!accountLocationId) return;
     try {
-      await disconnectLocation(userId, accountId, accountLocationId);
+      await disconnectLocation({ accountId, accountLocationId });
       router.push("/dashboard/home");
     } catch (error) {
       console.error("Error disconnecting location:", error);
@@ -55,13 +53,7 @@ export function LocationSettingsActions({
 
   return (
     <>
-      <LocationDetailsCard
-        location={location}
-        userId={userId}
-        limits={limits}
-        loading={loading}
-        onUpdate={handleUpdate}
-      />
+      <LocationDetailsCard location={location} limits={limits} loading={loading} onUpdate={handleUpdate} />
 
       {accountLocationId && (
         <DeleteConfirmation

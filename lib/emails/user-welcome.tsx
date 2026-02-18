@@ -13,7 +13,7 @@ import {
   Button,
 } from "@react-email/components";
 
-export interface UserWelcomeEmailProps {
+interface UserWelcomeEmailProps {
   userName: string;
   userEmail: string;
 }

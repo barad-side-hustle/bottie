@@ -12,7 +12,6 @@ import { RadioGroup } from "@/components/ui/radio-group";
 import { useTranslations } from "next-intl";
 import { subscribeToGoogleNotifications } from "@/lib/actions/google.actions";
 import { connectLocation } from "@/lib/actions/locations.actions";
-import { getDefaultLocationConfig } from "@/lib/utils/location-config";
 
 interface ChooseLocationFormProps {
   accountId: string;
@@ -37,11 +36,9 @@ export function ChooseLocationForm({ accountId, availableLocations }: ChooseLoca
     try {
       setConnecting(true);
 
-      const defaults = getDefaultLocationConfig();
-
-      const { location } = await connectLocation(user.id, accountId, {
+      const { location } = await connectLocation({
+        accountId,
         googleBusinessId: selectedLocation.id,
-        googleLocationId: selectedLocation.locationId,
         name: selectedLocation.name,
         address: selectedLocation.address,
         city: selectedLocation.city,
@@ -54,11 +51,10 @@ export function ChooseLocationForm({ accountId, availableLocations }: ChooseLoca
         reviewUrl: selectedLocation.reviewUrl,
         description: selectedLocation.description,
         photoUrl: selectedLocation.photoUrl,
-        ...defaults,
       });
 
       try {
-        await subscribeToGoogleNotifications(user.id, accountId);
+        await subscribeToGoogleNotifications({ accountId });
       } catch (err) {
         console.error("Error subscribing to notifications:", err);
       }

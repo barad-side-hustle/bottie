@@ -1,7 +1,6 @@
 "use server";
 
 import { ReviewsController } from "@/lib/controllers/reviews.controller";
-import type { ReviewCreate, ReviewUpdate } from "@/lib/types";
 import { createSafeAction } from "./safe-action";
 import { z } from "zod";
 
@@ -37,20 +36,12 @@ const ReviewIdSchema = ContextSchema.extend({
   reviewId: z.string().uuid(),
 });
 
-const UpdateReviewSchema = ReviewIdSchema.extend({
-  data: z.custom<ReviewUpdate>(),
-});
-
 const PostReviewReplySchema = ReviewIdSchema.extend({
   customReply: z.string().optional(),
 });
 
 const SaveReviewDraftSchema = ReviewIdSchema.extend({
   customReply: z.string(),
-});
-
-const CreateReviewSchema = ContextSchema.extend({
-  data: z.custom<Omit<ReviewCreate, "accountId" | "locationId">>(),
 });
 
 export const getReviews = createSafeAction(GetReviewsSchema, async ({ accountId, locationId, filters }, { userId }) => {
@@ -62,14 +53,6 @@ export const getReview = createSafeAction(ReviewIdSchema, async ({ accountId, lo
   const controller = new ReviewsController(userId, accountId, locationId);
   return controller.getReview(reviewId);
 });
-
-export const updateReview = createSafeAction(
-  UpdateReviewSchema,
-  async ({ accountId, locationId, reviewId, data }, { userId }) => {
-    const controller = new ReviewsController(userId, accountId, locationId);
-    return controller.updateReview(reviewId, data);
-  }
-);
 
 export const generateReviewReply = createSafeAction(
   ReviewIdSchema,
@@ -93,17 +76,5 @@ export const postReviewReply = createSafeAction(
     const controller = new ReviewsController(userId, accountId, locationId);
     const { review } = await controller.postReply(reviewId, customReply, userId);
     return review;
-  }
-);
-
-export const createReview = createSafeAction(
-  CreateReviewSchema,
-  async ({ accountId, locationId, data }, { userId }) => {
-    const controller = new ReviewsController(userId, accountId, locationId);
-    const reviewData: ReviewCreate = {
-      locationId,
-      ...data,
-    };
-    return controller.createReview(reviewData);
   }
 );

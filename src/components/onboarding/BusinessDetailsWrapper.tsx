@@ -70,10 +70,13 @@ export function LocationDetailsWrapper({ accountId, locationId, location }: Loca
     try {
       setSaving(true);
 
-      await updateLocationConfig(user.id, locationId, {
-        name: formData.name,
-        description: formData.description,
-        phoneNumber: formData.phoneNumber,
+      await updateLocationConfig({
+        locationId,
+        config: {
+          name: formData.name,
+          description: formData.description,
+          phoneNumber: formData.phoneNumber,
+        },
       });
 
       router.push(`/onboarding/ai-settings?accountId=${accountId}&locationId=${locationId}`);

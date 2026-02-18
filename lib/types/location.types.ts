@@ -58,7 +58,3 @@ export interface GoogleBusinessProfileLocation {
   description: string | null;
   photoUrl: string | null;
 }
-
-export type LocationWithConnection = Location & {
-  accountLocation: AccountLocation;
-};

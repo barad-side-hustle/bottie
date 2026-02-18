@@ -21,13 +21,12 @@ describe("StatsRepository", () => {
   });
 
   describe("countUserReviewsThisMonth", () => {
-    it("should return 0 if query fails", async () => {
+    it("should propagate database errors", async () => {
       (db.select as Mock).mockImplementation(() => {
         throw new Error("DB Error");
       });
 
-      const count = await repository.countUserReviewsThisMonth("user-1");
-      expect(count).toBe(0);
+      await expect(repository.countUserReviewsThisMonth("user-1")).rejects.toThrow("DB Error");
     });
 
     it("should correctly count quota-consuming reviews", async () => {
@@ -62,6 +61,16 @@ describe("StatsRepository", () => {
 
       const count = await repository.countUserReviewsThisMonth("user-1");
       expect(count).toBe(0);
+    });
+  });
+
+  describe("countUserLocations", () => {
+    it("should propagate database errors", async () => {
+      (db.select as Mock).mockImplementation(() => {
+        throw new Error("DB Error");
+      });
+
+      await expect(repository.countUserLocations("user-1")).rejects.toThrow("DB Error");
     });
   });
 });

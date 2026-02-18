@@ -1,6 +1,5 @@
 import { boolean, integer, jsonb, pgTable, text, timestamp, uuid, index, pgPolicy, check } from "drizzle-orm/pg-core";
 import { sql, relations } from "drizzle-orm";
-import { authenticatedRole, authUid } from "./roles";
 import { locations } from "./locations.schema";
 import type { ReplyStatus } from "../../types/review.types";
 import type { ReviewClassification } from "../../types/classification.types";
@@ -50,46 +49,11 @@ export const reviews = pgTable(
       sql`${table.replyStatus} IN ('pending', 'rejected', 'posted', 'failed', 'quota_exceeded')`
     ),
 
-    pgPolicy("reviews_select_connected", {
-      for: "select",
-      to: authenticatedRole,
-      using: sql`EXISTS (
-        SELECT 1 FROM account_locations al
-        INNER JOIN user_accounts ua ON ua.account_id = al.account_id
-        WHERE al.location_id = ${table.locationId}
-        AND ua.user_id = ${authUid()}
-      )`,
-    }),
-    pgPolicy("reviews_insert_connected", {
-      for: "insert",
-      to: authenticatedRole,
-      withCheck: sql`EXISTS (
-        SELECT 1 FROM account_locations al
-        INNER JOIN user_accounts ua ON ua.account_id = al.account_id
-        WHERE al.location_id = ${table.locationId}
-        AND ua.user_id = ${authUid()}
-      )`,
-    }),
-    pgPolicy("reviews_update_connected", {
-      for: "update",
-      to: authenticatedRole,
-      using: sql`EXISTS (
-        SELECT 1 FROM account_locations al
-        INNER JOIN user_accounts ua ON ua.account_id = al.account_id
-        WHERE al.location_id = ${table.locationId}
-        AND ua.user_id = ${authUid()}
-      )`,
-    }),
-    pgPolicy("reviews_delete_connected_owner", {
-      for: "delete",
-      to: authenticatedRole,
-      using: sql`EXISTS (
-        SELECT 1 FROM account_locations al
-        INNER JOIN user_accounts ua ON ua.account_id = al.account_id
-        WHERE al.location_id = ${table.locationId}
-        AND ua.user_id = ${authUid()}
-        AND ua.role = 'owner'
-      )`,
+    pgPolicy("reviews_service_role_access", {
+      for: "all",
+      to: ["postgres", "service_role"],
+      using: sql`true`,
+      withCheck: sql`true`,
     }),
   ]
 );

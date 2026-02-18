@@ -72,12 +72,15 @@ export function AISettingsWrapper({ accountId, locationId, limits }: AISettingsW
     try {
       setSaving(true);
 
-      await updateLocationConfig(user.id, locationId, {
-        toneOfVoice: formData.toneOfVoice,
-        languageMode: formData.languageMode,
-        allowedEmojis: formData.allowedEmojis,
-        maxSentences: formData.maxSentences,
-        signature: formData.signature,
+      await updateLocationConfig({
+        locationId,
+        config: {
+          toneOfVoice: formData.toneOfVoice,
+          languageMode: formData.languageMode,
+          allowedEmojis: formData.allowedEmojis,
+          maxSentences: formData.maxSentences,
+          signature: formData.signature,
+        },
       });
 
       router.push(`/onboarding/star-ratings?accountId=${accountId}&locationId=${locationId}`);

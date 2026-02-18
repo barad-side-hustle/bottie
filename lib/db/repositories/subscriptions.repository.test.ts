@@ -6,7 +6,6 @@ vi.mock("@/lib/db/client", () => ({
   db: {
     select: vi.fn().mockReturnThis(),
     from: vi.fn().mockReturnThis(),
-    innerJoin: vi.fn().mockReturnThis(),
     where: vi.fn().mockReturnThis(),
     limit: vi.fn().mockReturnThis(),
     insert: vi.fn().mockReturnThis(),
@@ -25,50 +24,49 @@ describe("SubscriptionsRepository", () => {
     repository = new SubscriptionsRepository();
   });
 
-  describe("countUserReviewsThisMonth", () => {
-    it("should return 0 if query fails", async () => {
+  describe("getActiveSubscriptionForUser", () => {
+    it("should return null if no active subscription found", async () => {
+      (db.select as Mock).mockReturnValue({
+        from: vi.fn().mockReturnValue({
+          where: vi.fn().mockReturnValue({
+            limit: vi.fn().mockResolvedValue([]),
+          }),
+        }),
+      });
+
+      const result = await repository.getActiveSubscriptionForUser("user-1");
+      expect(result).toBeNull();
+    });
+
+    it("should propagate database errors", async () => {
       (db.select as Mock).mockImplementation(() => {
         throw new Error("DB Error");
       });
 
-      const count = await repository.countUserReviewsThisMonth("user-1");
-      expect(count).toBe(0);
+      await expect(repository.getActiveSubscriptionForUser("user-1")).rejects.toThrow("DB Error");
     });
+  });
 
-    it("should correctly count quota-consuming reviews", async () => {
-      const mockResult = [{ count: 5 }];
-
+  describe("getByUserId", () => {
+    it("should return null if no subscription found", async () => {
       (db.select as Mock).mockReturnValue({
         from: vi.fn().mockReturnValue({
-          innerJoin: vi.fn().mockReturnValue({
-            innerJoin: vi.fn().mockReturnValue({
-              where: vi.fn().mockResolvedValue(mockResult),
-            }),
+          where: vi.fn().mockReturnValue({
+            limit: vi.fn().mockResolvedValue([]),
           }),
         }),
       });
 
-      const count = await repository.countUserReviewsThisMonth("user-1");
-
-      expect(db.select).toHaveBeenCalled();
-      expect(count).toBe(5);
+      const result = await repository.getByUserId("user-1");
+      expect(result).toBeNull();
     });
 
-    it("should return 0 if no result found", async () => {
-      const mockResult: { count: number }[] = [];
-
-      (db.select as Mock).mockReturnValue({
-        from: vi.fn().mockReturnValue({
-          innerJoin: vi.fn().mockReturnValue({
-            innerJoin: vi.fn().mockReturnValue({
-              where: vi.fn().mockResolvedValue(mockResult),
-            }),
-          }),
-        }),
+    it("should propagate database errors", async () => {
+      (db.select as Mock).mockImplementation(() => {
+        throw new Error("DB Error");
       });
 
-      const count = await repository.countUserReviewsThisMonth("user-1");
-      expect(count).toBe(0);
+      await expect(repository.getByUserId("user-1")).rejects.toThrow("DB Error");
     });
   });
 });

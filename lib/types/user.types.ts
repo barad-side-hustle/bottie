@@ -1,7 +1,3 @@
-import type { UsersConfig, UsersConfigInsert, UserConfigMap } from "@/lib/db/schema";
-
-export type UserConfig = UsersConfig;
-
-export type UserConfigCreate = Omit<UsersConfigInsert, "id" | "createdAt" | "updatedAt">;
+import type { UserConfigMap } from "@/lib/db/schema";
 
 export type UserConfigUpdate = Partial<UserConfigMap>;

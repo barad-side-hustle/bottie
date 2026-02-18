@@ -1,7 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { signInWithGoogle } from "@/lib/auth/auth";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
 import {
   DashboardCard,
   DashboardCardContent,
@@ -11,32 +13,55 @@ import {
 } from "@/components/ui/dashboard-card";
 import { Logo } from "@/components/ui/Logo";
 import { GoogleSsoButton } from "@/components/ui/google-sso-button";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Link } from "@/i18n/routing";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 
 export function LoginForm() {
   const t = useTranslations("auth.loginPage");
-  const tAuth = useTranslations();
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (error) {
-      toast.error(tAuth(error));
-    }
-  }, [error, tAuth]);
-
   const handleGoogleSignIn = async () => {
-    setIsLoading(true);
+    setIsGoogleLoading(true);
     setError(null);
 
-    const { error } = await signInWithGoogle();
+    const { error } = await authClient.signIn.social({
+      provider: "google",
+      callbackURL: "/dashboard/home",
+    });
 
     if (error) {
-      setError(error);
-      setIsLoading(false);
+      toast.error(error.message || "An error occurred signing in with Google");
+      setIsGoogleLoading(false);
     }
+  };
+
+  const handleEmailSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    setIsLoading(true);
+
+    const { error } = await authClient.signIn.email({
+      email,
+      password,
+    });
+
+    if (error) {
+      setError(error.message || "Sign in failed. Please try again.");
+      setIsLoading(false);
+      return;
+    }
+
+    router.push("/dashboard/home");
+    router.refresh();
   };
 
   return (
@@ -55,10 +80,62 @@ export function LoginForm() {
           <DashboardCardContent className="space-y-4">
             <GoogleSsoButton
               onClick={handleGoogleSignIn}
-              isLoading={isLoading}
+              isLoading={isGoogleLoading}
               label={t("googleButton")}
               labelLoading={t("googleButtonLoading")}
             />
+
+            <div className="relative my-2">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card text-muted-foreground px-2">{t("orContinueWith")}</span>
+              </div>
+            </div>
+
+            <form onSubmit={handleEmailSignIn} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">{t("emailLabel")}</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder={t("emailPlaceholder")}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password">{t("passwordLabel")}</Label>
+                  <Link href="/forgot-password" className="text-muted-foreground hover:text-primary text-xs">
+                    {t("forgotPassword")}
+                  </Link>
+                </div>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+
+              {error && <p className="text-destructive text-sm">{error}</p>}
+
+              <Button type="submit" className="w-full cursor-pointer" disabled={isLoading}>
+                {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+                {t("signInButton")}
+              </Button>
+            </form>
+
+            <p className="text-muted-foreground text-center text-sm">
+              {t("noAccount")}{" "}
+              <Link href="/sign-up" className="text-primary hover:underline">
+                {t("signUpLink")}
+              </Link>
+            </p>
           </DashboardCardContent>
         </DashboardCard>
 

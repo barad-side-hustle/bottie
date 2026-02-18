@@ -4,7 +4,6 @@ import { getAuthenticatedUserId, createLocaleAwareRedirect } from "@/lib/api/aut
 import { AccountsController, UsersController } from "@/lib/controllers";
 
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
 
 const redirectToLocations = async (success?: boolean, accountId?: string) => {
   if (success && accountId) {

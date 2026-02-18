@@ -1,12 +1,21 @@
 import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
 import { createCheckoutSession } from "./subscription.actions";
 import { getStripe, getStripePriceId } from "@/lib/stripe/config";
-import { createClient } from "@/lib/supabase/server";
+import { auth } from "@/lib/auth";
 import { resolveLocale } from "@/lib/locale-detection";
 
 vi.mock("@/lib/stripe/config");
-vi.mock("@/lib/supabase/server");
+vi.mock("@/lib/auth", () => ({
+  auth: {
+    api: {
+      getSession: vi.fn(),
+    },
+  },
+}));
 vi.mock("@/lib/locale-detection");
+vi.mock("next/headers", () => ({
+  headers: vi.fn().mockResolvedValue(new Headers()),
+}));
 
 describe("createCheckoutSession", () => {
   const mockStripe = {
@@ -15,26 +24,21 @@ describe("createCheckoutSession", () => {
         create: vi.fn(),
       },
     },
-  };
-
-  const mockSupabase = {
-    auth: {
-      getUser: vi.fn(),
+    promotionCodes: {
+      list: vi.fn(),
     },
   };
 
   beforeEach(() => {
     vi.clearAllMocks();
     (getStripe as unknown as Mock).mockReturnValue(mockStripe);
-    (createClient as unknown as Mock).mockResolvedValue(mockSupabase);
     (getStripePriceId as unknown as Mock).mockReturnValue("price_123");
     (resolveLocale as unknown as Mock).mockResolvedValue("en");
   });
 
   it("should create a checkout session successfully", async () => {
-    mockSupabase.auth.getUser.mockResolvedValue({
-      data: { user: { id: "user_123", email: "test@example.com" } },
-      error: null,
+    (auth.api.getSession as unknown as Mock).mockResolvedValue({
+      user: { id: "user_123", email: "test@example.com" },
     });
     mockStripe.checkout.sessions.create.mockResolvedValue({
       url: "https://checkout.stripe.com/test",
@@ -54,19 +58,15 @@ describe("createCheckoutSession", () => {
   });
 
   it("should return error if user is not authenticated", async () => {
-    mockSupabase.auth.getUser.mockResolvedValue({
-      data: { user: null },
-      error: new Error("Auth error"),
-    });
+    (auth.api.getSession as unknown as Mock).mockResolvedValue(null);
 
     const result = await createCheckoutSession("pro", "monthly");
     expect(result).toEqual({ error: "Unauthorized" });
   });
 
   it("should return error for invalid plan", async () => {
-    mockSupabase.auth.getUser.mockResolvedValue({
-      data: { user: { id: "user_123" } },
-      error: null,
+    (auth.api.getSession as unknown as Mock).mockResolvedValue({
+      user: { id: "user_123", email: "test@example.com" },
     });
 
     const result = await createCheckoutSession("invalid" as unknown as "basic" | "pro", "monthly");
@@ -74,9 +74,8 @@ describe("createCheckoutSession", () => {
   });
 
   it("should return error for invalid interval", async () => {
-    mockSupabase.auth.getUser.mockResolvedValue({
-      data: { user: { id: "user_123" } },
-      error: null,
+    (auth.api.getSession as unknown as Mock).mockResolvedValue({
+      user: { id: "user_123", email: "test@example.com" },
     });
 
     const result = await createCheckoutSession("pro", "invalid" as unknown as "monthly" | "yearly");

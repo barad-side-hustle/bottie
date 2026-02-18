@@ -15,7 +15,7 @@ import {
   Column,
 } from "@react-email/components";
 
-export interface SentimentData {
+interface SentimentData {
   positive: number;
   neutral: number;
   negative: number;
@@ -24,7 +24,7 @@ export interface SentimentData {
   negativeLabel: string;
 }
 
-export interface WeeklySummaryEmailProps {
+interface WeeklySummaryEmailProps {
   title: string;
   dateRange: string;
   businessName: string;

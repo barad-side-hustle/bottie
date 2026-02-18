@@ -32,7 +32,7 @@ export function TrendsChart({ trends, locale }: TrendsChartProps) {
   }));
 
   return (
-    <DashboardCard className="hover:scale-100 hover:-translate-y-0">
+    <DashboardCard>
       <DashboardCardHeader>
         <DashboardCardTitle>{t("sections.trends")}</DashboardCardTitle>
       </DashboardCardHeader>

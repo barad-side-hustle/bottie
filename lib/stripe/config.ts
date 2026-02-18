@@ -34,7 +34,7 @@ function validatePriceIds(): void {
   }
 }
 
-export const STRIPE_PRICE_IDS = {
+const STRIPE_PRICE_IDS = {
   basic: {
     monthly: BASIC_MONTHLY!,
     yearly: BASIC_YEARLY!,

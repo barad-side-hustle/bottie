@@ -1,6 +1,8 @@
-import { authenticatedRole, anonRole, serviceRole } from "drizzle-orm/supabase";
 import { sql } from "drizzle-orm";
 
-export { authenticatedRole, anonRole, serviceRole };
-
-export const authUid = () => sql`(auth.uid())`;
+export const serviceRolePolicy = {
+  for: "all" as const,
+  to: ["postgres", "service_role"] as const,
+  using: sql`true`,
+  withCheck: sql`true`,
+};

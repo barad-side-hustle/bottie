@@ -1,5 +1,6 @@
 import { SchemaType, type ResponseSchema } from "@google/generative-ai";
 import { generateWithGemini } from "./core/gemini-client";
+import { env } from "@/lib/env";
 
 const replySchema: ResponseSchema = {
   type: SchemaType.OBJECT,
@@ -14,12 +15,12 @@ const replySchema: ResponseSchema = {
 
 export async function generateAIReply(prompt: string): Promise<string> {
   try {
-    const key = process.env.GEMINI_API_KEY!;
+    const key = env.GEMINI_API_KEY;
     const response = await generateWithGemini(key, prompt, "gemini-3-flash-preview", 8192, replySchema);
     const data = JSON.parse(response) as { reply: string };
     return data.reply;
   } catch (error) {
     console.error("Error generating structured AI reply, falling back to text:", error);
-    return await generateWithGemini(process.env.GEMINI_API_KEY!, prompt);
+    return await generateWithGemini(env.GEMINI_API_KEY, prompt);
   }
 }

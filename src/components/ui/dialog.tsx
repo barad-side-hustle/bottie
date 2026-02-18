@@ -7,11 +7,7 @@ import { Cross2Icon } from "@radix-ui/react-icons";
 
 const Dialog = DialogPrimitive.Root;
 
-export const DialogTrigger = DialogPrimitive.Trigger;
-
-export const DialogPortal = DialogPrimitive.Portal;
-
-export const DialogClose = DialogPrimitive.Close;
+const DialogPortal = DialogPrimitive.Portal;
 
 const DialogOverlay = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Overlay>,
