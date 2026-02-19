@@ -99,22 +99,18 @@ export const auth = betterAuth({
         webhooks({
           secret: env.POLAR_WEBHOOK_SECRET,
           onSubscriptionCreated: async (payload) => {
-            const customerId = payload.data.customerId;
-            const customer = await getPolar().customers.get({ id: customerId });
-            const userId = customer.externalId;
+            const userId = payload.data.customer?.externalId;
             if (!userId) return;
 
             const repo = new SubscriptionsRepository();
             await repo.upsert(userId, {
-              polarCustomerId: customerId,
+              polarCustomerId: payload.data.customerId,
               polarSubscriptionId: payload.data.id,
               status: payload.data.status,
             });
           },
           onSubscriptionUpdated: async (payload) => {
-            const customerId = payload.data.customerId;
-            const customer = await getPolar().customers.get({ id: customerId });
-            const userId = customer.externalId;
+            const userId = payload.data.customer?.externalId;
             if (!userId) return;
 
             const repo = new SubscriptionsRepository();
@@ -127,9 +123,7 @@ export const auth = betterAuth({
             }
           },
           onSubscriptionCanceled: async (payload) => {
-            const customerId = payload.data.customerId;
-            const customer = await getPolar().customers.get({ id: customerId });
-            const userId = customer.externalId;
+            const userId = payload.data.customer?.externalId;
             if (!userId) return;
 
             const repo = new SubscriptionsRepository();
