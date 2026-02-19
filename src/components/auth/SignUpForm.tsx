@@ -158,7 +158,7 @@ export function SignUpForm() {
 
               {error && <p className="text-destructive text-sm">{error}</p>}
 
-              <Button type="submit" className="w-full cursor-pointer" disabled={loading}>
+              <Button type="submit" className="w-full" disabled={loading}>
                 {loading && <Loader2 className="h-4 w-4 animate-spin" />}
                 {t("createAccountButton")}
               </Button>

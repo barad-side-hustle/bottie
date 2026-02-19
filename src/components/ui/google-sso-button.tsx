@@ -18,7 +18,6 @@ const GoogleSsoButton = React.forwardRef<HTMLButtonElement, GoogleSsoButtonProps
           "hover:bg-accent hover:text-accent-foreground transition-colors",
           "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
           "disabled:pointer-events-none disabled:opacity-50",
-          "cursor-pointer",
           className
         )}
         disabled={isLoading || props.disabled}

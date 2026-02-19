@@ -125,7 +125,7 @@ export function LoginForm() {
 
               {error && <p className="text-destructive text-sm">{error}</p>}
 
-              <Button type="submit" className="w-full cursor-pointer" disabled={isLoading}>
+              <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
                 {t("signInButton")}
               </Button>
