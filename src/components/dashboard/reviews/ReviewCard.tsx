@@ -161,27 +161,16 @@ export function ReviewCard({ review, accountId, userId, locationId, onUpdate }: 
         </DashboardCardHeader>
 
         <DashboardCardContent className="space-y-4">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                {t("reviewLabel")}
-              </span>
-            </div>
-            <div className="rounded-md bg-muted/50 p-3">
-              <p className={cn("text-sm leading-relaxed", !review.text && "italic text-muted-foreground")}>
-                {review.text || t("noText")}
-              </p>
-            </div>
-          </div>
+          <p className={cn("text-sm leading-relaxed", !review.text && "italic text-muted-foreground")}>
+            {review.text || t("noText")}
+          </p>
 
           {review.latestAiReply && (
             <DashboardCardSection withBorder={!!review.text}>
               <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                    {review.latestAiReplyType === "imported" ? t("externalReplyLabel") : t("aiReplyLabel")}
-                  </span>
-                </div>
+                <span className="text-xs font-medium text-muted-foreground">
+                  {review.latestAiReplyType === "imported" ? t("externalReplyLabel") : t("aiReplyLabel")}
+                </span>
                 {review.replyStatus === "posted" && review.latestAiReplyPostedAt && (
                   <div className="flex items-center gap-1">
                     <span className="text-xs text-muted-foreground">
@@ -199,7 +188,7 @@ export function ReviewCard({ review, accountId, userId, locationId, onUpdate }: 
                   </div>
                 )}
               </div>
-              <div className="rounded-md border border-primary/20 bg-primary/5 p-3">
+              <div className="border-s-2 border-primary/30 ps-3">
                 {isLoading ? (
                   <div className="space-y-2">
                     <Skeleton className="h-4 w-full" />

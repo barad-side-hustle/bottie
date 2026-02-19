@@ -14,7 +14,7 @@ export function StarRating({ rating, size = 20, className = "", showNumber = fal
         <Star
           key={star}
           size={size}
-          className={star <= rating ? "fill-primary text-primary" : "fill-secondary text-primary/50"}
+          className={star <= rating ? "fill-star-filled text-star-filled" : "fill-star-empty text-star-empty"}
         />
       ))}
       {showNumber && <span className="me-1 text-sm font-medium text-muted-foreground">{rating.toFixed(1)}</span>}

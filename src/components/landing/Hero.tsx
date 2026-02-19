@@ -15,16 +15,10 @@ export function Hero() {
       tabIndex={-1}
       className="relative overflow-hidden min-h-[60vh] md:min-h-[90vh] flex items-center rounded-b-[2rem] md:rounded-b-[3rem] lg:rounded-b-[4rem]"
     >
-      <div className="absolute inset-0" style={{ background: "var(--gradient-soft)" }} />
+      <div className="absolute inset-0 bg-gradient-soft" />
 
-      <div
-        className="absolute top-20 end-10 w-[500px] h-[500px] rounded-full opacity-40 blur-3xl pointer-events-none"
-        style={{ background: "var(--pastel-lavender)" }}
-      />
-      <div
-        className="absolute bottom-20 start-10 w-[400px] h-[400px] rounded-full opacity-40 blur-3xl pointer-events-none"
-        style={{ background: "var(--pastel-sky)" }}
-      />
+      <div className="absolute top-20 end-10 w-[500px] h-[500px] rounded-full opacity-40 blur-3xl pointer-events-none bg-pastel-lavender" />
+      <div className="absolute bottom-20 start-10 w-[400px] h-[400px] rounded-full opacity-40 blur-3xl pointer-events-none bg-pastel-sky" />
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="mx-auto max-w-7xl flex flex-col md:flex-row items-center justify-center gap-16 md:gap-16 py-16 md:py-20">

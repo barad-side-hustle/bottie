@@ -92,6 +92,13 @@ html {
   --warning-foreground: oklch(0.4 0.1 85);
   --info: oklch(0.7 0.12 240);
   --info-foreground: oklch(0.3 0.08 240);
+
+  /* Overlay */
+  --overlay: oklch(0 0 0 / 0.6);
+
+  /* Star rating */
+  --star-filled: oklch(0.8 0.18 85);
+  --star-empty: oklch(0.87 0 0);
 }
 
 .dark {
@@ -166,6 +173,13 @@ html {
   --warning-foreground: oklch(0.9 0.08 85);
   --info: oklch(0.65 0.12 240);
   --info-foreground: oklch(0.85 0.06 240);
+
+  /* Overlay */
+  --overlay: oklch(0 0 0 / 0.7);
+
+  /* Star rating */
+  --star-filled: oklch(0.75 0.15 85);
+  --star-empty: oklch(0.35 0 0);
 }
 
 @theme inline {
@@ -232,4 +246,11 @@ html {
   /* Expose gradients */
   --image-gradient-soft: var(--gradient-soft);
   --image-gradient-mesh: var(--gradient-mesh);
+
+  /* Overlay */
+  --color-overlay: var(--overlay);
+
+  /* Star rating */
+  --color-star-filled: var(--star-filled);
+  --color-star-empty: var(--star-empty);
 }

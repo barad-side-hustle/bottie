@@ -191,7 +191,7 @@ export function ReviewImportProgress({ accountId, locationId }: ReviewImportProg
           )}
           {phase === "complete" && (
             <>
-              <p className="text-sm font-medium text-green-600">{t("importComplete", { count: imported })}</p>
+              <p className="text-sm font-medium text-success">{t("importComplete", { count: imported })}</p>
               <p className="text-xs text-muted-foreground">{t("redirecting")}</p>
             </>
           )}

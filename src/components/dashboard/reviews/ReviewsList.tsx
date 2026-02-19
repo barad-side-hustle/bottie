@@ -116,16 +116,13 @@ function ReviewCardSkeleton() {
         </div>
       </DashboardCardHeader>
       <DashboardCardContent className="space-y-4">
-        <div>
-          <Skeleton className="h-3 w-16 mb-2" />
-          <div className="rounded-md bg-muted/50 p-3 space-y-2">
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-3/4" />
-          </div>
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-3/4" />
         </div>
         <div>
           <Skeleton className="h-3 w-20 mb-2" />
-          <div className="rounded-md border border-primary/20 bg-primary/5 p-3 space-y-2">
+          <div className="border-s-2 border-primary/30 ps-3 space-y-2">
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-2/3" />
           </div>

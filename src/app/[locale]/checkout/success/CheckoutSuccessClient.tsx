@@ -29,7 +29,7 @@ export function CheckoutSuccessClient({ locale }: CheckoutSuccessClientProps) {
       <DashboardCard className="w-full max-w-md">
         <DashboardCardContent className="space-y-6 text-center">
           <div className="flex justify-center">
-            <CheckCircle2 className="h-16 w-16 text-green-500" />
+            <CheckCircle2 className="h-16 w-16 text-success" />
           </div>
 
           <div className="space-y-2">
