@@ -10,7 +10,7 @@ interface FilterSectionProps {
 export function FilterSection({ title, children, className }: FilterSectionProps) {
   return (
     <div className={cn("space-y-2", className)}>
-      <Label className="text-sm font-medium text-muted-foreground">{title}</Label>
+      <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{title}</Label>
       <div className="space-y-2">{children}</div>
     </div>
   );

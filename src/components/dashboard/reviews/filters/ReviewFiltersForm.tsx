@@ -3,8 +3,7 @@
 import { useState, useEffect } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
+import { ToggleChip } from "@/components/ui/toggle-chip";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { FilterSection } from "./FilterSection";
@@ -90,48 +89,45 @@ export function ReviewFiltersForm({ filters: initialFilters, onApply, onReset }:
   return (
     <div className="space-y-6">
       <FilterSection title={t("replyStatus")}>
-        {["pending", "posted", "rejected", "failed", "quota_exceeded"].map((status) => (
-          <div key={status} className="flex items-center gap-2">
-            <Checkbox
-              id={`status-${status}`}
-              checked={filters.replyStatus?.includes(status as ReplyStatus)}
-              onCheckedChange={(checked) => handleReplyStatusChange(status, checked as boolean)}
-            />
-            <Label htmlFor={`status-${status}`} className="capitalize">
+        <div className="flex flex-wrap gap-2">
+          {["pending", "posted", "rejected", "failed", "quota_exceeded"].map((status) => (
+            <ToggleChip
+              key={status}
+              selected={filters.replyStatus?.includes(status as ReplyStatus) ?? false}
+              onToggle={(checked) => handleReplyStatusChange(status, checked)}
+            >
               {t(`status.${status}`)}
-            </Label>
-          </div>
-        ))}
+            </ToggleChip>
+          ))}
+        </div>
       </FilterSection>
 
       <FilterSection title={t("rating")}>
         <div className="flex flex-wrap gap-2">
           {[5, 4, 3, 2, 1].map((rating) => (
-            <div key={rating} className="flex items-center gap-2">
-              <Checkbox
-                id={`rating-${rating}`}
-                checked={filters.rating?.includes(rating)}
-                onCheckedChange={(checked) => handleRatingChange(rating, checked as boolean)}
-              />
-              <Label htmlFor={`rating-${rating}`}>{rating} ★</Label>
-            </div>
+            <ToggleChip
+              key={rating}
+              selected={filters.rating?.includes(rating) ?? false}
+              onToggle={(checked) => handleRatingChange(rating, checked)}
+            >
+              {rating} ★
+            </ToggleChip>
           ))}
         </div>
       </FilterSection>
 
       <FilterSection title={t("sentiment")}>
-        {(["positive", "neutral", "negative"] as const).map((sentiment) => (
-          <div key={sentiment} className="flex items-center gap-2">
-            <Checkbox
-              id={`sentiment-${sentiment}`}
-              checked={filters.sentiment?.includes(sentiment)}
-              onCheckedChange={(checked) => handleSentimentChange(sentiment, checked as boolean)}
-            />
-            <Label htmlFor={`sentiment-${sentiment}`} className="capitalize">
+        <div className="flex flex-wrap gap-2">
+          {(["positive", "neutral", "negative"] as const).map((sentiment) => (
+            <ToggleChip
+              key={sentiment}
+              selected={filters.sentiment?.includes(sentiment) ?? false}
+              onToggle={(checked) => handleSentimentChange(sentiment, checked)}
+            >
               {t(`sentimentValues.${sentiment}`)}
-            </Label>
-          </div>
-        ))}
+            </ToggleChip>
+          ))}
+        </div>
       </FilterSection>
 
       <FilterSection title={t("dateRange")}>
@@ -173,7 +169,7 @@ export function ReviewFiltersForm({ filters: initialFilters, onApply, onReset }:
         </div>
       </FilterSection>
 
-      <div className="flex justify-end gap-2 pt-4 border-t">
+      <div className="flex justify-end gap-2 pt-4 border-t border-border/40">
         <Button variant="outline" onClick={onReset}>
           {t("reset")}
         </Button>
