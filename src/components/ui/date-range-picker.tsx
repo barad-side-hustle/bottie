@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { format, subDays } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { DateRange } from "react-day-picker";
@@ -36,6 +36,23 @@ export function DateRangePicker({
 }: DateRangePickerProps) {
   const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState(false);
+  const wasRangeComplete = useRef(false);
+
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    if (open) {
+      wasRangeComplete.current = !!(date?.from && date?.to);
+    }
+  };
+
+  const handleSelect = (range: DateRange | undefined) => {
+    const isComplete = !!(range?.from && range?.to);
+    setDate(range);
+    if (isComplete && !wasRangeComplete.current) {
+      setIsOpen(false);
+    }
+    wasRangeComplete.current = false;
+  };
 
   const numberOfMonths = isMobile ? 1 : 2;
 
@@ -97,12 +114,7 @@ export function DateRangePicker({
       mode="range"
       defaultMonth={date?.from}
       selected={date}
-      onSelect={(range) => {
-        setDate(range);
-        if (range?.from && range?.to) {
-          setIsOpen(false);
-        }
-      }}
+      onSelect={handleSelect}
       numberOfMonths={numberOfMonths}
       locale={locale}
     />
@@ -114,12 +126,7 @@ export function DateRangePicker({
       mode="range"
       defaultMonth={date?.from}
       selected={date}
-      onSelect={(range) => {
-        setDate(range);
-        if (range?.from && range?.to) {
-          setIsOpen(false);
-        }
-      }}
+      onSelect={handleSelect}
       numberOfMonths={1}
       locale={locale}
       className="w-full p-0"
@@ -148,13 +155,13 @@ export function DateRangePicker({
   if (isMobile && showPresets) {
     return (
       <div className={cn("grid gap-2", className)}>
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <Dialog open={isOpen} onOpenChange={handleOpenChange}>
           <DialogTrigger asChild>{Trigger}</DialogTrigger>
           <DialogContent className="max-w-[calc(100%-2rem)] p-0 gap-0">
             <DialogHeader className="p-4 pb-0 text-start">
               <DialogTitle>{title || "Select Date Range"}</DialogTitle>
             </DialogHeader>
-            <div className="p-4 space-y-4">
+            <div className="px-5 py-4 space-y-4">
               {PresetsSection}
               <div className="pt-4">{MobileCalendarSection}</div>
             </div>
@@ -166,7 +173,7 @@ export function DateRangePicker({
 
   return (
     <div className={cn("grid gap-2", className)}>
-      <Popover open={isOpen} onOpenChange={setIsOpen}>
+      <Popover open={isOpen} onOpenChange={handleOpenChange}>
         <PopoverTrigger asChild>{Trigger}</PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
           {showPresets ? (
