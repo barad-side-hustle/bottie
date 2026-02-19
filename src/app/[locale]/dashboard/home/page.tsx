@@ -18,7 +18,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const hasLocations = allAccounts.some((account) => account.accountLocations.length > 0);
 
   if (!hasLocations) {
-    return <RedirectToOnboarding href="/onboarding/connect-account" />;
+    return <RedirectToOnboarding href="/onboarding" />;
   }
 
   const overviewData = await getOverviewData();

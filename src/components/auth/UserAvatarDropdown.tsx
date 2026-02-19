@@ -33,7 +33,7 @@ export function UserAvatarDropdown() {
   };
 
   const handleAddBusiness = () => {
-    router.push("/onboarding/connect-account");
+    router.push("/onboarding");
   };
 
   const handleDashboard = () => {

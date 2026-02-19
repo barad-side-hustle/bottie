@@ -956,11 +956,22 @@
     }
   },
   "onboarding": {
-    "step": "Step {current} of {total}",
+    "steps": {
+      "connect": "Connect",
+      "configure": "Configure",
+      "autoReply": "Auto-Reply"
+    },
+    "illustrations": {
+      "connect": "Let's connect your business",
+      "choose": "Which business is yours?",
+      "configure": "Teach your AI assistant",
+      "autoReply": "One last thing..."
+    },
     "common": {
       "back": "Back",
       "next": "Next",
       "finish": "Finish",
+      "launch": "Launch Bottie",
       "connecting": "Connecting...",
       "saving": "Saving...",
       "loading": "Loading...",
@@ -973,9 +984,9 @@
       "connectingButton": "Connecting...",
       "permissionsTitle": "What we will request access to:",
       "permissions": {
-        "businessList": "List of your businesses in Google Business Profile",
+        "businessList": "View your businesses",
         "readReviews": "Read customer reviews",
-        "publishReplies": "Publish review responses"
+        "publishReplies": "Post review replies"
       }
     },
     "chooseBusiness": {
@@ -992,17 +1003,22 @@
         "failedToConnect": "Unable to connect the business"
       }
     },
+    "configure": {
+      "title": "Business & AI Settings",
+      "description": "Tell us about your business and how AI should respond",
+      "errorSaving": "Unable to save settings"
+    },
     "businessDetails": {
-      "title": "Business Details",
+      "title": "Your Business",
       "description": "Set up the basic business details that will be used to create AI responses"
     },
     "aiSettings": {
-      "title": "AI Response Settings",
+      "title": "AI Response Style",
       "description": "Customize the style and manner of automatic responses"
     },
     "starRatings": {
-      "title": "Settings by Star Rating",
-      "description": "Customize automatic responses according to rating level",
+      "title": "Auto-Reply Rules",
+      "description": "Choose which ratings get automatic AI responses",
       "successMessage": "Settings saved successfully!",
       "errorMessage": "Unable to save settings"
     },

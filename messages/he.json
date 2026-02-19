@@ -966,15 +966,22 @@
     }
   },
   "onboarding": {
-    "welcome": "ברוכים הבאים!",
-    "letsGetStarted": "בואו נתחיל",
-    "skip": "דלג",
-    "finish": "סיים",
-    "step": "שלב {current} מתוך {total}",
+    "steps": {
+      "connect": "חיבור",
+      "configure": "הגדרות",
+      "autoReply": "תגובות אוטומטיות"
+    },
+    "illustrations": {
+      "connect": "בואו נחבר את העסק שלך",
+      "choose": "איזה עסק שלך?",
+      "configure": "למד את העוזר ה-AI שלך",
+      "autoReply": "עוד דבר אחד..."
+    },
     "common": {
       "back": "הקודם",
       "next": "הבא",
       "finish": "סיים",
+      "launch": "הפעל את Bottie",
       "connecting": "מתחבר...",
       "saving": "שומר...",
       "loading": "טוען...",
@@ -987,9 +994,9 @@
       "connectingButton": "מתחבר...",
       "permissionsTitle": "מה נבקש גישה אליו:",
       "permissions": {
-        "businessList": "רשימת העסקים שלך ב-Google Business Profile",
+        "businessList": "צפייה בעסקים שלך",
         "readReviews": "קריאת ביקורות לקוחות",
-        "publishReplies": "פרסום תשובות לביקורות"
+        "publishReplies": "פרסום תגובות לביקורות"
       }
     },
     "chooseBusiness": {
@@ -1006,17 +1013,22 @@
         "failedToConnect": "לא ניתן לחבר את העסק"
       }
     },
+    "configure": {
+      "title": "הגדרות עסק ו-AI",
+      "description": "ספרו לנו על העסק שלכם ואיך ה-AI צריך להגיב",
+      "errorSaving": "לא ניתן לשמור את ההגדרות"
+    },
     "businessDetails": {
-      "title": "פרטי העסק",
+      "title": "העסק שלך",
       "description": "הגדר את פרטי העסק הבסיסיים שישמשו ביצירת תגובות AI"
     },
     "aiSettings": {
-      "title": "הגדרות תגובה AI",
+      "title": "סגנון תגובת AI",
       "description": "התאם אישית את סגנון ואופן התגובות האוטומטיות"
     },
     "starRatings": {
-      "title": "הגדרות לפי דירוג כוכבים",
-      "description": "התאם אישית את התגובות האוטומטיות לפי רמת הדירוג",
+      "title": "כללי תגובה אוטומטית",
+      "description": "בחרו אילו דירוגים מקבלים תגובות AI אוטומטיות",
       "successMessage": "ההגדרות נשמרו בהצלחה!",
       "errorMessage": "לא ניתן לשמור את ההגדרות"
     },

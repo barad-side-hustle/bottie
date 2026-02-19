@@ -4,10 +4,10 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import confetti from "canvas-confetti";
-import { OnboardingCard } from "@/components/onboarding/OnboardingCard";
 import { CircularProgress } from "@/components/ui/circular-progress";
+import { Button } from "@/components/ui/button";
 
-interface ReviewImportProgressProps {
+interface CompletionCelebrationProps {
   accountId: string;
   locationId: string;
 }
@@ -17,7 +17,7 @@ type ImportPhase = "connecting" | "importing" | "complete" | "error";
 const TIMEOUT_MS = 120_000;
 const REDIRECT_DELAY_MS = 2500;
 
-export function ReviewImportProgress({ accountId, locationId }: ReviewImportProgressProps) {
+export function CompletionCelebration({ accountId, locationId }: CompletionCelebrationProps) {
   const router = useRouter();
   const t = useTranslations("onboarding.importProgress");
 
@@ -155,48 +155,53 @@ export function ReviewImportProgress({ accountId, locationId }: ReviewImportProg
     };
   }, [accountId, locationId, handleComplete, cleanup, t]);
 
-  if (phase === "error") {
-    return (
-      <OnboardingCard
-        title={t("title")}
-        description={t("errorDescription")}
-        nextButton={{
-          label: t("skipToDashboard"),
-          onClick: () => router.push("/dashboard/home"),
-        }}
-      >
-        <div className="flex flex-col items-center gap-4 py-8">
-          <p className="text-sm text-destructive">{errorMessage}</p>
-        </div>
-      </OnboardingCard>
-    );
-  }
-
   return (
-    <OnboardingCard
-      title={phase === "complete" ? t("completeTitle") : t("title")}
-      description={phase === "complete" ? t("completeDescription") : t("description")}
-      hideNavigation
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center animate-onboarding-fade-in"
+      style={{ background: "var(--gradient-soft)" }}
     >
-      <div className="flex flex-col items-center gap-6 py-8">
-        <CircularProgress value={phase === "complete" ? 100 : progress} size={140} strokeWidth={10} />
+      <div className="absolute top-1/4 start-1/4 h-64 w-64 rounded-full bg-pastel-lavender/20 blur-3xl" />
+      <div className="absolute bottom-1/3 end-1/4 h-48 w-48 rounded-full bg-pastel-sky/20 blur-3xl" />
+      <div className="absolute top-1/2 end-1/3 h-56 w-56 rounded-full bg-pastel-peach/15 blur-3xl" />
 
-        <div className="text-center space-y-1">
-          {phase === "connecting" && <p className="text-sm text-muted-foreground">{t("preparingImport")}</p>}
-          {phase === "importing" && (
-            <>
-              <p className="text-sm font-medium">{t("importingCount", { imported, total })}</p>
-              <p className="text-xs text-muted-foreground">{t("pleaseWait")}</p>
-            </>
-          )}
-          {phase === "complete" && (
-            <>
-              <p className="text-sm font-medium text-success">{t("importComplete", { count: imported })}</p>
-              <p className="text-xs text-muted-foreground">{t("redirecting")}</p>
-            </>
-          )}
-        </div>
+      <div className="relative z-10 flex flex-col items-center gap-8 max-w-md mx-auto px-4 text-center">
+        {phase === "error" ? (
+          <>
+            <h2 className="text-2xl font-semibold">{t("title")}</h2>
+            <p className="text-sm text-destructive">{errorMessage}</p>
+            <Button onClick={() => router.push("/dashboard/home")} className="shadow-primary">
+              {t("skipToDashboard")}
+            </Button>
+          </>
+        ) : (
+          <>
+            <CircularProgress value={phase === "complete" ? 100 : progress} size={140} strokeWidth={10} />
+
+            <div className="space-y-2">
+              <h2 className="text-2xl font-semibold">{phase === "complete" ? t("completeTitle") : t("title")}</h2>
+              <p className="text-sm text-muted-foreground">
+                {phase === "complete" ? t("completeDescription") : t("description")}
+              </p>
+            </div>
+
+            <div className="text-center space-y-1">
+              {phase === "connecting" && <p className="text-sm text-muted-foreground">{t("preparingImport")}</p>}
+              {phase === "importing" && (
+                <>
+                  <p className="text-sm font-medium">{t("importingCount", { imported, total })}</p>
+                  <p className="text-xs text-muted-foreground">{t("pleaseWait")}</p>
+                </>
+              )}
+              {phase === "complete" && (
+                <>
+                  <p className="text-sm font-medium text-success">{t("importComplete", { count: imported })}</p>
+                  <p className="text-xs text-muted-foreground">{t("redirecting")}</p>
+                </>
+              )}
+            </div>
+          </>
+        )}
       </div>
-    </OnboardingCard>
+    </div>
   );
 }

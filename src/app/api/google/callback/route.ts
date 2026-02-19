@@ -7,10 +7,10 @@ export const runtime = "nodejs";
 
 const redirectToLocations = async (success?: boolean, accountId?: string) => {
   if (success && accountId) {
-    return await createLocaleAwareRedirect("/onboarding/choose-location", { accountId });
+    return await createLocaleAwareRedirect("/onboarding", { accountId });
   }
 
-  return await createLocaleAwareRedirect("/onboarding/connect-account");
+  return await createLocaleAwareRedirect("/onboarding");
 };
 
 export async function GET(request: NextRequest) {

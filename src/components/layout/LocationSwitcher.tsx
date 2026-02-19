@@ -36,7 +36,7 @@ export function LocationSwitcher() {
   };
 
   const handleAddLocation = () => {
-    router.push("/onboarding/connect-account");
+    router.push("/onboarding");
   };
 
   const grouped = locations.reduce<Record<string, typeof locations>>(

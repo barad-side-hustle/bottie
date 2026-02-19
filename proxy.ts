@@ -55,7 +55,7 @@ export async function proxy(request: NextRequest) {
             path: "/",
           });
         } else {
-          const redirectUrl = new URL(`/${locale}/onboarding/connect-account`, request.url);
+          const redirectUrl = new URL(`/${locale}/onboarding`, request.url);
           return NextResponse.redirect(redirectUrl);
         }
       }
