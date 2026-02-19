@@ -7,7 +7,11 @@ import { getLocation } from "@/lib/actions/locations.actions";
 import { getReviews } from "@/lib/actions/reviews.actions";
 import { getAuthenticatedUserId } from "@/lib/api/auth";
 import { ReviewsList } from "@/components/dashboard/reviews/ReviewsList";
-import { ReviewsFilterBar } from "@/components/dashboard/reviews/filters/ReviewsFilterBar";
+import {
+  ReviewsFilterBar,
+  ReviewsDesktopFilterPanel,
+  ReviewsActiveFilters,
+} from "@/components/dashboard/reviews/filters/ReviewsFilterBar";
 import { parseFiltersFromSearchParams } from "@/lib/utils/filter-utils";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { buildLocationBreadcrumbs } from "@/lib/utils/breadcrumbs";
@@ -54,17 +58,34 @@ export default async function LocationReviewsPage({ params, searchParams }: Loca
 
       <PageHeader title={t("reviewsFor", { businessName: location.name })} description={t("allReviews")} />
 
-      <div className="space-y-4 mt-6">
-        <Suspense>
-          <ReviewsFilterBar />
-        </Suspense>
-        {reviews.length === 0 ? (
-          <EmptyState title={t("noReviews")} description={t("noReviewsDescription")} />
-        ) : (
-          <Suspense>
-            <ReviewsList reviews={reviews} accountId={accountId} locationId={locationId} userId={userId} />
-          </Suspense>
-        )}
+      <div className="lg:flex lg:gap-6 mt-6">
+        <div className="flex-1 min-w-0 space-y-4">
+          <div className="lg:hidden">
+            <Suspense>
+              <ReviewsFilterBar />
+            </Suspense>
+          </div>
+          <div className="hidden lg:block">
+            <Suspense>
+              <ReviewsActiveFilters />
+            </Suspense>
+          </div>
+          {reviews.length === 0 ? (
+            <EmptyState title={t("noReviews")} description={t("noReviewsDescription")} />
+          ) : (
+            <Suspense>
+              <ReviewsList reviews={reviews} accountId={accountId} locationId={locationId} userId={userId} />
+            </Suspense>
+          )}
+        </div>
+
+        <aside className="hidden lg:block w-[280px] shrink-0">
+          <div className="sticky top-20">
+            <Suspense>
+              <ReviewsDesktopFilterPanel />
+            </Suspense>
+          </div>
+        </aside>
       </div>
     </PageContainer>
   );

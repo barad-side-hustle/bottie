@@ -14,18 +14,29 @@ interface ResponsiveFilterPanelProps {
   activeCount: number;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  variant?: "default" | "inline";
 }
 
 const subscribe = () => () => {};
 
-export function ResponsiveFilterPanel({ children, activeCount, open, onOpenChange }: ResponsiveFilterPanelProps) {
+export function ResponsiveFilterPanel({
+  children,
+  activeCount,
+  open,
+  onOpenChange,
+  variant = "default",
+}: ResponsiveFilterPanelProps) {
   const t = useTranslations("dashboard.reviews.filters");
   const hasMounted = useSyncExternalStore(
     subscribe,
     () => true,
     () => false
   );
-  const isDesktop = useMediaQuery({ query: "(min-width: 768px)" });
+  const isMedium = useMediaQuery({ query: "(min-width: 768px)" });
+
+  if (variant === "inline") {
+    return <>{children}</>;
+  }
 
   const Trigger = (
     <Button variant="outline" className="gap-2">
@@ -43,7 +54,7 @@ export function ResponsiveFilterPanel({ children, activeCount, open, onOpenChang
     return Trigger;
   }
 
-  if (isDesktop) {
+  if (isMedium) {
     return (
       <Popover open={open} onOpenChange={onOpenChange}>
         <PopoverTrigger asChild>{Trigger}</PopoverTrigger>

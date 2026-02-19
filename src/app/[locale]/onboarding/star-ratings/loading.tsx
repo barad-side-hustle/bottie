@@ -1,5 +1,5 @@
 import { OnboardingSkeleton } from "@/components/skeletons/OnboardingSkeleton";
 
 export default function StarRatingsLoading() {
-  return <OnboardingSkeleton />;
+  return <OnboardingSkeleton variant="star-ratings" />;
 }

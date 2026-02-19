@@ -8,8 +8,16 @@ import { useFiltersStore } from "@/lib/store/filters-store";
 import { ReviewFiltersForm } from "./ReviewFiltersForm";
 import { ResponsiveFilterPanel } from "./ResponsiveFilterPanel";
 import { ActiveFilters } from "./ActiveFilters";
+import {
+  DashboardCard,
+  DashboardCardHeader,
+  DashboardCardTitle,
+  DashboardCardContent,
+} from "@/components/ui/dashboard-card";
+import { Filter } from "lucide-react";
+import { useTranslations } from "next-intl";
 
-export function ReviewsFilterBar() {
+function useReviewFilters() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -73,6 +81,12 @@ export function ReviewsFilterBar() {
     handleApply(newFilters);
   };
 
+  return { filters, activeCount, isOpen, setIsOpen, handleApply, handleReset, handleRemoveFilter };
+}
+
+export function ReviewsFilterBar() {
+  const { filters, activeCount, isOpen, setIsOpen, handleApply, handleReset, handleRemoveFilter } = useReviewFilters();
+
   return (
     <div className="mb-6">
       <ResponsiveFilterPanel activeCount={activeCount} open={isOpen} onOpenChange={setIsOpen}>
@@ -81,4 +95,26 @@ export function ReviewsFilterBar() {
       <ActiveFilters filters={filters} onRemove={handleRemoveFilter} onClearAll={handleReset} />
     </div>
   );
+}
+
+export function ReviewsDesktopFilterPanel() {
+  const t = useTranslations("dashboard.reviews.filters");
+  const { filters, handleApply, handleReset } = useReviewFilters();
+
+  return (
+    <DashboardCard>
+      <DashboardCardHeader>
+        <DashboardCardTitle icon={<Filter className="size-5" />}>{t("filters")}</DashboardCardTitle>
+      </DashboardCardHeader>
+      <DashboardCardContent>
+        <ReviewFiltersForm filters={filters} onApply={handleApply} onReset={handleReset} />
+      </DashboardCardContent>
+    </DashboardCard>
+  );
+}
+
+export function ReviewsActiveFilters() {
+  const { filters, handleReset, handleRemoveFilter } = useReviewFilters();
+
+  return <ActiveFilters filters={filters} onRemove={handleRemoveFilter} onClearAll={handleReset} />;
 }

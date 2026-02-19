@@ -1,5 +1,6 @@
 "use client";
 
+import React from "react";
 import { ChevronsUpDown, MapPin, Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/routing";
@@ -87,36 +88,39 @@ export function LocationSwitcher() {
             side={isMobile ? "bottom" : dir === "rtl" ? "left" : "right"}
             sideOffset={4}
           >
-            {Object.entries(grouped).map(([accountName, locs]) => (
-              <DropdownMenuGroup key={accountName}>
-                <DropdownMenuLabel className="text-xs text-muted-foreground">{accountName}</DropdownMenuLabel>
-                {locs.map((loc) => (
-                  <DropdownMenuItem
-                    key={loc.locationId}
-                    onClick={() => handleSelectLocation(loc.accountId, loc.locationId)}
-                    className="gap-2 p-2"
-                  >
-                    <div className="flex size-6 items-center justify-center rounded-sm border overflow-hidden">
-                      {loc.photoUrl ? (
-                        <Image
-                          src={loc.photoUrl}
-                          alt={loc.locationName}
-                          width={24}
-                          height={24}
-                          className="size-full object-cover"
-                        />
-                      ) : (
-                        <MapPin className="size-4 shrink-0" />
-                      )}
-                    </div>
-                    <span className="truncate">{loc.locationName}</span>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuGroup>
+            {Object.entries(grouped).map(([accountName, locs], index) => (
+              <React.Fragment key={accountName}>
+                {index > 0 && <DropdownMenuSeparator />}
+                <DropdownMenuGroup>
+                  <DropdownMenuLabel className="text-xs text-muted-foreground">{accountName}</DropdownMenuLabel>
+                  {locs.map((loc) => (
+                    <DropdownMenuItem
+                      key={loc.locationId}
+                      onClick={() => handleSelectLocation(loc.accountId, loc.locationId)}
+                      className="gap-2 p-2"
+                    >
+                      <div className="flex size-6 items-center justify-center rounded-sm border border-border/50 overflow-hidden">
+                        {loc.photoUrl ? (
+                          <Image
+                            src={loc.photoUrl}
+                            alt={loc.locationName}
+                            width={24}
+                            height={24}
+                            className="size-full object-cover"
+                          />
+                        ) : (
+                          <MapPin className="size-4 shrink-0 text-muted-foreground" />
+                        )}
+                      </div>
+                      <span className="truncate">{loc.locationName}</span>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuGroup>
+              </React.Fragment>
             ))}
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleAddLocation} className="gap-2 p-2">
-              <div className="flex size-6 items-center justify-center rounded-md border bg-background">
+              <div className="flex size-6 items-center justify-center rounded-md border border-border/50 bg-background">
                 <Plus className="size-4" />
               </div>
               <span>{t("navigation.sidebar.addLocation")}</span>
