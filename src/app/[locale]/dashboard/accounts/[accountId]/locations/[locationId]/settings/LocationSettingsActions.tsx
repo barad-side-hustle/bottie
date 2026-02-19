@@ -6,6 +6,7 @@ import type { Location } from "@/lib/types";
 import LocationDetailsCard from "@/components/dashboard/locations/LocationDetailsCard";
 import { DeleteConfirmation } from "@/components/ui/delete-confirmation";
 import { disconnectLocation } from "@/lib/actions/locations.actions";
+import { sendRybbitEvent } from "@/lib/analytics";
 import type { PlanLimits } from "@/lib/subscriptions/plans";
 
 interface LocationSettingsActionsProps {
@@ -45,6 +46,7 @@ export function LocationSettingsActions({
     if (!accountLocationId) return;
     try {
       await disconnectLocation({ accountId, accountLocationId });
+      sendRybbitEvent("location_disconnected");
       router.push("/dashboard/home");
     } catch (error) {
       console.error("Error disconnecting location:", error);

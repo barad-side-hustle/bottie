@@ -14,6 +14,7 @@ import { OnboardingCard } from "@/components/onboarding/OnboardingCard";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { updateLocationConfig } from "@/lib/actions/locations.actions";
+import { sendRybbitEvent } from "@/lib/analytics";
 import type { PlanLimits } from "@/lib/subscriptions/plans";
 
 interface AISettingsWrapperProps {
@@ -81,6 +82,11 @@ export function AISettingsWrapper({ accountId, locationId, limits }: AISettingsW
           maxSentences: formData.maxSentences,
           signature: formData.signature,
         },
+      });
+
+      sendRybbitEvent("ai_settings_configured", {
+        tone: formData.toneOfVoice,
+        language_mode: formData.languageMode,
       });
 
       router.push(`/onboarding/star-ratings?accountId=${accountId}&locationId=${locationId}`);

@@ -19,7 +19,7 @@ interface UseSubscriptionReturn {
 }
 
 export function useSubscription(): UseSubscriptionReturn {
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [subscription, setSubscription] = useState<Subscription | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -28,10 +28,14 @@ export function useSubscription(): UseSubscriptionReturn {
   const [featureOverrides, setFeatureOverrides] = useState<FeatureOverrides | null>(null);
 
   useEffect(() => {
+    if (authLoading) return;
+
     if (!user) {
       setLoading(false);
       return;
     }
+
+    setLoading(true);
 
     async function loadSubscription() {
       try {
@@ -58,7 +62,7 @@ export function useSubscription(): UseSubscriptionReturn {
     }
 
     loadSubscription();
-  }, [user]);
+  }, [user, authLoading]);
 
   const isActive = subscription?.status === "active";
 

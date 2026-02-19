@@ -55,6 +55,7 @@ export function DateRangePicker({
   };
 
   const numberOfMonths = isMobile ? 1 : 2;
+  const dateFormat = "LLL dd";
 
   const defaultPresets = [
     { label: "Last 7 days", days: 7 },
@@ -81,10 +82,10 @@ export function DateRangePicker({
       {date?.from ? (
         date.to ? (
           <span className="truncate">
-            {format(date.from, "LLL dd, y", { locale })} - {format(date.to, "LLL dd, y", { locale })}
+            {format(date.from, dateFormat, { locale })} - {format(date.to, dateFormat, { locale })}
           </span>
         ) : (
-          format(date.from, "LLL dd, y", { locale })
+          format(date.from, dateFormat, { locale })
         )
       ) : (
         <span>{placeholder || "Pick a date"}</span>
@@ -152,18 +153,20 @@ export function DateRangePicker({
     />
   );
 
-  if (isMobile && showPresets) {
+  if (isMobile) {
     return (
       <div className={cn("grid gap-2", className)}>
         <Dialog open={isOpen} onOpenChange={handleOpenChange}>
           <DialogTrigger asChild>{Trigger}</DialogTrigger>
           <DialogContent className="max-w-[calc(100%-2rem)] p-0 gap-0">
-            <DialogHeader className="p-4 pb-0 text-start">
-              <DialogTitle>{title || "Select Date Range"}</DialogTitle>
-            </DialogHeader>
+            {(showPresets || title) && (
+              <DialogHeader className="p-4 pb-0 text-start">
+                <DialogTitle>{title || "Select Date Range"}</DialogTitle>
+              </DialogHeader>
+            )}
             <div className="px-5 py-4 space-y-4">
               {PresetsSection}
-              <div className="pt-4">{MobileCalendarSection}</div>
+              <div className={showPresets ? "pt-4" : ""}>{MobileCalendarSection}</div>
             </div>
           </DialogContent>
         </Dialog>

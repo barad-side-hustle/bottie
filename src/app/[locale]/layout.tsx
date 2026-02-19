@@ -81,6 +81,11 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
         "x-default": `${baseUrl}/en`,
       },
     },
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: "default",
+      title: "Bottie.ai",
+    },
   };
 }
 
@@ -121,6 +126,9 @@ export default async function LocaleLayout({
               gtag('config', 'AW-17485891262');
               gtag('config', 'G-4077J0PY28');
             `}
+          </Script>
+          <Script id="sw-register" strategy="afterInteractive">
+            {`if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js').catch(function(){})}`}
           </Script>
         </NextIntlClientProvider>
       </body>

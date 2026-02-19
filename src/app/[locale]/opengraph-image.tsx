@@ -1,7 +1,18 @@
 import { ImageResponse } from "next/og";
 import { getTranslations } from "next-intl/server";
 
-export const runtime = "edge";
+import {
+  BG_LIGHT,
+  BRAND_BLUE,
+  DARK_TEXT,
+  MUTED_TEXT,
+  PASTEL_LAVENDER,
+  PASTEL_SKY,
+  fixRtlText,
+  loadLogoIcon,
+  loadRubikFont,
+} from "./og-utils";
+
 export const alt = "Bottie.ai - AI Review Management";
 export const size = {
   width: 1200,
@@ -11,10 +22,19 @@ export const contentType = "image/png";
 
 export default async function OGImage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: "metadata" });
+  const t = await getTranslations({ locale, namespace: "landing.hero" });
+  const tMeta = await getTranslations({ locale, namespace: "metadata" });
 
-  const description = t("description");
+  const title = t("title");
+  const highlight = t("titleHighlight");
+  const description = tMeta("description");
   const isRTL = locale === "he";
+
+  const [rubikBold, rubikRegular, logoSrc] = await Promise.all([
+    loadRubikFont(700),
+    loadRubikFont(400),
+    loadLogoIcon(),
+  ]);
 
   return new ImageResponse(
     <div
@@ -25,107 +45,112 @@ export default async function OGImage({ params }: { params: Promise<{ locale: st
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-        fontFamily: "system-ui, -apple-system, sans-serif",
-        direction: isRTL ? "rtl" : "ltr",
+        background: BG_LIGHT,
+        fontFamily: "Rubik",
+        position: "relative",
+        overflow: "hidden",
       }}
     >
       <div
         style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          marginBottom: 40,
+          position: "absolute",
+          top: -80,
+          right: -60,
+          width: 400,
+          height: 400,
+          borderRadius: "50%",
+          background: PASTEL_LAVENDER,
+          opacity: 0.6,
         }}
-      >
-        <div
-          style={{
-            width: 120,
-            height: 120,
-            background: "white",
-            borderRadius: 30,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            boxShadow: "0 20px 40px rgba(0,0,0,0.3)",
-          }}
-        >
-          <div
-            style={{
-              fontSize: 64,
-              fontWeight: 900,
-              background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-              backgroundClip: "text",
-              color: "transparent",
-            }}
-          >
-            B
-          </div>
-        </div>
-      </div>
+      />
+      <div
+        style={{
+          position: "absolute",
+          bottom: -100,
+          left: -80,
+          width: 350,
+          height: 350,
+          borderRadius: "50%",
+          background: PASTEL_SKY,
+          opacity: 0.6,
+        }}
+      />
+
+      <img alt="" src={logoSrc} width={80} height={80} style={{ marginBottom: 28 }} />
 
       <div
         style={{
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          padding: "0 80px",
+          padding: "0 100px",
         }}
       >
-        <h1
+        <div
           style={{
-            fontSize: 60,
-            fontWeight: 900,
-            color: "white",
+            fontSize: 52,
+            fontWeight: 700,
+            color: DARK_TEXT,
             textAlign: "center",
-            marginBottom: 20,
             lineHeight: 1.2,
-            textShadow: "0 4px 12px rgba(0,0,0,0.3)",
           }}
         >
-          Bottie.ai
-        </h1>
-
-        <p
+          {isRTL ? fixRtlText(title) : title}
+        </div>
+        <div
           style={{
-            fontSize: 32,
-            color: "rgba(255, 255, 255, 0.95)",
+            fontSize: 52,
+            fontWeight: 700,
+            color: BRAND_BLUE,
             textAlign: "center",
-            lineHeight: 1.4,
-            maxWidth: 900,
-            textShadow: "0 2px 8px rgba(0,0,0,0.2)",
+            lineHeight: 1.2,
+            marginTop: 4,
           }}
         >
-          {description}
-        </p>
+          {isRTL ? fixRtlText(highlight) : highlight}
+        </div>
+
+        <div
+          style={{
+            fontSize: 24,
+            color: MUTED_TEXT,
+            textAlign: "center",
+            lineHeight: 1.5,
+            maxWidth: 900,
+            marginTop: 24,
+          }}
+        >
+          {isRTL ? fixRtlText(description) : description}
+        </div>
       </div>
 
       <div
         style={{
           position: "absolute",
-          bottom: 40,
+          bottom: 36,
           display: "flex",
           alignItems: "center",
-          gap: 12,
-          background: "rgba(255, 255, 255, 0.2)",
-          backdropFilter: "blur(10px)",
-          padding: "16px 32px",
-          borderRadius: 50,
+          gap: 10,
         }}
       >
+        <img alt="" src={logoSrc} width={28} height={28} />
         <div
           style={{
-            fontSize: 24,
-            color: "white",
-            fontWeight: 600,
+            fontSize: 22,
+            fontWeight: 700,
+            color: BRAND_BLUE,
           }}
         >
-          {isRTL ? "מופעל על ידי AI" : "Powered by AI"}
+          Bottie.ai
         </div>
       </div>
     </div>,
     {
       ...size,
+      fonts: [
+        { name: "Rubik", data: rubikBold, weight: 700, style: "normal" },
+        { name: "Rubik", data: rubikRegular, weight: 400, style: "normal" },
+      ],
     }
   );
 }

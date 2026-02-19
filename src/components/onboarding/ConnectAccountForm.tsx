@@ -5,6 +5,7 @@ import { OnboardingCard } from "@/components/onboarding/OnboardingCard";
 import { Building2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/routing";
+import { sendRybbitEvent } from "@/lib/analytics";
 
 export function ConnectAccountForm() {
   const router = useRouter();
@@ -18,6 +19,7 @@ export function ConnectAccountForm() {
 
   const handleConnect = () => {
     setConnecting(true);
+    sendRybbitEvent("google_account_connected");
     window.location.href = "/api/google/auth?onboarding=true";
   };
 

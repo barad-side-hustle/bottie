@@ -15,6 +15,7 @@ import { useTranslations } from "next-intl";
 import { updateLocationConfig } from "@/lib/actions/locations.actions";
 import { updateOnboardingStatus } from "@/lib/actions/onboarding.actions";
 import { ReviewImportProgress } from "@/components/onboarding/ReviewImportProgress";
+import { sendRybbitEvent } from "@/lib/analytics";
 
 interface StarRatingsWrapperProps {
   accountId: string;
@@ -74,6 +75,8 @@ export function StarRatingsWrapper({ accountId, locationId }: StarRatingsWrapper
       await updateLocationConfig({ locationId, config });
 
       await updateOnboardingStatus(true);
+
+      sendRybbitEvent("onboarding_completed");
 
       reset();
 

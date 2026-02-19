@@ -23,6 +23,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { useTranslations, useFormatter } from "next-intl";
 import { useRouter } from "@/i18n/routing";
+import { sendRybbitEvent } from "@/lib/analytics";
 import type { ReviewWithLatestGeneration } from "@/lib/db/repositories";
 
 interface ReviewCardProps {
@@ -93,6 +94,10 @@ export function ReviewCard({ review, accountId, userId, locationId, onUpdate }: 
 
     try {
       await postReviewReply({ accountId, locationId, reviewId: review.id });
+      sendRybbitEvent("reply_published", {
+        rating: review.rating,
+        is_update: review.replyStatus === "posted",
+      });
       onUpdate?.();
     } catch (error) {
       console.error("Error publishing reply:", error);
@@ -108,6 +113,7 @@ export function ReviewCard({ review, accountId, userId, locationId, onUpdate }: 
     try {
       setIsLoading(true);
       await generateReviewReply({ accountId, locationId, reviewId: review.id });
+      sendRybbitEvent("reply_regenerated", { rating: review.rating });
       onUpdate?.();
     } catch (error) {
       console.error("Error regenerating reply:", error);

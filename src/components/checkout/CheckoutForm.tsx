@@ -9,6 +9,7 @@ import type { PlanTier } from "@/lib/subscriptions/plans";
 import type { BillingInterval } from "@/lib/types/subscription.types";
 import { useAuth } from "@/contexts/AuthContext";
 import { createCheckoutSession } from "@/lib/actions/subscription.actions";
+import { sendRybbitEvent } from "@/lib/analytics";
 
 interface CheckoutFormProps {
   plan: PlanTier | null;
@@ -51,6 +52,7 @@ export function CheckoutForm({ plan, period, coupon }: CheckoutFormProps) {
         if (plan === "free") return;
 
         try {
+          sendRybbitEvent("checkout_initiated", { plan, interval: period });
           const { url, error: actionError } = await createCheckoutSession(plan, period, coupon || undefined);
 
           if (actionError) {

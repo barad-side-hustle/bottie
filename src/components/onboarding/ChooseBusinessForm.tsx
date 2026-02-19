@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { OnboardingCard } from "@/components/onboarding/OnboardingCard";
 import { LocationRadioItem } from "@/components/onboarding/BusinessRadioItem";
 import { AlertCircle } from "lucide-react";
+import { sendRybbitEvent } from "@/lib/analytics";
 import { RadioGroup } from "@/components/ui/radio-group";
 import { useTranslations } from "next-intl";
 import { subscribeToGoogleNotifications } from "@/lib/actions/google.actions";
@@ -59,6 +60,8 @@ export function ChooseLocationForm({ accountId, availableLocations }: ChooseLoca
       }
 
       const { location } = result;
+
+      sendRybbitEvent("location_connected", { location_name: selectedLocation.name });
 
       try {
         await subscribeToGoogleNotifications({ accountId });

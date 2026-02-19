@@ -11,6 +11,9 @@ export function RybbitProvider() {
   useEffect(() => {
     if (initialized.current) return;
     initialized.current = true;
+
+    if (window.location.hostname === "localhost") return;
+
     rybbit.init({
       siteId: "91604d9cddac",
       analyticsHost: "https://app.rybbit.io/api",

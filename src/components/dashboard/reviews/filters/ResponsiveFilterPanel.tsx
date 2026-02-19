@@ -72,7 +72,7 @@ export function ResponsiveFilterPanel({
         <DrawerHeader className="text-start">
           <DrawerTitle>{t("filters")}</DrawerTitle>
         </DrawerHeader>
-        <div className="p-4 pb-8">{children}</div>
+        <div className="px-8 py-4 pb-8">{children}</div>
       </DrawerContent>
     </Drawer>
   );
