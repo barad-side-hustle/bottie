@@ -2,11 +2,10 @@
 
 import * as React from "react";
 import * as TooltipPrimitive from "@radix-ui/react-tooltip";
-import { Info, X } from "lucide-react";
+import { Info } from "lucide-react";
 
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
   DrawerDescription,
   DrawerHeader,
@@ -43,10 +42,9 @@ TooltipContent.displayName = TooltipPrimitive.Content.displayName;
 interface TooltipIconProps {
   text: string;
   additionalInfoLabel: string;
-  closeLabel: string;
 }
 
-const TooltipIcon = ({ text, additionalInfoLabel, closeLabel }: TooltipIconProps) => {
+const TooltipIcon = ({ text, additionalInfoLabel }: TooltipIconProps) => {
   const isMobile = useIsMobile();
 
   if (isMobile) {
@@ -58,18 +56,9 @@ const TooltipIcon = ({ text, additionalInfoLabel, closeLabel }: TooltipIconProps
           </button>
         </DrawerTrigger>
         <DrawerContent>
-          <DrawerHeader className="relative">
-            <DrawerClose asChild>
-              <button
-                type="button"
-                className="absolute start-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-              >
-                <X className="h-4 w-4" />
-                <span className="sr-only">{closeLabel}</span>
-              </button>
-            </DrawerClose>
-            <DrawerTitle className="text-start ps-12">{additionalInfoLabel}</DrawerTitle>
-            <DrawerDescription className="text-start ps-12">{text}</DrawerDescription>
+          <DrawerHeader>
+            <DrawerTitle className="text-start">{additionalInfoLabel}</DrawerTitle>
+            <DrawerDescription className="text-start">{text}</DrawerDescription>
           </DrawerHeader>
         </DrawerContent>
       </Drawer>

@@ -95,7 +95,7 @@ export function CategoryReviewsModal({
           {isLoading ? (
             <div className="space-y-4">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="space-y-2 p-4 border rounded-lg">
+                <div key={i} className="space-y-2 p-4 border border-border/50 rounded-lg">
                   <div className="flex items-center gap-3">
                     <Skeleton className="h-10 w-10 rounded-full" />
                     <div className="space-y-1">
@@ -111,7 +111,7 @@ export function CategoryReviewsModal({
             <p className="text-muted-foreground text-center py-8">{t("modal.noReviews")}</p>
           ) : (
             reviews.map((review) => (
-              <div key={review.id} className="p-4 border rounded-lg space-y-3">
+              <div key={review.id} className="p-4 border border-border/50 rounded-lg space-y-3">
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
                     <Avatar className="h-10 w-10 shrink-0">

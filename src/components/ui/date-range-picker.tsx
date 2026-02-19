@@ -76,13 +76,13 @@ export function DateRangePicker({
   );
 
   const PresetsSection = showPresets ? (
-    <div className="flex flex-wrap gap-2 md:flex-col md:gap-0 md:space-y-2">
+    <div className="flex gap-2 md:flex-col md:gap-0 md:space-y-2">
       {activePresets.map((preset) => (
         <Button
           key={preset.days}
           variant="ghost"
           size="sm"
-          className="justify-start"
+          className="flex-1 md:flex-initial md:justify-start"
           onClick={() => handlePreset(preset.days)}
         >
           {preset.label}
