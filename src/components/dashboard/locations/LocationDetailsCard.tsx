@@ -5,16 +5,14 @@ import LocationIdentitySection from "@/components/dashboard/locations/LocationId
 import AIResponseSettingsSection from "@/components/dashboard/locations/AIResponseSettingsSection";
 import StarRatingConfigSection from "@/components/dashboard/locations/StarRatingConfigSection";
 import { updateLocationConfig } from "@/lib/actions/locations.actions";
-import type { PlanLimits } from "@/lib/subscriptions/plans";
 
 interface LocationDetailsCardProps {
   location: Location;
-  limits: PlanLimits;
   loading?: boolean;
   onUpdate: () => Promise<void>;
 }
 
-export default function LocationDetailsCard({ location, limits, loading = false, onUpdate }: LocationDetailsCardProps) {
+export default function LocationDetailsCard({ location, loading = false, onUpdate }: LocationDetailsCardProps) {
   const handleSaveSection = async (partialData: Partial<Location>) => {
     try {
       await updateLocationConfig({ locationId: location.id, config: partialData });
@@ -33,7 +31,7 @@ export default function LocationDetailsCard({ location, limits, loading = false,
     <div className="space-y-6">
       <LocationIdentitySection location={location} loading={loading} onSave={handleSaveSection} />
 
-      <AIResponseSettingsSection location={location} limits={limits} loading={loading} onSave={handleSaveSection} />
+      <AIResponseSettingsSection location={location} loading={loading} onSave={handleSaveSection} />
 
       <StarRatingConfigSection starConfigs={location.starConfigs} loading={loading} onSave={handleSaveStarConfigs} />
     </div>

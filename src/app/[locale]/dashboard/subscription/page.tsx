@@ -4,7 +4,6 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { getTranslations } from "next-intl/server";
 import { getUserStats } from "@/lib/actions/stats.actions";
 import { getAuthenticatedUserId } from "@/lib/api/auth";
-import type { PlanTier } from "@/lib/subscriptions/plans";
 import { SubscriptionInfo } from "@/components/dashboard/dashboard/SubscriptionInfo";
 import { UpgradeButton } from "@/components/dashboard/subscription/UpgradeButton";
 import { SubscriptionSuccessToast } from "@/components/dashboard/subscription/SubscriptionSuccessToast";
@@ -18,8 +17,6 @@ export default async function SubscriptionPage({ params }: { params: Promise<{ l
 
   const stats = await getUserStats(userId);
 
-  const planType: PlanTier = stats.subscription ? (stats.subscription.planTier as PlanTier) : "free";
-
   return (
     <PageContainer>
       <Suspense>
@@ -30,26 +27,12 @@ export default async function SubscriptionPage({ params }: { params: Promise<{ l
       <div className="space-y-6">
         <SubscriptionInfo
           limits={stats.limits}
-          subscription={stats.subscription}
-          currentLocations={stats.locations}
           currentReviews={stats.reviews}
-          locationsPercent={stats.locationsPercent}
           reviewsPercent={stats.reviewsPercent}
-          planType={planType}
+          hasPaidSubscription={stats.hasPaidSubscription}
         />
 
-        <div className="flex gap-3 flex-wrap">
-          {planType === "free" && <UpgradeButton />}
-
-          {planType !== "free" && (
-            <div className="text-sm text-muted-foreground">
-              <p>
-                {t("currentPlan")}: {planType.toUpperCase()}
-              </p>
-              <p className="mt-1">{t("contactSupport")}</p>
-            </div>
-          )}
-        </div>
+        <div className="flex gap-3 flex-wrap">{!stats.hasPaidSubscription && <UpgradeButton />}</div>
       </div>
     </PageContainer>
   );

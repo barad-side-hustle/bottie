@@ -1,7 +1,6 @@
 import { eq, and } from "drizzle-orm";
 import { db } from "@/lib/db/client";
 import { subscriptions, type Subscription, type SubscriptionInsert } from "@/lib/db/schema";
-import { type PlanLimits, getPlanLimits, type PlanTier } from "@/lib/subscriptions/plans";
 
 export class SubscriptionsRepository {
   async getActiveSubscriptionForUser(userId: string): Promise<Subscription | null> {
@@ -56,17 +55,11 @@ export class SubscriptionsRepository {
 
     return this.update(existing.id, {
       status: "canceled",
-      planTier: "free",
     });
   }
 
-  async getUserPlanLimits(userId: string): Promise<PlanLimits> {
+  async hasPaidSubscription(userId: string): Promise<boolean> {
     const subscription = await this.getActiveSubscriptionForUser(userId);
-
-    if (subscription) {
-      return getPlanLimits(subscription.planTier as PlanTier);
-    }
-
-    return getPlanLimits("free");
+    return !!subscription?.polarSubscriptionId;
   }
 }

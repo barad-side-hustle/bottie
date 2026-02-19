@@ -2,11 +2,15 @@ import { betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { render } from "@react-email/render";
+import { polar, checkout, portal, usage, webhooks } from "@polar-sh/better-auth";
 import { db } from "@/lib/db/client";
 import * as authSchema from "@/lib/db/schema/auth.schema";
 import { sendUserWelcomeEmail, sendNewUserNotification } from "@/lib/utils/email-service";
 import VerifyEmailTemplate from "@/lib/emails/verify-email";
 import ResetPasswordEmailTemplate from "@/lib/emails/reset-password";
+import { getPolar } from "@/lib/polar/config";
+import { SubscriptionsRepository } from "@/lib/db/repositories/subscriptions.repository";
+import { env } from "@/lib/env";
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -74,5 +78,70 @@ export const auth = betterAuth({
     updateAge: 60 * 60 * 24,
     cookieCache: { enabled: true, maxAge: 5 * 60 },
   },
-  plugins: [nextCookies()],
+  plugins: [
+    nextCookies(),
+    polar({
+      client: getPolar(),
+      createCustomerOnSignUp: true,
+      use: [
+        checkout({
+          products: [
+            {
+              productId: env.POLAR_PRODUCT_ID,
+              slug: "pay-as-you-go",
+            },
+          ],
+          successUrl: "/checkout/success?checkout_id={CHECKOUT_ID}",
+          authenticatedUsersOnly: true,
+        }),
+        portal(),
+        usage(),
+        webhooks({
+          secret: env.POLAR_WEBHOOK_SECRET,
+          onSubscriptionCreated: async (payload) => {
+            const customerId = payload.data.customerId;
+            const customer = await getPolar().customers.get({ id: customerId });
+            const userId = customer.externalId;
+            if (!userId) return;
+
+            const repo = new SubscriptionsRepository();
+            await repo.upsert(userId, {
+              polarCustomerId: customerId,
+              polarSubscriptionId: payload.data.id,
+              status: payload.data.status,
+            });
+          },
+          onSubscriptionUpdated: async (payload) => {
+            const customerId = payload.data.customerId;
+            const customer = await getPolar().customers.get({ id: customerId });
+            const userId = customer.externalId;
+            if (!userId) return;
+
+            const repo = new SubscriptionsRepository();
+            const existing = await repo.getByUserId(userId);
+            if (existing) {
+              await repo.update(existing.id, {
+                polarSubscriptionId: payload.data.id,
+                status: payload.data.status,
+              });
+            }
+          },
+          onSubscriptionCanceled: async (payload) => {
+            const customerId = payload.data.customerId;
+            const customer = await getPolar().customers.get({ id: customerId });
+            const userId = customer.externalId;
+            if (!userId) return;
+
+            const repo = new SubscriptionsRepository();
+            const existing = await repo.getByUserId(userId);
+            if (existing) {
+              await repo.update(existing.id, {
+                status: "canceled",
+              });
+            }
+          },
+        }),
+      ],
+    }),
+  ],
 });

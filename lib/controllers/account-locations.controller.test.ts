@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach, Mock } from "vitest";
 import { AccountLocationsController } from "./account-locations.controller";
-import { AccountLocationsRepository, LocationsRepository } from "@/lib/db/repositories";
-import { ForbiddenError } from "@/lib/api/errors";
+import { AccountLocationsRepository } from "@/lib/db/repositories";
 
 vi.mock("@/lib/db/repositories");
 
@@ -12,7 +11,6 @@ describe("AccountLocationsController", () => {
   const accountId = "acc-123";
   let controller: AccountLocationsController;
   let mockAccountLocationsRepo: MockRepository;
-  let mockLocationsRepo: MockRepository;
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -30,16 +28,8 @@ describe("AccountLocationsController", () => {
       getByLocationId: vi.fn(),
     };
 
-    mockLocationsRepo = {
-      findByGoogleLocationId: vi.fn(),
-    };
-
     (AccountLocationsRepository as unknown as Mock).mockImplementation(function () {
       return mockAccountLocationsRepo;
-    });
-
-    (LocationsRepository as unknown as Mock).mockImplementation(function () {
-      return mockLocationsRepo;
     });
 
     controller = new AccountLocationsController(userId, accountId);
@@ -127,63 +117,19 @@ describe("AccountLocationsController", () => {
       },
     };
 
-    it("should connect location successfully for new location", async () => {
+    it("should connect location successfully", async () => {
       const mockResult = {
         accountLocation: { id: "al-1", locationId: "loc-1" },
         location: { id: "loc-1", googleLocationId: "456" },
         isNew: true,
       };
 
-      mockLocationsRepo.findByGoogleLocationId.mockResolvedValue(null);
       mockAccountLocationsRepo.findOrCreate.mockResolvedValue(mockResult);
 
       const result = await controller.connectLocation(locationData);
 
       expect(mockAccountLocationsRepo.findOrCreate).toHaveBeenCalled();
       expect(result).toBe(mockResult);
-    });
-
-    it("should connect to existing location without checking limit", async () => {
-      const existingLocation = { id: "loc-1", googleLocationId: "456" };
-      const mockResult = {
-        accountLocation: { id: "al-1", locationId: "loc-1" },
-        location: existingLocation,
-        isNew: false,
-      };
-
-      mockLocationsRepo.findByGoogleLocationId.mockResolvedValue(existingLocation);
-      mockAccountLocationsRepo.findOrCreate.mockResolvedValue(mockResult);
-
-      const checkLimit = vi.fn().mockResolvedValue(true);
-      const result = await controller.connectLocation(locationData, checkLimit);
-
-      expect(checkLimit).not.toHaveBeenCalled();
-      expect(result).toBe(mockResult);
-    });
-
-    it("should check limit for new location and allow if under limit", async () => {
-      const mockResult = {
-        accountLocation: { id: "al-1", locationId: "loc-1" },
-        location: { id: "loc-1", googleLocationId: "456" },
-        isNew: true,
-      };
-
-      mockLocationsRepo.findByGoogleLocationId.mockResolvedValue(null);
-      mockAccountLocationsRepo.findOrCreate.mockResolvedValue(mockResult);
-
-      const checkLimit = vi.fn().mockResolvedValue(true);
-      const result = await controller.connectLocation(locationData, checkLimit);
-
-      expect(checkLimit).toHaveBeenCalled();
-      expect(result).toBe(mockResult);
-    });
-
-    it("should throw ForbiddenError if limit exceeded for new location", async () => {
-      mockLocationsRepo.findByGoogleLocationId.mockResolvedValue(null);
-
-      const checkLimit = vi.fn().mockResolvedValue(false);
-
-      await expect(controller.connectLocation(locationData, checkLimit)).rejects.toThrow(ForbiddenError);
     });
   });
 

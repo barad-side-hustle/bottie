@@ -1,15 +1,15 @@
 import { StatsRepository } from "@/lib/db/repositories";
 import { SubscriptionsRepository } from "@/lib/db/repositories";
-import { getPlanLimits, type PlanLimits, type PlanTier } from "@/lib/subscriptions/plans";
+import { getUsageLimits, type UsageLimits } from "@/lib/subscriptions/plans";
 import type { Subscription } from "@/lib/db/schema";
 
 export interface UserStats {
   locations: number;
   reviews: number;
-  locationsPercent: number;
   reviewsPercent: number;
-  limits: PlanLimits;
+  limits: UsageLimits;
   subscription: Subscription | null;
+  hasPaidSubscription: boolean;
 }
 
 export class StatsController {
@@ -23,17 +23,18 @@ export class StatsController {
       subRepo.getActiveSubscriptionForUser(userId),
     ]);
 
-    const limits = getPlanLimits((subscription?.planTier as PlanTier) || "free");
-    const locationsPercent = Math.min(100, Math.round((locations * 100) / limits.businesses));
-    const reviewsPercent = Math.min(100, Math.round((reviews * 100) / limits.reviewsPerMonth));
+    const hasPaid = !!subscription?.polarSubscriptionId;
+    const limits = getUsageLimits(hasPaid);
+    const reviewsPercent =
+      limits.reviewsPerMonth === -1 ? 0 : Math.min(100, Math.round((reviews * 100) / limits.reviewsPerMonth));
 
     return {
       locations,
       reviews,
-      locationsPercent,
       reviewsPercent,
       limits,
       subscription,
+      hasPaidSubscription: hasPaid,
     };
   }
 }

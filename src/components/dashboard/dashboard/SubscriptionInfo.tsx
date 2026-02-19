@@ -10,44 +10,27 @@ import {
 } from "@/components/ui/dashboard-card";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import type { PlanLimits, PlanTier } from "@/lib/subscriptions/plans";
-import type { Subscription } from "@/lib/types/subscription.types";
+import type { UsageLimits } from "@/lib/subscriptions/plans";
 import { formatDate, getCurrentBillingPeriod } from "@/lib/subscriptions/billing-period";
 import { useTranslations, useLocale } from "next-intl";
 import type { Locale } from "@/lib/locale";
 
 interface SubscriptionInfoProps {
-  limits: PlanLimits;
-  subscription: Subscription | null;
-  currentLocations: number;
+  limits: UsageLimits;
   currentReviews: number;
-  locationsPercent: number;
   reviewsPercent: number;
-  planType: PlanTier;
-}
-
-function getPlanBadgeInfo(planType: PlanTier, planLabel: string) {
-  const planMap = {
-    free: { label: planLabel, variant: "secondary" as const },
-    basic: { label: planLabel, variant: "default" as const },
-    pro: { label: planLabel, variant: "default" as const },
-  };
-  return planMap[planType];
+  hasPaidSubscription: boolean;
 }
 
 export function SubscriptionInfo({
   limits,
-  currentLocations,
   currentReviews,
-  locationsPercent,
   reviewsPercent,
-  planType,
+  hasPaidSubscription,
 }: SubscriptionInfoProps) {
   const t = useTranslations("dashboard.subscription.info");
   const locale = useLocale() as Locale;
   const { resetDate } = getCurrentBillingPeriod();
-  const planLabel = t(`plans.${planType}`);
-  const badgeInfo = getPlanBadgeInfo(planType, planLabel);
 
   return (
     <div className="space-y-6">
@@ -58,31 +41,23 @@ export function SubscriptionInfo({
               <DashboardCardTitle>{t("title")}</DashboardCardTitle>
               <DashboardCardDescription>{t("description")}</DashboardCardDescription>
             </div>
-            <Badge variant={badgeInfo.variant}>{badgeInfo.label}</Badge>
+            <Badge variant={hasPaidSubscription ? "default" : "secondary"}>
+              {hasPaidSubscription ? t("plans.paid") : t("plans.free")}
+            </Badge>
           </div>
         </DashboardCardHeader>
         <DashboardCardContent className="space-y-6">
-          <DashboardCardField label={t("businessesLabel")}>
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="font-medium">
-                  {t("businessesCount", { current: currentLocations, max: limits.businesses })}
-                </span>
-                <span className="text-muted-foreground">{locationsPercent}%</span>
-              </div>
-              <Progress value={locationsPercent} />
-            </div>
-          </DashboardCardField>
-
           <DashboardCardField label={t("reviewsLabel")}>
             <div className="space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="font-medium">
-                  {t("reviewsCount", { current: currentReviews, max: limits.reviewsPerMonth })}
+                  {limits.reviewsPerMonth === -1
+                    ? t("reviewsUnlimited", { current: currentReviews })
+                    : t("reviewsCount", { current: currentReviews, max: limits.reviewsPerMonth })}
                 </span>
-                <span className="text-muted-foreground">{reviewsPercent}%</span>
+                {limits.reviewsPerMonth !== -1 && <span className="text-muted-foreground">{reviewsPercent}%</span>}
               </div>
-              <Progress value={reviewsPercent} />
+              {limits.reviewsPerMonth !== -1 && <Progress value={reviewsPercent} />}
               <p className="text-xs text-muted-foreground">{t("resetsOn", { date: formatDate(resetDate, locale) })}</p>
             </div>
           </DashboardCardField>

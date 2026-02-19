@@ -5,9 +5,7 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { buildLocationBreadcrumbs } from "@/lib/utils/breadcrumbs";
 import { getTranslations } from "next-intl/server";
 import { getLocation, getAccountLocations } from "@/lib/actions/locations.actions";
-import { getAuthenticatedUserId } from "@/lib/api/auth";
 import { LocationSettingsActions } from "./LocationSettingsActions";
-import { SubscriptionsController } from "@/lib/controllers/subscriptions.controller";
 
 export const dynamic = "force-dynamic";
 
@@ -17,15 +15,13 @@ export default async function LocationSettingsPage({
   params: Promise<{ locale: string; accountId: string; locationId: string }>;
 }) {
   const { locale, accountId, locationId } = await params;
-  const { userId } = await getAuthenticatedUserId();
   const t = await getTranslations({ locale, namespace: "dashboard.settings" });
   const tCommon = await getTranslations({ locale, namespace: "common" });
   const tBreadcrumbs = await getTranslations({ locale, namespace: "breadcrumbs" });
 
-  const [location, accountLocations, limits] = await Promise.all([
+  const [location, accountLocations] = await Promise.all([
     getLocation({ locationId }),
     getAccountLocations({ accountId }),
-    new SubscriptionsController().getUserPlanLimits(userId),
   ]);
 
   const accountLocation = accountLocations.find((al) => al.locationId === locationId);
@@ -54,7 +50,6 @@ export default async function LocationSettingsPage({
         location={location}
         accountId={accountId}
         accountLocationId={accountLocation?.id}
-        limits={limits}
         translations={{
           disconnectLocation: t("deleteBusiness"),
           disconnectConfirmation: t("deleteConfirmation", { businessName: location.name }),

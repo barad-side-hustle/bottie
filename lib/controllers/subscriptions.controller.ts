@@ -1,31 +1,18 @@
 import { SubscriptionsRepository, StatsRepository } from "@/lib/db/repositories";
-import type { PlanLimits, PlanTier } from "@/lib/subscriptions/plans";
-import { checkFeatureAccess, type GatedFeature, type FeatureCheckResult } from "@/lib/subscriptions/feature-check";
+import { getUsageLimits, type UsageLimits } from "@/lib/subscriptions/plans";
 
 export class SubscriptionsController {
-  async getUserPlanLimits(userId: string): Promise<PlanLimits> {
+  async getUserUsageLimits(userId: string): Promise<UsageLimits> {
     const repo = new SubscriptionsRepository();
-    return repo.getUserPlanLimits(userId);
-  }
-
-  async checkLocationLimit(userId: string): Promise<boolean> {
-    const repo = new SubscriptionsRepository();
-    const limits = await repo.getUserPlanLimits(userId);
-
-    if (limits.businesses === -1) {
-      return true;
-    }
-
-    const statsRepo = new StatsRepository();
-    const locationCount = await statsRepo.countUserLocations(userId);
-
-    return locationCount < limits.businesses;
+    const hasPaid = await repo.hasPaidSubscription(userId);
+    return getUsageLimits(hasPaid);
   }
 
   async checkReviewQuota(userId: string): Promise<{ allowed: boolean; currentCount: number; limit: number }> {
     const repo = new SubscriptionsRepository();
     const statsRepo = new StatsRepository();
-    const limits = await repo.getUserPlanLimits(userId);
+    const hasPaid = await repo.hasPaidSubscription(userId);
+    const limits = getUsageLimits(hasPaid);
     const currentCount = await statsRepo.countUserReviewsThisMonth(userId);
 
     const allowed = limits.reviewsPerMonth === -1 || currentCount < limits.reviewsPerMonth;
@@ -37,13 +24,8 @@ export class SubscriptionsController {
     };
   }
 
-  async checkFeatureAccess(userId: string, feature: GatedFeature): Promise<FeatureCheckResult> {
+  async hasPaidSubscription(userId: string): Promise<boolean> {
     const repo = new SubscriptionsRepository();
-    const subscription = await repo.getActiveSubscriptionForUser(userId);
-
-    const planTier = (subscription?.planTier as PlanTier) ?? "free";
-    const featureOverrides = subscription?.featureOverrides ?? null;
-
-    return checkFeatureAccess(planTier, feature, featureOverrides);
+    return repo.hasPaidSubscription(userId);
   }
 }

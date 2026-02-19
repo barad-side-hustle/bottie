@@ -1,19 +1,12 @@
 import type { LocationCreate } from "@/lib/types";
-import {
-  AccountLocationsRepository,
-  LocationsRepository,
-  type Location,
-  type AccountLocation,
-} from "@/lib/db/repositories";
-import { ForbiddenError, NotFoundError } from "@/lib/api/errors";
+import { AccountLocationsRepository, type Location, type AccountLocation } from "@/lib/db/repositories";
+import { NotFoundError } from "@/lib/api/errors";
 
 export class AccountLocationsController {
   private repository: AccountLocationsRepository;
-  private locationsRepo: LocationsRepository;
 
   constructor(userId: string, accountId: string) {
     this.repository = new AccountLocationsRepository(userId, accountId);
-    this.locationsRepo = new LocationsRepository(userId);
   }
 
   async getAccountLocations(): Promise<AccountLocation[]> {
@@ -31,18 +24,8 @@ export class AccountLocationsController {
   }
 
   async connectLocation(
-    data: LocationCreate,
-    checkLimit?: () => Promise<boolean>
+    data: LocationCreate
   ): Promise<{ accountLocation: AccountLocation; location: Location; isNew: boolean }> {
-    const existingLocation = await this.locationsRepo.findByGoogleLocationId(data.googleLocationId);
-
-    if (!existingLocation && checkLimit) {
-      const canCreate = await checkLimit();
-      if (!canCreate) {
-        throw new ForbiddenError("הגעת למגבלת העסקים בתוכנית הנוכחית. שדרג את התוכנית כדי להוסיף עסקים נוספים.");
-      }
-    }
-
     return this.repository.findOrCreate(data.googleBusinessId, data.googleLocationId, {
       name: data.name,
       address: data.address,

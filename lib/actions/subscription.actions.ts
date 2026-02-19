@@ -1,13 +1,8 @@
 "use server";
 
-import Stripe from "stripe";
 import { getAuthenticatedUserId } from "@/lib/api/auth";
 import { SubscriptionsRepository } from "@/lib/db/repositories";
 import type { Subscription } from "@/lib/db/schema";
-import { getStripe, getStripePriceId } from "@/lib/stripe/config";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { resolveLocale } from "@/lib/locale-detection";
 
 export async function getActiveSubscription(): Promise<Subscription | null> {
   try {
@@ -17,102 +12,5 @@ export async function getActiveSubscription(): Promise<Subscription | null> {
   } catch (error) {
     console.error("Error getting active subscription:", error);
     return null;
-  }
-}
-
-export async function createCheckoutSession(
-  plan: "basic" | "pro",
-  interval: "monthly" | "yearly",
-  couponCode?: string
-): Promise<{ url?: string; error?: string }> {
-  try {
-    const session = await auth.api.getSession({
-      headers: await headers(),
-    });
-
-    if (!session?.user) {
-      return { error: "Unauthorized" };
-    }
-
-    const user = session.user;
-
-    if (!plan || !interval) {
-      return { error: "Missing plan or interval" };
-    }
-
-    if (!["basic", "pro"].includes(plan)) {
-      return { error: "Invalid plan" };
-    }
-
-    if (!["monthly", "yearly"].includes(interval)) {
-      return { error: "Invalid interval" };
-    }
-
-    const priceId = getStripePriceId(plan, interval);
-    const locale = await resolveLocale();
-
-    let discountObj: { coupon?: string; promotion_code?: string } | undefined;
-
-    if (couponCode) {
-      const cleanCode = couponCode.trim();
-
-      try {
-        const promotionCodes = await getStripe().promotionCodes.list({
-          code: cleanCode,
-          active: true,
-          limit: 1,
-        });
-
-        if (promotionCodes.data.length > 0) {
-          discountObj = { promotion_code: promotionCodes.data[0].id };
-        }
-      } catch (err) {
-        console.error("Error resolving coupon/promo code:", err);
-      }
-    }
-
-    const sessionConfig: Stripe.Checkout.SessionCreateParams = {
-      mode: "subscription",
-      payment_method_types: ["card"],
-      line_items: [
-        {
-          price: priceId,
-          quantity: 1,
-        },
-      ],
-      success_url: `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/${locale}/#pricing`,
-      customer_email: user.email,
-      client_reference_id: user.id,
-      metadata: {
-        userId: user.id,
-        planTier: plan,
-        interval: interval,
-      },
-      subscription_data: {
-        metadata: {
-          userId: user.id,
-          planTier: plan,
-          interval: interval,
-        },
-      },
-    };
-
-    if (discountObj) {
-      sessionConfig.discounts = [discountObj];
-    } else {
-      sessionConfig.allow_promotion_codes = true;
-    }
-
-    const stripeSession = await getStripe().checkout.sessions.create(sessionConfig);
-
-    if (!stripeSession.url) {
-      return { error: "Failed to create checkout session" };
-    }
-
-    return { url: stripeSession.url };
-  } catch (error) {
-    console.error("Error creating checkout session:", error);
-    return { error: "Failed to create checkout session" };
   }
 }

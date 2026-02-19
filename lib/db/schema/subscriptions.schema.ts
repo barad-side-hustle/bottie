@@ -1,10 +1,6 @@
-import { pgTable, text, timestamp, uuid, index, pgPolicy, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, uuid, index, pgPolicy } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 import { user } from "./auth.schema";
-
-export type FeatureOverrides = {
-  analytics?: boolean;
-};
 
 export const subscriptions = pgTable(
   "subscriptions",
@@ -15,14 +11,10 @@ export const subscriptions = pgTable(
       .unique()
       .references(() => user.id, { onDelete: "cascade" }),
 
-    planTier: text("plan_tier").notNull().default("free"),
     status: text("status").notNull().default("active"),
 
-    stripeCustomerId: text("stripe_customer_id"),
-    stripeSubscriptionId: text("stripe_subscription_id"),
-    stripePriceId: text("stripe_price_id"),
-
-    featureOverrides: jsonb("feature_overrides").$type<FeatureOverrides>(),
+    polarCustomerId: text("polar_customer_id"),
+    polarSubscriptionId: text("polar_subscription_id"),
 
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },

@@ -1,6 +1,7 @@
 import type { ReviewFilters, Review, ReviewCreate } from "@/lib/types";
 import { env } from "@/lib/env";
 import { NotFoundError } from "@/lib/api/errors";
+import { getPolar } from "@/lib/polar/config";
 import {
   ReviewsRepository,
   ReviewResponsesRepository,
@@ -89,6 +90,21 @@ export class ReviewsController {
 
     const prompt = buildReplyPrompt(location, review, approvedSamples, rejectedSamples);
     const aiReply = await generateAIReply(prompt);
+
+    try {
+      await getPolar().events.ingest({
+        events: [
+          {
+            name: "ai_reply_generated",
+            externalCustomerId: this.userId,
+            metadata: { reviewId, locationId: review.locationId },
+            timestamp: new Date(),
+          },
+        ],
+      });
+    } catch (error) {
+      console.error("Failed to ingest Polar usage event:", error);
+    }
 
     await this.responsesRepo.create({
       reviewId,

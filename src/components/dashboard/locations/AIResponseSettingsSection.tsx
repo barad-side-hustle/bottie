@@ -9,21 +9,14 @@ import {
   AIResponseSettingsFormData,
 } from "@/components/dashboard/locations/forms/AIResponseSettingsForm";
 import { useTranslations } from "next-intl";
-import type { PlanLimits } from "@/lib/subscriptions/plans";
 
 interface AIResponseSettingsSectionProps {
   location: Location;
-  limits: PlanLimits;
   loading?: boolean;
   onSave: (data: Partial<Location>) => Promise<void>;
 }
 
-export default function AIResponseSettingsSection({
-  location,
-  limits,
-  loading,
-  onSave,
-}: AIResponseSettingsSectionProps) {
+export default function AIResponseSettingsSection({ location, loading, onSave }: AIResponseSettingsSectionProps) {
   const t = useTranslations("dashboard.businesses.sections.aiSettings");
   const tCommon = useTranslations("common");
 
@@ -91,7 +84,7 @@ export default function AIResponseSettingsSection({
         </>
       )}
       renderForm={({ data, isLoading, onChange }) => (
-        <AIResponseSettingsForm values={data} onChange={onChange} disabled={isLoading} limits={limits} />
+        <AIResponseSettingsForm values={data} onChange={onChange} disabled={isLoading} />
       )}
     />
   );

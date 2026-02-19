@@ -4,39 +4,19 @@ import { Button } from "@/components/ui/button";
 import { ExternalLink, Crown } from "lucide-react";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import type { Subscription } from "@/lib/db/schema";
-import { getPlan } from "@/lib/subscriptions/plans";
+import { authClient } from "@/lib/auth-client";
 
-interface SubscriptionManagementCardProps {
-  subscription: Subscription;
-}
-
-export function SubscriptionManagementCard({ subscription }: SubscriptionManagementCardProps) {
+export function SubscriptionManagementCard() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const t = useTranslations("landing.pricing");
-
-  const plan = getPlan(subscription.planTier as "free" | "basic" | "pro");
 
   const handleManageBilling = async () => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const response = await fetch("/api/stripe/portal", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || "Failed to open billing portal");
-      }
-
-      const data = await response.json();
-      window.location.href = data.url;
+      await authClient.customer.portal();
     } catch (err) {
       console.error("Error opening billing portal:", err);
       setError(err instanceof Error ? err.message : "Failed to open billing portal");
@@ -62,7 +42,7 @@ export function SubscriptionManagementCard({ subscription }: SubscriptionManagem
               <div>
                 <h3 className="text-lg font-bold text-foreground">{t("yourCurrentPlan")}</h3>
                 <p className="text-sm text-muted-foreground">
-                  {plan.name} • <span className="text-primary font-medium">{t("statusActive")}</span>
+                  {t("plans.paid.name")} &bull; <span className="text-primary font-medium">{t("statusActive")}</span>
                 </p>
               </div>
             </div>

@@ -41,15 +41,11 @@ describe("StatsController", () => {
   });
 
   describe("getUserStats", () => {
-    it("should return user stats with correct calculations", async () => {
+    it("should return user stats with correct calculations for free user", async () => {
       const userId = "user-123";
-      const locationsCount = 5;
-      const reviewsCount = 50;
-      const mockSubscription = { id: "sub-1", planTier: "basic", status: "active" };
-
-      mockStatsRepo.countUserLocations.mockResolvedValue(locationsCount);
-      mockStatsRepo.countUserReviewsThisMonth.mockResolvedValue(reviewsCount);
-      mockSubsRepo.getActiveSubscriptionForUser.mockResolvedValue(mockSubscription);
+      mockStatsRepo.countUserLocations.mockResolvedValue(5);
+      mockStatsRepo.countUserReviewsThisMonth.mockResolvedValue(3);
+      mockSubsRepo.getActiveSubscriptionForUser.mockResolvedValue(null);
 
       const result = await controller.getUserStats(userId);
 
@@ -57,26 +53,37 @@ describe("StatsController", () => {
       expect(mockStatsRepo.countUserReviewsThisMonth).toHaveBeenCalledWith(userId);
       expect(mockSubsRepo.getActiveSubscriptionForUser).toHaveBeenCalledWith(userId);
 
-      expect(result.locations).toBe(locationsCount);
-      expect(result.reviews).toBe(reviewsCount);
-      expect(result.subscription).toEqual(mockSubscription);
+      expect(result.locations).toBe(5);
+      expect(result.reviews).toBe(3);
+      expect(result.subscription).toBeNull();
+      expect(result.hasPaidSubscription).toBe(false);
       expect(result.limits).toBeDefined();
-      expect(result.locationsPercent).toBeGreaterThanOrEqual(0);
+      expect(result.limits.reviewsPerMonth).toBeGreaterThan(0);
       expect(result.reviewsPercent).toBeGreaterThanOrEqual(0);
+    });
+
+    it("should return unlimited for paid user", async () => {
+      const userId = "user-123";
+      const mockSubscription = { id: "sub-1", polarSubscriptionId: "polar-123", status: "active" };
+      mockStatsRepo.countUserLocations.mockResolvedValue(10);
+      mockStatsRepo.countUserReviewsThisMonth.mockResolvedValue(50);
+      mockSubsRepo.getActiveSubscriptionForUser.mockResolvedValue(mockSubscription);
+
+      const result = await controller.getUserStats(userId);
+
+      expect(result.hasPaidSubscription).toBe(true);
+      expect(result.limits.reviewsPerMonth).toBe(-1);
+      expect(result.reviewsPercent).toBe(0);
     });
 
     it("should cap percentages at 100", async () => {
       const userId = "user-123";
-      const locationsCount = 150;
-      const reviewsCount = 1500;
+      mockStatsRepo.countUserLocations.mockResolvedValue(150);
+      mockStatsRepo.countUserReviewsThisMonth.mockResolvedValue(1500);
       mockSubsRepo.getActiveSubscriptionForUser.mockResolvedValue(null);
-
-      mockStatsRepo.countUserLocations.mockResolvedValue(locationsCount);
-      mockStatsRepo.countUserReviewsThisMonth.mockResolvedValue(reviewsCount);
 
       const result = await controller.getUserStats(userId);
 
-      expect(result.locationsPercent).toBe(100);
       expect(result.reviewsPercent).toBe(100);
     });
   });

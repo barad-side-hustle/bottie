@@ -122,56 +122,35 @@
       "noCreditCard": "ללא צורך בכרטיס אשראי • ביטול בכל עת"
     },
     "pricing": {
-      "title": "תוכניות מחיר שמתאימות לכם",
-      "subtitle": "בחרו את התוכנית המתאימה לעסק שלכם",
-      "monthly": "חודשי",
-      "yearly": "שנתי",
-      "yearlyDiscount": "(חסכו 20%)",
-      "perMonth": "/חודש",
-      "savings": "חסכון של ₪{amount} לחודש",
+      "title": "תמחור פשוט לפי שימוש",
+      "subtitle": "שלמו רק על מה שאתם משתמשים. כל התכונות כלולות לכולם.",
       "freeCta": "התחל בחינם",
-      "paidCta": "התחל עכשיו",
+      "paidCta": "שדרג לתשלום לפי שימוש",
       "loading": "טוען...",
+      "perReply": "/תגובה",
+      "freeReplies": "{count} תגובות AI חינם בחודש",
       "features": {
-        "max_businesses": "מספר עסקים",
-        "monthly_reviews": "ביקורות בחודש",
-        "manual_approval": "אישור ידני",
-        "auto_publish": "פרסום אוטומטי",
-        "whatsapp_support": "תמיכה בוואטסאפ",
-        "businesses": "{count, select, 1 {עסק אחד} other {עד {count} עסקים}}",
-        "reviews": "{count} תשובות AI בחודש",
+        "unlimitedLocations": "עסקים ללא הגבלה",
         "autoPost": "פרסום תשובות אוטומטי",
-        "manualApproval": "אפשרות לאישור ידני של תגובות AI",
-        "whatsappSupport": "תמיכה בוואטסאפ",
-        "prioritySupport": "תמיכה מועדפת",
-        "priorityEmailSupport": "תמיכה מועדפת במייל",
-        "emailSupport": "תמיכה במייל",
+        "analytics": "ניתוח נתונים ותובנות מלאות",
         "customTone": "טון דיבור מותאם אישית",
         "emojiCustomization": "התאמת אימוג'ים",
-        "analytics": "ניתוח נתונים מתקדם"
+        "emailNotifications": "התראות במייל"
       },
       "plans": {
         "free": {
           "name": "חינם",
-          "description": "התחילו עם תכונות בסיסיות"
+          "description": "התחילו עם {count} תגובות AI בחודש"
         },
-        "basic": {
-          "name": "בסיסית",
-          "description": "מושלם לעסקים קטנים"
-        },
-        "pro": {
-          "name": "פרו",
-          "description": "לעסקים צומחים"
+        "paid": {
+          "name": "תשלום לפי שימוש",
+          "description": "תגובות AI ללא הגבלה, חיוב לפי שימוש"
         }
       },
-      "yearlySavings": "חסכון של {percentage}% בתשלום שנתי",
       "yourCurrentPlan": "המנוי הנוכחי שלך",
-      "managePlanDescription": "נהל את המנוי שלך וצפה בפרטי התוכנית הנוכחית",
+      "managePlanDescription": "נהל את המנוי שלך וצפה בנתוני השימוש",
       "manageBilling": "ניהול חיוב",
-      "viewAllPlans": "צפה בכל התוכניות",
-      "status": "סטטוס",
-      "statusActive": "פעיל",
-      "billedYearly": "חיוב שנתי"
+      "statusActive": "פעיל"
     },
     "faq": {
       "title": "שאלות נפוצות",
@@ -630,40 +609,22 @@
       }
     },
     "subscription": {
-      "title": "תוכנית המנוי",
-      "description": "נהל את המנוי והשימוש שלך",
-      "currentPlan": "תוכנית נוכחית",
-      "upgrade": "שדרג",
-      "downgrade": "הורד תוכנית",
-      "cancel": "בטל מנוי",
-      "renews": "מתחדש ב",
-      "expires": "פג תוקף ב",
-      "upgradePlan": "שדרג תוכנית",
-      "manageSubscription": "נהל מנוי",
+      "title": "שימוש וחיוב",
+      "description": "עקוב אחר השימוש בתגובות AI ונהל את החיוב",
+      "upgradePlan": "שדרג לתשלום לפי שימוש",
+      "manageSubscription": "ניהול חיוב",
       "errorLoading": "שגיאה בטעינת נתונים. אנא נסה שוב מאוחר יותר.",
-      "upgradeComingSoon": "שדרוג מנוי יהיה זמין בקרוב",
-      "invalidLink": "קישור לא תקין. אנא פנה לתמיכה.",
-      "contactSupport": "כדי לנהל או לבטל את המנוי שלך, אנא פנה לתמיכה.",
       "successMessage": "המנוי שלך הופעל בהצלחה!",
       "info": {
-        "title": "שימוש ומגבלות",
-        "description": "מעקב אחר השימוש שלך בתוכנית הנוכחית",
-        "businessesLabel": "עסקים מחוברים",
-        "businessesCount": "{current} מתוך {max} עסקים",
-        "reviewsLabel": "ביקורות החודש",
-        "reviewsCount": "{current} מתוך {max} ביקורות",
+        "title": "שימוש בתגובות AI",
+        "description": "מעקב אחר השימוש בתגובות AI החודש",
+        "reviewsLabel": "תגובות AI החודש",
+        "reviewsCount": "{current} מתוך {max} תגובות",
+        "reviewsUnlimited": "{current} תגובות בשימוש (ללא הגבלה)",
         "resetsOn": "מתאפס ב-{date}",
         "plans": {
           "free": "חינם",
-          "basic": "בסיסית",
-          "pro": "פרו"
-        },
-        "features": {
-          "max_businesses": "מספר עסקים",
-          "monthly_reviews": "ביקורות בחודש",
-          "manual_approval": "אישור ידני",
-          "auto_publish": "פרסום אוטומטי",
-          "whatsapp_support": "תמיכה בוואטסאפ"
+          "paid": "תשלום לפי שימוש"
         }
       }
     },
@@ -819,19 +780,6 @@
         "upgradeNow": "שדרג עכשיו",
         "close": "סגור",
         "upgradeToPlan": "שדרג לתוכנית בסיסי"
-      }
-    },
-    "featureGate": {
-      "plans": {
-        "basic": "בסיסי",
-        "pro": "פרו"
-      },
-      "upgradeTo": "שדרג ל-{plan}",
-      "features": {
-        "analytics": {
-          "title": "אנליטיקס היא תכונת פרו",
-          "description": "שדרג ל-{plan} כדי לגשת לתובנות וניתוחים מפורטים עבור הביקורות שלך."
-        }
       }
     }
   },

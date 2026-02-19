@@ -1,83 +1,33 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { useRouter } from "@/i18n/routing";
+import { useEffect, useRef } from "react";
 import { Loading } from "@/components/ui/loading";
-import { toast } from "sonner";
 import { useTranslations } from "next-intl";
-import type { PlanTier } from "@/lib/subscriptions/plans";
-import type { BillingInterval } from "@/lib/types/subscription.types";
 import { useAuth } from "@/contexts/AuthContext";
-import { createCheckoutSession } from "@/lib/actions/subscription.actions";
-import { sendRybbitEvent } from "@/lib/analytics";
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "@/i18n/routing";
 
-interface CheckoutFormProps {
-  plan: PlanTier | null;
-  period: BillingInterval | null;
-  coupon: string | null;
-}
-
-export function CheckoutForm({ plan, period, coupon }: CheckoutFormProps) {
+export function CheckoutForm() {
   const router = useRouter();
   const t = useTranslations("checkout");
   const { user } = useAuth();
-  const [error, setError] = useState<string | null>(null);
   const hasStartedProcessing = useRef(false);
 
   useEffect(() => {
-    if (error) {
-      toast.error(error);
-    }
-  }, [error]);
-
-  useEffect(() => {
     if (hasStartedProcessing.current || !user) return;
+    hasStartedProcessing.current = true;
 
-    if (plan === "free") {
-      router.push("/dashboard/home");
-      return;
-    }
-
-    if (!plan || !period) {
-      toast.error(t("missingPriceDetails"));
-      router.push("/");
-      return;
-    }
-
-    if (plan && period && !error) {
-      hasStartedProcessing.current = true;
-
-      async function processStripeCheckout() {
-        if (!plan || !period) return;
-        if (plan === "free") return;
-
-        try {
-          sendRybbitEvent("checkout_initiated", { plan, interval: period });
-          const { url, error: actionError } = await createCheckoutSession(plan, period, coupon || undefined);
-
-          if (actionError) {
-            setError(actionError || t("error"));
-            return;
-          }
-
-          if (url) {
-            window.location.href = url;
-          } else {
-            setError(t("error"));
-          }
-        } catch (err) {
-          console.error("Error creating checkout session:", err);
-          setError(t("error"));
-        }
+    async function startCheckout() {
+      try {
+        await authClient.checkout({ slug: "pay-as-you-go" });
+      } catch (error) {
+        console.error("Error creating checkout session:", error);
+        router.push("/");
       }
-
-      processStripeCheckout();
     }
-  }, [plan, period, router, error, t, user, coupon]);
 
-  if (!error && plan && period) {
-    return <Loading fullScreen text={t("processing")} description={t("almostThere")} size="lg" />;
-  }
+    startCheckout();
+  }, [user, router]);
 
-  return null;
+  return <Loading fullScreen text={t("processing")} description={t("almostThere")} size="lg" />;
 }

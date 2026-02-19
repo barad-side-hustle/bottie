@@ -11,15 +11,15 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 
 export function UpgradeBanner() {
   const t = useTranslations("dashboard.components.upgradeBanner");
-  const { planType, loading } = useSubscription();
+  const { hasPaidSubscription, loading } = useSubscription();
   const router = useRouter();
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
 
   const isVisible = useMemo(() => {
-    if (loading || planType !== "free") return false;
+    if (loading || hasPaidSubscription) return false;
     return true;
-  }, [loading, planType]);
+  }, [loading, hasPaidSubscription]);
 
   const handleUpgrade = () => {
     router.push("/");

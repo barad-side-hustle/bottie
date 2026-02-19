@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import type { Location, ToneOfVoice, LanguageMode } from "@/lib/types";
-import type { PlanLimits } from "@/lib/subscriptions/plans";
+
 import {
   LocationDetailsForm,
   LocationDetailsFormData,
@@ -17,7 +17,6 @@ import { Sparkles } from "lucide-react";
 
 interface ConfigureStepProps {
   location: Location;
-  limits: PlanLimits;
   initialLocationDetails: LocationDetailsFormData;
   initialAISettings: AIResponseSettingsFormData;
   onNext: (details: LocationDetailsFormData, aiSettings: AIResponseSettingsFormData) => Promise<void>;
@@ -27,7 +26,6 @@ interface ConfigureStepProps {
 
 export function ConfigureStep({
   location,
-  limits,
   initialLocationDetails,
   initialAISettings,
   onNext,
@@ -91,7 +89,7 @@ export function ConfigureStep({
             <Sparkles className="h-4 w-4 text-primary" />
             {t("aiSettings.title")}
           </h3>
-          <AIResponseSettingsForm values={aiSettings} onChange={handleAIChange} limits={limits} />
+          <AIResponseSettingsForm values={aiSettings} onChange={handleAIChange} />
         </div>
       </div>
     </OnboardingFormPanel>

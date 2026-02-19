@@ -1,6 +1,6 @@
 {
   "ignore": ["src/i18n/request.ts", "public/sw.js"],
-  "ignoreBinaries": ["stripe"],
+  "ignoreBinaries": [],
   "ignoreDependencies": [
     "@testing-library/dom",
     "@testing-library/react",

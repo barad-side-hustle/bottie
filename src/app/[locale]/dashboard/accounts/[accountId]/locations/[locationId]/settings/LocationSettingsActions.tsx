@@ -7,13 +7,11 @@ import LocationDetailsCard from "@/components/dashboard/locations/LocationDetail
 import { DeleteConfirmation } from "@/components/ui/delete-confirmation";
 import { disconnectLocation } from "@/lib/actions/locations.actions";
 import { sendRybbitEvent } from "@/lib/analytics";
-import type { PlanLimits } from "@/lib/subscriptions/plans";
 
 interface LocationSettingsActionsProps {
   location: Location;
   accountId: string;
   accountLocationId?: string;
-  limits: PlanLimits;
   translations: {
     disconnectLocation: string;
     disconnectConfirmation: string;
@@ -32,7 +30,6 @@ export function LocationSettingsActions({
   location,
   accountId,
   accountLocationId,
-  limits,
   translations,
 }: LocationSettingsActionsProps) {
   const router = useRouter();
@@ -55,7 +52,7 @@ export function LocationSettingsActions({
 
   return (
     <>
-      <LocationDetailsCard location={location} limits={limits} loading={loading} onUpdate={handleUpdate} />
+      <LocationDetailsCard location={location} loading={loading} onUpdate={handleUpdate} />
 
       {accountLocationId && (
         <DeleteConfirmation

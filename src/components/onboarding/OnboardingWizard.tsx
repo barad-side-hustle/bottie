@@ -4,7 +4,7 @@ import { useState, useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import type { Location, GoogleBusinessProfileLocation } from "@/lib/types";
-import type { PlanLimits } from "@/lib/subscriptions/plans";
+
 import type { LocationDetailsFormData } from "@/components/dashboard/locations/forms/LocationDetailsForm";
 import type { AIResponseSettingsFormData } from "@/components/dashboard/locations/forms/AIResponseSettingsForm";
 import type { StarRatingConfigFormData } from "@/components/dashboard/locations/forms/StarRatingConfigForm";
@@ -39,7 +39,6 @@ interface OnboardingWizardProps {
   initialLocationId: string | null;
   availableLocations: GoogleBusinessProfileLocation[] | null;
   location: Location | null;
-  limits: PlanLimits;
 }
 
 export function OnboardingWizard({
@@ -47,7 +46,6 @@ export function OnboardingWizard({
   initialLocationId,
   availableLocations,
   location,
-  limits,
 }: OnboardingWizardProps) {
   const t = useTranslations("onboarding");
 
@@ -134,11 +132,6 @@ export function OnboardingWizard({
         description: selectedLocation.description,
         photoUrl: selectedLocation.photoUrl,
       });
-
-      if ("error" in result) {
-        toast.error(result.error);
-        return;
-      }
 
       const { location: connectedLocation } = result;
 
@@ -252,7 +245,6 @@ export function OnboardingWizard({
         return (
           <ConfigureStep
             location={locationData!}
-            limits={limits}
             initialLocationDetails={initialLocationDetailsValue}
             initialAISettings={initialAISettingsValue}
             onNext={handleConfigureNext}

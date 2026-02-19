@@ -5,13 +5,11 @@ import { SubscriptionManagementCard } from "./SubscriptionManagementCard";
 import { PricingCards } from "./PricingCards";
 
 export function Pricing() {
-  const { subscription, planType, isActive } = useSubscription();
-
-  const hasActivePaidSubscription = isActive && planType !== "free" && subscription?.stripeSubscriptionId;
+  const { subscription, hasPaidSubscription } = useSubscription();
 
   return (
     <>
-      {hasActivePaidSubscription && subscription && <SubscriptionManagementCard subscription={subscription} />}
+      {hasPaidSubscription && subscription && <SubscriptionManagementCard />}
       <PricingCards />
     </>
   );

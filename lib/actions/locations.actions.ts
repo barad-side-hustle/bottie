@@ -2,8 +2,7 @@
 
 import { cache } from "react";
 import { z } from "zod";
-import { LocationsController, AccountLocationsController, SubscriptionsController } from "@/lib/controllers";
-import { ForbiddenError } from "@/lib/api/errors";
+import { LocationsController, AccountLocationsController } from "@/lib/controllers";
 import type { Location, LocationUpdate, AccountLocation } from "@/lib/types";
 import type { Location as DBLocation } from "@/lib/db/schema";
 import { getDefaultLocationConfig } from "@/lib/utils/location-config";
@@ -49,7 +48,6 @@ export const connectLocation = createSafeAction(
   }),
   async ({ accountId, ...locationFields }, { userId }) => {
     const controller = new AccountLocationsController(userId, accountId);
-    const subscriptionsController = new SubscriptionsController();
 
     const defaultConfig = getDefaultLocationConfig();
 
@@ -64,14 +62,7 @@ export const connectLocation = createSafeAction(
       starConfigs: defaultConfig.starConfigs,
     };
 
-    try {
-      return await controller.connectLocation(locationData, () => subscriptionsController.checkLocationLimit(userId));
-    } catch (error) {
-      if (error instanceof ForbiddenError) {
-        return { error: error.message };
-      }
-      throw error;
-    }
+    return await controller.connectLocation(locationData);
   }
 );
 

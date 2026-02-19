@@ -1,7 +1,7 @@
 import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db/client";
-import { user as userTable, subscriptions, locations, accountLocations, userAccounts, reviews } from "@/lib/db/schema";
+import { user as userTable, locations, accountLocations, userAccounts, reviews } from "@/lib/db/schema";
 import { eq, and, gte, lte } from "drizzle-orm";
 import { generateWeeklySummary, generateWeeklySummaryFromClassifications } from "@/lib/ai/summaries";
 import { WeeklySummariesRepository } from "@/lib/db/repositories/weekly-summaries.repository";
@@ -41,24 +41,25 @@ export async function GET(req: NextRequest) {
 
     console.log(`Running Weekly Summary Cron for period: ${lastSunday.toISOString()} to ${lastSaturday.toISOString()}`);
 
-    const proSubscriptions = await db
-      .select({
-        userId: subscriptions.userId,
+    const allUsers = await db
+      .selectDistinct({
+        userId: userAccounts.userId,
       })
-      .from(subscriptions)
-      .where(and(eq(subscriptions.status, "active"), eq(subscriptions.planTier, "pro")));
+      .from(userAccounts)
+      .innerJoin(accountLocations, eq(accountLocations.accountId, userAccounts.accountId))
+      .where(eq(accountLocations.connected, true));
 
-    const proUserIds = proSubscriptions.map((sub) => sub.userId);
+    const userIds = allUsers.map((u) => u.userId);
 
-    if (proUserIds.length === 0) {
-      return NextResponse.json({ message: "No pro users found" });
+    if (userIds.length === 0) {
+      return NextResponse.json({ message: "No users with connected locations found" });
     }
 
     let emailsSent = 0;
     let summariesGenerated = 0;
     const errors: { userId: string; error: string }[] = [];
 
-    for (const userId of proUserIds) {
+    for (const userId of userIds) {
       try {
         const userConfig = await usersConfigsRepo.get(userId);
         const isEnabled = userConfig?.configs?.WEEKLY_SUMMARY_ENABLED ?? false;
