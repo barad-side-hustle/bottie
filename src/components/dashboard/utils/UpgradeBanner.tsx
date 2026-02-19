@@ -2,9 +2,8 @@
 
 import { useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { Sparkles, X } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { useSubscription } from "@/hooks/use-subscription";
-import { useUIStore } from "@/lib/store/ui-store";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/routing";
 import { useSidebar } from "@/components/ui/sidebar";
@@ -14,20 +13,13 @@ export function UpgradeBanner() {
   const t = useTranslations("dashboard.components.upgradeBanner");
   const { planType, loading } = useSubscription();
   const router = useRouter();
-  const { dismissUpgradeBanner, shouldShowUpgradeBanner } = useUIStore();
   const { state } = useSidebar();
   const isCollapsed = state === "collapsed";
 
   const isVisible = useMemo(() => {
-    if (loading || planType !== "free") {
-      return false;
-    }
-    return shouldShowUpgradeBanner();
-  }, [loading, planType, shouldShowUpgradeBanner]);
-
-  const handleDismiss = () => {
-    dismissUpgradeBanner();
-  };
+    if (loading || planType !== "free") return false;
+    return true;
+  }, [loading, planType]);
 
   const handleUpgrade = () => {
     router.push("/");
@@ -52,15 +44,9 @@ export function UpgradeBanner() {
 
   return (
     <div className="rounded-lg border border-primary/20 bg-primary/5 p-3">
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex items-center gap-2">
-          <Sparkles className="size-4 shrink-0 text-primary" />
-          <h3 className="text-sm font-semibold text-foreground">{t("title")}</h3>
-        </div>
-        <Button variant="ghost" size="icon" onClick={handleDismiss} className="size-6 shrink-0 -me-1 -mt-1">
-          <X className="size-3.5" />
-          <span className="sr-only">{t("close")}</span>
-        </Button>
+      <div className="flex items-center gap-2">
+        <Sparkles className="size-4 shrink-0 text-primary" />
+        <h3 className="text-sm font-semibold text-foreground">{t("title")}</h3>
       </div>
       <p className="mt-1 text-xs text-muted-foreground">{t("description")}</p>
       <Button size="sm" onClick={handleUpgrade} className="mt-3 w-full">

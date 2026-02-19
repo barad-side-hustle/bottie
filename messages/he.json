@@ -764,7 +764,8 @@
       "trends": {
         "title": "מגמות לאורך זמן",
         "reviews": "ביקורות",
-        "rating": "דירוג"
+        "rating": "דירוג",
+        "average": "ממוצע"
       },
       "noCategories": "אין קטגוריות להצגה",
       "sections": {
