@@ -3,7 +3,7 @@ import { ImageResponse } from "next/og";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
-const THEME_COLOR = "#8b5cf6";
+const THEME_COLOR = "#0f74c5";
 
 const VALID_SIZES: Record<string, { dimension: number; maskable: boolean }> = {
   "192": { dimension: 192, maskable: false },
