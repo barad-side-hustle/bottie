@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { UserAvatarDropdown } from "@/components/auth/UserAvatarDropdown";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
@@ -16,7 +17,7 @@ export function AuthButton({ size = "sm", className }: AuthButtonProps) {
   const t = useTranslations("auth");
 
   if (loading) {
-    return null;
+    return <Skeleton className="h-8 w-20 rounded-md" />;
   }
 
   if (user) {
