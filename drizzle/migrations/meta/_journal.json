@@ -8,6 +8,13 @@
       "when": 1771421921413,
       "tag": "0000_dark_cargill",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1771516858317,
+      "tag": "0001_new_cassandra_nova",
+      "breakpoints": true
     }
   ]
 }

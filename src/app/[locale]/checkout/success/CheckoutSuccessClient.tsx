@@ -9,7 +9,6 @@ import { Loading } from "@/components/ui/loading";
 
 interface CheckoutSuccessClientProps {
   locale: string;
-  sessionId?: string;
 }
 
 export function CheckoutSuccessClient({ locale }: CheckoutSuccessClientProps) {
