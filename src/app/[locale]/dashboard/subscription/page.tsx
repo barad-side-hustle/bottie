@@ -30,6 +30,7 @@ export default async function SubscriptionPage({ params }: { params: Promise<{ l
           currentReviews={stats.reviews}
           reviewsPercent={stats.reviewsPercent}
           hasPaidSubscription={stats.hasPaidSubscription}
+          subscription={stats.subscription}
         />
 
         <div className="flex gap-3 flex-wrap">{!stats.hasPaidSubscription && <UpgradeButton />}</div>

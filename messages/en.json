@@ -511,6 +511,13 @@
         "reviewsCount": "{current} out of {max} replies",
         "reviewsUnlimited": "{current} replies used (unlimited)",
         "resetsOn": "Resets on {date}",
+        "costThisMonth": "Cost This Month",
+        "pricePerReply": "Price Per Reply",
+        "daysUntilReset": "Days Until Reset",
+        "memberSince": "Member Since",
+        "freeRepliesLeft": "Free ({remaining} left)",
+        "perReply": "/reply",
+        "days": "{count} days",
         "plans": {
           "free": "Free",
           "paid": "Pay-as-you-go"

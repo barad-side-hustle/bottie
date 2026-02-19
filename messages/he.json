@@ -622,6 +622,13 @@
         "reviewsCount": "{current} מתוך {max} תגובות",
         "reviewsUnlimited": "{current} תגובות בשימוש (ללא הגבלה)",
         "resetsOn": "מתאפס ב-{date}",
+        "costThisMonth": "עלות החודש",
+        "pricePerReply": "מחיר לתגובה",
+        "daysUntilReset": "ימים עד איפוס",
+        "memberSince": "חבר מאז",
+        "freeRepliesLeft": "חינם ({remaining} נותרו)",
+        "perReply": "/תגובה",
+        "days": "{count} ימים",
         "plans": {
           "free": "חינם",
           "paid": "תשלום לפי שימוש"
