@@ -1004,6 +1004,19 @@
       "description": "Customize automatic responses according to rating level",
       "successMessage": "Settings saved successfully!",
       "errorMessage": "Unable to save settings"
+    },
+    "importProgress": {
+      "title": "Importing Your Reviews",
+      "description": "We're importing your existing Google reviews. This will only take a moment.",
+      "completeTitle": "All Set!",
+      "completeDescription": "Your reviews have been imported successfully.",
+      "preparingImport": "Preparing import...",
+      "importingCount": "{imported} of {total} reviews imported",
+      "pleaseWait": "Please wait while we import your reviews...",
+      "importComplete": "{count} reviews imported successfully!",
+      "redirecting": "Redirecting to your dashboard...",
+      "errorDescription": "We couldn't import your reviews right now, but you can still continue to the dashboard.",
+      "skipToDashboard": "Go to Dashboard"
     }
   },
   "emails": {

@@ -13,7 +13,8 @@ import { useOnboardingStore } from "@/lib/store/onboarding-store";
 import { OnboardingCard } from "@/components/onboarding/OnboardingCard";
 import { useTranslations } from "next-intl";
 import { updateLocationConfig } from "@/lib/actions/locations.actions";
-import { triggerReviewImport, updateOnboardingStatus } from "@/lib/actions/onboarding.actions";
+import { updateOnboardingStatus } from "@/lib/actions/onboarding.actions";
+import { ReviewImportProgress } from "@/components/onboarding/ReviewImportProgress";
 
 interface StarRatingsWrapperProps {
   accountId: string;
@@ -42,6 +43,7 @@ export function StarRatingsWrapper({ accountId, locationId }: StarRatingsWrapper
   });
 
   const [saving, setSaving] = useState(false);
+  const [showImport, setShowImport] = useState(false);
 
   useEffect(() => {
     setAccountId(accountId);
@@ -71,15 +73,11 @@ export function StarRatingsWrapper({ accountId, locationId }: StarRatingsWrapper
 
       await updateLocationConfig({ locationId, config });
 
-      triggerReviewImport(accountId, locationId).catch((error) => {
-        console.error("Failed to trigger review import:", error);
-      });
-
       await updateOnboardingStatus(true);
 
       reset();
 
-      router.push("/dashboard/home");
+      setShowImport(true);
     } catch (error) {
       console.error("Error saving configuration:", error);
       toast.error(t("errorMessage"));
@@ -87,6 +85,10 @@ export function StarRatingsWrapper({ accountId, locationId }: StarRatingsWrapper
       setSaving(false);
     }
   };
+
+  if (showImport) {
+    return <ReviewImportProgress accountId={accountId} locationId={locationId} />;
+  }
 
   return (
     <OnboardingCard

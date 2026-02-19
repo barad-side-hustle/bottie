@@ -36,7 +36,7 @@ export function ChooseLocationForm({ accountId, availableLocations }: ChooseLoca
     try {
       setConnecting(true);
 
-      const { location } = await connectLocation({
+      const result = await connectLocation({
         accountId,
         googleBusinessId: selectedLocation.id,
         name: selectedLocation.name,
@@ -52,6 +52,13 @@ export function ChooseLocationForm({ accountId, availableLocations }: ChooseLoca
         description: selectedLocation.description,
         photoUrl: selectedLocation.photoUrl,
       });
+
+      if ("error" in result) {
+        toast.error(result.error);
+        return;
+      }
+
+      const { location } = result;
 
       try {
         await subscribeToGoogleNotifications({ accountId });

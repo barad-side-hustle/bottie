@@ -1018,6 +1018,19 @@
       "description": "התאם אישית את התגובות האוטומטיות לפי רמת הדירוג",
       "successMessage": "ההגדרות נשמרו בהצלחה!",
       "errorMessage": "לא ניתן לשמור את ההגדרות"
+    },
+    "importProgress": {
+      "title": "מייבאים את הביקורות שלך",
+      "description": "אנחנו מייבאים את הביקורות הקיימות שלך מגוגל. זה ייקח רק רגע.",
+      "completeTitle": "הכל מוכן!",
+      "completeDescription": "הביקורות שלך יובאו בהצלחה.",
+      "preparingImport": "מכינים את הייבוא...",
+      "importingCount": "{imported} מתוך {total} ביקורות יובאו",
+      "pleaseWait": "נא להמתין בזמן שאנחנו מייבאים את הביקורות...",
+      "importComplete": "{count} ביקורות יובאו בהצלחה!",
+      "redirecting": "מועברים ללוח הבקרה...",
+      "errorDescription": "לא הצלחנו לייבא את הביקורות כרגע, אבל עדיין ניתן להמשיך ללוח הבקרה.",
+      "skipToDashboard": "עבור ללוח הבקרה"
     }
   },
   "emails": {

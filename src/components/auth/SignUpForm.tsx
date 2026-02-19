@@ -16,10 +16,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "@/i18n/routing";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 
 export function SignUpForm() {
   const t = useTranslations("auth.signUpPage");
+  const locale = useLocale();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -34,7 +35,7 @@ export function SignUpForm() {
 
     const { error } = await authClient.signIn.social({
       provider: "google",
-      callbackURL: "/dashboard/home",
+      callbackURL: `/${locale}/dashboard/home`,
     });
 
     if (error) {

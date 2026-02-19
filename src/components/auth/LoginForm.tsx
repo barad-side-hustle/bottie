@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
+import { useLocale } from "next-intl";
 import { authClient } from "@/lib/auth-client";
 import {
   DashboardCard,
@@ -16,12 +16,13 @@ import { GoogleSsoButton } from "@/components/ui/google-sso-button";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link } from "@/i18n/routing";
+import { Link, useRouter } from "@/i18n/routing";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 
 export function LoginForm() {
   const t = useTranslations("auth.loginPage");
+  const locale = useLocale();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -35,7 +36,7 @@ export function LoginForm() {
 
     const { error } = await authClient.signIn.social({
       provider: "google",
-      callbackURL: "/dashboard/home",
+      callbackURL: `/${locale}/dashboard/home`,
     });
 
     if (error) {

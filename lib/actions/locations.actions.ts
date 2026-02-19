@@ -3,6 +3,7 @@
 import { cache } from "react";
 import { z } from "zod";
 import { LocationsController, AccountLocationsController, SubscriptionsController } from "@/lib/controllers";
+import { ForbiddenError } from "@/lib/api/errors";
 import type { Location, LocationUpdate, AccountLocation } from "@/lib/types";
 import type { Location as DBLocation } from "@/lib/db/schema";
 import { getDefaultLocationConfig } from "@/lib/utils/location-config";
@@ -63,7 +64,14 @@ export const connectLocation = createSafeAction(
       starConfigs: defaultConfig.starConfigs,
     };
 
-    return await controller.connectLocation(locationData, () => subscriptionsController.checkLocationLimit(userId));
+    try {
+      return await controller.connectLocation(locationData, () => subscriptionsController.checkLocationLimit(userId));
+    } catch (error) {
+      if (error instanceof ForbiddenError) {
+        return { error: error.message };
+      }
+      throw error;
+    }
   }
 );
 
