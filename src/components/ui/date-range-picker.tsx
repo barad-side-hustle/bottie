@@ -148,13 +148,13 @@ export function DateRangePicker({
   if (isMobile && showPresets) {
     return (
       <div className={cn("grid gap-2", className)}>
-        <Drawer open={isOpen} onOpenChange={setIsOpen}>
+        <Drawer open={isOpen} onOpenChange={setIsOpen} handleOnly>
           <DrawerTrigger asChild>{Trigger}</DrawerTrigger>
           <DrawerContent>
             <DrawerHeader className="text-start">
               <DrawerTitle>{title || "Select Date Range"}</DrawerTitle>
             </DrawerHeader>
-            <div className="p-4 pb-8 space-y-4">
+            <div className="p-4 pb-8 space-y-4" data-vaul-no-drag>
               {PresetsSection}
               <div className="pt-4">{MobileCalendarSection}</div>
             </div>

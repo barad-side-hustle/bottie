@@ -24,7 +24,6 @@ export function StarRatingConfigForm({
   disabled = false,
 }: StarRatingConfigFormProps) {
   const t = useTranslations("dashboard.businesses.forms.starRatings");
-  const tCommon = useTranslations("common");
 
   return (
     <div className="space-y-6 overflow-y-auto max-h-[60vh]">
@@ -37,11 +36,7 @@ export function StarRatingConfigForm({
               <div className="flex items-center gap-3">
                 <div className="flex items-center gap-2">
                   {showTooltips && (
-                    <TooltipIcon
-                      text={t("autoReply.tooltip")}
-                      additionalInfoLabel={t("autoReply.label")}
-                      closeLabel={tCommon("close")}
-                    />
+                    <TooltipIcon text={t("autoReply.tooltip")} additionalInfoLabel={t("autoReply.label")} />
                   )}
                   <Label htmlFor={`auto-reply-${rating}`} className="text-sm font-medium cursor-pointer">
                     {t("autoReply.label")}
@@ -68,7 +63,6 @@ export function StarRatingConfigForm({
                   <TooltipIcon
                     text={t("customInstructions.tooltip")}
                     additionalInfoLabel={t("customInstructions.label")}
-                    closeLabel={tCommon("close")}
                   />
                 )}
                 <Label htmlFor={`instructions-${rating}`}>{t("customInstructions.label")}</Label>

@@ -29,7 +29,7 @@ export function LocationDetailsForm({
   locationNamePlaceholder,
 }: LocationDetailsFormProps) {
   const t = useTranslations("dashboard.businesses.forms.businessDetails");
-  const tCommon = useTranslations("common");
+
   const locale = useLocale() as Locale;
   const dir = getLocaleDir(locale);
 
@@ -37,9 +37,7 @@ export function LocationDetailsForm({
     <div className="space-y-6" dir={dir}>
       <div className="space-y-2">
         <div className="flex items-center gap-2">
-          {showTooltips && (
-            <TooltipIcon text={t("name.tooltip")} additionalInfoLabel={t("name.label")} closeLabel={tCommon("close")} />
-          )}
+          {showTooltips && <TooltipIcon text={t("name.tooltip")} additionalInfoLabel={t("name.label")} />}
           <Label htmlFor="locationName">{t("name.label")}</Label>
         </div>
         <Input
@@ -56,13 +54,7 @@ export function LocationDetailsForm({
 
       <div className="space-y-2">
         <div className="flex items-center gap-2">
-          {showTooltips && (
-            <TooltipIcon
-              text={t("description.tooltip")}
-              additionalInfoLabel={t("description.label")}
-              closeLabel={tCommon("close")}
-            />
-          )}
+          {showTooltips && <TooltipIcon text={t("description.tooltip")} additionalInfoLabel={t("description.label")} />}
           <Label htmlFor="locationDescription">{t("description.label")}</Label>
         </div>
         <Textarea
@@ -80,13 +72,7 @@ export function LocationDetailsForm({
 
       <div className="space-y-2">
         <div className="flex items-center gap-2">
-          {showTooltips && (
-            <TooltipIcon
-              text={t("phone.tooltip")}
-              additionalInfoLabel={t("phone.label")}
-              closeLabel={tCommon("close")}
-            />
-          )}
+          {showTooltips && <TooltipIcon text={t("phone.tooltip")} additionalInfoLabel={t("phone.label")} />}
           <Label htmlFor="locationPhone">{t("phone.label")}</Label>
         </div>
         <Input

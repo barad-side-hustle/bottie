@@ -19,6 +19,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarSeparator,
+  useSidebar,
 } from "@/components/ui/sidebar";
 
 export function AppSidebar() {
@@ -89,6 +90,7 @@ function SidebarNavLink({
   t: ReturnType<typeof useTranslations>;
 }) {
   const { dir } = useDirection();
+  const { isMobile, setOpenMobile } = useSidebar();
   const href = resolveHref(item, locationCtx);
   if (!href) return null;
 
@@ -102,7 +104,7 @@ function SidebarNavLink({
         isActive={isActive}
         tooltip={{ children: t(item.label), side: dir === "rtl" ? "left" : "right" }}
       >
-        <Link href={href}>
+        <Link href={href} onClick={() => isMobile && setOpenMobile(false)}>
           <Icon />
           <span>{t(item.label)}</span>
         </Link>

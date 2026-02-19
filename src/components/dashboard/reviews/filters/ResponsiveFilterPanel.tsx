@@ -58,7 +58,7 @@ export function ResponsiveFilterPanel({
     return (
       <Popover open={open} onOpenChange={onOpenChange}>
         <PopoverTrigger asChild>{Trigger}</PopoverTrigger>
-        <PopoverContent className="w-[350px] p-4" align="start">
+        <PopoverContent className="w-[400px] p-4" align="start">
           {children}
         </PopoverContent>
       </Popover>

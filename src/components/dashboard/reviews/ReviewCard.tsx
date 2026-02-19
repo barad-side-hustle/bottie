@@ -35,7 +35,7 @@ interface ReviewCardProps {
 
 export function ReviewCard({ review, accountId, userId, locationId, onUpdate }: ReviewCardProps) {
   const t = useTranslations("dashboard.reviews.card");
-  const tCommon = useTranslations("common");
+
   const format = useFormatter();
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
@@ -143,11 +143,7 @@ export function ReviewCard({ review, accountId, userId, locationId, onUpdate }: 
                         day: "numeric",
                       })}
                     </p>
-                    <TooltipIcon
-                      text={t("dateTooltip")}
-                      additionalInfoLabel={t("reviewDateLabel")}
-                      closeLabel={tCommon("close")}
-                    />
+                    <TooltipIcon text={t("dateTooltip")} additionalInfoLabel={t("reviewDateLabel")} />
                   </div>
                 </div>
               </div>
@@ -180,11 +176,7 @@ export function ReviewCard({ review, accountId, userId, locationId, onUpdate }: 
                         day: "numeric",
                       })}
                     </span>
-                    <TooltipIcon
-                      text={t("replyDateTooltip")}
-                      additionalInfoLabel={t("replyDateLabel")}
-                      closeLabel={tCommon("close")}
-                    />
+                    <TooltipIcon text={t("replyDateTooltip")} additionalInfoLabel={t("replyDateLabel")} />
                   </div>
                 )}
               </div>
