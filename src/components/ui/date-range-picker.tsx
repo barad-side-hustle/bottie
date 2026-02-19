@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 interface DateRangePickerProps {
@@ -148,18 +148,18 @@ export function DateRangePicker({
   if (isMobile && showPresets) {
     return (
       <div className={cn("grid gap-2", className)}>
-        <Drawer open={isOpen} onOpenChange={setIsOpen} handleOnly>
-          <DrawerTrigger asChild>{Trigger}</DrawerTrigger>
-          <DrawerContent>
-            <DrawerHeader className="text-start">
-              <DrawerTitle>{title || "Select Date Range"}</DrawerTitle>
-            </DrawerHeader>
-            <div className="p-4 pb-8 space-y-4" data-vaul-no-drag>
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+          <DialogTrigger asChild>{Trigger}</DialogTrigger>
+          <DialogContent className="max-w-[calc(100%-2rem)] p-0 gap-0">
+            <DialogHeader className="p-4 pb-0 text-start">
+              <DialogTitle>{title || "Select Date Range"}</DialogTitle>
+            </DialogHeader>
+            <div className="p-4 space-y-4">
               {PresetsSection}
               <div className="pt-4">{MobileCalendarSection}</div>
             </div>
-          </DrawerContent>
-        </Drawer>
+          </DialogContent>
+        </Dialog>
       </div>
     );
   }

@@ -29,7 +29,7 @@ export function AppSidebar() {
   const locationCtx = useActiveLocation();
 
   return (
-    <Sidebar side={dir === "rtl" ? "right" : "left"} collapsible="icon" dir={dir}>
+    <Sidebar side={dir === "rtl" ? "right" : "left"} variant="floating" collapsible="icon" dir={dir}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
