@@ -329,3 +329,115 @@ html {
 .animate-onboarding-pulse-dot {
   animation: onboarding-pulse-dot 2s ease-in-out infinite;
 }
+
+/* Hero section animations */
+@keyframes hero-float {
+  0%,
+  100% {
+    transform: translateY(0) translateX(0);
+  }
+  25% {
+    transform: translateY(-20px) translateX(10px);
+  }
+  50% {
+    transform: translateY(-10px) translateX(-5px);
+  }
+  75% {
+    transform: translateY(-25px) translateX(8px);
+  }
+}
+
+@keyframes hero-float-reverse {
+  0%,
+  100% {
+    transform: translateY(0) translateX(0);
+  }
+  25% {
+    transform: translateY(15px) translateX(-8px);
+  }
+  50% {
+    transform: translateY(5px) translateX(12px);
+  }
+  75% {
+    transform: translateY(20px) translateX(-6px);
+  }
+}
+
+@keyframes hero-card-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes hero-typing-cursor {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes hero-fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes hero-pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+.animate-hero-float {
+  animation: hero-float 8s ease-in-out infinite;
+}
+
+.animate-hero-float-reverse {
+  animation: hero-float-reverse 10s ease-in-out infinite;
+}
+
+.animate-hero-card-float {
+  animation: hero-card-float 4s ease-in-out infinite;
+}
+
+.animate-hero-typing-cursor {
+  animation: hero-typing-cursor 1s ease-in-out infinite;
+}
+
+.animate-hero-fade-in-up {
+  animation: hero-fade-in-up 0.6s ease-out both;
+}
+
+.animate-hero-pulse-ring {
+  animation: hero-pulse-ring 2s ease-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-hero-float,
+  .animate-hero-float-reverse,
+  .animate-hero-card-float,
+  .animate-hero-typing-cursor,
+  .animate-hero-pulse-ring {
+    animation: none;
+  }
+  .animate-hero-fade-in-up {
+    animation-duration: 0.01s;
+  }
+}

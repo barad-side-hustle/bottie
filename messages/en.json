@@ -91,16 +91,29 @@
     "hero": {
       "title": "Professional Responses to Reviews",
       "titleHighlight": "Automatically",
-      "subtitle": "Automatically",
       "description": "Save valuable time and respond to every review in a personal and professional manner with the power of artificial intelligence. Maintain your brand voice and improve business reputation.",
+      "badge": "AI-Powered",
       "cta": "Start Now for Free",
+      "ctaSecondary": "See How It Works",
       "badge1": "Completely Free",
       "badge2": "No Commitment",
       "illustration": {
         "averageRating": "Average Rating",
-        "reviewSample": "Amazing tool! Saved me hours.",
         "responseRate": "Response Rate",
-        "days": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        "card1": {
+          "name": "Sarah M.",
+          "text": "Great service! The team was incredibly helpful and professional.",
+          "response": "Thank you so much, Sarah! We truly appreciate your kind words and are thrilled to hear about your experience."
+        },
+        "card2": {
+          "name": "David K.",
+          "text": "Amazing food and atmosphere. Will definitely come back!",
+          "response": "Thank you, David! We're so glad you enjoyed it."
+        },
+        "card3": {
+          "name": "Rachel L.",
+          "text": "Best experience I've had. Highly recommend to everyone!"
+        }
       }
     },
     "stats": {
