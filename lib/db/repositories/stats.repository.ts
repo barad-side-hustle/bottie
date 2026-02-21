@@ -1,7 +1,13 @@
 import { eq, and, gte, countDistinct, count, avg, sql } from "drizzle-orm";
 import { db } from "@/lib/db/client";
-import { accountLocations, locations, reviews, userAccounts } from "@/lib/db/schema";
+import { accountLocations, locations, reviews, reviewResponses, userAccounts } from "@/lib/db/schema";
 import { startOfMonth } from "date-fns";
+
+interface GlobalStats {
+  totalLocations: number;
+  totalAiResponses: number;
+  averageRating: number | null;
+}
 
 export interface LocationSummary {
   locationId: string;
@@ -13,6 +19,23 @@ export interface LocationSummary {
 }
 
 export class StatsRepository {
+  static async getGlobalStats(): Promise<GlobalStats> {
+    const [locationsResult, responsesResult, reviewsResult] = await Promise.all([
+      db
+        .select({ count: countDistinct(accountLocations.locationId) })
+        .from(accountLocations)
+        .where(eq(accountLocations.connected, true)),
+      db.select({ count: count() }).from(reviewResponses).where(eq(reviewResponses.type, "ai_generated")),
+      db.select({ avgRating: avg(reviews.rating) }).from(reviews),
+    ]);
+
+    return {
+      totalLocations: locationsResult[0]?.count || 0,
+      totalAiResponses: Number(responsesResult[0]?.count) || 0,
+      averageRating: reviewsResult[0]?.avgRating ? parseFloat(reviewsResult[0].avgRating) : null,
+    };
+  }
+
   async countUserLocations(userId: string): Promise<number> {
     const result = await db
       .select({ count: countDistinct(accountLocations.locationId) })

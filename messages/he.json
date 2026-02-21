@@ -103,9 +103,9 @@
       }
     },
     "stats": {
-      "businesses": "עסקים",
-      "responses": "תשובות שנוצרו",
-      "satisfaction": "שביעות רצון לקוחות",
+      "businesses": "עסקים מחוברים",
+      "responses": "תשובות AI שנוצרו",
+      "avgRating": "דירוג ממוצע",
       "hoursSaved": "שעות שנחסכו"
     },
     "testimonials": {
