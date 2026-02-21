@@ -116,11 +116,11 @@ export function CategoryReviewsModal({
                   <div className="flex items-center gap-3">
                     <Avatar className="h-10 w-10 shrink-0">
                       <AvatarImage src={review.photoUrl || undefined} alt={`${review.name} profile`} />
-                      <AvatarFallback className="bg-muted">
+                      <AvatarFallback className="bg-primary/10">
                         {review.photoUrl ? (
-                          <User className="h-5 w-5 text-muted-foreground" />
+                          <User className="h-5 w-5 text-primary" />
                         ) : (
-                          <span className="text-sm font-medium text-muted-foreground">{getInitials(review.name)}</span>
+                          <span className="text-sm font-medium text-primary">{getInitials(review.name)}</span>
                         )}
                       </AvatarFallback>
                     </Avatar>

@@ -3,22 +3,15 @@
 import { useState } from "react";
 import { ReplyStatus } from "@/lib/types";
 import { StarRating } from "@/components/ui/StarRating";
-import {
-  DashboardCard,
-  DashboardCardHeader,
-  DashboardCardContent,
-  DashboardCardSection,
-  DashboardCardFooter,
-} from "@/components/ui/dashboard-card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { TooltipIcon } from "@/components/ui/tooltip";
+import { TooltipIcon, Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
 import { postReviewReply, generateReviewReply } from "@/lib/actions/reviews.actions";
 import { useAuth } from "@/contexts/AuthContext";
 import { ReplyEditor } from "@/components/dashboard/reviews/ReplyEditor";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
-import { User, Bot, Sparkles } from "lucide-react";
+import { User, Bot, RotateCcw, Pencil, Send } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import { useTranslations, useFormatter } from "next-intl";
@@ -122,20 +115,23 @@ export function ReviewCard({ review, accountId, userId, locationId, onUpdate }: 
     }
   };
 
+  const hasActions =
+    review.replyStatus === "pending" || review.replyStatus === "failed" || review.replyStatus === "posted";
+
   return (
     <>
-      <DashboardCard className="w-full">
-        <DashboardCardHeader className="pb-3">
+      <div className="w-full rounded-2xl border border-border/40 bg-card p-5 sm:p-6">
+        <div className="space-y-3">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center justify-between gap-2 w-full sm:w-auto sm:flex-1">
-              <div className="flex items-center gap-2 min-w-0">
+              <div className="flex items-center gap-3 min-w-0">
                 <Avatar className="h-10 w-10 shrink-0">
                   <AvatarImage src={review.photoUrl || undefined} alt={`${review.name} profile`} />
-                  <AvatarFallback className="bg-muted">
+                  <AvatarFallback className="bg-primary/10">
                     {review.photoUrl ? (
-                      <User className="h-5 w-5 text-muted-foreground" />
+                      <User className="h-5 w-5 text-primary" />
                     ) : (
-                      <span className="text-sm font-medium text-muted-foreground">{getInitials(review.name)}</span>
+                      <span className="text-sm font-medium text-primary">{getInitials(review.name)}</span>
                     )}
                   </AvatarFallback>
                 </Avatar>
@@ -155,26 +151,25 @@ export function ReviewCard({ review, accountId, userId, locationId, onUpdate }: 
               </div>
               <div className="sm:hidden">{getStatusBadge(review)}</div>
             </div>
-            <div className="flex items-center gap-2 sm:gap-2">
+            <div className="flex items-center gap-2">
               <StarRating rating={review.rating} size={18} />
               <div className="hidden sm:block">{getStatusBadge(review)}</div>
             </div>
           </div>
-        </DashboardCardHeader>
 
-        <DashboardCardContent className="space-y-4">
           <p className={cn("text-sm leading-relaxed", !review.text && "italic text-muted-foreground")}>
             {review.text || t("noText")}
           </p>
 
           {review.latestAiReply && (
-            <DashboardCardSection withBorder={!!review.text}>
-              <div className="flex items-center justify-between mb-2">
+            <div>
+              <div className="flex items-center gap-1.5 mb-2">
                 <span className="text-xs font-medium text-muted-foreground">
                   {review.latestAiReplyType === "imported" ? t("externalReplyLabel") : t("aiReplyLabel")}
                 </span>
                 {review.replyStatus === "posted" && review.latestAiReplyPostedAt && (
-                  <div className="flex items-center gap-1">
+                  <>
+                    <span className="text-xs text-muted-foreground/60">&middot;</span>
                     <span className="text-xs text-muted-foreground">
                       {format.dateTime(new Date(review.latestAiReplyPostedAt), {
                         year: "numeric",
@@ -183,7 +178,7 @@ export function ReviewCard({ review, accountId, userId, locationId, onUpdate }: 
                       })}
                     </span>
                     <TooltipIcon text={t("replyDateTooltip")} additionalInfoLabel={t("replyDateLabel")} />
-                  </div>
+                  </>
                 )}
               </div>
               <div className="border-s-2 border-primary/30 ps-3">
@@ -196,58 +191,76 @@ export function ReviewCard({ review, accountId, userId, locationId, onUpdate }: 
                   <p className="text-sm leading-relaxed">{review.latestAiReply}</p>
                 )}
               </div>
-            </DashboardCardSection>
-          )}
-        </DashboardCardContent>
-
-        <DashboardCardFooter className="flex-col sm:flex-row">
-          {(review.replyStatus === "pending" || review.replyStatus === "failed" || review.replyStatus === "posted") && (
-            <div className="flex flex-col-reverse sm:flex-row gap-2 w-full sm:w-auto">
-              <div className="flex gap-2">
-                <Button
-                  type="button"
-                  onClick={handleRegenerate}
-                  disabled={isLoading}
-                  size="sm"
-                  variant="outline"
-                  className="flex-1 sm:flex-none"
-                >
-                  <Sparkles className="h-4 w-4 me-2" />
-                  {t("actions.regenerate")}
-                </Button>
-                <Button
-                  type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setShowEditor(true);
-                  }}
-                  disabled={isLoading}
-                  size="sm"
-                  variant="outline"
-                  className="flex-1 sm:flex-none"
-                >
-                  {t("actions.edit")}
-                </Button>
-              </div>
-              <Button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setShowPublishDialog(true);
-                }}
-                disabled={isLoading}
-                size="sm"
-                variant="default"
-                className="w-full sm:w-auto"
-              >
-                {review.replyStatus === "posted" ? t("actions.update") : t("actions.publish")}
-              </Button>
             </div>
           )}
-        </DashboardCardFooter>
-      </DashboardCard>
+
+          {hasActions && (
+            <div className="flex items-center justify-end gap-1">
+              <TooltipProvider delayDuration={300}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      type="button"
+                      onClick={handleRegenerate}
+                      disabled={isLoading}
+                      size="icon"
+                      variant="ghost"
+                      aria-label={t("actions.regenerate")}
+                    >
+                      <RotateCcw className="size-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>{t("actions.regenerate")}</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider delayDuration={300}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setShowEditor(true);
+                      }}
+                      disabled={isLoading}
+                      size="icon"
+                      variant="ghost"
+                      aria-label={t("actions.edit")}
+                    >
+                      <Pencil className="size-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>{t("actions.edit")}</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <TooltipProvider delayDuration={300}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setShowPublishDialog(true);
+                      }}
+                      disabled={isLoading}
+                      size="icon"
+                      variant="default"
+                      aria-label={review.replyStatus === "posted" ? t("actions.update") : t("actions.publish")}
+                    >
+                      <Send className="size-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    {review.replyStatus === "posted" ? t("actions.update") : t("actions.publish")}
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+          )}
+        </div>
+      </div>
 
       <ReplyEditor
         review={review}
@@ -273,7 +286,7 @@ export function ReviewCard({ review, accountId, userId, locationId, onUpdate }: 
               <div className="flex items-center gap-2 text-sm">
                 <span className="font-medium">{t("publishDialog.reviewer")}</span>
                 <span>{review.name}</span>
-                <span>•</span>
+                <span>&middot;</span>
                 <StarRating rating={review.rating} size={14} />
               </div>
               <div className="text-sm">

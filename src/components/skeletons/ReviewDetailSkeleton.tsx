@@ -1,6 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { PageContainer } from "@/components/layout/PageContainer";
-import { DashboardCard } from "@/components/ui/dashboard-card";
 
 export function ReviewDetailSkeleton() {
   return (
@@ -15,10 +14,10 @@ export function ReviewDetailSkeleton() {
       </div>
 
       <div className="mt-6">
-        <DashboardCard>
-          <div className="p-6 pb-3">
+        <div className="rounded-2xl border border-border/40 bg-card p-5 sm:p-6">
+          <div className="space-y-3">
             <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2 min-w-0 flex-1">
+              <div className="flex items-center gap-3 min-w-0 flex-1">
                 <Skeleton className="h-10 w-10 rounded-full shrink-0" />
                 <Skeleton className="h-5 w-32" />
               </div>
@@ -27,35 +26,29 @@ export function ReviewDetailSkeleton() {
                 <Skeleton className="h-5 w-20 rounded-full" />
               </div>
             </div>
-          </div>
 
-          <div className="px-6 pb-6 space-y-4">
-            <div>
-              <Skeleton className="h-3 w-16 mb-2" />
-              <div className="rounded-md bg-muted/50 p-3 space-y-2">
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-3/4" />
-              </div>
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-full" />
+              <Skeleton className="h-4 w-3/4" />
             </div>
 
-            <div className="border-t border-border/40 pt-4">
+            <div>
               <Skeleton className="h-3 w-20 mb-2" />
-              <div className="rounded-md border border-primary/20 bg-primary/5 p-3 space-y-2">
+              <div className="border-s-2 border-primary/30 ps-3 space-y-2">
                 <Skeleton className="h-4 w-full" />
                 <Skeleton className="h-4 w-full" />
                 <Skeleton className="h-4 w-2/3" />
               </div>
             </div>
-          </div>
 
-          <div className="flex items-center justify-end gap-2 p-6 pt-4 border-t border-border/40">
-            <Skeleton className="h-9 w-20" />
-            <Skeleton className="h-9 w-24" />
-            <Skeleton className="h-9 w-16" />
-            <Skeleton className="h-9 w-20" />
+            <div className="flex items-center justify-end gap-1">
+              <Skeleton className="h-9 w-9 rounded-md" />
+              <Skeleton className="h-9 w-9 rounded-md" />
+              <Skeleton className="h-8 w-20 rounded-md ms-2" />
+            </div>
           </div>
-        </DashboardCard>
+        </div>
       </div>
     </PageContainer>
   );

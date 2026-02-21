@@ -7,7 +7,6 @@ import { ReviewCard } from "@/components/dashboard/reviews/ReviewCard";
 import { getReviews } from "@/lib/actions/reviews.actions";
 import { useInView } from "react-intersection-observer";
 import { Skeleton } from "@/components/ui/skeleton";
-import { DashboardCard, DashboardCardHeader, DashboardCardContent } from "@/components/ui/dashboard-card";
 import type { ReviewWithLatestGeneration } from "@/lib/db/repositories";
 import { parseFiltersFromSearchParams } from "@/lib/utils/filter-utils";
 
@@ -99,10 +98,10 @@ export function ReviewsList({ reviews: initialReviews, accountId, locationId, us
 
 function ReviewCardSkeleton() {
   return (
-    <DashboardCard className="w-full">
-      <DashboardCardHeader className="pb-3">
+    <div className="w-full rounded-2xl border border-border/40 bg-card p-5 sm:p-6">
+      <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <Skeleton className="h-10 w-10 rounded-full" />
             <div className="space-y-1.5">
               <Skeleton className="h-4 w-28" />
@@ -114,8 +113,6 @@ function ReviewCardSkeleton() {
             <Skeleton className="h-5 w-16 rounded-full" />
           </div>
         </div>
-      </DashboardCardHeader>
-      <DashboardCardContent className="space-y-4">
         <div className="space-y-2">
           <Skeleton className="h-4 w-full" />
           <Skeleton className="h-4 w-3/4" />
@@ -127,7 +124,12 @@ function ReviewCardSkeleton() {
             <Skeleton className="h-4 w-2/3" />
           </div>
         </div>
-      </DashboardCardContent>
-    </DashboardCard>
+        <div className="flex items-center justify-end gap-1">
+          <Skeleton className="h-9 w-9 rounded-md" />
+          <Skeleton className="h-9 w-9 rounded-md" />
+          <Skeleton className="h-8 w-20 rounded-md ms-2" />
+        </div>
+      </div>
+    </div>
   );
 }

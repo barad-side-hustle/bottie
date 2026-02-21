@@ -90,7 +90,5 @@ export {
   DashboardCardTitle,
   DashboardCardDescription,
   DashboardCardContent,
-  DashboardCardSection,
-  DashboardCardFooter,
   DashboardCardField,
 };
