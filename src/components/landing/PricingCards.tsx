@@ -58,7 +58,6 @@ export function PricingCards() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-6 max-w-4xl mx-auto">
-
           <div className="relative p-8 flex flex-col rounded-2xl border border-border/60 bg-primary/[0.03] shadow-sm">
             <div className="mb-6">
               <h3 className="text-2xl font-bold text-foreground mb-2">{t("plans.free.name")}</h3>
