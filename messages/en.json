@@ -608,6 +608,13 @@
           "postedUser": "Posted by User",
           "postedAi": "Posted by AI"
         },
+        "statusDescription": {
+          "pending": "AI generated a reply waiting for your approval before publishing",
+          "posted": "Reply has been published to Google",
+          "rejected": "You rejected the AI reply. You can regenerate a new one",
+          "failed": "Failed to generate or publish the reply. Try again",
+          "quotaExceeded": "Monthly reply quota reached. Upgrade for more"
+        },
         "reviewLabel": "Review",
         "noText": "(no text)",
         "imported": "Imported",

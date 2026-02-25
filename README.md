@@ -7,55 +7,54 @@ RevYou (also known as Bottie.ai) is a SaaS platform that automates responses to 
 ![Project Status](https://img.shields.io/badge/status-active-success.svg)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
-## 🚀 Features
+## Features
 
-### 🤖 AI-Powered Review Responses
+### AI-Powered Review Responses
 
-- **Smart AI Generation**: Powered by **Google Gemini 3.0 Flash Preview** for natural, context-aware replies.
+- **Smart AI Generation**: Powered by Google Gemini for natural, context-aware replies with review classification.
 - **Customizable Tone**: Choose from Professional, Friendly, Formal, or Humorous tones.
-- **Multi-Language Support**: Full support for **English and Hebrew** with automatic language detection and RTL layouts.
+- **Multi-Language Support**: Full support for English and Hebrew with automatic language detection and RTL layouts.
 - **Star-Rating Logic**: Define specific instructions for each rating level (e.g., "Apologize for 1-star", "Thank warmly for 5-stars").
 - **Personalization**: Name transliteration, emoji customization, and custom signatures.
 - **Approval Modes**:
   - **Manual Approval**: Review every response before posting.
   - **Auto-Publish**: Automatically post replies for specific star ratings.
 
-### 📍 Google Business Profile Integration
+### Google Business Profile Integration
 
 - **OAuth 2.0 Authentication**: Secure connection to manage business profiles.
-- **Real-Time Notifications**: Instant updates via **Google Cloud Pub/Sub** webhooks when a new review is posted.
+- **Real-Time Notifications**: Instant updates via Google Cloud Pub/Sub webhooks when a new review is posted.
 - **Multi-Location Support**: Manage multiple business locations from a single dashboard.
 - **Direct Posting**: Publish replies directly to Google Maps/Search.
 
-### 📊 Analytics & Insights
+### Analytics & Insights
 
 - **Sentiment Analysis**: Analyze positive, neutral, and negative sentiment trends.
 - **Weekly Email Summaries**: Automated weekly reports with performance stats, sentiment breakdown, and AI-driven recommendations.
-- **Dashboard**: comprehensive view of review volume, ratings, and response times.
+- **Dashboard**: Comprehensive view of review volume, ratings, and response times.
 
-### 💳 Subscription Management
+### Subscription Management
 
-- **Stripe Integration**: Secure billing and subscription handling.
-- **Tiered Plans**:
-  - **Free**: Basic features for a single business.
-  - **Basic/Pro**: tiered limits on reviews and businesses.
+- **Polar Integration**: Usage-based billing via Polar.
+- **Free Tier**: 10 AI-generated replies per month.
+- **Paid Plan**: Unlimited reviews at $0.20 per AI-generated reply.
 - **Usage Tracking**: Monitor review quotas and limits.
 
-## 🛠 Tech Stack
+## Tech Stack
 
 ### Frontend
 
 - **Framework**: [Next.js 16](https://nextjs.org/) (App Router, Turbopack)
 - **Language**: TypeScript 5.9
-- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/), [Shadcn/UI](https://ui.shadcn.com/)
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/), [shadcn/UI](https://ui.shadcn.com/)
 - **State Management**: Zustand
-- **Internationalization**: `next-intl` (Authored for English & Hebrew)
-- **Components**: Radix UI, Framer Motion, Lucide React
+- **Internationalization**: `next-intl` (English & Hebrew with RTL support)
+- **Components**: Radix UI, Lucide React
 
 ### Backend
 
-- **Database**: PostgreSQL (via Supabase) with [Drizzle ORM](https://orm.drizzle.team/)
-- **Auth**: Supabase Auth (SSR)
+- **Database**: PostgreSQL with [Drizzle ORM](https://orm.drizzle.team/)
+- **Auth**: [Better Auth](https://www.better-auth.com/) (email/password + Google OAuth)
 - **API**: Next.js Server Actions & API Routes
 - **Validation**: Zod
 - **Email**: [Resend](https://resend.com/) + [React Email](https://react.email/)
@@ -63,11 +62,11 @@ RevYou (also known as Bottie.ai) is a SaaS platform that automates responses to 
 ### Services
 
 - **AI**: Google Generative AI (Gemini)
-- **Payments**: Stripe
+- **Payments**: [Polar](https://polar.sh/)
 - **Cloud**: Google Cloud Platform (Pub/Sub)
 - **Deployment**: Vercel (recommended)
 
-## 📂 Project Structure
+## Project Structure
 
 ```
 RevYou/
@@ -75,17 +74,21 @@ RevYou/
 │   ├── app/                        # Next.js App Router (Pages & API)
 │   │   ├── [locale]/              # i18n routes (dashboard, landing, auth)
 │   │   └── api/                   # API Routes (webhooks, cron, internal)
-│   ├── components/                # UI Components (Shadcn, Feature-specific)
+│   ├── components/                # UI Components (shadcn, feature-specific)
 │   ├── hooks/                     # Custom React Hooks
-│   ├── contexts/                  # React Contexts (Auth, Direction)
+│   ├── contexts/                  # React Contexts (Auth, Direction, SidebarData)
 │   └── i18n/                      # Internationalization config
 ├── lib/                           # Core Business Logic
-│   ├── ai/                        # Gemini AI prompts & integration
+│   ├── actions/                   # Server actions (Next.js "use server")
+│   ├── ai/                        # Gemini AI prompts, classification & summaries
+│   ├── auth/                      # Auth middleware
+│   ├── controllers/               # Business logic layer
 │   ├── db/                        # Drizzle Schema & Data Access
 │   ├── emails/                    # React Email templates
-│   ├── google/                    # Google APIs (MyBusiness, PubSub)
-│   ├── stripe/                    # Stripe helpers
-│   ├── supabase/                  # Supabase Setup
+│   ├── google/                    # Google APIs (MyBusiness, OAuth, Pub/Sub)
+│   ├── polar/                     # Polar SDK config
+│   ├── security/                  # Token encryption
+│   ├── subscriptions/             # Plan limits and billing logic
 │   └── utils/                     # Helper functions
 ├── messages/                      # Translation files (en.json, he.json)
 ├── drizzle/                       # Database migrations
@@ -93,15 +96,14 @@ RevYou/
 └── public/                        # Static assets
 ```
 
-## 🏁 Getting Started
+## Getting Started
 
 ### Prerequisites
 
-- **Node.js** 20.9+
-- **Yarn** (Package Manager)
-- **Supabase Project** (Postgres DB & Auth)
-- **Google Cloud Project** (With My Business & Pub/Sub APIs enabled)
-- **Stripe Account** (For billing)
+- **Node.js** 22.13.0+ (LTS recommended)
+- **Yarn** 1.22.22 (Package Manager)
+- **Google Cloud Project** (with My Business & Pub/Sub APIs enabled)
+- **Polar Account** (for billing)
 
 ### Installation
 
@@ -130,14 +132,15 @@ RevYou/
    Now, fill in the required variables in `.env.local`.
 
    **Critical Variables:**
-   - `DATABASE_URL`: Connection string from Supabase (Transaction Pooler - port 6543).
-   - `NEXT_PUBLIC_SUPABASE_URL` / `ANON_KEY`: From Supabase settings.
-   - `GOOGLE_CLIENT_ID` / `SECRET`: OAuth credentials.
+   - `DATABASE_URL`: PostgreSQL connection string.
+   - `BETTER_AUTH_SECRET` / `BETTER_AUTH_URL`: Auth configuration.
+   - `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`: OAuth credentials.
    - `GEMINI_API_KEY`: Google AI Studio key.
-   - `STRIPE_SECRET_KEY` / `WEBHOOK_SECRET`: Stripe config.
+   - `POLAR_ACCESS_TOKEN` / `POLAR_WEBHOOK_SECRET` / `POLAR_PRODUCT_ID`: Polar billing config.
+   - `RESEND_API_KEY` / `RESEND_FROM_EMAIL`: Email service config.
 
 4. **Database Setup:**
-   Push the schema to your Supabase instance:
+   Push the schema to your PostgreSQL database:
 
    ```bash
    yarn db:push
@@ -151,35 +154,37 @@ RevYou/
    ```
    Open [http://localhost:3000](http://localhost:3000) to view the app.
 
-## 💻 Development Workflows
+## Development Workflows
 
 ### Database (Drizzle ORM)
 
-- **Update Schema**: Modify `lib/db/schema/index.ts`.
-- **Push Changes**: `yarn db:push` (Syncs schema with DB).
-- **View Data**: `yarn db:studio` (Opens Drizzle Studio GUI).
+- **Update Schema**: Modify files in `lib/db/schema/`.
+- **Push Changes**: `yarn db:push` (syncs schema with DB).
+- **View Data**: `yarn db:studio` (opens Drizzle Studio GUI).
 - **Generate Migrations**: `yarn db:generate`.
+- **Run Migrations**: `yarn db:migrate`.
 
 ### Email Templates
 
 We use **React Email** for designing transactional emails.
 
 - **Preview Emails**: `yarn email:dev`
-  This starts a local server at [http://localhost:3000](http://localhost:3000) (or 3001) where you can interactively test templates.
+  This starts a local server where you can interactively test templates.
 
 ### Webhooks & Scripts
 
 The `scripts/` folder contains utilities for testing:
 
-- **Trigger Review Webhook**: `yarn webhook:trigger` (Simulates a Google review event).
-- **Trigger Weekly Summary**: `yarn cron:trigger` (Runs the weekly email summary logic).
+- **Trigger Review Webhook**: `yarn webhook:trigger` (simulates a Google review event).
+- **Trigger Weekly Summary**: `yarn cron:trigger` (runs the weekly email summary logic).
 
 ### Testing
 
 - **Run Tests**: `yarn test` (Vitest).
+- **Watch Mode**: `yarn test:watch`.
 - **Coverage**: `yarn test:coverage`.
 
-## 🚢 Deployment
+## Deployment
 
 ### Vercel
 
@@ -191,7 +196,7 @@ The `scripts/` folder contains utilities for testing:
 
 > **Note**: This project relies on Cron Jobs (defined in `vercel.json`) for sending weekly summaries. Vercel automatically picks this up.
 
-## 📄 License
+## License
 
 [MIT License](LICENSE)
 

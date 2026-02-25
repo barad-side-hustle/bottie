@@ -3,8 +3,8 @@ import { parseFiltersFromSearchParams, buildSearchParams, DEFAULT_REVIEW_SORT } 
 
 describe("filter-utils", () => {
   describe("DEFAULT_REVIEW_SORT", () => {
-    it("should have receivedAt as default orderBy", () => {
-      expect(DEFAULT_REVIEW_SORT.orderBy).toBe("receivedAt");
+    it("should have date as default orderBy", () => {
+      expect(DEFAULT_REVIEW_SORT.orderBy).toBe("date");
     });
 
     it("should have desc as default orderDirection", () => {
@@ -13,11 +13,11 @@ describe("filter-utils", () => {
   });
 
   describe("parseFiltersFromSearchParams", () => {
-    it("should return default sort (receivedAt desc) when no params provided", () => {
+    it("should return default sort (date desc) when no params provided", () => {
       const result = parseFiltersFromSearchParams({});
 
       expect(result.sort).toEqual({
-        orderBy: "receivedAt",
+        orderBy: "date",
         orderDirection: "desc",
       });
     });

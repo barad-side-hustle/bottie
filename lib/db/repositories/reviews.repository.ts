@@ -93,7 +93,7 @@ export class ReviewsRepository extends BaseRepository<ReviewInsert, Review, Part
       const column = columnMap[sortField as keyof typeof columnMap];
       orderBy = orderDirection === "asc" ? asc(column) : desc(column);
     } else {
-      orderBy = desc(reviews.receivedAt);
+      orderBy = desc(reviews.date);
     }
 
     const reviewsData = await db.query.reviews.findMany({

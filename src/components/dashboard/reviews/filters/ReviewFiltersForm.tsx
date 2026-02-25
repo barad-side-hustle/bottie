@@ -80,7 +80,7 @@ export function ReviewFiltersForm({ filters: initialFilters, onApply, onReset }:
     setFilters({
       ...filters,
       sort: {
-        orderBy: filters.sort?.orderBy || "receivedAt",
+        orderBy: filters.sort?.orderBy || "date",
         orderDirection: filters.sort?.orderDirection === "asc" ? "desc" : "asc",
       },
     });

@@ -83,4 +83,37 @@ const TooltipIcon = ({ text, additionalInfoLabel }: TooltipIconProps) => {
   );
 };
 
-export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider, TooltipIcon };
+interface ResponsiveTooltipProps {
+  title: string;
+  description: string;
+  children: React.ReactNode;
+}
+
+const ResponsiveTooltip = ({ title, description, children }: ResponsiveTooltipProps) => {
+  const isMobile = useIsMobile();
+
+  if (isMobile) {
+    return (
+      <Drawer>
+        <DrawerTrigger asChild>{children}</DrawerTrigger>
+        <DrawerContent>
+          <DrawerHeader>
+            <DrawerTitle className="text-start">{title}</DrawerTitle>
+            <DrawerDescription className="text-start">{description}</DrawerDescription>
+          </DrawerHeader>
+        </DrawerContent>
+      </Drawer>
+    );
+  }
+
+  return (
+    <TooltipProvider delayDuration={300}>
+      <Tooltip>
+        <TooltipTrigger asChild>{children}</TooltipTrigger>
+        <TooltipContent>{description}</TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+};
+
+export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider, TooltipIcon, ResponsiveTooltip };

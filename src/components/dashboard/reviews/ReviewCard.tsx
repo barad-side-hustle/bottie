@@ -6,7 +6,14 @@ import { StarRating } from "@/components/ui/StarRating";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { TooltipIcon, Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
+import {
+  TooltipIcon,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+  TooltipProvider,
+  ResponsiveTooltip,
+} from "@/components/ui/tooltip";
 import { postReviewReply, generateReviewReply } from "@/lib/actions/reviews.actions";
 import { useAuth } from "@/contexts/AuthContext";
 import { ReplyEditor } from "@/components/dashboard/reviews/ReplyEditor";
@@ -48,27 +55,49 @@ export function ReviewCard({ review, accountId, userId, locationId, onUpdate }: 
   const getStatusBadge = (review: ReviewWithLatestGeneration) => {
     const status = review.replyStatus as ReplyStatus;
     const statusMap = {
-      pending: { label: t("status.pending"), variant: "warning" as const },
-      posted: { label: t("status.posted"), variant: "success" as const },
-      rejected: { label: t("status.rejected"), variant: "secondary" as const },
-      failed: { label: t("status.failed"), variant: "destructive" as const },
-      quota_exceeded: { label: t("status.quotaExceeded"), variant: "destructive" as const },
+      pending: {
+        label: t("status.pending"),
+        variant: "warning" as const,
+        descKey: "statusDescription.pending" as const,
+      },
+      posted: { label: t("status.posted"), variant: "success" as const, descKey: "statusDescription.posted" as const },
+      rejected: {
+        label: t("status.rejected"),
+        variant: "secondary" as const,
+        descKey: "statusDescription.rejected" as const,
+      },
+      failed: {
+        label: t("status.failed"),
+        variant: "destructive" as const,
+        descKey: "statusDescription.failed" as const,
+      },
+      quota_exceeded: {
+        label: t("status.quotaExceeded"),
+        variant: "destructive" as const,
+        descKey: "statusDescription.quotaExceeded" as const,
+      },
     };
 
     const statusInfo = statusMap[status] || statusMap.pending;
 
-    let statusBadge;
+    let badgeElement;
     if (status === "posted") {
       const Icon = review.latestAiReplyPostedBy ? User : Bot;
-      statusBadge = (
+      badgeElement = (
         <Badge variant={statusInfo.variant} className="gap-1">
           <Icon className="h-3 w-3" />
           {statusInfo.label}
         </Badge>
       );
     } else {
-      statusBadge = <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>;
+      badgeElement = <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>;
     }
+
+    const statusBadge = (
+      <ResponsiveTooltip title={statusInfo.label} description={t(statusInfo.descKey)}>
+        <span className="cursor-default">{badgeElement}</span>
+      </ResponsiveTooltip>
+    );
 
     if (!review.consumesQuota) {
       return (

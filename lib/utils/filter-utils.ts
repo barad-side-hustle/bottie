@@ -2,7 +2,7 @@ import { ReviewFilters, ReviewSortField, ReviewSortOptions, Sentiment } from "@/
 import { format } from "date-fns";
 
 export const DEFAULT_REVIEW_SORT: ReviewSortOptions = {
-  orderBy: "receivedAt",
+  orderBy: "date",
   orderDirection: "desc",
 };
 

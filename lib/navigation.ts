@@ -58,8 +58,14 @@ export const sidebarLocationItems: SidebarNavItem[] = [
 export const sidebarGlobalItems: SidebarNavItem[] = [
   { href: "/dashboard/home", label: "navigation.sidebar.overview", icon: LayoutDashboard, scope: "global" },
   { href: "/dashboard/subscription", label: "navigation.sidebar.billing", icon: CreditCard, scope: "global" },
-  { href: "/dashboard/settings", label: "navigation.sidebar.account", icon: Settings, scope: "global" },
 ];
+
+export const sidebarAccountItem: SidebarNavItem = {
+  href: "/dashboard/settings",
+  label: "navigation.sidebar.account",
+  icon: Settings,
+  scope: "global",
+};
 
 export function resolveHref(
   item: SidebarNavItem,

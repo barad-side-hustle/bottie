@@ -4,7 +4,13 @@ import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/routing";
 import { useDirection } from "@/contexts/DirectionProvider";
 import { useActiveLocation } from "@/hooks/use-active-location";
-import { sidebarLocationItems, sidebarGlobalItems, resolveHref, type SidebarNavItem } from "@/lib/navigation";
+import {
+  sidebarLocationItems,
+  sidebarGlobalItems,
+  sidebarAccountItem,
+  resolveHref,
+  type SidebarNavItem,
+} from "@/lib/navigation";
 import { LocationSwitcher } from "./LocationSwitcher";
 import { UpgradeBanner } from "@/components/dashboard/utils/UpgradeBanner";
 import Image from "next/image";
@@ -60,18 +66,18 @@ export function AppSidebar() {
             <SidebarSeparator />
           </>
         )}
+      </SidebarContent>
 
+      <SidebarFooter>
         <SidebarGroup>
           <SidebarGroupLabel>{t("navigation.sidebar.generalLabel")}</SidebarGroupLabel>
           <SidebarMenu>
             {sidebarGlobalItems.map((item) => (
               <SidebarNavLink key={item.label} item={item} pathname={pathname} locationCtx={locationCtx} t={t} />
             ))}
+            <SidebarNavLink item={sidebarAccountItem} pathname={pathname} locationCtx={locationCtx} t={t} />
           </SidebarMenu>
         </SidebarGroup>
-      </SidebarContent>
-
-      <SidebarFooter>
         <UpgradeBanner />
       </SidebarFooter>
     </Sidebar>
