@@ -66,21 +66,22 @@ export class ReviewsController {
   async generateReply(reviewId: string): Promise<{ review: ReviewWithLatestGeneration; aiReply: string }> {
     const review = await this.getReview(reviewId);
 
-    const [location, approvedGenerations, rejectedGenerations] = await Promise.all([
+    const [location, likedGenerations, dislikedGenerations] = await Promise.all([
       this.locationsRepo.get(review.locationId),
-      this.responsesRepo.getRecent("posted", 5),
-      this.responsesRepo.getRecent("rejected", 5),
+      this.responsesRepo.getByFeedback("liked", 5),
+      this.responsesRepo.getByFeedback("disliked", 5),
     ]);
     if (!location) throw new NotFoundError("Location not found");
 
-    const approvedSamples: PromptSample[] = approvedGenerations.map((g) => ({
+    const approvedSamples: PromptSample[] = likedGenerations.map((g) => ({
       review: g.review,
       reply: g.text,
     }));
 
-    const rejectedSamples: PromptSample[] = rejectedGenerations.map((g) => ({
+    const rejectedSamples: PromptSample[] = dislikedGenerations.map((g) => ({
       review: g.review,
       reply: g.text,
+      comment: g.feedbackComment,
     }));
 
     const latestGen = await this.responsesRepo.getLatestDraft(reviewId);
@@ -149,6 +150,10 @@ export class ReviewsController {
 
     const updatedReview = await this.getReview(reviewId);
     return { review: updatedReview, savedDraft: customReply };
+  }
+
+  async setFeedback(responseId: string, feedback: "liked" | "disliked" | null, comment?: string | null) {
+    return this.responsesRepo.updateFeedback(responseId, feedback, comment);
   }
 
   async postReply(

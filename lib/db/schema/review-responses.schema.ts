@@ -22,6 +22,8 @@ export const reviewResponses = pgTable(
     text: text("text").notNull(),
     status: text("status").notNull(),
     type: text("type").$type<"imported" | "ai_generated" | "human_generated">().notNull().default("ai_generated"),
+    feedback: text("feedback").$type<"liked" | "disliked">(),
+    feedbackComment: text("feedback_comment"),
 
     generatedBy: text("generated_by").references(() => user.id, { onDelete: "set null" }),
     postedBy: text("posted_by").references(() => user.id, { onDelete: "set null" }),
@@ -38,6 +40,11 @@ export const reviewResponses = pgTable(
     index("review_responses_location_status_created_idx").on(table.locationId, table.status, table.createdAt),
 
     check("review_responses_status_check", sql`${table.status} IN ('draft', 'posted', 'rejected')`),
+    check(
+      "review_responses_feedback_check",
+      sql`${table.feedback} IS NULL OR ${table.feedback} IN ('liked', 'disliked')`
+    ),
+    index("review_responses_location_feedback_created_idx").on(table.locationId, table.feedback, table.createdAt),
 
     pgPolicy("review_responses_service_role_access", {
       for: "all",

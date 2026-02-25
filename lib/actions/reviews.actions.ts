@@ -44,6 +44,12 @@ const SaveReviewDraftSchema = ReviewIdSchema.extend({
   customReply: z.string(),
 });
 
+const SetFeedbackSchema = ContextSchema.extend({
+  responseId: z.string().uuid(),
+  feedback: z.enum(["liked", "disliked"]).nullable(),
+  comment: z.string().max(500).optional(),
+});
+
 export const getReviews = createSafeAction(GetReviewsSchema, async ({ accountId, locationId, filters }, { userId }) => {
   const controller = new ReviewsController(userId, accountId, locationId);
   return controller.getReviews(filters);
@@ -76,5 +82,13 @@ export const postReviewReply = createSafeAction(
     const controller = new ReviewsController(userId, accountId, locationId);
     const { review } = await controller.postReply(reviewId, customReply, userId);
     return review;
+  }
+);
+
+export const setReviewResponseFeedback = createSafeAction(
+  SetFeedbackSchema,
+  async ({ accountId, locationId, responseId, feedback, comment }, { userId }) => {
+    const controller = new ReviewsController(userId, accountId, locationId);
+    return controller.setFeedback(responseId, feedback, comment);
   }
 );

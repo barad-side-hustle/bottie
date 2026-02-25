@@ -104,4 +104,47 @@ export class ReviewResponsesRepository {
       },
     });
   }
+
+  async updateFeedback(
+    id: string,
+    feedback: "liked" | "disliked" | null,
+    comment?: string | null
+  ): Promise<ReviewResponse | undefined> {
+    const feedbackComment = feedback === "disliked" ? (comment ?? null) : null;
+
+    const [updated] = await db
+      .update(reviewResponses)
+      .set({ feedback, feedbackComment })
+      .where(
+        and(
+          eq(reviewResponses.id, id),
+          eq(reviewResponses.accountId, this.accountId),
+          eq(reviewResponses.locationId, this.locationId),
+          this.getAccessCondition()
+        )
+      )
+      .returning();
+
+    if (!updated) {
+      throw new ForbiddenError("Access denied or response not found");
+    }
+
+    return updated;
+  }
+
+  async getByFeedback(feedback: "liked" | "disliked", limit: number = 5): Promise<ReviewResponseWithReview[]> {
+    return await db.query.reviewResponses.findMany({
+      where: and(
+        eq(reviewResponses.accountId, this.accountId),
+        eq(reviewResponses.locationId, this.locationId),
+        eq(reviewResponses.feedback, feedback),
+        this.getAccessCondition()
+      ),
+      orderBy: [desc(reviewResponses.createdAt)],
+      limit: limit,
+      with: {
+        review: true,
+      },
+    });
+  }
 }

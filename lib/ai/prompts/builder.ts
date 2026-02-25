@@ -9,6 +9,7 @@ function getStarCustomInstructions(star: 1 | 2 | 3 | 4 | 5, location: Location):
 export interface PromptSample {
   review: Review;
   reply: string;
+  comment?: string | null;
 }
 
 export function buildReplyPrompt(
@@ -23,7 +24,11 @@ export function buildReplyPrompt(
 
   const formatSample = (s: PromptSample) => {
     const reviewText = s.review.text ? `"${s.review.text}"` : "(no text)";
-    return `Review (${s.review.rating}★): ${reviewText}\nReply: "${s.reply}"`;
+    let formatted = `Review (${s.review.rating}★): ${reviewText}\nReply: "${s.reply}"`;
+    if (s.comment) {
+      formatted += `\nUser feedback: "${s.comment}"`;
+    }
+    return formatted;
   };
 
   const templateData = {

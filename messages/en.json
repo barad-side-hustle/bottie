@@ -632,6 +632,12 @@
           "publish": "Publish",
           "update": "Update"
         },
+        "feedback": {
+          "like": "I like this response",
+          "dislike": "I don't like this response",
+          "commentPlaceholder": "What didn't you like? (optional)",
+          "saveComment": "Save"
+        },
         "publishDialog": {
           "title": "Publish Reply to Google",
           "description": "Are you sure you want to publish this reply to Google?",

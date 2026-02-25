@@ -8,6 +8,13 @@
       "when": 1771984027196,
       "tag": "0000_smiling_maginty",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1772017380915,
+      "tag": "0001_strange_big_bertha",
+      "breakpoints": true
     }
   ]
 }

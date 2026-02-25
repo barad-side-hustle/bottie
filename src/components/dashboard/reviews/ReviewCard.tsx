@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ReplyStatus } from "@/lib/types";
 import { StarRating } from "@/components/ui/StarRating";
 import { Button } from "@/components/ui/button";
@@ -14,12 +14,13 @@ import {
   TooltipProvider,
   ResponsiveTooltip,
 } from "@/components/ui/tooltip";
-import { postReviewReply, generateReviewReply } from "@/lib/actions/reviews.actions";
+import { postReviewReply, generateReviewReply, setReviewResponseFeedback } from "@/lib/actions/reviews.actions";
 import { useAuth } from "@/contexts/AuthContext";
 import { ReplyEditor } from "@/components/dashboard/reviews/ReplyEditor";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
-import { User, Bot, RotateCcw, Pencil, Send } from "lucide-react";
+import { User, Bot, RotateCcw, Pencil, Send, ThumbsUp, ThumbsDown } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useTranslations, useFormatter } from "next-intl";
 import { useRouter } from "@/i18n/routing";
@@ -42,6 +43,17 @@ export function ReviewCard({ review, accountId, userId, locationId, onUpdate }: 
   const [isLoading, setIsLoading] = useState(false);
   const [showEditor, setShowEditor] = useState(false);
   const [showPublishDialog, setShowPublishDialog] = useState(false);
+
+  const [feedbackState, setFeedbackState] = useState<"liked" | "disliked" | null>(review.latestAiReplyFeedback ?? null);
+  const [feedbackComment, setFeedbackComment] = useState(review.latestAiReplyFeedbackComment ?? "");
+  const [showCommentInput, setShowCommentInput] = useState(false);
+  const [isFeedbackLoading, setIsFeedbackLoading] = useState(false);
+
+  useEffect(() => {
+    setFeedbackState(review.latestAiReplyFeedback ?? null);
+    setFeedbackComment(review.latestAiReplyFeedbackComment ?? "");
+    setShowCommentInput(false);
+  }, [review.latestAiReplyFeedback, review.latestAiReplyFeedbackComment]);
 
   const getInitials = (name: string) => {
     return name
@@ -148,8 +160,70 @@ export function ReviewCard({ review, accountId, userId, locationId, onUpdate }: 
     }
   };
 
+  const handleFeedback = async (value: "liked" | "disliked", e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!review.latestAiReplyId || isFeedbackLoading) return;
+
+    const newFeedback = feedbackState === value ? null : value;
+    const previousFeedback = feedbackState;
+    const previousComment = feedbackComment;
+
+    setFeedbackState(newFeedback);
+    if (newFeedback !== "disliked") {
+      setShowCommentInput(false);
+      setFeedbackComment("");
+    } else {
+      setShowCommentInput(true);
+    }
+    setIsFeedbackLoading(true);
+
+    try {
+      await setReviewResponseFeedback({
+        accountId,
+        locationId,
+        responseId: review.latestAiReplyId,
+        feedback: newFeedback,
+      });
+      sendRybbitEvent("reply_feedback", {
+        rating: review.rating,
+        feedback: newFeedback ?? "cleared",
+      });
+    } catch (error) {
+      console.error("Error setting feedback:", error);
+      setFeedbackState(previousFeedback);
+      setFeedbackComment(previousComment);
+      if (previousFeedback === "disliked") setShowCommentInput(true);
+    } finally {
+      setIsFeedbackLoading(false);
+    }
+  };
+
+  const handleSaveComment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!review.latestAiReplyId || isFeedbackLoading) return;
+
+    setIsFeedbackLoading(true);
+    try {
+      await setReviewResponseFeedback({
+        accountId,
+        locationId,
+        responseId: review.latestAiReplyId,
+        feedback: "disliked",
+        comment: feedbackComment || undefined,
+      });
+      setShowCommentInput(false);
+    } catch (error) {
+      console.error("Error saving feedback comment:", error);
+    } finally {
+      setIsFeedbackLoading(false);
+    }
+  };
+
   const hasActions =
     review.replyStatus === "pending" || review.replyStatus === "failed" || review.replyStatus === "posted";
+
+  const showFeedback = review.latestAiReply && review.latestAiReplyType !== "imported";
 
   return (
     <>
@@ -227,69 +301,145 @@ export function ReviewCard({ review, accountId, userId, locationId, onUpdate }: 
             </div>
           )}
 
-          {hasActions && (
-            <div className="flex items-center justify-end gap-1">
-              <TooltipProvider delayDuration={300}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      type="button"
-                      onClick={handleRegenerate}
-                      disabled={isLoading}
-                      size="icon"
-                      variant="ghost"
-                      aria-label={t("actions.regenerate")}
-                    >
-                      <RotateCcw className="size-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>{t("actions.regenerate")}</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <TooltipProvider delayDuration={300}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setShowEditor(true);
-                      }}
-                      disabled={isLoading}
-                      size="icon"
-                      variant="ghost"
-                      aria-label={t("actions.edit")}
-                    >
-                      <Pencil className="size-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>{t("actions.edit")}</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <TooltipProvider delayDuration={300}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      type="button"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        setShowPublishDialog(true);
-                      }}
-                      disabled={isLoading}
-                      size="icon"
-                      variant="default"
-                      aria-label={review.replyStatus === "posted" ? t("actions.update") : t("actions.publish")}
-                    >
-                      <Send className="size-4" />
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    {review.replyStatus === "posted" ? t("actions.update") : t("actions.publish")}
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
+          {(hasActions || showFeedback) && (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                {showFeedback && (
+                  <div className="flex items-center gap-1">
+                    <TooltipProvider delayDuration={300}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            type="button"
+                            onClick={(e) => handleFeedback("liked", e)}
+                            disabled={isFeedbackLoading || isLoading}
+                            size="icon"
+                            variant="ghost"
+                            aria-label={t("feedback.like")}
+                            className={cn(
+                              "h-7 w-7",
+                              feedbackState === "liked" &&
+                                "text-green-600 bg-green-50 hover:bg-green-100 dark:bg-green-950 dark:hover:bg-green-900"
+                            )}
+                          >
+                            <ThumbsUp className="size-3.5" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>{t("feedback.like")}</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <TooltipProvider delayDuration={300}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            type="button"
+                            onClick={(e) => handleFeedback("disliked", e)}
+                            disabled={isFeedbackLoading || isLoading}
+                            size="icon"
+                            variant="ghost"
+                            aria-label={t("feedback.dislike")}
+                            className={cn(
+                              "h-7 w-7",
+                              feedbackState === "disliked" &&
+                                "text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-950 dark:hover:bg-red-900"
+                            )}
+                          >
+                            <ThumbsDown className="size-3.5" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>{t("feedback.dislike")}</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                )}
+                {hasActions && (
+                  <div className="flex items-center gap-1 ms-auto">
+                    <TooltipProvider delayDuration={300}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            type="button"
+                            onClick={handleRegenerate}
+                            disabled={isLoading}
+                            size="icon"
+                            variant="ghost"
+                            aria-label={t("actions.regenerate")}
+                          >
+                            <RotateCcw className="size-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>{t("actions.regenerate")}</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <TooltipProvider delayDuration={300}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setShowEditor(true);
+                            }}
+                            disabled={isLoading}
+                            size="icon"
+                            variant="ghost"
+                            aria-label={t("actions.edit")}
+                          >
+                            <Pencil className="size-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>{t("actions.edit")}</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <TooltipProvider delayDuration={300}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              setShowPublishDialog(true);
+                            }}
+                            disabled={isLoading}
+                            size="icon"
+                            variant="default"
+                            aria-label={review.replyStatus === "posted" ? t("actions.update") : t("actions.publish")}
+                          >
+                            <Send className="size-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          {review.replyStatus === "posted" ? t("actions.update") : t("actions.publish")}
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                )}
+              </div>
+
+              {showCommentInput && feedbackState === "disliked" && (
+                <form onSubmit={handleSaveComment} className="flex items-center gap-2">
+                  <Input
+                    value={feedbackComment}
+                    onChange={(e) => setFeedbackComment(e.target.value)}
+                    placeholder={t("feedback.commentPlaceholder")}
+                    maxLength={500}
+                    className="h-8 text-sm"
+                    disabled={isFeedbackLoading}
+                  />
+                  <Button
+                    type="submit"
+                    size="sm"
+                    variant="outline"
+                    disabled={isFeedbackLoading || !feedbackComment.trim()}
+                    className="h-8 shrink-0"
+                  >
+                    {t("feedback.saveComment")}
+                  </Button>
+                </form>
+              )}
             </div>
           )}
         </div>
