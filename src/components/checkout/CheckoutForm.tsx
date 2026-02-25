@@ -7,6 +7,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "@/i18n/routing";
 import { useSearchParams } from "next/navigation";
+import { CheckoutPageLayout } from "@/components/checkout/CheckoutPageLayout";
 
 export function CheckoutForm() {
   const router = useRouter();
@@ -36,5 +37,11 @@ export function CheckoutForm() {
     startCheckout();
   }, [user, router, locationId]);
 
-  return <Loading fullScreen text={t("processing")} description={t("almostThere")} size="lg" />;
+  return (
+    <CheckoutPageLayout>
+      <div className="flex flex-col items-center text-center py-8">
+        <Loading text={t("processing")} description={t("almostThere")} size="lg" />
+      </div>
+    </CheckoutPageLayout>
+  );
 }

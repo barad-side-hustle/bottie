@@ -95,15 +95,15 @@
       "noCreditCard": "ללא צורך בכרטיס אשראי • ביטול בכל עת"
     },
     "pricing": {
-      "title": "תמחור פשוט לפי מיקום",
-      "subtitle": "תגובות AI ללא הגבלה לכל מיקום. התחילו בחינם, שדרגו בכל זמן.",
+      "title": "תמחור פשוט לפי כמות העסקים המחוברים",
+      "subtitle": "תגובות AI ללא הגבלה לכל עסק. התחילו בחינם, שדרגו בכל זמן.",
       "freeCta": "התחל בחינם",
       "proCta": "התחל עכשיו",
       "loading": "טוען...",
-      "perLocation": "/מיקום/חודש",
-      "freeReplies": "{count} תגובות AI חינם בחודש לכל מיקום",
+      "perLocation": "/עסק/חודש",
+      "freeReplies": "{count} תגובות AI חינם בחודש לכל עסק",
       "features": {
-        "freeReplies": "{count} תגובות AI בחודש לכל מיקום",
+        "freeReplies": "{count} תגובות AI בחודש לכל עסק",
         "unlimitedReplies": "תגובות AI ללא הגבלה",
         "autoPost": "פרסום תשובות אוטומטי",
         "analytics": "ניתוח נתונים ותובנות מלאות",
@@ -114,11 +114,11 @@
       "plans": {
         "free": {
           "name": "חינם",
-          "description": "התחילו עם {count} תגובות AI בחודש לכל מיקום"
+          "description": "התחילו עם {count} תגובות AI בחודש לכל עסק"
         },
         "pro": {
           "name": "פרו",
-          "description": "תגובות AI ללא הגבלה לכל מיקום"
+          "description": "תגובות AI ללא הגבלה לכל עסק"
         }
       }
     },
@@ -588,7 +588,7 @@
         "unlimitedReplies": "תגובות AI ללא הגבלה",
         "freeRepliesPerMonth": "{count} תגובות AI חינם בחודש",
         "noLocations": "עדיין לא חוברו מיקומים.",
-        "upgradeHint": "שדרג מיקום לתגובות AI ללא הגבלה ב-${price}/חודש",
+        "upgradeHint": "שדרג עסק לתגובות AI ללא הגבלה ב-${price}/חודש",
         "plans": {
           "free": "חינם",
           "pro": "פרו"
