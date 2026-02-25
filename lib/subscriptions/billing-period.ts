@@ -1,5 +1,5 @@
 import { startOfMonth, addMonths, format } from "date-fns";
-import { he, enUS } from "date-fns/locale";
+import { he, enUS, es } from "date-fns/locale";
 import type { Locale } from "@/lib/locale";
 
 export function getCurrentBillingPeriod(): {
@@ -18,11 +18,13 @@ export function getCurrentBillingPeriod(): {
 const dateLocales = {
   he: he,
   en: enUS,
+  es: es,
 } as const;
 
 const dateFormats = {
   he: "d 'ב'MMMM yyyy",
   en: "MMMM d, yyyy",
+  es: "d 'de' MMMM yyyy",
 } as const;
 
 export function formatDate(date: Date, locale: Locale): string {

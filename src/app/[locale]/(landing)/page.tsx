@@ -13,14 +13,14 @@ import {
   generateSoftwareApplicationSchema,
   generateFAQPageSchema,
 } from "@/lib/seo/structured-data";
-import { type Locale } from "@/lib/locale";
+import { locales, getLocaleCode, type Locale } from "@/lib/locale";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "metadata" });
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-  const localeCode = locale === "he" ? "he_IL" : "en_US";
+  const localeCode = getLocaleCode(locale as Locale);
 
   return {
     title: t("title"),
@@ -51,8 +51,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     alternates: {
       canonical: `${baseUrl}/${locale}`,
       languages: {
-        en: `${baseUrl}/en`,
-        he: `${baseUrl}/he`,
+        ...Object.fromEntries(locales.map((l) => [l, `${baseUrl}/${l}`])),
         "x-default": `${baseUrl}/en`,
       },
     },

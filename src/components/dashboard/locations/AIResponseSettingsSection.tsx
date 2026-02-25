@@ -31,6 +31,7 @@ export default function AIResponseSettingsSection({ location, loading, onSave }:
     "auto-detect": t("languageOptions.autoDetect"),
     hebrew: t("languageOptions.hebrew"),
     english: t("languageOptions.english"),
+    spanish: t("languageOptions.spanish"),
   };
 
   const formData: AIResponseSettingsFormData = {

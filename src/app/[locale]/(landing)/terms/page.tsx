@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { locales, getLocaleCode, type Locale } from "@/lib/locale";
 import { TermsContent } from "./TermsContent";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -7,7 +8,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const t = await getTranslations({ locale, namespace: "terms" });
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-  const localeCode = locale === "he" ? "he_IL" : "en_US";
+  const localeCode = getLocaleCode(locale as Locale);
 
   return {
     title: t("title"),
@@ -37,8 +38,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     alternates: {
       canonical: `${baseUrl}/${locale}/terms`,
       languages: {
-        en: `${baseUrl}/en/terms`,
-        he: `${baseUrl}/he/terms`,
+        ...Object.fromEntries(locales.map((l) => [l, `${baseUrl}/${l}/terms`])),
         "x-default": `${baseUrl}/en/terms`,
       },
     },

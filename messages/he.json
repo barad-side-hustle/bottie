@@ -418,7 +418,8 @@
             "options": {
               "autoDetect": "זיהוי אוטומטי",
               "hebrew": "עברית",
-              "english": "English"
+              "english": "English",
+              "spanish": "ספרדית"
             }
           },
           "emojis": {
@@ -495,7 +496,8 @@
           "languageOptions": {
             "autoDetect": "זיהוי אוטומטי",
             "hebrew": "עברית",
-            "english": "English"
+            "english": "English",
+            "spanish": "ספרדית"
           },
           "noEmojis": "ללא שימוש באימוג'ים",
           "noSignature": "ללא חתימה",

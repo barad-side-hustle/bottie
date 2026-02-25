@@ -429,6 +429,11 @@ html {
   animation: hero-pulse-ring 2s ease-out infinite;
 }
 
+/* Sileo toaster RTL support */
+[dir="rtl"] [data-sileo-description] {
+  text-align: right;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .animate-hero-float,
   .animate-hero-float-reverse,

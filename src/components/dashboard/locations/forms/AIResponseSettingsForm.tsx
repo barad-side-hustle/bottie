@@ -98,6 +98,7 @@ export function AIResponseSettingsForm({
             <SelectItem value="auto-detect">{t("languageMode.options.autoDetect")}</SelectItem>
             <SelectItem value="hebrew">{t("languageMode.options.hebrew")}</SelectItem>
             <SelectItem value="english">{t("languageMode.options.english")}</SelectItem>
+            <SelectItem value="spanish">{t("languageMode.options.spanish")}</SelectItem>
           </SelectContent>
         </Select>
       </div>

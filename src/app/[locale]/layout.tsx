@@ -5,9 +5,9 @@ import { getMessages, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { DirectionProvider } from "@/contexts/DirectionProvider";
-import { Toaster } from "@/components/ui/sonner";
+import { Toaster as SileoToaster } from "sileo";
 import { RybbitProvider } from "@/components/RybbitProvider";
-import { locales, getLocaleDir, type Locale } from "@/lib/locale";
+import { locales, getLocaleDir, getLocaleCode, localeCodeMap, type Locale } from "@/lib/locale";
 import "../globals.css";
 import Script from "next/script";
 
@@ -42,8 +42,8 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const t = await getTranslations({ locale, namespace: "metadata" });
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-  const localeCode = locale === "he" ? "he_IL" : "en_US";
-  const alternateLocale = locale === "he" ? "en_US" : "he_IL";
+  const localeCode = getLocaleCode(locale as Locale);
+  const alternateLocale = locales.filter((l) => l !== locale).map((l) => localeCodeMap[l]);
 
   return {
     metadataBase: new URL(baseUrl),
@@ -76,8 +76,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     alternates: {
       canonical: `${baseUrl}/${locale}`,
       languages: {
-        en: `${baseUrl}/en`,
-        he: `${baseUrl}/he`,
+        ...Object.fromEntries(locales.map((l) => [l, `${baseUrl}/${l}`])),
         "x-default": `${baseUrl}/en`,
       },
     },
@@ -113,7 +112,7 @@ export default async function LocaleLayout({
             <AuthProvider>
               <RybbitProvider />
               {children}
-              <Toaster dir={dir} richColors />
+              <SileoToaster position="top-center" />
             </AuthProvider>
           </DirectionProvider>
 

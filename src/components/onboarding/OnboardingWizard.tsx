@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
-import { toast } from "sonner";
+import { sileo } from "sileo";
 import type { Location, GoogleBusinessProfileLocation } from "@/lib/types";
 
 import type { LocationDetailsFormData } from "@/components/dashboard/locations/forms/LocationDetailsForm";
@@ -148,7 +148,7 @@ export function OnboardingWizard({
     } catch (err) {
       console.error("Error connecting location:", err);
       const errorMessage = err instanceof Error ? err.message : t("chooseBusiness.errors.failedToConnect");
-      toast.error(errorMessage);
+      sileo.error({ title: errorMessage });
     }
   };
 
@@ -188,7 +188,7 @@ export function OnboardingWizard({
       goForward("autoReply");
     } catch (error) {
       console.error("Error saving config:", error);
-      toast.error(t("configure.errorSaving"));
+      sileo.error({ title: t("configure.errorSaving") });
     }
   };
 
@@ -216,7 +216,7 @@ export function OnboardingWizard({
       goForward("celebration");
     } catch (error) {
       console.error("Error saving configuration:", error);
-      toast.error(t("starRatings.errorMessage"));
+      sileo.error({ title: t("starRatings.errorMessage") });
     }
   };
 

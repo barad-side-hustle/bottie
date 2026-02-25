@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 
 import { BotIconSvg, BRAND_BLUE } from "@/lib/brand/logo";
 import { BG_LIGHT, DARK_TEXT, MUTED_TEXT, PASTEL_LAVENDER, PASTEL_SKY, fixRtlText, loadRubikFont } from "./og-utils";
+import { getLocaleDir, type Locale } from "@/lib/locale";
 
 export const alt = "Bottie.ai - AI Review Management";
 export const size = {
@@ -19,7 +20,7 @@ export default async function OGImage({ params }: { params: Promise<{ locale: st
   const title = t("title");
   const highlight = t("titleHighlight");
   const description = tMeta("description");
-  const isRTL = locale === "he";
+  const isRTL = getLocaleDir(locale as Locale) === "rtl";
 
   const [rubikBold, rubikRegular] = await Promise.all([loadRubikFont(700), loadRubikFont(400)]);
 

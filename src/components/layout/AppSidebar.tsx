@@ -9,7 +9,6 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useSidebarData } from "@/contexts/SidebarDataContext";
 import { signOut } from "@/lib/auth/auth";
 import { LocationSwitcher } from "./LocationSwitcher";
-import { UpgradeBanner } from "@/components/dashboard/utils/UpgradeBanner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChevronsUpDown, LogOut, Settings, Check, Globe, CreditCard } from "lucide-react";
 import { locales, localeConfig, type Locale } from "@/lib/locale";
@@ -93,7 +92,6 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroup>
         )}
-        <UpgradeBanner />
       </SidebarContent>
 
       <SidebarFooter>

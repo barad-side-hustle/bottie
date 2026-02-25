@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { toast } from "sonner";
+import { sileo } from "sileo";
 import { useTranslations } from "next-intl";
 
 export function SubscriptionSuccessToast() {
@@ -14,7 +14,7 @@ export function SubscriptionSuccessToast() {
     const success = searchParams.get("success");
 
     if (success === "true") {
-      toast.success(t("successMessage"));
+      sileo.success({ title: t("successMessage") });
 
       const params = new URLSearchParams(searchParams);
       params.delete("success");

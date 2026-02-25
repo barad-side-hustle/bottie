@@ -39,7 +39,7 @@ export type LocationCreate = {
 export type LocationUpdate = Partial<Omit<LocationInsert, "id" | "googleLocationId" | "createdAt">>;
 
 export type ToneOfVoice = "friendly" | "formal" | "humorous" | "professional";
-export type LanguageMode = "hebrew" | "english" | "auto-detect";
+export type LanguageMode = "hebrew" | "english" | "spanish" | "auto-detect";
 
 export interface GoogleBusinessProfileLocation {
   accountId: string;

@@ -418,7 +418,8 @@
             "options": {
               "autoDetect": "Auto Detect",
               "hebrew": "Hebrew",
-              "english": "English"
+              "english": "English",
+              "spanish": "Spanish"
             }
           },
           "emojis": {
@@ -495,7 +496,8 @@
           "languageOptions": {
             "autoDetect": "Auto Detect",
             "hebrew": "Hebrew",
-            "english": "English"
+            "english": "English",
+            "spanish": "Spanish"
           },
           "noEmojis": "No emojis",
           "noSignature": "No signature",

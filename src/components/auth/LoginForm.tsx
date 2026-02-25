@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link, useRouter } from "@/i18n/routing";
-import { toast } from "sonner";
+import { sileo } from "sileo";
 import { useTranslations } from "next-intl";
 
 export function LoginForm() {
@@ -40,7 +40,7 @@ export function LoginForm() {
     });
 
     if (error) {
-      toast.error(error.message || "An error occurred signing in with Google");
+      sileo.error({ title: error.message || "An error occurred signing in with Google" });
       setIsGoogleLoading(false);
     }
   };

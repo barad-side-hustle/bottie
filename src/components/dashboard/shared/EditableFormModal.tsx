@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { FormRenderProps } from "./EditableSection";
-import { toast } from "sonner";
+import { sileo } from "sileo";
 import { useDirection } from "@/contexts/DirectionProvider";
 
 interface EditableFormModalProps<T> {
@@ -67,12 +67,12 @@ export function EditableFormModal<T>({
     try {
       setIsLoading(true);
       await onSave(formData);
-      toast.success(successMessage);
+      sileo.success({ title: successMessage });
       onClose();
     } catch (error) {
       const specificErrorMessage = error instanceof Error ? error.message : errorMessage;
       console.error("Error saving:", error);
-      toast.error(specificErrorMessage);
+      sileo.error({ title: specificErrorMessage });
     } finally {
       setIsLoading(false);
     }

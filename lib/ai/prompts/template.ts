@@ -50,6 +50,7 @@ These are previous review-reply pairs that the user explicitly disliked. Avoid s
    - Transliterate the first name to match {{TARGET_LANGUAGE}}:
      * Hebrew reply: transliterate to Hebrew script (John→ג׳ון, Sarah→שרה, Alex→אלכס)
      * English reply: transliterate to English script (אלון→Alon, שרה→Sarah, יוסי→Yossi)
+     * Spanish reply: transliterate to Latin script (אלון→Alon, שרה→Sarah, John→John)
    {{/TARGET_LANGUAGE}}
 
    {{#IS_AUTO_DETECT}}
@@ -58,6 +59,7 @@ These are previous review-reply pairs that the user explicitly disliked. Avoid s
    - Transliterate the first name to match the REPLY language:
      * If replying in Hebrew: transliterate to Hebrew (John Smith→ג׳ון, אלון ברד→אלון)
      * If replying in English: transliterate to English (אלון ברד→Alon, John Smith→John)
+     * If replying in Spanish: transliterate to Latin script (אלון ברד→Alon, John Smith→John)
    {{/IS_AUTO_DETECT}}
 
    Examples:
@@ -91,11 +93,13 @@ These are previous review-reply pairs that the user explicitly disliked. Avoid s
    - Translate the signature to match your reply language
    - If replying in Hebrew, translate to Hebrew
    - If replying in English, translate to English
+   - If replying in Spanish, translate to Spanish
    {{/IS_AUTO_DETECT}}
 
    Examples:
    - "צוות מסעדת חמישים ושמונה" → "Restaurant 58 Team" (English)
    - "Team MyStore" → "צוות MyStore" (Hebrew)
+   - "צוות מסעדת חמישים ושמונה" → "Equipo Restaurante 58" (Spanish)
 {{/SIGNATURE}}
 
 ---
@@ -235,6 +239,11 @@ Name: "אלון ברד"
 **Hebrew mode, English name (4★)**
 Name: "John Smith"
 > "תודה רבה, ג׳ון! שמחים שנהניתם מהחוויה ✨ צוות מסעדת חמישים ושמונה"
+
+**Spanish mode, English name (5★)**
+Review: "Great food!"
+Name: "John Smith"
+> "¡Muchas gracias, John! Nos alegra que hayas disfrutado tu experiencia 🙏 Equipo Restaurante 58"
 
 **Auto-detect mode, English review with Hebrew name (5★)**
 Review: "Amazing food!"

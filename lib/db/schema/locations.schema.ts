@@ -28,7 +28,10 @@ export const locations = pgTable(
       .$type<"friendly" | "formal" | "humorous" | "professional">()
       .notNull()
       .default("friendly"),
-    languageMode: text("language_mode").$type<"hebrew" | "english" | "auto-detect">().notNull().default("auto-detect"),
+    languageMode: text("language_mode")
+      .$type<"hebrew" | "english" | "spanish" | "auto-detect">()
+      .notNull()
+      .default("auto-detect"),
     maxSentences: integer("max_sentences"),
     allowedEmojis: jsonb("allowed_emojis").$type<string[]>(),
     signature: text("signature"),

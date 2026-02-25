@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations, useLocale } from "next-intl";
-import type { Locale } from "@/lib/locale";
+import { localeDateMap, type Locale } from "@/lib/locale";
 
 const LAST_UPDATED_DATE = new Date("2025-11-09");
 
@@ -9,7 +9,7 @@ export function PrivacyContent() {
   const t = useTranslations("privacy");
   const locale = useLocale() as Locale;
 
-  const formattedDate = LAST_UPDATED_DATE.toLocaleDateString(locale === "he" ? "he-IL" : "en-US", {
+  const formattedDate = LAST_UPDATED_DATE.toLocaleDateString(localeDateMap[locale], {
     year: "numeric",
     month: "long",
     day: "numeric",
