@@ -129,19 +129,19 @@
       "title": "Trusted by Business Owners",
       "items": {
         "0": {
-          "name": "Sarah Cohen",
+          "name": "Noa Peretz",
           "role": "Restaurant Owner",
-          "quote": "This tool has completely changed how we handle reviews. It saves us hours every week and the responses are professional and personal."
+          "quote": "Between the kitchen and managing staff, I never had time to answer reviews. Now every reply goes out sounding like I actually wrote it — one of my regulars even mentioned how nice our responses are."
         },
         "1": {
-          "name": "David Levi",
-          "role": "Retail Manager",
-          "quote": "I was skeptical at first, but the AI understands our tone perfectly. Highly recommended for any business owner."
+          "name": "Tom Hadad",
+          "role": "Auto Shop Owner",
+          "quote": "Honestly didn't think AI could match how we talk to customers. Took maybe 10 minutes to set up, and I've barely had to edit a single reply since. Wish I'd found this sooner."
         },
         "2": {
-          "name": "Michael Chen",
-          "role": "Cafe Owner",
-          "quote": "Simple to set up and works like magic. The automatic responses for 5-star reviews are a game changer."
+          "name": "Lina Marcos",
+          "role": "Boutique Hotel Manager",
+          "quote": "We used to just ignore anything under 4 stars because we didn't know what to say. Now every review gets a thoughtful reply, and we've actually seen a few unhappy customers come back."
         }
       }
     },
