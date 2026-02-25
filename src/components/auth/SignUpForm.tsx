@@ -17,9 +17,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "@/i18n/routing";
 import { useTranslations, useLocale } from "next-intl";
+import { useAuthError } from "@/hooks/use-auth-error";
 
 export function SignUpForm() {
   const t = useTranslations("auth.signUpPage");
+  const getAuthError = useAuthError();
   const locale = useLocale();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -39,7 +41,7 @@ export function SignUpForm() {
     });
 
     if (error) {
-      setError(error.message || "An error occurred signing in with Google");
+      setError(getAuthError(error.message));
       setIsGoogleLoading(false);
     }
   };
@@ -56,7 +58,7 @@ export function SignUpForm() {
     });
 
     if (error) {
-      setError(error.message || "Sign up failed. Please try again.");
+      setError(getAuthError(error.message));
       setLoading(false);
       return;
     }

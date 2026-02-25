@@ -19,9 +19,11 @@ import { Label } from "@/components/ui/label";
 import { Link, useRouter } from "@/i18n/routing";
 import { sileo } from "sileo";
 import { useTranslations } from "next-intl";
+import { useAuthError } from "@/hooks/use-auth-error";
 
 export function LoginForm() {
   const t = useTranslations("auth.loginPage");
+  const getAuthError = useAuthError();
   const locale = useLocale();
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -40,7 +42,7 @@ export function LoginForm() {
     });
 
     if (error) {
-      sileo.error({ title: error.message || "An error occurred signing in with Google" });
+      sileo.error({ title: getAuthError(error.message) });
       setIsGoogleLoading(false);
     }
   };
@@ -56,7 +58,7 @@ export function LoginForm() {
     });
 
     if (error) {
-      setError(error.message || "Sign in failed. Please try again.");
+      setError(getAuthError(error.message));
       setIsLoading(false);
       return;
     }

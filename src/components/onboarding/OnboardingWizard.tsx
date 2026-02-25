@@ -62,6 +62,7 @@ export function OnboardingWizard({
   const [accountId] = useState<string | null>(initialAccountId);
   const [locationId, setLocationId] = useState<string | null>(initialLocationId);
   const [locationData, setLocationData] = useState<Location | null>(location);
+  const [isExistingLocation, setIsExistingLocation] = useState(false);
 
   const storeSetAccountId = useOnboardingStore((s) => s.setAccountId);
   const storeSetLocationId = useOnboardingStore((s) => s.setLocationId);
@@ -138,7 +139,7 @@ export function OnboardingWizard({
         photoUrl: selectedLocation.photoUrl,
       });
 
-      const { location: connectedLocation } = result;
+      const { location: connectedLocation, isNew } = result;
 
       sendRybbitEvent("location_connected", { location_name: selectedLocation.name });
 
@@ -149,7 +150,15 @@ export function OnboardingWizard({
 
       subscribeToGoogleNotifications({ accountId }).catch(console.error);
 
-      goForward("configure");
+      if (!isNew) {
+        setIsExistingLocation(true);
+        await updateOnboardingStatus(true);
+        sendRybbitEvent("onboarding_completed");
+        storeReset();
+        goForward("celebration");
+      } else {
+        goForward("configure");
+      }
     } catch (err) {
       console.error("Error connecting location:", err);
       const errorMessage = err instanceof Error ? err.message : t("chooseBusiness.errors.failedToConnect");
@@ -235,7 +244,9 @@ export function OnboardingWizard({
   };
 
   if (currentStep === "celebration" && accountId && locationId) {
-    return <CompletionCelebration accountId={accountId} locationId={locationId} />;
+    return (
+      <CompletionCelebration accountId={accountId} locationId={locationId} isExistingLocation={isExistingLocation} />
+    );
   }
 
   const progressBar = <SteppedProgressBar steps={stepLabels} currentStep={STEP_TO_PROGRESS[currentStep]} />;

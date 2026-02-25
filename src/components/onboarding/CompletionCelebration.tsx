@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 interface CompletionCelebrationProps {
   accountId: string;
   locationId: string;
+  isExistingLocation?: boolean;
 }
 
 type ImportPhase = "connecting" | "importing" | "complete" | "error";
@@ -17,11 +18,11 @@ type ImportPhase = "connecting" | "importing" | "complete" | "error";
 const TIMEOUT_MS = 120_000;
 const REDIRECT_DELAY_MS = 2500;
 
-export function CompletionCelebration({ accountId, locationId }: CompletionCelebrationProps) {
+export function CompletionCelebration({ accountId, locationId, isExistingLocation }: CompletionCelebrationProps) {
   const router = useRouter();
   const t = useTranslations("onboarding.importProgress");
 
-  const [phase, setPhase] = useState<ImportPhase>("connecting");
+  const [phase, setPhase] = useState<ImportPhase>(isExistingLocation ? "complete" : "connecting");
   const [total, setTotal] = useState(0);
   const [imported, setImported] = useState(0);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -70,6 +71,17 @@ export function CompletionCelebration({ accountId, locationId }: CompletionCeleb
   );
 
   useEffect(() => {
+    if (!isExistingLocation) return;
+    fireConfetti();
+    const timer = setTimeout(() => {
+      router.push("/dashboard/home");
+    }, REDIRECT_DELAY_MS);
+    return () => clearTimeout(timer);
+  }, [isExistingLocation, fireConfetti, router]);
+
+  useEffect(() => {
+    if (isExistingLocation) return;
+
     const abortController = new AbortController();
     abortRef.current = abortController;
 
@@ -153,7 +165,7 @@ export function CompletionCelebration({ accountId, locationId }: CompletionCeleb
     return () => {
       cleanup();
     };
-  }, [accountId, locationId, handleComplete, cleanup, t]);
+  }, [isExistingLocation, accountId, locationId, handleComplete, cleanup, t]);
 
   return (
     <div
@@ -165,7 +177,18 @@ export function CompletionCelebration({ accountId, locationId }: CompletionCeleb
       <div className="absolute top-1/2 end-1/3 h-56 w-56 rounded-full bg-pastel-peach/15 blur-3xl" />
 
       <div className="relative z-10 flex flex-col items-center gap-8 max-w-md mx-auto px-4 text-center">
-        {phase === "error" ? (
+        {isExistingLocation ? (
+          <>
+            <CircularProgress value={100} size={140} strokeWidth={10} />
+
+            <div className="space-y-2">
+              <h2 className="text-2xl font-semibold">{t("existingTitle")}</h2>
+              <p className="text-sm text-muted-foreground">{t("existingDescription")}</p>
+            </div>
+
+            <p className="text-xs text-muted-foreground">{t("redirecting")}</p>
+          </>
+        ) : phase === "error" ? (
           <>
             <h2 className="text-2xl font-semibold">{t("title")}</h2>
             <p className="text-sm text-destructive">{errorMessage}</p>

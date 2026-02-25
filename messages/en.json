@@ -308,7 +308,18 @@
     },
     "errors": {
       "signOutFailed": "An error occurred signing out",
-      "authCodeError": "Unable to verify login information. Please try again."
+      "authCodeError": "Unable to verify login information. Please try again.",
+      "invalidEmailOrPassword": "Invalid email or password.",
+      "userAlreadyExists": "An account with this email already exists.",
+      "invalidEmail": "Invalid email address.",
+      "invalidPassword": "Invalid password.",
+      "passwordTooShort": "Password is too short.",
+      "passwordTooLong": "Password is too long.",
+      "emailNotVerified": "Please verify your email before signing in.",
+      "invalidToken": "The reset link is invalid or has expired.",
+      "userNotFound": "No account found with this email.",
+      "sessionExpired": "Session expired. Please sign in again.",
+      "generic": "Something went wrong. Please try again."
     }
   },
   "dashboard": {
@@ -1043,7 +1054,9 @@
       "importComplete": "{count} reviews imported successfully!",
       "redirecting": "Redirecting to your dashboard...",
       "errorDescription": "We couldn't import your reviews right now, but you can still continue to the dashboard.",
-      "skipToDashboard": "Go to Dashboard"
+      "skipToDashboard": "Go to Dashboard",
+      "existingTitle": "Location Already Connected!",
+      "existingDescription": "This location is already set up. Taking you to your dashboard..."
     }
   },
   "emails": {

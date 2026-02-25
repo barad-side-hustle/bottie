@@ -308,7 +308,18 @@
     },
     "errors": {
       "signOutFailed": "Ocurrio un error al cerrar sesion",
-      "authCodeError": "No se pudo verificar la informacion de inicio de sesion. Por favor intenta de nuevo."
+      "authCodeError": "No se pudo verificar la informacion de inicio de sesion. Por favor intenta de nuevo.",
+      "invalidEmailOrPassword": "Correo electronico o contrasena invalidos.",
+      "userAlreadyExists": "Ya existe una cuenta con este correo electronico.",
+      "invalidEmail": "Direccion de correo electronico invalida.",
+      "invalidPassword": "Contrasena invalida.",
+      "passwordTooShort": "La contrasena es demasiado corta.",
+      "passwordTooLong": "La contrasena es demasiado larga.",
+      "emailNotVerified": "Por favor verifica tu correo electronico antes de iniciar sesion.",
+      "invalidToken": "El enlace de restablecimiento es invalido o ha expirado.",
+      "userNotFound": "No se encontro una cuenta con este correo electronico.",
+      "sessionExpired": "La sesion ha expirado. Por favor inicia sesion de nuevo.",
+      "generic": "Algo salio mal. Por favor intenta de nuevo."
     }
   },
   "dashboard": {
@@ -1043,7 +1054,9 @@
       "importComplete": "{count} resenas importadas exitosamente!",
       "redirecting": "Redirigiendo a tu panel de control...",
       "errorDescription": "No pudimos importar tus resenas en este momento, pero puedes continuar al panel de control.",
-      "skipToDashboard": "Ir al panel de control"
+      "skipToDashboard": "Ir al panel de control",
+      "existingTitle": "Ubicacion ya conectada!",
+      "existingDescription": "Esta ubicacion ya esta configurada. Redirigiendo a tu panel de control..."
     }
   },
   "emails": {

@@ -16,9 +16,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
+import { useAuthError } from "@/hooks/use-auth-error";
 
 export function ForgotPasswordForm() {
   const t = useTranslations("auth.forgotPasswordPage");
+  const getAuthError = useAuthError();
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -35,7 +37,7 @@ export function ForgotPasswordForm() {
     });
 
     if (error) {
-      setError(error.message || "Something went wrong. Please try again.");
+      setError(getAuthError(error.message));
       setLoading(false);
       return;
     }

@@ -301,7 +301,18 @@
     },
     "errors": {
       "signOutFailed": "אירעה שגיאה בהתנתקות",
-      "authCodeError": "לא ניתן לאמת את פרטי ההתחברות. אנא נסה שוב."
+      "authCodeError": "לא ניתן לאמת את פרטי ההתחברות. אנא נסה שוב.",
+      "invalidEmailOrPassword": "אימייל או סיסמה שגויים.",
+      "userAlreadyExists": "כבר קיים חשבון עם אימייל זה.",
+      "invalidEmail": "כתובת אימייל לא תקינה.",
+      "invalidPassword": "סיסמה שגויה.",
+      "passwordTooShort": "הסיסמה קצרה מדי.",
+      "passwordTooLong": "הסיסמה ארוכה מדי.",
+      "emailNotVerified": "אנא אמת את האימייל שלך לפני ההתחברות.",
+      "invalidToken": "קישור האיפוס אינו תקין או שפג תוקפו.",
+      "userNotFound": "לא נמצא חשבון עם אימייל זה.",
+      "sessionExpired": "פג תוקף החיבור. אנא התחבר שוב.",
+      "generic": "משהו השתבש. אנא נסה שוב."
     }
   },
   "dashboard": {
@@ -1036,7 +1047,9 @@
       "importComplete": "{count} ביקורות יובאו בהצלחה!",
       "redirecting": "מועברים ללוח הבקרה...",
       "errorDescription": "לא הצלחנו לייבא את הביקורות כרגע, אבל עדיין ניתן להמשיך ללוח הבקרה.",
-      "skipToDashboard": "עבור ללוח הבקרה"
+      "skipToDashboard": "עבור ללוח הבקרה",
+      "existingTitle": "העסק כבר מחובר!",
+      "existingDescription": "העסק הזה כבר מוגדר במערכת. מעבירים אותך ללוח הבקרה..."
     }
   },
   "emails": {

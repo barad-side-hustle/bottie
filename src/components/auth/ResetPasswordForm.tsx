@@ -16,9 +16,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
+import { useAuthError } from "@/hooks/use-auth-error";
 
 export function ResetPasswordForm({ token }: { token: string }) {
   const t = useTranslations("auth.resetPasswordPage");
+  const getAuthError = useAuthError();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -42,7 +44,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
     });
 
     if (error) {
-      setError(error.message || "Failed to reset password. Please try again.");
+      setError(getAuthError(error.message));
       setLoading(false);
       return;
     }
