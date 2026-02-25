@@ -3,7 +3,7 @@ import {
   PiggyBank,
   ShieldQuestionMarkIcon,
   Rocket,
-  MessageSquareQuote,
+  Play,
   Star,
   BarChart3,
   Settings2,
@@ -20,8 +20,8 @@ interface NavItem {
 export const landingNavItems: NavItem[] = [
   { href: "/#hero", label: "navigation.landing.home", icon: Home },
   { href: "/#how-it-works", label: "navigation.landing.howItWorks", icon: Rocket },
+  { href: "/#demo", label: "navigation.landing.demo", icon: Play },
   { href: "/#pricing", label: "navigation.landing.pricing", icon: PiggyBank },
-  { href: "/#testimonials", label: "navigation.landing.testimonials", icon: MessageSquareQuote },
   { href: "/#faq", label: "navigation.landing.faq", icon: ShieldQuestionMarkIcon },
 ];
 

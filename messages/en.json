@@ -35,8 +35,8 @@
     "landing": {
       "home": "Home",
       "howItWorks": "How It Works",
+      "demo": "Demo",
       "pricing": "Pricing",
-      "testimonials": "Testimonials",
       "faq": "FAQ"
     },
     "sidebar": {

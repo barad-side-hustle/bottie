@@ -35,8 +35,8 @@
     "landing": {
       "home": "Inicio",
       "howItWorks": "Como funciona",
+      "demo": "Demo",
       "pricing": "Precios",
-      "testimonials": "Testimonios",
       "faq": "Preguntas frecuentes"
     },
     "sidebar": {

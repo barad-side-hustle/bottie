@@ -35,9 +35,9 @@ export function PricingCards() {
   const handleGetStarted = (plan: string) => {
     setLoadingPlan(plan);
     if (!user) {
-      router.push(`/login?redirect=${encodeURIComponent("/dashboard/home")}`);
+      router.push(`/login?redirect=${encodeURIComponent("/dashboard/subscription")}`);
     } else {
-      router.push("/dashboard/home");
+      router.push("/dashboard/subscription");
     }
     setLoadingPlan(null);
   };
