@@ -15,6 +15,13 @@
       "when": 1772017380915,
       "tag": "0001_strange_big_bertha",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1772028160409,
+      "tag": "0002_plain_rockslide",
+      "breakpoints": true
     }
   ]
 }

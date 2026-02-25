@@ -74,21 +74,22 @@ export async function POST(request: NextRequest) {
     }
 
     const subscriptionsController = new SubscriptionsController();
-    const quotaCheck = await subscriptionsController.checkReviewQuota(userId);
+    const quotaCheck = await subscriptionsController.checkLocationQuota(locationId);
 
     if (!quotaCheck.allowed) {
-      console.log("User has exceeded review quota", {
-        userId,
+      console.log("Location has exceeded review quota", {
+        locationId,
         reviewId,
         currentCount: quotaCheck.currentCount,
         limit: quotaCheck.limit,
+        isPaid: quotaCheck.isPaid,
       });
 
       await reviewsRepo.update(reviewId, {
         replyStatus: "quota_exceeded",
       });
 
-      console.log("Review saved without AI reply due to quota limit", { reviewId });
+      console.log("Review saved without AI reply due to location quota limit", { reviewId });
       return NextResponse.json(
         {
           message: "Review saved but quota exceeded",
@@ -98,11 +99,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log("Quota check passed", {
-      userId,
+    console.log("Location quota check passed", {
+      locationId,
       reviewId,
       currentCount: quotaCheck.currentCount,
       limit: quotaCheck.limit,
+      isPaid: quotaCheck.isPaid,
     });
 
     const starConfig: StarConfig = location.starConfigs[review.rating as 1 | 2 | 3 | 4 | 5];

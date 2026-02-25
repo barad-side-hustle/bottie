@@ -18,14 +18,14 @@ export default function InsightsLoading() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="rounded-2xl border border-border/40 bg-card p-6">
-              <Skeleton className="h-4 w-24 mb-2" />
-              <Skeleton className="h-8 w-16" />
+            <div key={i} className="rounded-2xl bg-card shadow-xs p-5">
+              <Skeleton className="h-3.5 w-24 mb-3" />
+              <Skeleton className="h-7 w-16" />
             </div>
           ))}
         </div>
 
-        <div className="rounded-2xl border border-border/40 bg-card p-6">
+        <div className="rounded-2xl bg-card shadow-xs p-6">
           <Skeleton className="h-5 w-32 mb-4" />
           <div className="space-y-1">
             {[...Array(5)].map((_, i) => (
@@ -38,7 +38,7 @@ export default function InsightsLoading() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-border/40 bg-card p-6">
+        <div className="rounded-2xl bg-card shadow-xs p-6">
           <Skeleton className="h-5 w-24 mb-4" />
           <Skeleton className="h-64 w-full" />
         </div>

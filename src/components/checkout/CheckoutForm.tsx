@@ -6,12 +6,16 @@ import { useTranslations } from "next-intl";
 import { useAuth } from "@/contexts/AuthContext";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "@/i18n/routing";
+import { useSearchParams } from "next/navigation";
 
 export function CheckoutForm() {
   const router = useRouter();
   const t = useTranslations("checkout");
   const { user } = useAuth();
+  const searchParams = useSearchParams();
   const hasStartedProcessing = useRef(false);
+
+  const locationId = searchParams.get("locationId");
 
   useEffect(() => {
     if (hasStartedProcessing.current || !user) return;
@@ -19,7 +23,10 @@ export function CheckoutForm() {
 
     async function startCheckout() {
       try {
-        await authClient.checkout({ slug: "pay-as-you-go" });
+        await authClient.checkout({
+          slug: "location-plan",
+          ...(locationId ? { metadata: { locationId } } : {}),
+        });
       } catch (error) {
         console.error("Error creating checkout session:", error);
         router.push("/");
@@ -27,7 +34,7 @@ export function CheckoutForm() {
     }
 
     startCheckout();
-  }, [user, router]);
+  }, [user, router, locationId]);
 
   return <Loading fullScreen text={t("processing")} description={t("almostThere")} size="lg" />;
 }

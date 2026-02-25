@@ -1,16 +1,16 @@
-export const FREE_TIER_LIMITS = {
-  reviewsPerMonth: 10,
+export const FREE_LOCATION_LIMITS = {
+  reviewsPerMonth: 5,
 } as const;
 
-export const PRICE_PER_REPLY = 0.2;
+export const PRICE_PER_LOCATION = 39;
 
-export interface UsageLimits {
+export interface LocationUsageLimits {
   reviewsPerMonth: number;
 }
 
-export function getUsageLimits(hasPaidSubscription: boolean): UsageLimits {
-  if (hasPaidSubscription) {
+export function getLocationUsageLimits(hasActiveSubscription: boolean): LocationUsageLimits {
+  if (hasActiveSubscription) {
     return { reviewsPerMonth: -1 };
   }
-  return { reviewsPerMonth: FREE_TIER_LIMITS.reviewsPerMonth };
+  return { reviewsPerMonth: FREE_LOCATION_LIMITS.reviewsPerMonth };
 }

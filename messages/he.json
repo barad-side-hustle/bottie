@@ -8,33 +8,16 @@
     }
   },
   "common": {
-    "loading": "טוען...",
     "save": "שמור",
     "saving": "שומר...",
     "cancel": "ביטול",
-    "delete": "מחק",
-    "edit": "ערוך",
-    "close": "סגור",
     "selectLanguage": "בחר שפה",
-    "selectLanguageDescription": "בחר את השפה המועדפת עליך מהרשימה למטה",
-    "confirm": "אישור",
-    "back": "חזור",
-    "next": "הבא",
-    "previous": "הקודם",
-    "search": "חיפוש",
-    "filter": "סינון",
-    "sort": "מיון",
-    "yes": "כן",
-    "no": "לא",
     "saveSuccess": "השינויים נשמרו בהצלחה",
     "saveError": "אירעה שגיאה בשמירה",
-    "processing": "מעבד...",
     "deleting": "מוחק...",
     "textMismatch": "הטקסט אינו תואם:",
     "dangerZone": "אזור מסוכן",
-    "irreversibleWarning": "פעולה זו אינה ניתנת לביטול!",
     "irreversibleActions": "פעולות בלתי הפיכות שישפיעו על החשבון שלך",
-    "additionalInfo": "מידע נוסף",
     "errorState": {
       "title": "משהו השתבש!",
       "description": "אירעה שגיאה בטעינת הדף.",
@@ -42,11 +25,6 @@
     }
   },
   "navigation": {
-    "dashboard": {
-      "home": "בית",
-      "subscription": "תוכנית",
-      "settings": "הגדרות"
-    },
     "landing": {
       "home": "בית",
       "howItWorks": "איך זה עובד",
@@ -60,11 +38,9 @@
       "locationSettings": "הגדרות עסק",
       "overview": "סקירה",
       "billing": "חיוב",
-      "account": "חשבון",
       "settings": "הגדרות",
       "getReviews": "קבלת ביקורות",
       "locationLabel": "עסק",
-      "generalLabel": "כללי",
       "addLocation": "הוסף עסק",
       "selectLocation": "בחר עסק"
     }
@@ -81,29 +57,10 @@
       "title": "תשובות מקצועיות לביקורות",
       "titleHighlight": "באופן אוטומטי",
       "description": "חסכו זמן יקר והגיבו לכל ביקורת בצורה אישית ומקצועית עם הכוח של בינה מלאכותית. שמרו על קול המותג שלכם ושפרו את המוניטין העסקי.",
-      "badge": "מבוסס AI",
       "cta": "התחל עכשיו בחינם",
       "ctaSecondary": "ראה איך זה עובד",
       "badge1": "חינם לחלוטין",
-      "badge2": "ללא התחייבות",
-      "illustration": {
-        "averageRating": "דירוג ממוצע",
-        "responseRate": "שיעור מענה",
-        "card1": {
-          "name": "שרה מ.",
-          "text": "שירות מעולה! הצוות היה מקצועי ונעים במיוחד.",
-          "response": "תודה רבה, שרה! אנחנו שמחים לשמוע ומעריכים את המילים החמות שלך."
-        },
-        "card2": {
-          "name": "דוד כ.",
-          "text": "אוכל ואווירה מדהימים. בהחלט נחזור!",
-          "response": "תודה, דוד! שמחים שנהנית."
-        },
-        "card3": {
-          "name": "רחל ל.",
-          "text": "החוויה הכי טובה שהייתה לי. ממליצה בחום לכולם!"
-        }
-      }
+      "badge2": "ללא התחייבות"
     },
     "stats": {
       "businesses": "עסקים מחוברים",
@@ -138,15 +95,16 @@
       "noCreditCard": "ללא צורך בכרטיס אשראי • ביטול בכל עת"
     },
     "pricing": {
-      "title": "תמחור פשוט לפי שימוש",
-      "subtitle": "שלמו רק על מה שאתם משתמשים. כל התכונות כלולות לכולם.",
+      "title": "תמחור פשוט לפי מיקום",
+      "subtitle": "תגובות AI ללא הגבלה לכל מיקום. התחילו בחינם, שדרגו בכל זמן.",
       "freeCta": "התחל בחינם",
-      "paidCta": "שדרג לתשלום לפי שימוש",
+      "proCta": "התחל עכשיו",
       "loading": "טוען...",
-      "perReply": "/תגובה",
-      "freeReplies": "{count} תגובות AI חינם בחודש",
+      "perLocation": "/מיקום/חודש",
+      "freeReplies": "{count} תגובות AI חינם בחודש לכל מיקום",
       "features": {
-        "unlimitedLocations": "עסקים ללא הגבלה",
+        "freeReplies": "{count} תגובות AI בחודש לכל מיקום",
+        "unlimitedReplies": "תגובות AI ללא הגבלה",
         "autoPost": "פרסום תשובות אוטומטי",
         "analytics": "ניתוח נתונים ותובנות מלאות",
         "customTone": "טון דיבור מותאם אישית",
@@ -156,17 +114,13 @@
       "plans": {
         "free": {
           "name": "חינם",
-          "description": "התחילו עם {count} תגובות AI בחודש"
+          "description": "התחילו עם {count} תגובות AI בחודש לכל מיקום"
         },
-        "paid": {
-          "name": "תשלום לפי שימוש",
-          "description": "תגובות AI ללא הגבלה, חיוב לפי שימוש"
+        "pro": {
+          "name": "פרו",
+          "description": "תגובות AI ללא הגבלה לכל מיקום"
         }
-      },
-      "yourCurrentPlan": "המנוי הנוכחי שלך",
-      "managePlanDescription": "נהל את המנוי שלך וצפה בנתוני השימוש",
-      "manageBilling": "ניהול חיוב",
-      "statusActive": "פעיל"
+      }
     },
     "faq": {
       "title": "שאלות נפוצות",
@@ -243,10 +197,6 @@
         "pricing": "מחירון",
         "faq": "שאלות נפוצות"
       },
-      "resources": {
-        "title": "משאבים",
-        "sitemap": "מפת אתר"
-      },
       "legal": {
         "title": "מידע משפטי",
         "privacy": "מדיניות פרטיות",
@@ -256,25 +206,12 @@
     }
   },
   "auth": {
-    "signIn": "התחבר",
     "signOut": "התנתק",
-    "signUp": "הרשם",
-    "email": "אימייל",
-    "password": "סיסמה",
-    "forgotPassword": "שכחת סיסמה?",
-    "rememberMe": "זכור אותי",
-    "noAccount": "אין לך חשבון?",
-    "hasAccount": "כבר יש לך חשבון?",
-    "resetPassword": "איפוס סיסמה",
     "backToLogin": "חזרה להתחברות",
     "login": "התחברות",
-    "loggingIn": "מתחבר...",
-    "myAccount": "החשבון שלי",
-    "navigating": "מעביר...",
     "user": "משתמש",
     "addBusiness": "הוסף עסק",
     "dashboard": "לוח בקרה",
-    "language": "שפה",
     "checkingAuth": "בודק אימות...",
     "loginPage": {
       "tagline": "היכנס כדי להתחיל לנהל את הביקורות שלך",
@@ -341,16 +278,11 @@
       "goToSignIn": "עבור להתחברות"
     },
     "errors": {
-      "firebaseNotConfigured": "מסד הנתונים לא מוגדר. אנא בדוק את הגדרות הפרויקט.",
-      "sessionCreationFailed": "לא ניתן ליצור הרשאה. אנא נסה להתחבר שוב.",
-      "googleSignInFailed": "אירעה שגיאה בהתחברות עם גוגל",
       "signOutFailed": "אירעה שגיאה בהתנתקות",
-      "authStateError": "אירעה שגיאה בטעינת המשתמש",
       "authCodeError": "לא ניתן לאמת את פרטי ההתחברות. אנא נסה שוב."
     }
   },
   "dashboard": {
-    "welcome": "ברוכים הבאים",
     "overview": {
       "pendingReviews": "ביקורות ממתינות",
       "averageRating": "דירוג ממוצע",
@@ -359,27 +291,15 @@
       "pendingBanner": "יש לך {count, plural, one {ביקורת אחת} other {# ביקורות}} שממתינות למענה",
       "reviewNow": "צפה עכשיו",
       "yourLocations": "העסקים שלך",
-      "pendingBadge": "{count} ממתינות"
+      "pendingBadge": "{count} ממתינות",
+      "proBadge": "פרו",
+      "freeBadge": "חינם"
     },
     "home": {
       "title": "סקירה",
-      "description": "העסק שלך במבט אחד",
-      "accountBusinessesList": {
-        "noConnectedAccounts": "אין חשבונות מחוברים",
-        "noConnectedAccountsDescription": "אין לך חשבונות מחוברים",
-        "connectAccount": "חבר חשבון",
-        "disconnected": "מנותק",
-        "navigating": "מעביר...",
-        "viewReviews": "ביקורות",
-        "viewInsights": "תובנות",
-        "editDetails": "ערוך פרטים"
-      }
+      "description": "העסק שלך במבט אחד"
     },
     "businesses": {
-      "title": "העסקים שלי",
-      "addBusiness": "הוסף עסק",
-      "noBusiness": "אין עסקים",
-      "connectGoogle": "חבר לגוגל",
       "forms": {
         "businessDetails": {
           "name": {
@@ -446,12 +366,9 @@
         },
         "starRatings": {
           "autoReply": {
-            "label": "תגובה אוטומטית",
-            "tooltip": "כאשר מופעל, המערכת תיצור ותשלח תשובה אוטומטית לביקורות בדירוג זה. ניתן להשבית עבור דירוגים שאתה מעדיף לטפל בהם ידנית"
+            "label": "תגובה אוטומטית"
           },
           "customInstructions": {
-            "label": "הנחיות מותאמות אישית",
-            "tooltip": "הוסף הנחיות ספציפיות שיכוונו את ה-AI איך לגבש תשובות לביקורות בדירוג זה. לדוגמה, עבור 1-2 כוכבים תוכל לבקש התנצלות והזמנה ליצור קשר",
             "placeholder": "הוסף הנחיות ספציפיות לדירוג זה...",
             "helpers": {
               "low": "מומלץ לכלול התנצלות ומספר טלפון לתיאום שיחה אישית עם הלקוח",
@@ -516,19 +433,8 @@
       }
     },
     "reviews": {
-      "title": "ביקורות",
-      "description": "כל הביקורות לעסק",
-      "newReviews": "ביקורות חדשות",
-      "responded": "נענו",
-      "pending": "ממתינות",
       "noReviews": "אין עדיין ביקורות",
       "noReviewsDescription": "כשיגיעו ביקורות חדשות, הן יופיעו כאן",
-      "reply": "השב",
-      "viewAll": "צפה בהכל",
-      "loadingReviews": "טוען ביקורות...",
-      "errorLoading": "שגיאה בטעינת ביקורות",
-      "businessNotFound": "לא נמצא עסק",
-      "backToBusinesses": "חזרה לעסקים",
       "reviewsFor": "ביקורות {businessName}",
       "allReviews": "כל הביקורות לעסק שלך",
       "card": {
@@ -537,9 +443,7 @@
           "posted": "פורסם",
           "rejected": "נדחה",
           "failed": "נכשל",
-          "quotaExceeded": "חריגה ממכסה",
-          "postedUser": "פורסם ע״י משתמש",
-          "postedAi": "פורסם ע״י AI"
+          "quotaExceeded": "חריגה ממכסה"
         },
         "statusDescription": {
           "pending": "ה-AI יצר תגובה שממתינה לאישורך לפני פרסום",
@@ -548,15 +452,12 @@
           "failed": "יצירת או פרסום התגובה נכשלו. נסה שנית",
           "quotaExceeded": "המכסה החודשית מוצתה. שדרג לתוכנית גבוהה יותר"
         },
-        "reviewLabel": "ביקורת",
         "noText": "(אין טקסט)",
         "imported": "מיובא",
         "importedDescription": "ביקורות שיובאו מגוגל בעת ההרשמה שלך ל-Bottie ואינן נספרות במכסה",
         "aiReplyLabel": "תגובת בינה מלאכותית",
         "externalReplyLabel": "תגובה חיצונית",
-        "postedReplyLabel": "תגובה שפורסמה",
         "actions": {
-          "reject": "דחה",
           "regenerate": "צור מחדש",
           "edit": "ערוך",
           "publish": "פרסם",
@@ -587,8 +488,7 @@
         "dateTooltip": "תאריך פרסום הביקורת בגוגל",
         "replyDateTooltip": "תאריך פרסום התגובה בגוגל",
         "reviewDateLabel": "תאריך הביקורת",
-        "replyDateLabel": "תאריך התגובה",
-        "reviewInfoLabel": "צפה בפרטי הביקורת"
+        "replyDateLabel": "תאריך התגובה"
       },
       "editor": {
         "title": "עריכת תגובה",
@@ -641,41 +541,30 @@
       }
     },
     "subscription": {
-      "title": "שימוש וחיוב",
-      "description": "עקוב אחר השימוש בתגובות AI ונהל את החיוב",
-      "upgradePlan": "שדרג לתשלום לפי שימוש",
-      "manageSubscription": "ניהול חיוב",
-      "errorLoading": "שגיאה בטעינת נתונים. אנא נסה שוב מאוחר יותר.",
+      "title": "מיקומים וחיוב",
+      "description": "נהל את מנויי המיקומים שלך",
+      "upgradePlan": "שדרג",
       "successMessage": "המנוי שלך הופעל בהצלחה!",
       "info": {
-        "title": "שימוש בתגובות AI",
-        "description": "מעקב אחר השימוש בתגובות AI החודש",
-        "reviewsLabel": "תגובות AI החודש",
-        "reviewsCount": "{current} מתוך {max} תגובות",
-        "reviewsUnlimited": "{current} תגובות בשימוש (ללא הגבלה)",
-        "resetsOn": "מתאפס ב-{date}",
-        "costThisMonth": "עלות החודש",
-        "pricePerReply": "מחיר לתגובה",
-        "daysUntilReset": "ימים עד איפוס",
-        "memberSince": "חבר מאז",
-        "freeRepliesLeft": "חינם ({remaining} נותרו)",
-        "perReply": "/תגובה",
-        "days": "{count} ימים",
+        "title": "מנויי מיקומים",
+        "description": "נהל תוכניות תגובות AI למיקומים שלך",
+        "totalLocations": "סה\"כ מיקומים",
+        "activeLocations": "מיקומי פרו",
+        "freeLocations": "מיקומים חינם",
+        "monthlyTotal": "סה\"כ חודשי",
+        "unlimitedReplies": "תגובות AI ללא הגבלה",
+        "freeRepliesPerMonth": "{count} תגובות AI חינם בחודש",
+        "noLocations": "עדיין לא חוברו מיקומים.",
+        "upgradeHint": "שדרג מיקום לתגובות AI ללא הגבלה ב-${price}/חודש",
         "plans": {
           "free": "חינם",
-          "paid": "תשלום לפי שימוש"
+          "pro": "פרו"
         }
       }
     },
     "accountSettings": {
       "title": "הגדרות",
       "description": "נהל את העדפות החשבון שלך",
-      "languagePreferences": {
-        "title": "העדפות שפה",
-        "description": "בחר את השפה המועדפת עליך עבור הממשק והאימיילים",
-        "label": "שפה מועדפת",
-        "tooltip": "שפה זו תשמש עבור כל האימיילים שלך וכשפת ברירת המחדל של הממשק"
-      },
       "emailNotifications": {
         "title": "התראות דוא״ל",
         "description": "הגדר אילו התראות דוא״ל ברצונך לקבל",
@@ -690,89 +579,38 @@
         "label": "סיכום שבועי בדוא״ל",
         "tooltip": "קבל דוא״ל בכל יום ראשון עם תובנות והמלצות",
         "enabled": "מופעל",
-        "disabled": "כבוי",
-        "proRequired": "שדרג ל-Pro כדי לקבל סיכומים שבועיים של הביקורות שלך עם תובנות והמלצות שנוצרו על ידי בינה מלאכותית."
+        "disabled": "כבוי"
       },
       "saveSuccess": "ההגדרות נשמרו בהצלחה",
-      "saveError": "שגיאה בשמירת ההגדרות. אנא נסה שוב.",
-      "loadError": "שגיאה בטעינת ההגדרות. אנא נסה שוב."
-    },
-    "team": {
-      "title": "ניהול צוות",
-      "description": "נהל את חברי הצוות והתפקידים שלהם",
-      "you": "אתה",
-      "roleOwner": "בעלים",
-      "roleMember": "חבר צוות",
-      "joinedOn": "הצטרף ב-{date}",
-      "makeOwner": "הפוך לבעלים",
-      "makeMember": "הפוך לחבר צוות",
-      "removeMember": "הסר חבר צוות",
-      "removeConfirmTitle": "הסרת חבר צוות",
-      "removeConfirmDescription": "האם אתה בטוח שברצונך להסיר את חבר הצוות הזה? הוא יאבד גישה לחשבון זה.",
-      "remove": "הסר",
-      "removing": "מסיר...",
-      "memberRemoved": "חבר הצוות הוסר בהצלחה",
-      "removeFailed": "הסרת חבר הצוות נכשלה",
-      "roleChanged": "התפקיד שונה בהצלחה",
-      "roleChangeFailed": "שינוי התפקיד נכשל",
-      "noMembers": "אין עדיין חברי צוות"
+      "saveError": "שגיאה בשמירת ההגדרות. אנא נסה שוב."
     },
     "reviewDetail": {
-      "loadingReview": "טוען ביקורת...",
-      "title": "ביקורת",
-      "description": "פרטי ביקורת",
-      "reviewNotFound": "הביקורת לא נמצאה",
-      "businessNotFound": "העסק לא נמצא",
-      "errorLoading": "שגיאה בטעינת הביקורת",
       "reviewFrom": "ביקורת מאת {reviewerName}"
     },
     "insights": {
       "title": "תובנות",
       "description": "הבן את ביצועי העסק שלך באמצעות ניתוח ביקורות",
-      "loading": "טוען תובנות...",
       "noData": "אין נתונים זמינים",
       "noDataDescription": "אין ביקורות מסווגות לתקופה שנבחרה",
       "dateFilter": {
-        "label": "טווח תאריכים",
         "selectDateRange": "בחירת טווח תאריכים",
         "last7Days": "7 ימים אחרונים",
         "last30Days": "30 ימים אחרונים",
-        "last90Days": "90 ימים אחרונים",
-        "last12Months": "12 חודשים אחרונים",
-        "allTime": "כל הזמנים",
-        "custom": "טווח מותאם",
-        "from": "מתאריך",
-        "to": "עד תאריך",
-        "apply": "החל",
-        "cancel": "ביטול"
+        "last90Days": "90 ימים אחרונים"
       },
       "overview": {
-        "title": "סקירה",
         "totalReviews": "סה״כ ביקורות",
-        "classifiedReviews": "מסווגות",
         "averageRating": "דירוג ממוצע",
-        "sentimentScore": "סנטימנט",
         "positiveSentiment": "חיובי",
         "negativeSentiment": "שלילי"
       },
-      "sentiment": {
-        "title": "התפלגות סנטימנט",
-        "positive": "חיובי",
-        "neutral": "ניטרלי",
-        "negative": "שלילי"
-      },
       "trends": {
-        "title": "מגמות לאורך זמן",
         "reviews": "ביקורות",
-        "rating": "דירוג",
         "average": "ממוצע"
       },
       "noCategories": "אין קטגוריות להצגה",
       "sections": {
-        "sentimentBreakdown": "התפלגות סנטימנט",
         "trends": "מגמות ביקורות",
-        "topPositives": "מה לקוחות אהבו",
-        "topNegatives": "נקודות לשיפור",
         "categories": "קטגוריות"
       },
       "modal": {
@@ -810,8 +648,6 @@
         "content": "תוכן"
       },
       "qrCode": {
-        "title": "קוד QR לביקורות",
-        "description": "התאימו אישית והורידו את קוד ה-QR לאיסוף ביקורות",
         "export": "ייצוא",
         "downloadPng": "הורד PNG",
         "downloadSvg": "הורד SVG"
@@ -865,7 +701,6 @@
         "textPlaceholder": "סרקו לביקורת",
         "textColor": "צבע טקסט",
         "fontSize": "גודל גופן",
-        "badgeHint": "בחרו סגנון מסגרת ״תגית״ כדי להוסיף טקסט",
         "font": "גופן",
         "fonts": {
           "sans-serif": "Sans Serif",
@@ -881,8 +716,7 @@
       "actions": {
         "save": "שמור",
         "saving": "שומר...",
-        "reset": "איפוס",
-        "saveError": "השמירה נכשלה. נסו שוב."
+        "reset": "איפוס"
       },
       "shareLinks": {
         "title": "קישורי שיתוף",
@@ -891,15 +725,9 @@
         "googleMaps": "מפות Google",
         "copy": "העתק",
         "copied": "הועתק!"
-      },
-      "noReviewUrl": {
-        "title": "אין קישור ביקורות זמין",
-        "description": "לעסק זה עדיין לא מוגדר קישור ביקורות Google. הוא יוגדר אוטומטית כשייובאו ביקורות."
       }
     },
     "settings": {
-      "businessNotFound": "עסק לא נמצא",
-      "businessNotFoundDescription": "העסק המבוקש לא נמצא.",
       "disconnected": "מנותק",
       "deleteBusiness": "מחיקת עסק",
       "deleteConfirmation": "פעולה זו תמחק את העסק \"{businessName}\" לצמיתות!",
@@ -909,17 +737,13 @@
     },
     "components": {
       "upgradeBanner": {
-        "title": "אתה משתמש חינמי",
-        "description": "שדרג לתוכנית בשביל להוסיף עסקים, ביקורות ותכונות מתקדמות",
-        "upgradeNow": "שדרג עכשיו",
-        "close": "סגור",
-        "upgradeToPlan": "שדרג לתוכנית בסיסי"
+        "title": "הפעל תגובות AI",
+        "description": "שדרג מיקום זה לתגובות AI ללא הגבלה - $39/חודש",
+        "upgradeNow": "שדרג עכשיו"
       }
     }
   },
   "checkout": {
-    "missingPriceDetails": "חסרים פרטי מחיר. אנא בחר תוכנית מעמוד התמחור.",
-    "error": "אירעה שגיאה בעת יצירת המנוי שלך. אנא נסה שוב או פנה לתמיכה.",
     "processing": "מעבד את המנוי שלך...",
     "almostThere": "כמעט סיימנו!",
     "success": {
@@ -1051,22 +875,28 @@
     "steps": {
       "connect": "חיבור",
       "configure": "הגדרות",
-      "autoReply": "תגובות אוטומטיות"
+      "autoReply": "תגובות אוטומטיות",
+      "subscribe": "מנוי"
     },
-    "illustrations": {
-      "connect": "בואו נחבר את העסק שלך",
-      "choose": "איזה עסק שלך?",
-      "configure": "למד את העוזר ה-AI שלך",
-      "autoReply": "עוד דבר אחד..."
+    "subscribe": {
+      "title": "שחרר תגובות AI ללא הגבלה",
+      "description": "הפעל תוכנית פרו עבור {locationName}",
+      "activateButton": "הפעל פרו - ${price}/חודש",
+      "processing": "מעבד...",
+      "skipFree": "המשך עם תוכנית חינם (5 תגובות/חודש)",
+      "perMonth": "/חודש למיקום",
+      "features": {
+        "unlimitedReplies": "תגובות AI ללא הגבלה",
+        "autoPost": "פרסום אוטומטי לגוגל",
+        "analytics": "ניתוח נתונים ותובנות מלאות",
+        "customTone": "טון דיבור מותאם אישית"
+      },
+      "errorMessage": "שגיאה בהשלמת ההרשמה. אנא נסה שוב."
     },
     "common": {
       "back": "הקודם",
       "next": "הבא",
-      "finish": "סיים",
-      "launch": "הפעל את Bottie",
-      "connecting": "מתחבר...",
       "saving": "שומר...",
-      "loading": "טוען...",
       "tryAgain": "נסה שנית"
     },
     "connectAccount": {
@@ -1085,13 +915,10 @@
       "title": "בחר עסק",
       "description": "בחר את העסק שברצונך לחבר מרשימת העסקים שלך",
       "descriptionWithCount": "בחר את העסק שברצונך לחבר (נמצאו {count} עסקים)",
-      "loadingBusinesses": "טוען עסקים...",
       "connectButton": "חבר עסק זה",
       "connectingButton": "מחבר...",
       "errors": {
-        "rateLimitError": "Google מגביל את מספר הבקשות. נא להמתין דקה ולנסות שוב.",
         "noBusinessesFound": "לא נמצאו עסקים בחשבון Google Business Profile שלך",
-        "failedToLoad": "לא ניתן לטעון עסקים",
         "failedToConnect": "לא ניתן לחבר את העסק"
       }
     },
@@ -1101,17 +928,14 @@
       "errorSaving": "לא ניתן לשמור את ההגדרות"
     },
     "businessDetails": {
-      "title": "העסק שלך",
-      "description": "הגדר את פרטי העסק הבסיסיים שישמשו ביצירת תגובות AI"
+      "title": "העסק שלך"
     },
     "aiSettings": {
-      "title": "סגנון תגובת AI",
-      "description": "התאם אישית את סגנון ואופן התגובות האוטומטיות"
+      "title": "סגנון תגובת AI"
     },
     "starRatings": {
       "title": "כללי תגובה אוטומטית",
       "description": "בחרו אילו דירוגים מקבלים תגובות AI אוטומטיות",
-      "successMessage": "ההגדרות נשמרו בהצלחה!",
       "errorMessage": "לא ניתן לשמור את ההגדרות"
     },
     "importProgress": {
@@ -1159,15 +983,8 @@
     }
   },
   "errors": {
-    "general": "משהו השתבש",
-    "network": "בעיית רשת",
-    "unauthorized": "אין הרשאה",
-    "notFound": "לא נמצא",
-    "validation": "שגיאת אימות",
-    "tryAgain": "נסה שנית",
     "notFoundPage": {
       "title": "404",
-      "heading": "הדף לא נמצא",
       "description": "אופס, נראה שהדף שאתה מחפש לא קיים.",
       "homeButton": "חזור לדף הבית"
     }

@@ -1,21 +1,21 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import type { Subscription } from "@/lib/db/schema";
-import { getActiveSubscription } from "@/lib/actions/subscription.actions";
+import { getPaidLocationIds } from "@/lib/actions/subscription.actions";
+import { PRICE_PER_LOCATION } from "@/lib/subscriptions/plans";
 
-interface UseSubscriptionReturn {
-  subscription: Subscription | null;
+interface UseLocationSubscriptionsReturn {
+  paidLocationIds: string[];
   loading: boolean;
   error: string | null;
-  isActive: boolean;
-  hasPaidSubscription: boolean;
+  isLocationPaid: (locationId: string) => boolean;
+  totalMonthly: number;
 }
 
-export function useSubscription(): UseSubscriptionReturn {
+export function useLocationSubscriptions(): UseLocationSubscriptionsReturn {
   const { user, loading: authLoading } = useAuth();
-  const [subscription, setSubscription] = useState<Subscription | null>(null);
+  const [paidLocationIds, setPaidLocationIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,30 +29,29 @@ export function useSubscription(): UseSubscriptionReturn {
 
     setLoading(true);
 
-    async function loadSubscription() {
+    async function loadSubscriptions() {
       try {
-        const sub = await getActiveSubscription();
-        setSubscription(sub ?? null);
+        const ids = await getPaidLocationIds();
+        setPaidLocationIds(ids);
         setError(null);
       } catch (err) {
-        console.error("Error loading subscription:", err);
-        setError("Error loading subscription");
+        console.error("Error loading location subscriptions:", err);
+        setError("Error loading subscriptions");
       } finally {
         setLoading(false);
       }
     }
 
-    loadSubscription();
+    loadSubscriptions();
   }, [user, authLoading]);
 
-  const isActive = subscription?.status === "active";
-  const hasPaidSubscription = isActive && !!subscription?.polarSubscriptionId;
+  const isLocationPaid = useCallback((locationId: string) => paidLocationIds.includes(locationId), [paidLocationIds]);
 
   return {
-    subscription,
+    paidLocationIds,
     loading,
     error,
-    isActive,
-    hasPaidSubscription,
+    isLocationPaid,
+    totalMonthly: paidLocationIds.length * PRICE_PER_LOCATION,
   };
 }

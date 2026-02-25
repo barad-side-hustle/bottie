@@ -9,16 +9,18 @@ import { UpgradeBanner } from "@/components/dashboard/utils/UpgradeBanner";
 export function DashboardLayoutClient({
   locations,
   pendingCount,
+  user,
   children,
 }: {
   locations: SidebarLocation[];
   pendingCount: number;
+  user: { name: string; email: string; image: string | null };
   children: React.ReactNode;
 }) {
   return (
     <SidebarDataProvider locations={locations} pendingCount={pendingCount}>
       <SidebarProvider>
-        <AppSidebar />
+        <AppSidebar user={user} />
         <SidebarInset>
           <DashboardTopBar />
           <UpgradeBanner />

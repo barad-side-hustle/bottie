@@ -23,7 +23,7 @@ export function StatCard({
   valueColor,
 }: StatCardProps) {
   return (
-    <DashboardCard className="transition-shadow hover:shadow-md">
+    <DashboardCard className="border-transparent shadow-xs hover:shadow-sm transition-shadow">
       <DashboardCardContent className="p-5">
         <div className="flex items-center justify-between gap-4">
           <div className="min-w-0">
@@ -31,8 +31,8 @@ export function StatCard({
             <p className={cn("text-2xl font-bold mt-2 tabular-nums", valueColor)}>{value}</p>
           </div>
           {Icon && (
-            <div className={cn("size-11 rounded-xl shrink-0 flex items-center justify-center", iconBgColor)}>
-              <Icon className={cn("size-5", iconColor)} />
+            <div className={cn("size-10 rounded-lg shrink-0 flex items-center justify-center", iconBgColor)}>
+              <Icon className={cn("size-[18px]", iconColor)} />
             </div>
           )}
         </div>

@@ -3,7 +3,7 @@ export * from "./auth.schema";
 export * from "./users-configs.schema";
 export * from "./accounts.schema";
 export * from "./user-accounts.schema";
-export * from "./subscriptions.schema";
+export * from "./location-subscriptions.schema";
 export * from "./locations.schema";
 export * from "./account-locations.schema";
 export * from "./reviews.schema";

@@ -1,22 +1,27 @@
 "use client";
 
-import { useEffect, useRef, useState, createElement } from "react";
+import { useEffect, useRef, createElement } from "react";
 import { sileo } from "sileo";
-import { useSubscription } from "@/hooks/use-subscription";
+import { useLocationSubscriptions } from "@/hooks/use-subscription";
+import { useCurrentLocation } from "@/hooks/use-current-location";
 import { useTranslations } from "next-intl";
 import { useDirection } from "@/contexts/DirectionProvider";
-import { authClient } from "@/lib/auth-client";
+import { useRouter } from "@/i18n/routing";
 import { ArrowLeft } from "lucide-react";
 
 export function UpgradeBanner() {
   const t = useTranslations("dashboard.components.upgradeBanner");
-  const { hasPaidSubscription, loading } = useSubscription();
+  const { isLocationPaid, loading } = useLocationSubscriptions();
+  const currentLocation = useCurrentLocation();
+  const locationId = currentLocation?.locationId;
   const { dir } = useDirection();
-  const [, setCheckoutLoading] = useState(false);
+  const router = useRouter();
   const hasShown = useRef(false);
 
+  const currentLocationPaid = locationId ? isLocationPaid(locationId) : true;
+
   useEffect(() => {
-    if (loading || hasPaidSubscription || hasShown.current) return;
+    if (loading || currentLocationPaid || hasShown.current || !locationId) return;
     hasShown.current = true;
 
     sileo.action({
@@ -26,19 +31,12 @@ export function UpgradeBanner() {
       ...(dir === "rtl" && { icon: createElement(ArrowLeft, { size: 16 }) }),
       button: {
         title: t("upgradeNow"),
-        onClick: async () => {
-          setCheckoutLoading(true);
-          try {
-            await authClient.checkout({ slug: "pay-as-you-go" });
-          } catch (error) {
-            console.error("Error initiating checkout:", error);
-          } finally {
-            setCheckoutLoading(false);
-          }
+        onClick: () => {
+          router.push("/dashboard/subscription");
         },
       },
     });
-  }, [loading, hasPaidSubscription, t, dir]);
+  }, [loading, currentLocationPaid, locationId, t, dir, router]);
 
   return null;
 }

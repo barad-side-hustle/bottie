@@ -38,8 +38,14 @@ export default async function DashboardLayout({
     }))
   );
 
+  const user = {
+    name: session.user.name,
+    email: session.user.email,
+    image: session.user.image ?? null,
+  };
+
   return (
-    <DashboardLayoutClient locations={locations} pendingCount={pendingCount}>
+    <DashboardLayoutClient locations={locations} pendingCount={pendingCount} user={user}>
       {children}
     </DashboardLayoutClient>
   );

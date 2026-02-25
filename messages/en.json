@@ -8,33 +8,16 @@
     }
   },
   "common": {
-    "loading": "Loading...",
     "save": "Save",
     "saving": "Saving...",
     "cancel": "Cancel",
-    "delete": "Delete",
-    "edit": "Edit",
-    "close": "Close",
     "selectLanguage": "Select language",
-    "selectLanguageDescription": "Choose your preferred language from the list below",
-    "confirm": "Confirm",
-    "back": "Back",
-    "next": "Next",
-    "previous": "Previous",
-    "search": "Search",
-    "filter": "Filter",
-    "sort": "Sort",
-    "yes": "Yes",
-    "no": "No",
     "saveSuccess": "Changes saved successfully",
     "saveError": "An error occurred while saving",
-    "processing": "Processing...",
     "deleting": "Deleting...",
     "textMismatch": "Text does not match:",
     "dangerZone": "Danger Zone",
-    "irreversibleWarning": "This action is irreversible!",
     "irreversibleActions": "Irreversible actions that will affect your account",
-    "additionalInfo": "Additional Information",
     "errorState": {
       "title": "Something went wrong!",
       "description": "An error occurred while loading this page.",
@@ -42,25 +25,13 @@
     }
   },
   "errors": {
-    "general": "Something went wrong",
-    "network": "Network error",
-    "unauthorized": "Unauthorized",
-    "notFound": "Not found",
-    "validation": "Validation error",
-    "tryAgain": "Try again",
     "notFoundPage": {
       "title": "404",
-      "heading": "Page Not Found",
       "description": "Oops, it looks like the page you're looking for doesn't exist.",
       "homeButton": "Go to Homepage"
     }
   },
   "navigation": {
-    "dashboard": {
-      "home": "Home",
-      "subscription": "Plan",
-      "settings": "Settings"
-    },
     "landing": {
       "home": "Home",
       "howItWorks": "How It Works",
@@ -74,11 +45,9 @@
       "locationSettings": "Location Settings",
       "overview": "Overview",
       "billing": "Billing",
-      "account": "Account",
       "settings": "Settings",
       "getReviews": "Get Reviews",
       "locationLabel": "Location",
-      "generalLabel": "General",
       "addLocation": "Add Location",
       "selectLocation": "Select Location"
     }
@@ -95,29 +64,10 @@
       "title": "Professional Responses to Reviews",
       "titleHighlight": "Automatically",
       "description": "Save valuable time and respond to every review in a personal and professional manner with the power of artificial intelligence. Maintain your brand voice and improve business reputation.",
-      "badge": "AI-Powered",
       "cta": "Start Now for Free",
       "ctaSecondary": "See How It Works",
       "badge1": "Completely Free",
-      "badge2": "No Commitment",
-      "illustration": {
-        "averageRating": "Average Rating",
-        "responseRate": "Response Rate",
-        "card1": {
-          "name": "Sarah M.",
-          "text": "Great service! The team was incredibly helpful and professional.",
-          "response": "Thank you so much, Sarah! We truly appreciate your kind words and are thrilled to hear about your experience."
-        },
-        "card2": {
-          "name": "David K.",
-          "text": "Amazing food and atmosphere. Will definitely come back!",
-          "response": "Thank you, David! We're so glad you enjoyed it."
-        },
-        "card3": {
-          "name": "Rachel L.",
-          "text": "Best experience I've had. Highly recommend to everyone!"
-        }
-      }
+      "badge2": "No Commitment"
     },
     "stats": {
       "businesses": "Businesses Connected",
@@ -152,15 +102,16 @@
       "noCreditCard": "No credit card required • Cancel anytime"
     },
     "pricing": {
-      "title": "Simple, Usage-Based Pricing",
-      "subtitle": "Pay only for what you use. All features included for everyone.",
+      "title": "Simple Per-Location Pricing",
+      "subtitle": "Unlimited AI replies for each location. Start free, upgrade anytime.",
       "freeCta": "Start Free",
-      "paidCta": "Upgrade to Pay-as-you-go",
+      "proCta": "Get Started",
       "loading": "Loading...",
-      "perReply": "/reply",
-      "freeReplies": "{count} free AI replies/month",
+      "perLocation": "/location/month",
+      "freeReplies": "{count} free AI replies/month per location",
       "features": {
-        "unlimitedLocations": "Unlimited business locations",
+        "freeReplies": "{count} AI replies/month per location",
+        "unlimitedReplies": "Unlimited AI replies",
         "autoPost": "Auto-post replies",
         "analytics": "Full analytics & insights",
         "customTone": "Custom tone of voice",
@@ -170,17 +121,13 @@
       "plans": {
         "free": {
           "name": "Free",
-          "description": "Get started with {count} AI replies per month"
+          "description": "Get started with {count} AI replies per month per location"
         },
-        "paid": {
-          "name": "Pay as you go",
-          "description": "Unlimited AI replies, billed per use"
+        "pro": {
+          "name": "Pro",
+          "description": "Unlimited AI replies per location"
         }
-      },
-      "yourCurrentPlan": "Your Current Plan",
-      "managePlanDescription": "Manage your subscription and view your usage",
-      "manageBilling": "Manage Billing",
-      "statusActive": "Active"
+      }
     },
     "faq": {
       "title": "Frequently Asked Questions",
@@ -257,10 +204,6 @@
         "pricing": "Pricing",
         "faq": "FAQ"
       },
-      "resources": {
-        "title": "Resources",
-        "sitemap": "Sitemap"
-      },
       "legal": {
         "title": "Legal",
         "privacy": "Privacy Policy",
@@ -273,13 +216,9 @@
     "signOut": "Sign Out",
     "backToLogin": "Back to Login",
     "login": "Login",
-    "loggingIn": "Logging in...",
-    "myAccount": "My Account",
-    "navigating": "Navigating...",
     "user": "User",
     "addBusiness": "Add Business",
     "dashboard": "Dashboard",
-    "language": "Language",
     "checkingAuth": "Verifying authentication...",
     "loginPage": {
       "tagline": "Sign in to start managing your reviews",
@@ -346,11 +285,7 @@
       "goToSignIn": "Go to Sign In"
     },
     "errors": {
-      "firebaseNotConfigured": "Database is not configured. Please check project settings.",
-      "sessionCreationFailed": "Unable to create session. Please try logging in again.",
-      "googleSignInFailed": "An error occurred signing in with Google",
       "signOutFailed": "An error occurred signing out",
-      "authStateError": "An error occurred loading user",
       "authCodeError": "Unable to verify login information. Please try again."
     }
   },
@@ -363,21 +298,13 @@
       "pendingBanner": "You have {count, plural, one {# review} other {# reviews}} awaiting response",
       "reviewNow": "Review Now",
       "yourLocations": "Your Locations",
-      "pendingBadge": "{count} pending"
+      "pendingBadge": "{count} pending",
+      "proBadge": "Pro",
+      "freeBadge": "Free"
     },
     "home": {
       "title": "Overview",
-      "description": "Your business at a glance",
-      "accountBusinessesList": {
-        "noConnectedAccounts": "No connected accounts",
-        "noConnectedAccountsDescription": "You have no connected accounts",
-        "connectAccount": "Connect account",
-        "disconnected": "Disconnected",
-        "navigating": "Navigating...",
-        "viewReviews": "Reviews",
-        "viewInsights": "Insights",
-        "editDetails": "Edit details"
-      }
+      "description": "Your business at a glance"
     },
     "businesses": {
       "forms": {
@@ -446,12 +373,9 @@
         },
         "starRatings": {
           "autoReply": {
-            "label": "Auto Reply",
-            "tooltip": "When enabled, the system will create and send an automatic response to reviews with this rating. Can be disabled for ratings you prefer to handle manually"
+            "label": "Auto Reply"
           },
           "customInstructions": {
-            "label": "Custom Instructions",
-            "tooltip": "Add specific instructions to guide the AI on how to formulate responses for reviews with this rating. For example, for 1-2 stars you can request an apology and invitation to get in touch",
             "placeholder": "Add specific instructions for this rating...",
             "helpers": {
               "low": "Recommended to include an apology and phone number to arrange a personal call with the customer",
@@ -516,41 +440,30 @@
       }
     },
     "subscription": {
-      "title": "Usage & Billing",
-      "description": "Track your AI reply usage and manage billing",
-      "upgradePlan": "Upgrade to Pay-as-you-go",
-      "manageSubscription": "Manage Billing",
-      "errorLoading": "Error loading data. Please try again later.",
+      "title": "Locations & Billing",
+      "description": "Manage your location subscriptions",
+      "upgradePlan": "Upgrade",
       "successMessage": "Your subscription has been activated successfully!",
       "info": {
-        "title": "AI Reply Usage",
-        "description": "Track your AI reply usage this month",
-        "reviewsLabel": "AI Replies This Month",
-        "reviewsCount": "{current} out of {max} replies",
-        "reviewsUnlimited": "{current} replies used (unlimited)",
-        "resetsOn": "Resets on {date}",
-        "costThisMonth": "Cost This Month",
-        "pricePerReply": "Price Per Reply",
-        "daysUntilReset": "Days Until Reset",
-        "memberSince": "Member Since",
-        "freeRepliesLeft": "Free ({remaining} left)",
-        "perReply": "/reply",
-        "days": "{count} days",
+        "title": "Location Subscriptions",
+        "description": "Manage AI reply plans for your locations",
+        "totalLocations": "Total Locations",
+        "activeLocations": "Pro Locations",
+        "freeLocations": "Free Locations",
+        "monthlyTotal": "Monthly Total",
+        "unlimitedReplies": "Unlimited AI replies",
+        "freeRepliesPerMonth": "{count} free AI replies/month",
+        "noLocations": "No locations connected yet.",
+        "upgradeHint": "Upgrade a location for unlimited AI replies at ${price}/month",
         "plans": {
           "free": "Free",
-          "paid": "Pay-as-you-go"
+          "pro": "Pro"
         }
       }
     },
     "accountSettings": {
       "title": "Settings",
       "description": "Manage your account preferences",
-      "languagePreferences": {
-        "title": "Language Preferences",
-        "description": "Choose your preferred language for the interface and emails",
-        "label": "Preferred Language",
-        "tooltip": "This language will be used for all your emails and as the default interface language"
-      },
       "emailNotifications": {
         "title": "Email Notifications",
         "description": "Configure which email notifications you want to receive",
@@ -565,40 +478,12 @@
         "label": "Weekly Summary Emails",
         "tooltip": "Receive an email every Sunday with insights and recommendations",
         "enabled": "Enabled",
-        "disabled": "Disabled",
-        "proRequired": "Upgrade to Pro to receive weekly AI-generated summaries of your reviews with insights and recommendations."
+        "disabled": "Disabled"
       },
       "saveSuccess": "Settings saved successfully",
-      "saveError": "Error saving settings. Please try again.",
-      "loadError": "Error loading settings. Please try again."
-    },
-    "team": {
-      "title": "Team Management",
-      "description": "Manage team members and their roles",
-      "you": "you",
-      "roleOwner": "Owner",
-      "roleMember": "Member",
-      "joinedOn": "Joined on {date}",
-      "makeOwner": "Make Owner",
-      "makeMember": "Make Member",
-      "removeMember": "Remove Member",
-      "removeConfirmTitle": "Remove Team Member",
-      "removeConfirmDescription": "Are you sure you want to remove this team member? They will lose access to this account.",
-      "remove": "Remove",
-      "removing": "Removing...",
-      "memberRemoved": "Team member removed successfully",
-      "removeFailed": "Failed to remove team member",
-      "roleChanged": "Role changed successfully",
-      "roleChangeFailed": "Failed to change role",
-      "noMembers": "No team members yet"
+      "saveError": "Error saving settings. Please try again."
     },
     "reviews": {
-      "title": "Reviews",
-      "description": "All reviews for the business",
-      "loadingReviews": "Loading reviews...",
-      "errorLoading": "Error loading reviews",
-      "businessNotFound": "Business not found",
-      "backToBusinesses": "Back to businesses",
       "reviewsFor": "Reviews for {businessName}",
       "allReviews": "All reviews for your business",
       "noReviews": "No reviews yet",
@@ -609,9 +494,7 @@
           "posted": "Published",
           "rejected": "Rejected",
           "failed": "Failed",
-          "quotaExceeded": "Quota Exceeded",
-          "postedUser": "Posted by User",
-          "postedAi": "Posted by AI"
+          "quotaExceeded": "Quota Exceeded"
         },
         "statusDescription": {
           "pending": "AI generated a reply waiting for your approval before publishing",
@@ -620,15 +503,12 @@
           "failed": "Failed to generate or publish the reply. Try again",
           "quotaExceeded": "Monthly reply quota reached. Upgrade for more"
         },
-        "reviewLabel": "Review",
         "noText": "(no text)",
         "imported": "Imported",
         "importedDescription": "This review was imported from Google and does not count towards your quota",
         "aiReplyLabel": "AI Response",
         "externalReplyLabel": "External Response",
-        "postedReplyLabel": "Posted Reply",
         "actions": {
-          "reject": "Reject",
           "regenerate": "Regenerate",
           "edit": "Edit",
           "publish": "Publish",
@@ -659,8 +539,7 @@
         "dateTooltip": "Date the review was published on Google",
         "replyDateTooltip": "Date the reply was posted to Google",
         "reviewDateLabel": "Review Date",
-        "replyDateLabel": "Reply Date",
-        "reviewInfoLabel": "View review details"
+        "replyDateLabel": "Reply Date"
       },
       "editor": {
         "title": "Edit Reply",
@@ -713,61 +592,32 @@
       }
     },
     "reviewDetail": {
-      "loadingReview": "Loading review...",
-      "title": "Review",
-      "description": "Review details",
-      "reviewNotFound": "Review not found",
-      "businessNotFound": "Business not found",
-      "errorLoading": "Error loading review",
       "reviewFrom": "Review from {reviewerName}"
     },
     "insights": {
       "title": "Insights",
       "description": "Understand your business performance through review analysis",
-      "loading": "Loading insights...",
       "noData": "No data available",
       "noDataDescription": "There are no classified reviews for the selected period",
       "dateFilter": {
-        "label": "Date Range",
         "selectDateRange": "Select Date Range",
         "last7Days": "Last 7 days",
         "last30Days": "Last 30 days",
-        "last90Days": "Last 90 days",
-        "last12Months": "Last 12 months",
-        "allTime": "All time",
-        "custom": "Custom range",
-        "from": "From",
-        "to": "To",
-        "apply": "Apply",
-        "cancel": "Cancel"
+        "last90Days": "Last 90 days"
       },
       "overview": {
-        "title": "Overview",
         "totalReviews": "Total Reviews",
-        "classifiedReviews": "Classified",
         "averageRating": "Avg Rating",
-        "sentimentScore": "Sentiment",
         "positiveSentiment": "Positive",
         "negativeSentiment": "Negative"
       },
-      "sentiment": {
-        "title": "Sentiment Distribution",
-        "positive": "Positive",
-        "neutral": "Neutral",
-        "negative": "Negative"
-      },
       "trends": {
-        "title": "Trends Over Time",
         "reviews": "Reviews",
-        "rating": "Rating",
         "average": "Avg"
       },
       "noCategories": "No categories to display",
       "sections": {
-        "sentimentBreakdown": "Sentiment Breakdown",
         "trends": "Review Trends",
-        "topPositives": "What Customers Love",
-        "topNegatives": "Areas for Improvement",
         "categories": "Categories"
       },
       "modal": {
@@ -805,8 +655,6 @@
         "content": "Content"
       },
       "qrCode": {
-        "title": "Review QR Code",
-        "description": "Customize and download your QR code for collecting reviews",
         "export": "Export",
         "downloadPng": "Download PNG",
         "downloadSvg": "Download SVG"
@@ -860,7 +708,6 @@
         "textPlaceholder": "Scan to Review",
         "textColor": "Text Color",
         "fontSize": "Font Size",
-        "badgeHint": "Select the Badge frame style to add text",
         "font": "Font",
         "fonts": {
           "sans-serif": "Sans Serif",
@@ -876,8 +723,7 @@
       "actions": {
         "save": "Save",
         "saving": "Saving...",
-        "reset": "Reset",
-        "saveError": "Failed to save. Please try again."
+        "reset": "Reset"
       },
       "shareLinks": {
         "title": "Share Links",
@@ -886,15 +732,9 @@
         "googleMaps": "Google Maps",
         "copy": "Copy",
         "copied": "Copied!"
-      },
-      "noReviewUrl": {
-        "title": "No Review Link Available",
-        "description": "This location doesn't have a Google review link configured yet. It will be set automatically when reviews are imported."
       }
     },
     "settings": {
-      "businessNotFound": "Business not found",
-      "businessNotFoundDescription": "The requested business was not found.",
       "disconnected": "Disconnected",
       "deleteBusiness": "Delete Business",
       "deleteConfirmation": "This action will permanently delete the business \"{businessName}\"!",
@@ -904,17 +744,13 @@
     },
     "components": {
       "upgradeBanner": {
-        "title": "You are a free user",
-        "description": "Upgrade to a plan to add businesses, reviews and advanced features",
-        "upgradeNow": "Upgrade Now",
-        "close": "Close",
-        "upgradeToPlan": "Upgrade to Basic Plan"
+        "title": "Activate AI Replies",
+        "description": "Upgrade this location for unlimited AI replies - $39/month",
+        "upgradeNow": "Upgrade Now"
       }
     }
   },
   "checkout": {
-    "missingPriceDetails": "Missing price details. Please select a plan from the pricing page.",
-    "error": "An error occurred while creating your subscription. Please try again or contact support.",
     "processing": "Processing your subscription...",
     "almostThere": "Almost there!",
     "success": {
@@ -1046,22 +882,28 @@
     "steps": {
       "connect": "Connect",
       "configure": "Configure",
-      "autoReply": "Auto-Reply"
+      "autoReply": "Auto-Reply",
+      "subscribe": "Subscribe"
     },
-    "illustrations": {
-      "connect": "Let's connect your business",
-      "choose": "Which business is yours?",
-      "configure": "Teach your AI assistant",
-      "autoReply": "One last thing..."
+    "subscribe": {
+      "title": "Unlock Unlimited AI Replies",
+      "description": "Activate the Pro plan for {locationName}",
+      "activateButton": "Activate Pro - ${price}/month",
+      "processing": "Processing...",
+      "skipFree": "Continue with free plan (5 replies/month)",
+      "perMonth": "/month per location",
+      "features": {
+        "unlimitedReplies": "Unlimited AI replies",
+        "autoPost": "Auto-post to Google",
+        "analytics": "Full analytics & insights",
+        "customTone": "Custom tone of voice"
+      },
+      "errorMessage": "Error completing onboarding. Please try again."
     },
     "common": {
       "back": "Back",
       "next": "Next",
-      "finish": "Finish",
-      "launch": "Launch Bottie",
-      "connecting": "Connecting...",
       "saving": "Saving...",
-      "loading": "Loading...",
       "tryAgain": "Try Again"
     },
     "connectAccount": {
@@ -1080,13 +922,10 @@
       "title": "Choose Business",
       "description": "Select the business you want to connect from your business list",
       "descriptionWithCount": "Select the business you want to connect (found {count} businesses)",
-      "loadingBusinesses": "Loading businesses...",
       "connectButton": "Connect this business",
       "connectingButton": "Connecting...",
       "errors": {
-        "rateLimitError": "Google is limiting the number of requests. Please wait a minute and try again.",
         "noBusinessesFound": "No businesses found in your Google Business Profile account",
-        "failedToLoad": "Unable to load businesses",
         "failedToConnect": "Unable to connect the business"
       }
     },
@@ -1096,17 +935,14 @@
       "errorSaving": "Unable to save settings"
     },
     "businessDetails": {
-      "title": "Your Business",
-      "description": "Set up the basic business details that will be used to create AI responses"
+      "title": "Your Business"
     },
     "aiSettings": {
-      "title": "AI Response Style",
-      "description": "Customize the style and manner of automatic responses"
+      "title": "AI Response Style"
     },
     "starRatings": {
       "title": "Auto-Reply Rules",
       "description": "Choose which ratings get automatic AI responses",
-      "successMessage": "Settings saved successfully!",
       "errorMessage": "Unable to save settings"
     },
     "importProgress": {

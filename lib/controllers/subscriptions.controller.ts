@@ -1,19 +1,22 @@
-import { SubscriptionsRepository, StatsRepository } from "@/lib/db/repositories";
-import { getUsageLimits, type UsageLimits } from "@/lib/subscriptions/plans";
+import { LocationSubscriptionsRepository, StatsRepository } from "@/lib/db/repositories";
+import { getLocationUsageLimits, type LocationUsageLimits } from "@/lib/subscriptions/plans";
 
 export class SubscriptionsController {
-  async getUserUsageLimits(userId: string): Promise<UsageLimits> {
-    const repo = new SubscriptionsRepository();
-    const hasPaid = await repo.hasPaidSubscription(userId);
-    return getUsageLimits(hasPaid);
+  async getLocationUsageLimits(locationId: string): Promise<LocationUsageLimits> {
+    const repo = new LocationSubscriptionsRepository();
+    const isPaid = await repo.isLocationPaid(locationId);
+    return getLocationUsageLimits(isPaid);
   }
 
-  async checkReviewQuota(userId: string): Promise<{ allowed: boolean; currentCount: number; limit: number }> {
-    const repo = new SubscriptionsRepository();
+  async checkLocationQuota(
+    locationId: string
+  ): Promise<{ allowed: boolean; currentCount: number; limit: number; isPaid: boolean }> {
+    const locSubRepo = new LocationSubscriptionsRepository();
     const statsRepo = new StatsRepository();
-    const hasPaid = await repo.hasPaidSubscription(userId);
-    const limits = getUsageLimits(hasPaid);
-    const currentCount = await statsRepo.countUserReviewsThisMonth(userId);
+
+    const isPaid = await locSubRepo.isLocationPaid(locationId);
+    const limits = getLocationUsageLimits(isPaid);
+    const currentCount = await statsRepo.countLocationReviewsThisMonth(locationId);
 
     const allowed = limits.reviewsPerMonth === -1 || currentCount < limits.reviewsPerMonth;
 
@@ -21,11 +24,12 @@ export class SubscriptionsController {
       allowed,
       currentCount,
       limit: limits.reviewsPerMonth,
+      isPaid,
     };
   }
 
-  async hasPaidSubscription(userId: string): Promise<boolean> {
-    const repo = new SubscriptionsRepository();
-    return repo.hasPaidSubscription(userId);
+  async isLocationPaid(locationId: string): Promise<boolean> {
+    const repo = new LocationSubscriptionsRepository();
+    return repo.isLocationPaid(locationId);
   }
 }

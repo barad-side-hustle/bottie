@@ -1,90 +1,95 @@
 import { describe, it, expect, vi, beforeEach, Mock } from "vitest";
 import { StatsController } from "./stats.controller";
-import { StatsRepository, SubscriptionsRepository } from "@/lib/db/repositories";
+import { StatsRepository, LocationSubscriptionsRepository } from "@/lib/db/repositories";
 
 vi.mock("@/lib/db/repositories");
 
 type MockStatsRepo = {
-  countUserLocations: Mock;
-  countUserReviewsThisMonth: Mock;
+  getLocationSummaries: Mock;
 };
 
-type MockSubsRepo = {
-  getActiveSubscriptionForUser: Mock;
+type MockLocSubRepo = {
+  getPaidLocationIds: Mock;
 };
 
 describe("StatsController", () => {
   let controller: StatsController;
   let mockStatsRepo: MockStatsRepo;
-  let mockSubsRepo: MockSubsRepo;
+  let mockLocSubRepo: MockLocSubRepo;
 
   beforeEach(() => {
     vi.clearAllMocks();
 
     mockStatsRepo = {
-      countUserLocations: vi.fn(),
-      countUserReviewsThisMonth: vi.fn(),
+      getLocationSummaries: vi.fn(),
     };
 
-    mockSubsRepo = {
-      getActiveSubscriptionForUser: vi.fn(),
+    mockLocSubRepo = {
+      getPaidLocationIds: vi.fn(),
     };
 
     (StatsRepository as unknown as Mock).mockImplementation(function () {
       return mockStatsRepo;
     });
-    (SubscriptionsRepository as unknown as Mock).mockImplementation(function () {
-      return mockSubsRepo;
+    (LocationSubscriptionsRepository as unknown as Mock).mockImplementation(function () {
+      return mockLocSubRepo;
     });
 
     controller = new StatsController();
   });
 
   describe("getUserStats", () => {
-    it("should return user stats with correct calculations for free user", async () => {
+    it("should return correct stats with paid and unpaid locations", async () => {
       const userId = "user-123";
-      mockStatsRepo.countUserLocations.mockResolvedValue(5);
-      mockStatsRepo.countUserReviewsThisMonth.mockResolvedValue(3);
-      mockSubsRepo.getActiveSubscriptionForUser.mockResolvedValue(null);
+      mockStatsRepo.getLocationSummaries.mockResolvedValue([
+        {
+          locationId: "loc-1",
+          locationName: "Location 1",
+          photoUrl: null,
+          accountId: "acc-1",
+          pendingCount: 2,
+          avgRating: 4.5,
+        },
+        {
+          locationId: "loc-2",
+          locationName: "Location 2",
+          photoUrl: null,
+          accountId: "acc-1",
+          pendingCount: 0,
+          avgRating: 3.0,
+        },
+      ]);
+      mockLocSubRepo.getPaidLocationIds.mockResolvedValue(["loc-1"]);
 
       const result = await controller.getUserStats(userId);
 
-      expect(mockStatsRepo.countUserLocations).toHaveBeenCalledWith(userId);
-      expect(mockStatsRepo.countUserReviewsThisMonth).toHaveBeenCalledWith(userId);
-      expect(mockSubsRepo.getActiveSubscriptionForUser).toHaveBeenCalledWith(userId);
-
-      expect(result.locations).toBe(5);
-      expect(result.reviews).toBe(3);
-      expect(result.subscription).toBeNull();
-      expect(result.hasPaidSubscription).toBe(false);
-      expect(result.limits).toBeDefined();
-      expect(result.limits.reviewsPerMonth).toBeGreaterThan(0);
-      expect(result.reviewsPercent).toBeGreaterThanOrEqual(0);
+      expect(result.totalLocations).toBe(2);
+      expect(result.paidLocations).toBe(1);
+      expect(result.unpaidLocations).toBe(1);
+      expect(result.monthlyTotal).toBe(39);
+      expect(result.locationSummaries[0].isPaid).toBe(true);
+      expect(result.locationSummaries[1].isPaid).toBe(false);
     });
 
-    it("should return unlimited for paid user", async () => {
+    it("should return zero monthly total when no paid locations", async () => {
       const userId = "user-123";
-      const mockSubscription = { id: "sub-1", polarSubscriptionId: "polar-123", status: "active" };
-      mockStatsRepo.countUserLocations.mockResolvedValue(10);
-      mockStatsRepo.countUserReviewsThisMonth.mockResolvedValue(50);
-      mockSubsRepo.getActiveSubscriptionForUser.mockResolvedValue(mockSubscription);
+      mockStatsRepo.getLocationSummaries.mockResolvedValue([
+        {
+          locationId: "loc-1",
+          locationName: "Location 1",
+          photoUrl: null,
+          accountId: "acc-1",
+          pendingCount: 0,
+          avgRating: null,
+        },
+      ]);
+      mockLocSubRepo.getPaidLocationIds.mockResolvedValue([]);
 
       const result = await controller.getUserStats(userId);
 
-      expect(result.hasPaidSubscription).toBe(true);
-      expect(result.limits.reviewsPerMonth).toBe(-1);
-      expect(result.reviewsPercent).toBe(0);
-    });
-
-    it("should cap percentages at 100", async () => {
-      const userId = "user-123";
-      mockStatsRepo.countUserLocations.mockResolvedValue(150);
-      mockStatsRepo.countUserReviewsThisMonth.mockResolvedValue(1500);
-      mockSubsRepo.getActiveSubscriptionForUser.mockResolvedValue(null);
-
-      const result = await controller.getUserStats(userId);
-
-      expect(result.reviewsPercent).toBe(100);
+      expect(result.totalLocations).toBe(1);
+      expect(result.paidLocations).toBe(0);
+      expect(result.monthlyTotal).toBe(0);
     });
   });
 });

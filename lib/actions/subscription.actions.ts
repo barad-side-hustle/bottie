@@ -1,16 +1,15 @@
 "use server";
 
 import { getAuthenticatedUserId } from "@/lib/api/auth";
-import { SubscriptionsRepository } from "@/lib/db/repositories";
-import type { Subscription } from "@/lib/db/schema";
+import { LocationSubscriptionsRepository } from "@/lib/db/repositories";
 
-export async function getActiveSubscription(): Promise<Subscription | null> {
+export async function getPaidLocationIds(): Promise<string[]> {
   try {
     const { userId } = await getAuthenticatedUserId();
-    const repo = new SubscriptionsRepository();
-    return repo.getActiveSubscriptionForUser(userId);
+    const repo = new LocationSubscriptionsRepository();
+    return repo.getPaidLocationIds(userId);
   } catch (error) {
-    console.error("Error getting active subscription:", error);
-    return null;
+    console.error("Error getting paid location IDs:", error);
+    return [];
   }
 }

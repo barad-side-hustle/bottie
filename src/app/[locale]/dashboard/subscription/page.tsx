@@ -5,7 +5,6 @@ import { getTranslations } from "next-intl/server";
 import { getUserStats } from "@/lib/actions/stats.actions";
 import { getAuthenticatedUserId } from "@/lib/api/auth";
 import { SubscriptionInfo } from "@/components/dashboard/dashboard/SubscriptionInfo";
-import { UpgradeButton } from "@/components/dashboard/subscription/UpgradeButton";
 import { SubscriptionSuccessToast } from "@/components/dashboard/subscription/SubscriptionSuccessToast";
 
 export const dynamic = "force-dynamic";
@@ -26,14 +25,12 @@ export default async function SubscriptionPage({ params }: { params: Promise<{ l
 
       <div className="space-y-6">
         <SubscriptionInfo
-          limits={stats.limits}
-          currentReviews={stats.reviews}
-          reviewsPercent={stats.reviewsPercent}
-          hasPaidSubscription={stats.hasPaidSubscription}
-          subscription={stats.subscription}
+          totalLocations={stats.totalLocations}
+          paidLocations={stats.paidLocations}
+          unpaidLocations={stats.unpaidLocations}
+          monthlyTotal={stats.monthlyTotal}
+          locationSummaries={stats.locationSummaries}
         />
-
-        <div className="flex gap-3 flex-wrap">{!stats.hasPaidSubscription && <UpgradeButton />}</div>
       </div>
     </PageContainer>
   );

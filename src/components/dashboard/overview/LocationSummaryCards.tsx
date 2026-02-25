@@ -1,14 +1,14 @@
 "use client";
 
-import { Star, MapPin } from "lucide-react";
+import { Star, MapPin, Crown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/routing";
 import { DashboardCard, DashboardCardContent } from "@/components/ui/dashboard-card";
 import { Badge } from "@/components/ui/badge";
-import type { LocationSummary } from "@/lib/db/repositories/stats.repository";
+import type { LocationSummaryWithSub } from "@/lib/actions/overview.actions";
 import Image from "next/image";
 
-export function LocationSummaryCards({ summaries }: { summaries: LocationSummary[] }) {
+export function LocationSummaryCards({ summaries }: { summaries: LocationSummaryWithSub[] }) {
   const t = useTranslations("dashboard.overview");
   const router = useRouter();
 
@@ -55,11 +55,19 @@ export function LocationSummaryCards({ summaries }: { summaries: LocationSummary
                       )}
                     </div>
                   </div>
-                  {loc.pendingCount > 0 && (
-                    <Badge variant="secondary" className="shrink-0">
-                      {t("pendingBadge", { count: loc.pendingCount })}
-                    </Badge>
-                  )}
+                  <div className="flex items-center gap-2 shrink-0">
+                    {loc.isPaid ? (
+                      <Badge variant="default" className="gap-1">
+                        <Crown className="size-3" />
+                        {t("proBadge")}
+                      </Badge>
+                    ) : (
+                      <Badge variant="secondary">{t("freeBadge")}</Badge>
+                    )}
+                    {loc.pendingCount > 0 && (
+                      <Badge variant="secondary">{t("pendingBadge", { count: loc.pendingCount })}</Badge>
+                    )}
+                  </div>
                 </div>
               </DashboardCardContent>
             </DashboardCard>

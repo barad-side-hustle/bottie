@@ -5,7 +5,6 @@ import { Link, usePathname, useRouter } from "@/i18n/routing";
 import { useDirection } from "@/contexts/DirectionProvider";
 import { useActiveLocation } from "@/hooks/use-active-location";
 import { sidebarLocationItems, resolveHref, type SidebarNavItem } from "@/lib/navigation";
-import { useAuth } from "@/contexts/AuthContext";
 import { useSidebarData } from "@/contexts/SidebarDataContext";
 import { signOut } from "@/lib/auth/auth";
 import { LocationSwitcher } from "./LocationSwitcher";
@@ -38,12 +37,11 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 
-export function AppSidebar() {
+export function AppSidebar({ user }: { user: { name: string; email: string; image: string | null } }) {
   const { dir } = useDirection();
   const t = useTranslations();
   const pathname = usePathname();
   const locationCtx = useActiveLocation();
-  const { user } = useAuth();
   const { pendingCount } = useSidebarData();
   const locale = useLocale() as Locale;
   const router = useRouter();

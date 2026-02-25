@@ -2,14 +2,14 @@ import { betterAuth } from "better-auth";
 import { nextCookies } from "better-auth/next-js";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { render } from "@react-email/render";
-import { polar, checkout, portal, usage, webhooks } from "@polar-sh/better-auth";
+import { polar, checkout, portal, webhooks } from "@polar-sh/better-auth";
 import { db } from "@/lib/db/client";
 import * as authSchema from "@/lib/db/schema/auth.schema";
 import { sendUserWelcomeEmail, sendNewUserNotification } from "@/lib/utils/email-service";
 import VerifyEmailTemplate from "@/lib/emails/verify-email";
 import ResetPasswordEmailTemplate from "@/lib/emails/reset-password";
 import { getPolar } from "@/lib/polar/config";
-import { SubscriptionsRepository } from "@/lib/db/repositories/subscriptions.repository";
+import { LocationSubscriptionsRepository } from "@/lib/db/repositories/location-subscriptions.repository";
 import { env } from "@/lib/env";
 
 export const auth = betterAuth({
@@ -88,51 +88,41 @@ export const auth = betterAuth({
           products: [
             {
               productId: env.POLAR_PRODUCT_ID,
-              slug: "pay-as-you-go",
+              slug: "location-plan",
             },
           ],
           successUrl: "/checkout/success?checkout_id={CHECKOUT_ID}",
           authenticatedUsersOnly: true,
         }),
         portal(),
-        usage(),
         webhooks({
           secret: env.POLAR_WEBHOOK_SECRET,
           onSubscriptionCreated: async (payload) => {
             const userId = payload.data.customer?.externalId;
             if (!userId) return;
 
-            const repo = new SubscriptionsRepository();
-            await repo.upsert(userId, {
-              polarCustomerId: payload.data.customerId,
+            const locationId = (payload.data.metadata as Record<string, string> | undefined)?.locationId;
+            if (!locationId) {
+              console.error("No locationId in subscription metadata", { subscriptionId: payload.data.id });
+              return;
+            }
+
+            const repo = new LocationSubscriptionsRepository();
+            await repo.create({
+              userId,
+              locationId,
+              status: "active",
               polarSubscriptionId: payload.data.id,
-              status: payload.data.status,
             });
           },
           onSubscriptionUpdated: async (payload) => {
-            const userId = payload.data.customer?.externalId;
-            if (!userId) return;
-
-            const repo = new SubscriptionsRepository();
-            const existing = await repo.getByUserId(userId);
-            if (existing) {
-              await repo.update(existing.id, {
-                polarSubscriptionId: payload.data.id,
-                status: payload.data.status,
-              });
-            }
+            const repo = new LocationSubscriptionsRepository();
+            const status = payload.data.status === "active" ? "active" : "canceled";
+            await repo.updateStatusByPolarSubscriptionId(payload.data.id, status);
           },
           onSubscriptionCanceled: async (payload) => {
-            const userId = payload.data.customer?.externalId;
-            if (!userId) return;
-
-            const repo = new SubscriptionsRepository();
-            const existing = await repo.getByUserId(userId);
-            if (existing) {
-              await repo.update(existing.id, {
-                status: "canceled",
-              });
-            }
+            const repo = new LocationSubscriptionsRepository();
+            await repo.cancelByPolarSubscriptionId(payload.data.id);
           },
         }),
       ],

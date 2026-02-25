@@ -1,35 +1,35 @@
 import { describe, it, expect, vi, beforeEach, Mock } from "vitest";
 import { SubscriptionsController } from "./subscriptions.controller";
-import { SubscriptionsRepository, StatsRepository } from "@/lib/db/repositories";
+import { LocationSubscriptionsRepository, StatsRepository } from "@/lib/db/repositories";
 
 vi.mock("@/lib/db/repositories");
 
-type MockSubsRepo = {
-  hasPaidSubscription: Mock;
+type MockLocSubRepo = {
+  isLocationPaid: Mock;
 };
 
 type MockStatsRepo = {
-  countUserReviewsThisMonth: Mock;
+  countLocationReviewsThisMonth: Mock;
 };
 
 describe("SubscriptionsController", () => {
   let controller: SubscriptionsController;
-  let mockSubsRepo: MockSubsRepo;
+  let mockLocSubRepo: MockLocSubRepo;
   let mockStatsRepo: MockStatsRepo;
 
   beforeEach(() => {
     vi.clearAllMocks();
 
-    mockSubsRepo = {
-      hasPaidSubscription: vi.fn(),
+    mockLocSubRepo = {
+      isLocationPaid: vi.fn(),
     };
 
     mockStatsRepo = {
-      countUserReviewsThisMonth: vi.fn(),
+      countLocationReviewsThisMonth: vi.fn(),
     };
 
-    (SubscriptionsRepository as unknown as Mock).mockImplementation(function () {
-      return mockSubsRepo;
+    (LocationSubscriptionsRepository as unknown as Mock).mockImplementation(function () {
+      return mockLocSubRepo;
     });
     (StatsRepository as unknown as Mock).mockImplementation(function () {
       return mockStatsRepo;
@@ -38,75 +38,58 @@ describe("SubscriptionsController", () => {
     controller = new SubscriptionsController();
   });
 
-  describe("getUserUsageLimits", () => {
-    it("should return unlimited reviews for paid users", async () => {
-      mockSubsRepo.hasPaidSubscription.mockResolvedValue(true);
+  describe("checkLocationQuota", () => {
+    it("should return allowed true for paid location (unlimited)", async () => {
+      mockLocSubRepo.isLocationPaid.mockResolvedValue(true);
+      mockStatsRepo.countLocationReviewsThisMonth.mockResolvedValue(100);
 
-      const result = await controller.getUserUsageLimits("user-123");
-
-      expect(result).toEqual({ reviewsPerMonth: -1 });
-    });
-
-    it("should return free tier limits for non-paid users", async () => {
-      mockSubsRepo.hasPaidSubscription.mockResolvedValue(false);
-
-      const result = await controller.getUserUsageLimits("user-123");
-
-      expect(result.reviewsPerMonth).toBeGreaterThan(0);
-    });
-  });
-
-  describe("checkReviewQuota", () => {
-    it("should return allowed true if user has paid subscription (unlimited)", async () => {
-      mockSubsRepo.hasPaidSubscription.mockResolvedValue(true);
-      mockStatsRepo.countUserReviewsThisMonth.mockResolvedValue(100);
-
-      const result = await controller.checkReviewQuota("user-123");
+      const result = await controller.checkLocationQuota("loc-123");
 
       expect(result).toEqual({
         allowed: true,
         currentCount: 100,
         limit: -1,
+        isPaid: true,
       });
     });
 
-    it("should return allowed true if free user is under limit", async () => {
-      mockSubsRepo.hasPaidSubscription.mockResolvedValue(false);
-      mockStatsRepo.countUserReviewsThisMonth.mockResolvedValue(3);
+    it("should return allowed true if free location is under limit", async () => {
+      mockLocSubRepo.isLocationPaid.mockResolvedValue(false);
+      mockStatsRepo.countLocationReviewsThisMonth.mockResolvedValue(3);
 
-      const result = await controller.checkReviewQuota("user-123");
+      const result = await controller.checkLocationQuota("loc-123");
 
       expect(result.allowed).toBe(true);
       expect(result.currentCount).toBe(3);
-      expect(result.limit).toBeGreaterThan(0);
+      expect(result.limit).toBe(5);
+      expect(result.isPaid).toBe(false);
     });
 
-    it("should return allowed false if free user reaches limit", async () => {
-      mockSubsRepo.hasPaidSubscription.mockResolvedValue(false);
+    it("should return allowed false if free location reaches limit", async () => {
+      mockLocSubRepo.isLocationPaid.mockResolvedValue(false);
+      mockStatsRepo.countLocationReviewsThisMonth.mockResolvedValue(5);
 
-      const limits = await controller.getUserUsageLimits("user-123");
-      mockStatsRepo.countUserReviewsThisMonth.mockResolvedValue(limits.reviewsPerMonth);
-
-      const result = await controller.checkReviewQuota("user-123");
+      const result = await controller.checkLocationQuota("loc-123");
 
       expect(result.allowed).toBe(false);
-      expect(result.currentCount).toBe(limits.reviewsPerMonth);
+      expect(result.currentCount).toBe(5);
+      expect(result.limit).toBe(5);
     });
   });
 
-  describe("hasPaidSubscription", () => {
-    it("should return true for paid users", async () => {
-      mockSubsRepo.hasPaidSubscription.mockResolvedValue(true);
+  describe("isLocationPaid", () => {
+    it("should return true for paid locations", async () => {
+      mockLocSubRepo.isLocationPaid.mockResolvedValue(true);
 
-      const result = await controller.hasPaidSubscription("user-123");
+      const result = await controller.isLocationPaid("loc-123");
 
       expect(result).toBe(true);
     });
 
-    it("should return false for free users", async () => {
-      mockSubsRepo.hasPaidSubscription.mockResolvedValue(false);
+    it("should return false for free locations", async () => {
+      mockLocSubRepo.isLocationPaid.mockResolvedValue(false);
 
-      const result = await controller.hasPaidSubscription("user-123");
+      const result = await controller.isLocationPaid("loc-123");
 
       expect(result).toBe(false);
     });

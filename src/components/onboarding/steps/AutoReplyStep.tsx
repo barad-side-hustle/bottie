@@ -7,7 +7,6 @@ import {
   StarRatingConfigFormData,
 } from "@/components/dashboard/locations/forms/StarRatingConfigForm";
 import { OnboardingFormPanel } from "@/components/onboarding/OnboardingFormPanel";
-import { Rocket } from "lucide-react";
 
 interface AutoReplyStepProps {
   initialStarRatings: StarRatingConfigFormData;
@@ -42,11 +41,10 @@ export function AutoReplyStep({ initialStarRatings, onFinish, onBack, progressBa
       progressBar={progressBar}
       backButton={{ onClick: onBack, loading: saving, label: tCommon("back") }}
       nextButton={{
-        label: tCommon("launch"),
+        label: tCommon("next"),
         loadingLabel: tCommon("saving"),
         onClick: handleFinish,
         loading: saving,
-        icon: <Rocket className="h-4 w-4" />,
       }}
     >
       <StarRatingConfigForm values={formData} onChange={handleChange} />

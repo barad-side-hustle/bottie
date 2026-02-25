@@ -5,7 +5,7 @@ import { getMessages, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { DirectionProvider } from "@/contexts/DirectionProvider";
-import { Toaster as SileoToaster } from "sileo";
+import { DirectionalToaster } from "@/components/DirectionalToaster";
 import { RybbitProvider } from "@/components/RybbitProvider";
 import { locales, getLocaleDir, getLocaleCode, localeCodeMap, type Locale } from "@/lib/locale";
 import "../globals.css";
@@ -112,7 +112,7 @@ export default async function LocaleLayout({
             <AuthProvider>
               <RybbitProvider />
               {children}
-              <SileoToaster position="top-center" />
+              <DirectionalToaster />
             </AuthProvider>
           </DirectionProvider>
 

@@ -23,15 +23,17 @@ import { ConnectStep } from "./steps/ConnectStep";
 import { ChooseLocationStep } from "./steps/ChooseLocationStep";
 import { ConfigureStep } from "./steps/ConfigureStep";
 import { AutoReplyStep } from "./steps/AutoReplyStep";
+import { SubscribeStep } from "./steps/SubscribeStep";
 
-type WizardStep = "connect" | "choose" | "configure" | "autoReply" | "celebration";
+type WizardStep = "connect" | "choose" | "configure" | "autoReply" | "subscribe" | "celebration";
 
 const STEP_TO_PROGRESS: Record<WizardStep, number> = {
   connect: 0,
   choose: 0,
   configure: 1,
   autoReply: 2,
-  celebration: 3,
+  subscribe: 3,
+  celebration: 4,
 };
 
 interface OnboardingWizardProps {
@@ -81,7 +83,10 @@ export function OnboardingWizard({
     setCurrentStep(step);
   }, []);
 
-  const stepLabels = useMemo(() => [t("steps.connect"), t("steps.configure"), t("steps.autoReply")], [t]);
+  const stepLabels = useMemo(
+    () => [t("steps.connect"), t("steps.configure"), t("steps.autoReply"), t("steps.subscribe")],
+    [t]
+  );
 
   const defaults = useMemo(() => getDefaultLocationConfig(), []);
 
@@ -208,15 +213,24 @@ export function OnboardingWizard({
       };
 
       await updateLocationConfig({ locationId, config: combinedConfig });
-      await updateOnboardingStatus(true);
 
-      sendRybbitEvent("onboarding_completed");
-      storeReset();
-
-      goForward("celebration");
+      goForward("subscribe");
     } catch (error) {
       console.error("Error saving configuration:", error);
       sileo.error({ title: t("starRatings.errorMessage") });
+    }
+  };
+
+  const handleSubscribeSkip = async () => {
+    if (!locationId) return;
+    try {
+      await updateOnboardingStatus(true);
+      sendRybbitEvent("onboarding_completed");
+      storeReset();
+      goForward("celebration");
+    } catch (error) {
+      console.error("Error completing onboarding:", error);
+      sileo.error({ title: t("subscribe.errorMessage") });
     }
   };
 
@@ -259,6 +273,17 @@ export function OnboardingWizard({
             initialStarRatings={initialStarRatingsValue}
             onFinish={handleFinish}
             onBack={() => goBackward("configure")}
+            progressBar={progressBar}
+          />
+        );
+
+      case "subscribe":
+        return (
+          <SubscribeStep
+            locationId={locationId!}
+            locationName={locationData?.name || ""}
+            onSkip={handleSubscribeSkip}
+            onBack={() => goBackward("autoReply")}
             progressBar={progressBar}
           />
         );

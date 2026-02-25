@@ -1,40 +1,45 @@
-import { StatsRepository } from "@/lib/db/repositories";
-import { SubscriptionsRepository } from "@/lib/db/repositories";
-import { getUsageLimits, type UsageLimits } from "@/lib/subscriptions/plans";
-import type { Subscription } from "@/lib/db/schema";
+import { StatsRepository, LocationSubscriptionsRepository } from "@/lib/db/repositories";
+import { PRICE_PER_LOCATION } from "@/lib/subscriptions/plans";
+import type { LocationSummary } from "@/lib/db/repositories/stats.repository";
+
+export interface LocationSummaryWithSubscription extends LocationSummary {
+  isPaid: boolean;
+}
 
 export interface UserStats {
-  locations: number;
-  reviews: number;
-  reviewsPercent: number;
-  limits: UsageLimits;
-  subscription: Subscription | null;
-  hasPaidSubscription: boolean;
+  totalLocations: number;
+  paidLocations: number;
+  unpaidLocations: number;
+  monthlyTotal: number;
+  locationSummaries: LocationSummaryWithSubscription[];
 }
 
 export class StatsController {
   async getUserStats(userId: string): Promise<UserStats> {
     const statsRepo = new StatsRepository();
-    const subRepo = new SubscriptionsRepository();
+    const locSubRepo = new LocationSubscriptionsRepository();
 
-    const [locations, reviews, subscription] = await Promise.all([
-      statsRepo.countUserLocations(userId),
-      statsRepo.countUserReviewsThisMonth(userId),
-      subRepo.getActiveSubscriptionForUser(userId),
+    const [locationSummaries, paidLocationIds] = await Promise.all([
+      statsRepo.getLocationSummaries(userId),
+      locSubRepo.getPaidLocationIds(userId),
     ]);
 
-    const hasPaid = !!subscription?.polarSubscriptionId;
-    const limits = getUsageLimits(hasPaid);
-    const reviewsPercent =
-      limits.reviewsPerMonth === -1 ? 0 : Math.min(100, Math.round((reviews * 100) / limits.reviewsPerMonth));
+    const paidSet = new Set(paidLocationIds);
+
+    const locationSummariesWithSub: LocationSummaryWithSubscription[] = locationSummaries.map((ls) => ({
+      ...ls,
+      isPaid: paidSet.has(ls.locationId),
+    }));
+
+    const totalLocations = locationSummaries.length;
+    const paidLocations = paidLocationIds.length;
 
     return {
-      locations,
-      reviews,
-      reviewsPercent,
-      limits,
-      subscription,
-      hasPaidSubscription: hasPaid,
+      totalLocations,
+      paidLocations,
+      unpaidLocations: totalLocations - paidLocations,
+      monthlyTotal: paidLocations * PRICE_PER_LOCATION,
+      locationSummaries: locationSummariesWithSub,
     };
   }
 }

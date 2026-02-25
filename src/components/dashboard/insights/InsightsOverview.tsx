@@ -25,13 +25,13 @@ export function InsightsOverview({ stats }: InsightsOverviewProps) {
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       <StatCard label={t("totalReviews")} value={stats.totalReviews} icon={MessageSquare} />
 
-      <DashboardCard>
-        <DashboardCardContent className="p-6">
+      <DashboardCard className="border-transparent shadow-xs hover:shadow-sm transition-shadow">
+        <DashboardCardContent className="p-5">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-muted-foreground">{t("averageRating")}</p>
-              <div className="flex items-center gap-2 mt-1">
-                <p className="text-3xl font-bold">{stats.averageRating.toFixed(1)}</p>
+              <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("averageRating")}</p>
+              <div className="flex items-center gap-2 mt-2">
+                <p className="text-2xl font-bold tabular-nums">{stats.averageRating.toFixed(1)}</p>
                 <StarRating rating={Math.round(stats.averageRating)} size={16} />
               </div>
             </div>

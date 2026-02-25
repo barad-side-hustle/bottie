@@ -28,3 +28,6 @@ jobs:
 
       - name: Run tests
         run: yarn test run
+
+      - name: Check translations
+        run: yarn i18n:check

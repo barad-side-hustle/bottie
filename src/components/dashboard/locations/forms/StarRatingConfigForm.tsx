@@ -1,11 +1,11 @@
 "use client";
 
-import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import { StarRating } from "@/components/ui/StarRating";
-import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
-import { TooltipIcon } from "@/components/ui/tooltip";
 import { Location } from "@/lib/types";
+import { cn } from "@/lib/utils";
+import { Check, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 export type StarRatingConfigFormData = Location["starConfigs"];
@@ -13,16 +13,10 @@ export type StarRatingConfigFormData = Location["starConfigs"];
 interface StarRatingConfigFormProps {
   values: StarRatingConfigFormData;
   onChange: (rating: 1 | 2 | 3 | 4 | 5, config: { autoReply: boolean; customInstructions: string }) => void;
-  showTooltips?: boolean;
   disabled?: boolean;
 }
 
-export function StarRatingConfigForm({
-  values,
-  onChange,
-  showTooltips = true,
-  disabled = false,
-}: StarRatingConfigFormProps) {
+export function StarRatingConfigForm({ values, onChange, disabled = false }: StarRatingConfigFormProps) {
   const t = useTranslations("dashboard.businesses.forms.starRatings");
 
   return (
@@ -32,55 +26,55 @@ export function StarRatingConfigForm({
 
         return (
           <div key={rating} className="pb-6 last:pb-0 border-b last:border-b-0 border-border/40">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2">
-                  {showTooltips && (
-                    <TooltipIcon text={t("autoReply.tooltip")} additionalInfoLabel={t("autoReply.label")} />
-                  )}
-                  <Label htmlFor={`auto-reply-${rating}`} className="text-sm font-medium cursor-pointer">
-                    {t("autoReply.label")}
-                  </Label>
-                </div>
-                <Switch
-                  id={`auto-reply-${rating}`}
-                  checked={starConfig.autoReply}
-                  onCheckedChange={(checked) =>
-                    onChange(rating, {
-                      ...starConfig,
-                      autoReply: checked,
-                    })
-                  }
-                  disabled={disabled}
-                />
-              </div>
+            <div className="mb-3">
               <StarRating rating={rating} size={18} />
             </div>
 
             <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                {showTooltips && (
-                  <TooltipIcon
-                    text={t("customInstructions.tooltip")}
-                    additionalInfoLabel={t("customInstructions.label")}
-                  />
+              <div
+                className={cn(
+                  "rounded-md border border-input bg-background overflow-hidden",
+                  "focus-within:ring-1 focus-within:ring-ring"
                 )}
-                <Label htmlFor={`instructions-${rating}`}>{t("customInstructions.label")}</Label>
+              >
+                <div className="px-3 pt-2.5 pb-1">
+                  <button
+                    type="button"
+                    disabled={disabled}
+                    onClick={() =>
+                      onChange(rating, {
+                        ...starConfig,
+                        autoReply: !starConfig.autoReply,
+                      })
+                    }
+                  >
+                    <Badge
+                      variant={starConfig.autoReply ? "default" : "secondary"}
+                      className={cn(
+                        "cursor-pointer select-none transition-colors gap-1",
+                        disabled && "pointer-events-none opacity-50"
+                      )}
+                    >
+                      {starConfig.autoReply ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
+                      {t("autoReply.label")}
+                    </Badge>
+                  </button>
+                </div>
+                <Textarea
+                  id={`instructions-${rating}`}
+                  value={starConfig.customInstructions}
+                  onChange={(e) =>
+                    onChange(rating, {
+                      ...starConfig,
+                      customInstructions: e.target.value,
+                    })
+                  }
+                  placeholder={t("customInstructions.placeholder")}
+                  rows={3}
+                  disabled={disabled}
+                  className="text-sm resize-none border-0 shadow-none focus-visible:ring-0 rounded-none"
+                />
               </div>
-              <Textarea
-                id={`instructions-${rating}`}
-                value={starConfig.customInstructions}
-                onChange={(e) =>
-                  onChange(rating, {
-                    ...starConfig,
-                    customInstructions: e.target.value,
-                  })
-                }
-                placeholder={t("customInstructions.placeholder")}
-                rows={3}
-                disabled={disabled}
-                className="text-sm resize-none"
-              />
               {rating <= 2 && (
                 <p className="text-xs text-muted-foreground text-start">{t("customInstructions.helpers.low")}</p>
               )}

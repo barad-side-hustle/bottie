@@ -59,6 +59,17 @@ export class StatsRepository {
     return result[0]?.count || 0;
   }
 
+  async countLocationReviewsThisMonth(locationId: string): Promise<number> {
+    const startDate = startOfMonth(new Date());
+
+    const result = await db
+      .select({ count: countDistinct(reviews.id) })
+      .from(reviews)
+      .where(and(eq(reviews.locationId, locationId), gte(reviews.receivedAt, startDate)));
+
+    return result[0]?.count || 0;
+  }
+
   async countPendingReviews(userId: string): Promise<number> {
     const result = await db
       .select({ count: count() })
