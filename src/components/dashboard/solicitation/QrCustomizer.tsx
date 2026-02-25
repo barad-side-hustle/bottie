@@ -20,6 +20,7 @@ import { QrContentControls } from "./controls/QrContentControls";
 import { getDefaultQrSettings } from "@/lib/utils/qr-defaults";
 import { updateLocationConfig } from "@/lib/actions/locations.actions";
 import type { QrCodeSettings } from "@/lib/types/qr-settings.types";
+import { sendRybbitEvent } from "@/lib/analytics";
 
 const QR_SIZE = 384;
 
@@ -56,6 +57,7 @@ export function QrCustomizer({ reviewUrl, mapsUrl, locationId, locationName, ini
     setSaving(true);
     try {
       await updateLocationConfig({ locationId, config: { qrCodeSettings: settings } });
+      sendRybbitEvent("qr_settings_saved");
     } catch {
       console.error("Failed to save QR settings");
     } finally {
@@ -70,11 +72,13 @@ export function QrCustomizer({ reviewUrl, mapsUrl, locationId, locationName, ini
   const handleDownloadPng = useCallback(() => {
     if (!qrRef.current) return;
     downloadQrPng(qrRef.current, settings, QR_SIZE, `${filePrefix}-review-qr`);
+    sendRybbitEvent("qr_exported", { format: "png" });
   }, [settings, filePrefix]);
 
   const handleDownloadSvg = useCallback(() => {
     if (!qrRef.current) return;
     downloadQrSvg(qrRef.current, `${filePrefix}-review-qr`);
+    sendRybbitEvent("qr_exported", { format: "svg" });
   }, [filePrefix]);
 
   return (

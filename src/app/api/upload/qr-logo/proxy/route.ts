@@ -17,9 +17,8 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Extract R2 key from URL, stripping the public URL prefix and query params
     const parsed = new URL(url);
-    const key = parsed.pathname.slice(1); // remove leading /
+    const key = parsed.pathname.slice(1);
 
     const client = getR2Client();
     const result = await client.send(
