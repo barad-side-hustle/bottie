@@ -82,7 +82,7 @@ export function QrCustomizer({ reviewUrl, mapsUrl, locationId, locationName, ini
       <DashboardCardContent className="flex flex-1 flex-col">
         <div className="flex flex-1 flex-col gap-6">
           <div className="flex flex-col items-center">
-            <div className="rounded-xl border border-border/40 bg-white p-4">
+            <div className="max-w-full rounded-xl border border-border/40 bg-white p-4">
               <QrFrame ref={qrRef} url={activeUrl} settings={settings} size={QR_SIZE} />
             </div>
           </div>

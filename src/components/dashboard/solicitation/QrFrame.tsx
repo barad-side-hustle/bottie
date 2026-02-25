@@ -23,7 +23,7 @@ export const QrFrame = forwardRef<QrStyledHandle, QrFrameProps>(function QrFrame
   return (
     <div
       className={cn(
-        "inline-flex flex-col items-center overflow-hidden",
+        "inline-flex max-w-full flex-col items-center overflow-hidden",
         hasFrame && "border-[3px]",
         isRounded && "rounded-2xl"
       )}

@@ -131,9 +131,9 @@ export const QrStyled = forwardRef<QrStyledHandle, QrStyledProps>(function QrSty
   }, [url, settings, size, logoDataUrl]);
 
   return (
-    <div style={{ width: size, height: size }} className="relative">
+    <div style={{ maxWidth: size, aspectRatio: "1" }} className="relative w-full">
       {!ready && <div className="absolute inset-0 animate-pulse rounded-lg bg-muted" />}
-      <div ref={containerRef} />
+      <div ref={containerRef} className="[&_canvas]:max-w-full [&_canvas]:h-auto" />
     </div>
   );
 });
