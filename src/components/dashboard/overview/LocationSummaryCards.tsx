@@ -22,7 +22,10 @@ export function LocationSummaryCards({ summaries }: { summaries: LocationSummary
           <button
             key={loc.locationId}
             type="button"
-            onClick={() => router.push(`/dashboard/accounts/${loc.accountId}/locations/${loc.locationId}/reviews`)}
+            onClick={() => {
+              const base = `/dashboard/accounts/${loc.accountId}/locations/${loc.locationId}/reviews`;
+              router.push(loc.pendingCount > 0 ? `${base}?replyStatus=pending` : base);
+            }}
             className="text-start w-full"
           >
             <DashboardCard className="hover:shadow-md hover:border-primary/20 transition-all cursor-pointer">

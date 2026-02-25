@@ -75,6 +75,8 @@
       "overview": "Overview",
       "billing": "Billing",
       "account": "Account",
+      "settings": "Settings",
+      "getReviews": "Get Reviews",
       "locationLabel": "Location",
       "generalLabel": "General",
       "addLocation": "Add Location",
@@ -85,7 +87,8 @@
     "overview": "Overview",
     "reviews": "Reviews",
     "insights": "Insights",
-    "settings": "Settings"
+    "settings": "Settings",
+    "getReviews": "Get Reviews"
   },
   "landing": {
     "hero": {
@@ -618,6 +621,7 @@
         "reviewLabel": "Review",
         "noText": "(no text)",
         "imported": "Imported",
+        "importedDescription": "This review was imported from Google and does not count towards your quota",
         "aiReplyLabel": "AI Response",
         "externalReplyLabel": "External Response",
         "postedReplyLabel": "Posted Reply",
@@ -783,6 +787,101 @@
         "expertise": "Expertise",
         "results": "Results",
         "safety": "Safety"
+      }
+    },
+    "solicitation": {
+      "title": "Get Reviews",
+      "description": "Share links and QR codes to collect more reviews from customers",
+      "tabs": {
+        "design": "Design",
+        "content": "Content"
+      },
+      "qrCode": {
+        "title": "Review QR Code",
+        "description": "Customize and download your QR code for collecting reviews",
+        "export": "Export",
+        "downloadPng": "Download PNG",
+        "downloadSvg": "Download SVG"
+      },
+      "content": {
+        "linkType": "QR Link Target",
+        "linkTypes": {
+          "review": "Review Link",
+          "googleMaps": "Google Maps",
+          "custom": "Custom URL"
+        }
+      },
+      "colors": {
+        "foreground": "Foreground Color",
+        "background": "Background Color"
+      },
+      "dotStyle": {
+        "title": "Dot Shape",
+        "square": "Square",
+        "dots": "Dots",
+        "rounded": "Rounded",
+        "extra-rounded": "Extra Rounded",
+        "classy": "Classy",
+        "classy-rounded": "Classy Rounded"
+      },
+      "cornerStyle": {
+        "outerTitle": "Outer Corner",
+        "innerTitle": "Inner Corner",
+        "square": "Square",
+        "dot": "Round",
+        "extra-rounded": "Rounded"
+      },
+      "logo": {
+        "title": "Logo",
+        "upload": "Upload Logo",
+        "remove": "Remove",
+        "change": "Change",
+        "uploaded": "Logo uploaded",
+        "size": "Logo Size",
+        "uploading": "Uploading...",
+        "maxSize": "PNG, JPEG or WebP. Max 5MB."
+      },
+      "frame": {
+        "title": "Frame Style",
+        "none": "None",
+        "simple": "Simple",
+        "rounded": "Rounded",
+        "badge": "Badge",
+        "color": "Frame Color",
+        "text": "Badge Text",
+        "textPlaceholder": "Scan to Review",
+        "textColor": "Text Color",
+        "fontSize": "Font Size",
+        "badgeHint": "Select the Badge frame style to add text",
+        "font": "Font",
+        "fonts": {
+          "sans-serif": "Sans Serif",
+          "serif": "Serif",
+          "monospace": "Monospace",
+          "cursive": "Cursive",
+          "arial": "Arial",
+          "georgia": "Georgia",
+          "impact": "Impact",
+          "verdana": "Verdana"
+        }
+      },
+      "actions": {
+        "save": "Save",
+        "saving": "Saving...",
+        "reset": "Reset",
+        "saveError": "Failed to save. Please try again."
+      },
+      "shareLinks": {
+        "title": "Share Links",
+        "description": "Copy and share these links with your customers",
+        "googleReviews": "Google Reviews",
+        "googleMaps": "Google Maps",
+        "copy": "Copy",
+        "copied": "Copied!"
+      },
+      "noReviewUrl": {
+        "title": "No Review Link Available",
+        "description": "This location doesn't have a Google review link configured yet. It will be set automatically when reviews are imported."
       }
     },
     "settings": {

@@ -7,7 +7,7 @@ export function buildLocationBreadcrumbs(params: {
   locationName: string;
   accountId: string;
   locationId: string;
-  currentSection: "reviews" | "insights" | "settings";
+  currentSection: "reviews" | "insights" | "settings" | "getReviews";
   t: (key: string) => string;
   reviewerName?: string;
 }): BreadcrumbItem[] {

@@ -61,6 +61,8 @@
       "overview": "סקירה",
       "billing": "חיוב",
       "account": "חשבון",
+      "settings": "הגדרות",
+      "getReviews": "קבלת ביקורות",
       "locationLabel": "עסק",
       "generalLabel": "כללי",
       "addLocation": "הוסף עסק",
@@ -71,7 +73,8 @@
     "overview": "סקירה",
     "reviews": "ביקורות",
     "insights": "תובנות",
-    "settings": "הגדרות"
+    "settings": "הגדרות",
+    "getReviews": "קבלת ביקורות"
   },
   "landing": {
     "hero": {
@@ -546,6 +549,7 @@
         "reviewLabel": "ביקורת",
         "noText": "(אין טקסט)",
         "imported": "מיובא",
+        "importedDescription": "ביקורות שיובאו מגוגל בעת ההרשמה שלך ל-Bottie ואינן נספרות במכסה",
         "aiReplyLabel": "תגובת בינה מלאכותית",
         "externalReplyLabel": "תגובה חיצונית",
         "postedReplyLabel": "תגובה שפורסמה",
@@ -788,6 +792,101 @@
         "expertise": "מומחיות",
         "results": "תוצאות",
         "safety": "בטיחות"
+      }
+    },
+    "solicitation": {
+      "title": "קבלת ביקורות",
+      "description": "שתפו קישורים וקודי QR כדי לאסוף עוד ביקורות מלקוחות",
+      "tabs": {
+        "design": "עיצוב",
+        "content": "תוכן"
+      },
+      "qrCode": {
+        "title": "קוד QR לביקורות",
+        "description": "התאימו אישית והורידו את קוד ה-QR לאיסוף ביקורות",
+        "export": "ייצוא",
+        "downloadPng": "הורד PNG",
+        "downloadSvg": "הורד SVG"
+      },
+      "content": {
+        "linkType": "יעד קישור QR",
+        "linkTypes": {
+          "review": "קישור ביקורות",
+          "googleMaps": "מפות Google",
+          "custom": "כתובת מותאמת"
+        }
+      },
+      "colors": {
+        "foreground": "צבע קידמי",
+        "background": "צבע רקע"
+      },
+      "dotStyle": {
+        "title": "צורת נקודות",
+        "square": "ריבוע",
+        "dots": "נקודות",
+        "rounded": "מעוגל",
+        "extra-rounded": "מעוגל מאוד",
+        "classy": "אלגנטי",
+        "classy-rounded": "אלגנטי מעוגל"
+      },
+      "cornerStyle": {
+        "outerTitle": "פינה חיצונית",
+        "innerTitle": "פינה פנימית",
+        "square": "ריבוע",
+        "dot": "עגול",
+        "extra-rounded": "מעוגל"
+      },
+      "logo": {
+        "title": "לוגו",
+        "upload": "העלאת לוגו",
+        "remove": "הסר",
+        "change": "שנה",
+        "uploaded": "לוגו הועלה",
+        "size": "גודל הלוגו",
+        "uploading": "מעלה...",
+        "maxSize": "PNG, JPEG או WebP. עד 5MB."
+      },
+      "frame": {
+        "title": "סגנון מסגרת",
+        "none": "ללא",
+        "simple": "פשוטה",
+        "rounded": "מעוגלת",
+        "badge": "תגית",
+        "color": "צבע מסגרת",
+        "text": "טקסט תגית",
+        "textPlaceholder": "סרקו לביקורת",
+        "textColor": "צבע טקסט",
+        "fontSize": "גודל גופן",
+        "badgeHint": "בחרו סגנון מסגרת ״תגית״ כדי להוסיף טקסט",
+        "font": "גופן",
+        "fonts": {
+          "sans-serif": "Sans Serif",
+          "serif": "Serif",
+          "monospace": "Monospace",
+          "cursive": "Cursive",
+          "arial": "Arial",
+          "georgia": "Georgia",
+          "impact": "Impact",
+          "verdana": "Verdana"
+        }
+      },
+      "actions": {
+        "save": "שמור",
+        "saving": "שומר...",
+        "reset": "איפוס",
+        "saveError": "השמירה נכשלה. נסו שוב."
+      },
+      "shareLinks": {
+        "title": "קישורי שיתוף",
+        "description": "העתיקו ושתפו קישורים אלה עם הלקוחות שלכם",
+        "googleReviews": "ביקורות Google",
+        "googleMaps": "מפות Google",
+        "copy": "העתק",
+        "copied": "הועתק!"
+      },
+      "noReviewUrl": {
+        "title": "אין קישור ביקורות זמין",
+        "description": "לעסק זה עדיין לא מוגדר קישור ביקורות Google. הוא יוגדר אוטומטית כשייובאו ביקורות."
       }
     },
     "settings": {

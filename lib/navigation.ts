@@ -3,13 +3,11 @@ import {
   PiggyBank,
   ShieldQuestionMarkIcon,
   Rocket,
-  CreditCard,
-  Settings,
   MessageSquareQuote,
   Star,
   BarChart3,
   Settings2,
-  LayoutDashboard,
+  QrCode,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -48,24 +46,18 @@ export const sidebarLocationItems: SidebarNavItem[] = [
     scope: "location",
   },
   {
+    href: (ctx) => `/dashboard/accounts/${ctx.accountId}/locations/${ctx.locationId}/get-reviews`,
+    label: "navigation.sidebar.getReviews",
+    icon: QrCode,
+    scope: "location",
+  },
+  {
     href: (ctx) => `/dashboard/accounts/${ctx.accountId}/locations/${ctx.locationId}/settings`,
     label: "navigation.sidebar.locationSettings",
     icon: Settings2,
     scope: "location",
   },
 ];
-
-export const sidebarGlobalItems: SidebarNavItem[] = [
-  { href: "/dashboard/home", label: "navigation.sidebar.overview", icon: LayoutDashboard, scope: "global" },
-  { href: "/dashboard/subscription", label: "navigation.sidebar.billing", icon: CreditCard, scope: "global" },
-];
-
-export const sidebarAccountItem: SidebarNavItem = {
-  href: "/dashboard/settings",
-  label: "navigation.sidebar.account",
-  icon: Settings,
-  scope: "global",
-};
 
 export function resolveHref(
   item: SidebarNavItem,

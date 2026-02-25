@@ -13,18 +13,21 @@ export interface SidebarLocation {
 
 interface SidebarDataContextValue {
   locations: SidebarLocation[];
+  pendingCount: number;
 }
 
 const SidebarDataContext = React.createContext<SidebarDataContextValue | undefined>(undefined);
 
 export function SidebarDataProvider({
   locations,
+  pendingCount,
   children,
 }: {
   locations: SidebarLocation[];
+  pendingCount: number;
   children: React.ReactNode;
 }) {
-  const value = React.useMemo(() => ({ locations }), [locations]);
+  const value = React.useMemo(() => ({ locations, pendingCount }), [locations, pendingCount]);
   return <SidebarDataContext.Provider value={value}>{children}</SidebarDataContext.Provider>;
 }
 

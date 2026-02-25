@@ -7,13 +7,15 @@ import { DashboardTopBar } from "@/components/layout/DashboardTopBar";
 
 export function DashboardLayoutClient({
   locations,
+  pendingCount,
   children,
 }: {
   locations: SidebarLocation[];
+  pendingCount: number;
   children: React.ReactNode;
 }) {
   return (
-    <SidebarDataProvider locations={locations}>
+    <SidebarDataProvider locations={locations} pendingCount={pendingCount}>
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>

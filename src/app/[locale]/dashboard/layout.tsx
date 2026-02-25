@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { getAccountsWithLocations } from "@/lib/actions/accounts.actions";
+import { StatsRepository } from "@/lib/db/repositories/stats.repository";
 import { DashboardLayoutClient } from "./DashboardLayoutClient";
 import type { SidebarLocation } from "@/contexts/SidebarDataContext";
 
@@ -21,7 +22,11 @@ export default async function DashboardLayout({
     redirect(`/${locale}/login`);
   }
 
-  const accounts = await getAccountsWithLocations();
+  const stats = new StatsRepository();
+  const [accounts, pendingCount] = await Promise.all([
+    getAccountsWithLocations(),
+    stats.countPendingReviews(session.user.id),
+  ]);
   const locations: SidebarLocation[] = accounts.flatMap((account) =>
     account.accountLocations.map((al) => ({
       accountId: account.id,
@@ -33,5 +38,9 @@ export default async function DashboardLayout({
     }))
   );
 
-  return <DashboardLayoutClient locations={locations}>{children}</DashboardLayoutClient>;
+  return (
+    <DashboardLayoutClient locations={locations} pendingCount={pendingCount}>
+      {children}
+    </DashboardLayoutClient>
+  );
 }

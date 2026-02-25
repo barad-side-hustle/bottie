@@ -102,7 +102,11 @@ export function ReviewCard({ review, accountId, userId, locationId, onUpdate }: 
     if (!review.consumesQuota) {
       return (
         <div className="flex gap-2">
-          <Badge variant="muted">{t("imported")}</Badge>
+          <ResponsiveTooltip title={t("imported")} description={t("importedDescription")}>
+            <span className="cursor-default">
+              <Badge variant="muted">{t("imported")}</Badge>
+            </span>
+          </ResponsiveTooltip>
           {statusBadge}
         </div>
       );

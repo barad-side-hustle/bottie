@@ -2,6 +2,7 @@ import { integer, jsonb, pgTable, text, timestamp, uuid, index, pgPolicy } from 
 import { sql, relations } from "drizzle-orm";
 import { reviews } from "./reviews.schema";
 import { accountLocations } from "./account-locations.schema";
+import type { QrCodeSettings } from "@/lib/types/qr-settings.types";
 
 export const locations = pgTable(
   "locations",
@@ -40,6 +41,7 @@ export const locations = pgTable(
         5: { customInstructions: string; autoReply: boolean };
       }>()
       .notNull(),
+    qrCodeSettings: jsonb("qr_code_settings").$type<QrCodeSettings>(),
 
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }),
