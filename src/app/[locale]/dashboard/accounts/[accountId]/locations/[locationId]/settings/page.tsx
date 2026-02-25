@@ -3,6 +3,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { Badge } from "@/components/ui/badge";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { buildLocationBreadcrumbs } from "@/lib/utils/breadcrumbs";
+import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { getLocation, getAccountLocations } from "@/lib/actions/locations.actions";
 import { LocationSettingsActions } from "./LocationSettingsActions";
@@ -19,10 +20,12 @@ export default async function LocationSettingsPage({
   const tCommon = await getTranslations({ locale, namespace: "common" });
   const tBreadcrumbs = await getTranslations({ locale, namespace: "breadcrumbs" });
 
-  const [location, accountLocations] = await Promise.all([
-    getLocation({ locationId }),
-    getAccountLocations({ accountId }),
-  ]);
+  let location, accountLocations;
+  try {
+    [location, accountLocations] = await Promise.all([getLocation({ locationId }), getAccountLocations({ accountId })]);
+  } catch {
+    redirect(`/${locale}/dashboard/home`);
+  }
 
   const accountLocation = accountLocations.find((al) => al.locationId === locationId);
 

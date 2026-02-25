@@ -7,6 +7,7 @@ import type { Location, LocationUpdate, AccountLocation } from "@/lib/types";
 import type { Location as DBLocation } from "@/lib/db/schema";
 import { getDefaultLocationConfig } from "@/lib/utils/location-config";
 import { extractLocationId } from "@/lib/google/business-profile";
+import { revalidatePath } from "next/cache";
 import { createSafeAction } from "./safe-action";
 
 const getLocationCached = cache(async (userId: string, locationId: string): Promise<Location> => {
@@ -82,8 +83,9 @@ export const disconnectLocation = createSafeAction(
     accountId: z.string(),
     accountLocationId: z.string(),
   }),
-  async ({ accountId, accountLocationId }, { userId }): Promise<AccountLocation> => {
+  async ({ accountId, accountLocationId }, { userId }): Promise<void> => {
     const controller = new AccountLocationsController(userId, accountId);
-    return controller.disconnectLocation(accountLocationId);
+    await controller.disconnectLocation(accountLocationId);
+    revalidatePath("/dashboard", "layout");
   }
 );

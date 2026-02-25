@@ -14,15 +14,30 @@ export const runtime = "nodejs";
 
 const MAX_IMPORT_COUNT = 500;
 const BATCH_SIZE = 50;
+const CONCURRENCY_LIMIT = 5;
 
 function sendEvent(controller: ReadableStreamDefaultController, encoder: TextEncoder, data: Record<string, unknown>) {
-  controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
+  try {
+    controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}\n\n`));
+  } catch {}
 }
 
 export async function POST(request: Request) {
   const { userId } = await getAuthenticatedUserId();
 
-  const { accountId, locationId } = await request.json();
+  let accountId: string | undefined;
+  let locationId: string | undefined;
+
+  try {
+    const body = await request.json();
+    accountId = body.accountId;
+    locationId = body.locationId;
+  } catch {
+    return new Response(JSON.stringify({ error: "Invalid or empty request body" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
 
   if (!accountId || !locationId) {
     return new Response(JSON.stringify({ error: "Missing accountId or locationId" }), {
@@ -63,63 +78,66 @@ export async function POST(request: Request) {
         let totalSent = false;
 
         const processReviewBatch = async (reviews: GoogleReview[]) => {
-          const processingPromises = reviews.map(async (googleReview) => {
-            const existingReview = await reviewsRepo.findByGoogleReviewId(googleReview.reviewId);
+          for (let i = 0; i < reviews.length; i += CONCURRENCY_LIMIT) {
+            const chunk = reviews.slice(i, i + CONCURRENCY_LIMIT);
+            await Promise.all(
+              chunk.map(async (googleReview) => {
+                const existingReview = await reviewsRepo.findByGoogleReviewId(googleReview.reviewId);
 
-            if (!existingReview) {
-              const hasReply = !!googleReview.reviewReply;
+                if (!existingReview) {
+                  const hasReply = !!googleReview.reviewReply;
 
-              const reviewData: ReviewInsert = {
-                locationId,
-                googleReviewId: googleReview.reviewId,
-                googleReviewName: googleReview.name,
-                name: googleReview.reviewer.displayName,
-                photoUrl: googleReview.reviewer.profilePhotoUrl || null,
-                rating: starRatingToNumber(googleReview.starRating),
-                text: googleReview.comment || "",
-                date: parseGoogleTimestamp(googleReview.createTime),
-                updateTime: parseGoogleTimestamp(googleReview.updateTime),
-                receivedAt: new Date(),
-                isAnonymous: googleReview.reviewer.isAnonymous || false,
-                replyStatus: hasReply ? "posted" : "pending",
-                consumesQuota: false,
-              };
-
-              try {
-                const newReview = await reviewsRepo.create(reviewData);
-                importedCount++;
-
-                safeBackground(`classify imported review ${newReview.id}`, async () => {
-                  const classification = await classifyReview({
-                    rating: reviewData.rating,
-                    text: reviewData.text || null,
-                  });
-                  await reviewsRepo.update(newReview.id, { classifications: classification });
-                });
-
-                if (hasReply && googleReview.reviewReply && googleReview.reviewReply.comment) {
-                  const responseData: Omit<ReviewResponseInsert, "accountId" | "locationId"> = {
-                    reviewId: newReview.id,
-                    text: googleReview.reviewReply.comment,
-                    status: "posted",
-                    postedAt: parseGoogleTimestamp(googleReview.reviewReply.updateTime),
-                    createdAt: new Date(),
-                    generatedBy: null,
-                    type: "imported",
+                  const reviewData: ReviewInsert = {
+                    locationId,
+                    googleReviewId: googleReview.reviewId,
+                    googleReviewName: googleReview.name,
+                    name: googleReview.reviewer.displayName,
+                    photoUrl: googleReview.reviewer.profilePhotoUrl || null,
+                    rating: starRatingToNumber(googleReview.starRating),
+                    text: googleReview.comment || "",
+                    date: parseGoogleTimestamp(googleReview.createTime),
+                    updateTime: parseGoogleTimestamp(googleReview.updateTime),
+                    receivedAt: new Date(),
+                    isAnonymous: googleReview.reviewer.isAnonymous || false,
+                    replyStatus: hasReply ? "posted" : "pending",
+                    consumesQuota: false,
                   };
 
-                  await reviewResponsesRepo.create(responseData);
-                }
-              } catch (error) {
-                if (isDuplicateKeyError(error)) {
-                  return;
-                }
-                throw error;
-              }
-            }
-          });
+                  try {
+                    const newReview = await reviewsRepo.create(reviewData);
+                    importedCount++;
 
-          await Promise.all(processingPromises);
+                    safeBackground(`classify imported review ${newReview.id}`, async () => {
+                      const classification = await classifyReview({
+                        rating: reviewData.rating,
+                        text: reviewData.text || null,
+                      });
+                      await reviewsRepo.update(newReview.id, { classifications: classification });
+                    });
+
+                    if (hasReply && googleReview.reviewReply && googleReview.reviewReply.comment) {
+                      const responseData: Omit<ReviewResponseInsert, "accountId" | "locationId"> = {
+                        reviewId: newReview.id,
+                        text: googleReview.reviewReply.comment,
+                        status: "posted",
+                        postedAt: parseGoogleTimestamp(googleReview.reviewReply.updateTime),
+                        createdAt: new Date(),
+                        generatedBy: null,
+                        type: "imported",
+                      };
+
+                      await reviewResponsesRepo.create(responseData);
+                    }
+                  } catch (error) {
+                    if (isDuplicateKeyError(error)) {
+                      return;
+                    }
+                    throw error;
+                  }
+                }
+              })
+            );
+          }
         };
 
         for await (const reviewsResponse of listReviews(

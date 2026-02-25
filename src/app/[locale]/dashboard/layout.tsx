@@ -24,7 +24,7 @@ export default async function DashboardLayout({
 
   const stats = new StatsRepository();
   const [accounts, pendingCount] = await Promise.all([
-    getAccountsWithLocations(),
+    getAccountsWithLocations({}, { connected: true }),
     stats.countPendingReviews(session.user.id),
   ]);
   const locations: SidebarLocation[] = accounts.flatMap((account) =>
