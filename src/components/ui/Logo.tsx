@@ -2,10 +2,8 @@
 
 import type { Route } from "next";
 import { Link } from "@/i18n/routing";
-
 import { cn } from "@/lib/utils";
-
-import Image from "next/image";
+import { BotIconSvg, FullLogoJsx } from "@/lib/brand/logo";
 
 interface SiteLogoProps {
   href: Route;
@@ -22,23 +20,11 @@ const sizePx = {
 };
 
 export function Logo({ href, className, size = "xl", variant = "icon" }: SiteLogoProps) {
-  const height = sizePx[size];
-
-  const imageSrc = variant === "icon" ? "/images/logo-icon.png" : "/images/logo-full.svg";
+  const px = sizePx[size];
 
   return (
     <Link href={href} className={cn("flex items-center", className)}>
-      <div style={{ height }} className="relative aspect-auto">
-        <Image
-          src={imageSrc}
-          alt="Bottie Logo"
-          height={height}
-          width={variant === "icon" ? height : height * 3}
-          style={{ width: "auto", height: "auto" }}
-          className="h-full w-auto object-contain"
-          priority
-        />
-      </div>
+      {variant === "icon" ? <BotIconSvg size={px} /> : <FullLogoJsx height={px} />}
     </Link>
   );
 }

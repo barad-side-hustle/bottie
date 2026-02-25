@@ -1,9 +1,5 @@
-import Image from "next/image";
 import { ImageResponse } from "next/og";
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
-
-const THEME_COLOR = "#0f74c5";
+import { BotIconSvg, BRAND_BLUE } from "@/lib/brand/logo";
 
 const VALID_SIZES: Record<string, { dimension: number; maskable: boolean }> = {
   "192": { dimension: 192, maskable: false },
@@ -11,11 +7,6 @@ const VALID_SIZES: Record<string, { dimension: number; maskable: boolean }> = {
   "maskable-192": { dimension: 192, maskable: true },
   "maskable-512": { dimension: 512, maskable: true },
 };
-
-async function loadLogoIcon(): Promise<string> {
-  const buffer = await readFile(join(process.cwd(), "public", "images", "logo-icon.png"));
-  return `data:image/png;base64,${buffer.toString("base64")}`;
-}
 
 export async function GET(_request: Request, { params }: { params: Promise<{ size: string }> }) {
   const { size } = await params;
@@ -25,7 +16,6 @@ export async function GET(_request: Request, { params }: { params: Promise<{ siz
     return new Response("Not found", { status: 404 });
   }
 
-  const logoSrc = await loadLogoIcon();
   const { dimension, maskable } = config;
   const logoSize = maskable ? Math.round(dimension * 0.6) : dimension;
 
@@ -37,10 +27,10 @@ export async function GET(_request: Request, { params }: { params: Promise<{ siz
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: maskable ? THEME_COLOR : "transparent",
+        background: maskable ? BRAND_BLUE : "transparent",
       }}
     >
-      <Image alt="" src={logoSrc} width={logoSize} height={logoSize} />
+      <BotIconSvg size={logoSize} color={maskable ? "#ffffff" : undefined} />
     </div>,
     { width: dimension, height: dimension }
   );

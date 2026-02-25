@@ -1,17 +1,8 @@
 import { ImageResponse } from "next/og";
 import { getTranslations } from "next-intl/server";
 
-import {
-  BG_LIGHT,
-  BRAND_BLUE,
-  DARK_TEXT,
-  MUTED_TEXT,
-  PASTEL_LAVENDER,
-  PASTEL_SKY,
-  fixRtlText,
-  loadLogoIcon,
-  loadRubikFont,
-} from "./og-utils";
+import { BotIconSvg, BRAND_BLUE } from "@/lib/brand/logo";
+import { BG_LIGHT, DARK_TEXT, MUTED_TEXT, PASTEL_LAVENDER, PASTEL_SKY, fixRtlText, loadRubikFont } from "./og-utils";
 
 export const alt = "Bottie.ai - AI Review Management";
 export const size = {
@@ -30,11 +21,7 @@ export default async function OGImage({ params }: { params: Promise<{ locale: st
   const description = tMeta("description");
   const isRTL = locale === "he";
 
-  const [rubikBold, rubikRegular, logoSrc] = await Promise.all([
-    loadRubikFont(700),
-    loadRubikFont(400),
-    loadLogoIcon(),
-  ]);
+  const [rubikBold, rubikRegular] = await Promise.all([loadRubikFont(700), loadRubikFont(400)]);
 
   return new ImageResponse(
     <div
@@ -76,7 +63,7 @@ export default async function OGImage({ params }: { params: Promise<{ locale: st
         }}
       />
 
-      <img alt="" src={logoSrc} width={80} height={80} style={{ marginBottom: 28 }} />
+      <BotIconSvg size={80} />
 
       <div
         style={{
@@ -84,6 +71,7 @@ export default async function OGImage({ params }: { params: Promise<{ locale: st
           flexDirection: "column",
           alignItems: "center",
           padding: "0 100px",
+          marginTop: 28,
         }}
       >
         <div
@@ -133,7 +121,7 @@ export default async function OGImage({ params }: { params: Promise<{ locale: st
           gap: 10,
         }}
       >
-        <img alt="" src={logoSrc} width={28} height={28} />
+        <BotIconSvg size={28} />
         <div
           style={{
             fontSize: 22,
@@ -148,8 +136,8 @@ export default async function OGImage({ params }: { params: Promise<{ locale: st
     {
       ...size,
       fonts: [
-        { name: "Rubik", data: rubikBold, weight: 700, style: "normal" },
-        { name: "Rubik", data: rubikRegular, weight: 400, style: "normal" },
+        { name: "Rubik", data: rubikBold, weight: 700 as const, style: "normal" as const },
+        { name: "Rubik", data: rubikRegular, weight: 400 as const, style: "normal" as const },
       ],
     }
   );

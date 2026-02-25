@@ -1,7 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
-export const BRAND_BLUE = "#0f74c5";
 export const DARK_TEXT = "#1a1a2e";
 export const MUTED_TEXT = "#6b7280";
 export const PASTEL_LAVENDER = "#e0d4f5";
@@ -25,9 +24,4 @@ export function fixRtlText(text: string): string {
     .reverse()
     .map((word) => (HEBREW_RE.test(word) ? word.split("").reverse().join("") : word))
     .join(" ");
-}
-
-export async function loadLogoIcon(): Promise<string> {
-  const buffer = await readFile(join(process.cwd(), "public", "images", "logo-icon.png"));
-  return `data:image/png;base64,${buffer.toString("base64")}`;
 }

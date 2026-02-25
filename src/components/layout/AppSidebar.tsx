@@ -13,7 +13,7 @@ import { UpgradeBanner } from "@/components/dashboard/utils/UpgradeBanner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChevronsUpDown, LogOut, Settings, Check, Globe, CreditCard } from "lucide-react";
 import { locales, localeConfig, type Locale } from "@/lib/locale";
-import Image from "next/image";
+import { BotIconSvg } from "@/lib/brand/logo";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -67,7 +67,7 @@ export function AppSidebar() {
             <SidebarMenuButton size="lg" asChild>
               <Link href="/dashboard/home">
                 <div className="flex aspect-square size-8 items-center justify-center">
-                  <Image src="/images/logo-icon.png" alt="Bottie" width={32} height={32} className="size-8" priority />
+                  <BotIconSvg size={32} />
                 </div>
                 <span className="font-semibold">Bottie</span>
                 {pendingCount > 0 && (

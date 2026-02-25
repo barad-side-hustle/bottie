@@ -1,18 +1,10 @@
 import { ImageResponse } from "next/og";
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
+import { BotIconSvg } from "@/lib/brand/logo";
 
 export const size = { width: 32, height: 32 };
 export const contentType = "image/png";
 
-async function loadLogoIcon(): Promise<string> {
-  const buffer = await readFile(join(process.cwd(), "public", "images", "logo-icon.png"));
-  return `data:image/png;base64,${buffer.toString("base64")}`;
-}
-
-export default async function Icon() {
-  const logoSrc = await loadLogoIcon();
-
+export default function Icon() {
   return new ImageResponse(
     <div
       style={{
@@ -24,7 +16,7 @@ export default async function Icon() {
         background: "transparent",
       }}
     >
-      <img alt="" src={logoSrc} width={32} height={32} />
+      <BotIconSvg size={32} />
     </div>,
     { ...size }
   );
