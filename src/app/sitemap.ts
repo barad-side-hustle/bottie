@@ -6,6 +6,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const localizedPages = [
     { path: "", priority: 1.0, changeFrequency: "daily" as const },
+    { path: "about", priority: 0.8, changeFrequency: "monthly" as const },
     { path: "privacy", priority: 0.5, changeFrequency: "monthly" as const },
     { path: "terms", priority: 0.5, changeFrequency: "monthly" as const },
   ];

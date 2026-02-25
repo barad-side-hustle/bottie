@@ -10,6 +10,7 @@ type MockStatsRepo = {
 
 type MockLocSubRepo = {
   getPaidLocationIds: Mock;
+  getPaidLocationIdsAmong: Mock;
 };
 
 describe("StatsController", () => {
@@ -26,6 +27,7 @@ describe("StatsController", () => {
 
     mockLocSubRepo = {
       getPaidLocationIds: vi.fn(),
+      getPaidLocationIdsAmong: vi.fn(),
     };
 
     (StatsRepository as unknown as Mock).mockImplementation(function () {
@@ -60,6 +62,7 @@ describe("StatsController", () => {
         },
       ]);
       mockLocSubRepo.getPaidLocationIds.mockResolvedValue(["loc-1"]);
+      mockLocSubRepo.getPaidLocationIdsAmong.mockResolvedValue(["loc-1"]);
 
       const result = await controller.getUserStats(userId);
 
@@ -84,6 +87,7 @@ describe("StatsController", () => {
         },
       ]);
       mockLocSubRepo.getPaidLocationIds.mockResolvedValue([]);
+      mockLocSubRepo.getPaidLocationIdsAmong.mockResolvedValue([]);
 
       const result = await controller.getUserStats(userId);
 

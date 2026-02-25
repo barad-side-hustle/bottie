@@ -21,16 +21,16 @@ export async function getOverviewData(): Promise<OverviewData> {
   const stats = new StatsRepository();
   const locSubRepo = new LocationSubscriptionsRepository();
 
-  const [pendingCount, avgRating, reviewsThisMonth, locationCount, locationSummaries, paidLocationIds] =
-    await Promise.all([
-      stats.countPendingReviews(userId),
-      stats.getAverageRatingAcrossLocations(userId),
-      stats.countUserReviewsThisMonth(userId),
-      stats.countUserLocations(userId),
-      stats.getLocationSummaries(userId),
-      locSubRepo.getPaidLocationIds(userId),
-    ]);
+  const [pendingCount, avgRating, reviewsThisMonth, locationCount, locationSummaries] = await Promise.all([
+    stats.countPendingReviews(userId),
+    stats.getAverageRatingAcrossLocations(userId),
+    stats.countUserReviewsThisMonth(userId),
+    stats.countUserLocations(userId),
+    stats.getLocationSummaries(userId),
+  ]);
 
+  const locationIds = locationSummaries.map((ls) => ls.locationId);
+  const paidLocationIds = await locSubRepo.getPaidLocationIdsAmong(locationIds);
   const paidSet = new Set(paidLocationIds);
   const summariesWithSub: LocationSummaryWithSub[] = locationSummaries.map((ls) => ({
     ...ls,

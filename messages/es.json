@@ -191,6 +191,27 @@
       "ctaText": "Listo para comenzar? Toma menos de 5 minutos",
       "ctaButton": "Comienza gratis ahora"
     },
+    "demo": {
+      "title": "Velo en accion",
+      "subtitle": "Ajusta la configuracion de IA y observa como las respuestas se actualizan al instante",
+      "aiReplyLabel": "Respuesta IA",
+      "settings": {
+        "toneOfVoice": "Tono de voz",
+        "language": "Idioma de respuesta",
+        "toneOptions": {
+          "professional": "Profesional",
+          "friendly": "Amigable",
+          "formal": "Formal",
+          "humorous": "Humoristico"
+        },
+        "languageOptions": {
+          "autoDetect": "Deteccion automatica",
+          "english": "Ingles",
+          "hebrew": "Hebreo",
+          "spanish": "Espanol"
+        }
+      }
+    },
     "footer": {
       "company": {
         "name": "Bottie.ai",
@@ -207,7 +228,8 @@
       "legal": {
         "title": "Legal",
         "privacy": "Politica de privacidad",
-        "terms": "Terminos de servicio"
+        "terms": "Terminos de servicio",
+        "about": "Acerca de nosotros"
       },
       "copyright": "© {year} Bottie.ai. Todos los derechos reservados."
     }
@@ -801,6 +823,71 @@
         "content": "Para preguntas o aclaraciones sobre los terminos de servicio, por favor contacta a:",
         "email": "alon@bottie.ai"
       }
+    }
+  },
+  "about": {
+    "meta": {
+      "title": "Acerca de Bottie - Gestion de resenas de Google con IA",
+      "description": "Descubre como Bottie.ai ayuda a las empresas a responder automaticamente a las resenas de Google con IA. Ahorra tiempo, mejora tu reputacion online y comprende el sentimiento de tus clientes.",
+      "keywords": "acerca de Bottie, gestion de resenas con IA, automatizacion de Google Business Profile, herramienta de respuesta a resenas, gestion de reputacion empresarial"
+    },
+    "hero": {
+      "title": "Acerca de Bottie.ai",
+      "subtitle": "Ayudamos a las empresas a ahorrar tiempo y construir una reputacion mas solida automatizando las respuestas a resenas de Google con inteligencia artificial."
+    },
+    "mission": {
+      "title": "Nuestra mision",
+      "content": "Cada resena de cliente merece una respuesta profesional y reflexiva, pero para los duenos de negocios ocupados, encontrar el tiempo para responder a cada una es casi imposible. Bottie.ai fue creado para resolver este problema. Nuestra mision es dar a cada negocio, desde tiendas locales hasta empresas con multiples ubicaciones, la capacidad de interactuar con los comentarios de los clientes de manera instantanea y autentica."
+    },
+    "problem": {
+      "title": "El problema que resolvemos",
+      "content": "Las resenas online impactan directamente en las decisiones de compra. Los estudios muestran que el 93% de los consumidores lee resenas online antes de visitar un negocio, y las empresas que responden a las resenas son percibidas como 1.7 veces mas confiables. Sin embargo, la mayoria de los duenos de negocios tienen dificultades para responder de manera consistente, lo que lleva a oportunidades perdidas, quejas sin respuesta y una presencia online debilitada."
+    },
+    "solution": {
+      "title": "Como ayuda Bottie.ai",
+      "content": "Bottie.ai se conecta directamente a tu Perfil de Negocio de Google y monitorea las resenas entrantes en tiempo real. Cuando llega una nueva resena, nuestra IA genera una respuesta personalizada que coincide con el tono y las preferencias de idioma de tu negocio. Puedes revisar y aprobar las respuestas manualmente, o habilitar la publicacion automatica para ahorrar aun mas tiempo."
+    },
+    "features": {
+      "title": "Que hace diferente a Bottie.ai",
+      "items": {
+        "aiPowered": {
+          "title": "Respuestas con IA",
+          "description": "Genera respuestas profesionales y contextuales adaptadas a cada resena utilizando modelos de lenguaje avanzados."
+        },
+        "autoPublish": {
+          "title": "Publicacion automatica o manual",
+          "description": "Elige revisar cada respuesta manualmente o deja que Bottie publique respuestas automaticamente segun tus reglas."
+        },
+        "reputation": {
+          "title": "Gestion de reputacion",
+          "description": "Sigue las tendencias de resenas, analisis de sentimiento e insights accionables para mejorar tu negocio."
+        },
+        "multiLanguage": {
+          "title": "Soporte multiidioma",
+          "description": "Responde a resenas en hebreo, ingles, espanol y mas, en el idioma de tus clientes."
+        },
+        "customTone": {
+          "title": "Tono y voz personalizados",
+          "description": "Configura la IA para que coincida con la personalidad de tu marca: profesional, amigable, casual o cualquier cosa intermedia."
+        },
+        "multiLocation": {
+          "title": "Gestion multi-ubicacion",
+          "description": "Gestiona resenas en todas las ubicaciones de tu negocio desde un unico panel de control."
+        }
+      }
+    },
+    "howItWorks": {
+      "title": "Como funciona",
+      "content": "Comenzar toma solo unos minutos. Conecta tu Perfil de Negocio de Google, selecciona tus ubicaciones y configura tu tono de respuesta e idioma preferidos. Bottie.ai luego monitorea tus resenas las 24 horas. Cuando llega una nueva resena, la IA elabora una respuesta y la publica automaticamente o la pone en cola para tu aprobacion, segun tu configuracion."
+    },
+    "team": {
+      "title": "Hecho en Tel Aviv",
+      "content": "Bottie.ai esta construido por un pequeno equipo en Tel Aviv, Israel, apasionado por ayudar a los negocios locales a prosperar en linea. Entendemos los desafios de gestionar una presencia online porque lo hemos vivido de primera mano, y construimos Bottie para ser la herramienta que deseabamos que existiera."
+    },
+    "cta": {
+      "title": "Listo para ahorrar tiempo en resenas?",
+      "subtitle": "Unete a los negocios que ya usan Bottie.ai para responder a cada resena de Google automaticamente.",
+      "button": "Comienza gratis"
     }
   },
   "privacy": {

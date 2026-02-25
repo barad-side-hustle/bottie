@@ -191,6 +191,27 @@
       "ctaText": "Ready to get started? It takes less than 5 minutes",
       "ctaButton": "Start Now for Free"
     },
+    "demo": {
+      "title": "See It in Action",
+      "subtitle": "Adjust the AI settings and watch the responses update instantly",
+      "aiReplyLabel": "AI Reply",
+      "settings": {
+        "toneOfVoice": "Tone of Voice",
+        "language": "Response Language",
+        "toneOptions": {
+          "professional": "Professional",
+          "friendly": "Friendly",
+          "formal": "Formal",
+          "humorous": "Humorous"
+        },
+        "languageOptions": {
+          "autoDetect": "Auto Detect",
+          "english": "English",
+          "hebrew": "Hebrew",
+          "spanish": "Spanish"
+        }
+      }
+    },
     "footer": {
       "company": {
         "name": "Bottie.ai",
@@ -207,7 +228,8 @@
       "legal": {
         "title": "Legal",
         "privacy": "Privacy Policy",
-        "terms": "Terms of Service"
+        "terms": "Terms of Service",
+        "about": "About Us"
       },
       "copyright": "© {year} Bottie.ai. All rights reserved."
     }
@@ -801,6 +823,71 @@
         "content": "For questions or clarifications regarding the terms of service, please contact:",
         "email": "alon@bottie.ai"
       }
+    }
+  },
+  "about": {
+    "meta": {
+      "title": "About Bottie - AI-Powered Google Review Management",
+      "description": "Learn how Bottie.ai helps businesses automatically respond to Google reviews with AI. Save time, improve your online reputation, and understand customer sentiment.",
+      "keywords": "about Bottie, AI review management, Google Business Profile automation, review response tool, business reputation management"
+    },
+    "hero": {
+      "title": "About Bottie.ai",
+      "subtitle": "We help businesses save time and build stronger reputations by automating Google review responses with artificial intelligence."
+    },
+    "mission": {
+      "title": "Our Mission",
+      "content": "Every customer review deserves a thoughtful, professional response — but for busy business owners, finding the time to reply to each one is nearly impossible. Bottie.ai was built to solve this problem. Our mission is to give every business, from local shops to multi-location enterprises, the ability to engage with customer feedback instantly and authentically."
+    },
+    "problem": {
+      "title": "The Problem We Solve",
+      "content": "Online reviews directly impact purchasing decisions. Studies show that 93% of consumers read online reviews before visiting a business, and businesses that respond to reviews are perceived as 1.7x more trustworthy. Yet most business owners struggle to respond consistently — leading to missed opportunities, unanswered complaints, and a weakened online presence."
+    },
+    "solution": {
+      "title": "How Bottie.ai Helps",
+      "content": "Bottie.ai connects directly to your Google Business Profile and monitors incoming reviews in real time. When a new review arrives, our AI generates a personalized, on-brand response that matches your business tone and language preferences. You can review and approve replies manually, or enable auto-publishing to save even more time."
+    },
+    "features": {
+      "title": "What Makes Bottie.ai Different",
+      "items": {
+        "aiPowered": {
+          "title": "AI-Powered Responses",
+          "description": "Generates professional, contextual replies tailored to each review using advanced language models."
+        },
+        "autoPublish": {
+          "title": "Auto-Publish or Approve",
+          "description": "Choose to review every reply manually or let Bottie publish responses automatically based on your rules."
+        },
+        "reputation": {
+          "title": "Reputation Management",
+          "description": "Track review trends, sentiment analysis, and actionable insights to improve your business."
+        },
+        "multiLanguage": {
+          "title": "Multi-Language Support",
+          "description": "Respond to reviews in Hebrew, English, Spanish, and more — matching your customers' language."
+        },
+        "customTone": {
+          "title": "Custom Tone & Voice",
+          "description": "Configure the AI to match your brand personality — professional, friendly, casual, or anything in between."
+        },
+        "multiLocation": {
+          "title": "Multi-Location Management",
+          "description": "Manage reviews across all your business locations from a single dashboard."
+        }
+      }
+    },
+    "howItWorks": {
+      "title": "How It Works",
+      "content": "Getting started takes just a few minutes. Connect your Google Business Profile, select your locations, and configure your preferred response tone and language. Bottie.ai then monitors your reviews around the clock. When a new review comes in, the AI crafts a response and either publishes it automatically or queues it for your approval — depending on your settings."
+    },
+    "team": {
+      "title": "Built in Tel Aviv",
+      "content": "Bottie.ai is built by a small team in Tel Aviv, Israel, passionate about helping local businesses thrive online. We understand the challenges of managing an online presence because we've seen it firsthand — and we built Bottie to be the tool we wished existed."
+    },
+    "cta": {
+      "title": "Ready to Save Time on Reviews?",
+      "subtitle": "Join businesses already using Bottie.ai to respond to every Google review automatically.",
+      "button": "Get Started for Free"
     }
   },
   "privacy": {

@@ -1,4 +1,4 @@
-import { eq, and } from "drizzle-orm";
+import { eq, and, inArray } from "drizzle-orm";
 import { db } from "@/lib/db/client";
 import { locationSubscriptions, type LocationSubscription, type LocationSubscriptionInsert } from "@/lib/db/schema";
 
@@ -41,6 +41,17 @@ export class LocationSubscriptionsRepository {
       .select({ locationId: locationSubscriptions.locationId })
       .from(locationSubscriptions)
       .where(and(eq(locationSubscriptions.userId, userId), eq(locationSubscriptions.status, "active")));
+
+    return results.map((r) => r.locationId);
+  }
+
+  async getPaidLocationIdsAmong(locationIds: string[]): Promise<string[]> {
+    if (locationIds.length === 0) return [];
+
+    const results = await db
+      .selectDistinct({ locationId: locationSubscriptions.locationId })
+      .from(locationSubscriptions)
+      .where(and(inArray(locationSubscriptions.locationId, locationIds), eq(locationSubscriptions.status, "active")));
 
     return results.map((r) => r.locationId);
   }

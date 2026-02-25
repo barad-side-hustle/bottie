@@ -19,12 +19,14 @@ export class StatsController {
     const statsRepo = new StatsRepository();
     const locSubRepo = new LocationSubscriptionsRepository();
 
-    const [locationSummaries, paidLocationIds] = await Promise.all([
+    const [locationSummaries, userPaidLocationIds] = await Promise.all([
       statsRepo.getLocationSummaries(userId),
       locSubRepo.getPaidLocationIds(userId),
     ]);
 
-    const paidSet = new Set(paidLocationIds);
+    const locationIds = locationSummaries.map((ls) => ls.locationId);
+    const allPaidLocationIds = await locSubRepo.getPaidLocationIdsAmong(locationIds);
+    const paidSet = new Set(allPaidLocationIds);
 
     const locationSummariesWithSub: LocationSummaryWithSubscription[] = locationSummaries.map((ls) => ({
       ...ls,
@@ -32,13 +34,13 @@ export class StatsController {
     }));
 
     const totalLocations = locationSummaries.length;
-    const paidLocations = paidLocationIds.length;
+    const paidLocations = allPaidLocationIds.length;
 
     return {
       totalLocations,
       paidLocations,
       unpaidLocations: totalLocations - paidLocations,
-      monthlyTotal: paidLocations * PRICE_PER_LOCATION,
+      monthlyTotal: userPaidLocationIds.length * PRICE_PER_LOCATION,
       locationSummaries: locationSummariesWithSub,
     };
   }
