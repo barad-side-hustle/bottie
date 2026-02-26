@@ -7,8 +7,6 @@ import { listReviews, starRatingToNumber, parseGoogleTimestamp, GoogleReview } f
 import { decryptToken } from "@/lib/google/business-profile";
 import { ReviewInsert, ReviewResponseInsert } from "@/lib/db/schema";
 import { isDuplicateKeyError } from "@/lib/db/error-handlers";
-import { classifyReview } from "@/lib/ai/classification";
-import { safeBackground } from "@/lib/utils/safe-background";
 
 export const runtime = "nodejs";
 
@@ -101,19 +99,12 @@ export async function POST(request: Request) {
                     isAnonymous: googleReview.reviewer.isAnonymous || false,
                     replyStatus: hasReply ? "posted" : "pending",
                     consumesQuota: false,
+                    notificationSent: hasReply,
                   };
 
                   try {
                     const newReview = await reviewsRepo.create(reviewData);
                     importedCount++;
-
-                    safeBackground(`classify imported review ${newReview.id}`, async () => {
-                      const classification = await classifyReview({
-                        rating: reviewData.rating,
-                        text: reviewData.text || null,
-                      });
-                      await reviewsRepo.update(newReview.id, { classifications: classification });
-                    });
 
                     if (hasReply && googleReview.reviewReply && googleReview.reviewReply.comment) {
                       const responseData: Omit<ReviewResponseInsert, "accountId" | "locationId"> = {

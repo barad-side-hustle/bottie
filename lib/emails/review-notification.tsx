@@ -29,8 +29,8 @@ export interface ReviewNotificationEmailProps {
   reviewerName: string;
   rating: number;
   reviewText: string;
-  aiReply: string;
-  status: "pending" | "posted";
+  aiReply?: string;
+  status: "pending" | "posted" | "failed";
   reviewPageUrl: string;
 }
 
@@ -147,30 +147,39 @@ export default function ReviewNotificationEmail({
                 </div>
               </div>
 
-              <div className="bg-background border border-solid border-border rounded-xl p-6 mb-8 relative">
-                <Row className="mb-4">
-                  <Column className="align-middle">
-                    <Text className="text-xs font-bold uppercase text-primary m-0 tracking-wider">{aiReplyHeader}</Text>
-                  </Column>
-                  <Column className="align-middle text-right">
-                    <Button
-                      className={`text-[10px] font-bold px-3 py-1 rounded-full no-underline cursor-default ${
-                        status === "posted"
-                          ? "text-green-400 bg-green-900/30 border border-green-800"
-                          : "text-blue-400 bg-blue-900/30 border border-blue-800"
-                      }`}
-                    >
-                      {statusText}
-                    </Button>
-                  </Column>
-                </Row>
+              {aiReply ? (
+                <div className="bg-background border border-solid border-border rounded-xl p-6 mb-8 relative">
+                  <Row className="mb-4">
+                    <Column className="align-middle">
+                      <Text className="text-xs font-bold uppercase text-primary m-0 tracking-wider">
+                        {aiReplyHeader}
+                      </Text>
+                    </Column>
+                    <Column className="align-middle text-right">
+                      <Button
+                        className={`text-[10px] font-bold px-3 py-1 rounded-full no-underline cursor-default ${
+                          status === "posted"
+                            ? "text-green-400 bg-green-900/30 border border-green-800"
+                            : "text-blue-400 bg-blue-900/30 border border-blue-800"
+                        }`}
+                      >
+                        {statusText}
+                      </Button>
+                    </Column>
+                  </Row>
 
-                <div className="pl-4 border-l-2 border-primary">
-                  <Text className="text-foreground text-sm leading-relaxed m-0 whitespace-pre-wrap font-sans">
-                    {aiReply}
-                  </Text>
+                  <div className="pl-4 border-l-2 border-primary">
+                    <Text className="text-foreground text-sm leading-relaxed m-0 whitespace-pre-wrap font-sans">
+                      {aiReply}
+                    </Text>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="bg-background border border-solid border-red-800/50 rounded-xl p-6 mb-8 relative">
+                  <Text className="text-red-400 text-sm font-bold m-0 mb-2">{statusText}</Text>
+                  <Text className="text-muted text-sm m-0">Please visit the dashboard to reply manually.</Text>
+                </div>
+              )}
 
               <div className="text-center mt-6">
                 <Button

@@ -15,8 +15,8 @@ interface SendReviewNotificationsParams {
   reviewerName: string;
   reviewRating: number;
   reviewText: string;
-  aiReply: string;
-  replyStatus: "pending" | "posted";
+  aiReply?: string;
+  replyStatus: "pending" | "posted" | "failed";
 }
 
 export async function sendReviewNotifications(params: SendReviewNotificationsParams): Promise<void> {
@@ -80,6 +80,12 @@ export async function sendReviewNotifications(params: SendReviewNotificationsPar
 
       const reviewPageUrl = `${env.NEXT_PUBLIC_APP_URL}/${locale}/dashboard/accounts/${accountId}/locations/${locationId}/reviews/${reviewId}`;
 
+      const statusTextMap = {
+        pending: "Pending Approval",
+        posted: "Posted",
+        failed: "Reply Generation Failed",
+      };
+
       const emailProps: ReviewNotificationEmailProps = {
         title: "New Review Received",
         greeting: `Hi ${recipientName},`,
@@ -87,7 +93,7 @@ export async function sendReviewNotifications(params: SendReviewNotificationsPar
         businessName: locationName,
         noReviewText: "No review text provided",
         aiReplyHeader: "AI Generated Reply",
-        statusText: replyStatus === "pending" ? "Pending Approval" : "Posted",
+        statusText: statusTextMap[replyStatus],
         viewReviewButton: "View Review",
         footer: "You're receiving this email because you enabled notifications for new reviews",
         reviewerName,
@@ -99,7 +105,7 @@ export async function sendReviewNotifications(params: SendReviewNotificationsPar
       };
 
       const emailComponent = <ReviewNotificationEmail {...emailProps} />;
-      const subject = `New ${reviewRating}-star review for ${locationName}`;
+      const subject = `New ${reviewRating}-star review from ${reviewerName} for ${locationName}`;
 
       const result = await sendEmail(recipientEmail, subject, emailComponent);
 

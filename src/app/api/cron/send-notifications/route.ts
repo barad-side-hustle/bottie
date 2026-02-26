@@ -26,20 +26,21 @@ export async function GET(req: NextRequest) {
   }
 
   try {
+    const hasResponse = and(
+      inArray(reviews.replyStatus, ["pending", "posted"]),
+      sql`EXISTS (
+        SELECT 1 FROM review_responses rr
+        WHERE rr.review_id = ${reviews.id}
+        AND rr.status IN ('draft', 'posted')
+      )`
+    );
+
+    const isFailed = eq(reviews.replyStatus, "failed");
+
     const reviewsToNotify = await db
       .select()
       .from(reviews)
-      .where(
-        and(
-          eq(reviews.notificationSent, false),
-          inArray(reviews.replyStatus, ["pending", "posted"]),
-          sql`EXISTS (
-            SELECT 1 FROM review_responses rr
-            WHERE rr.review_id = ${reviews.id}
-            AND rr.status IN ('draft', 'posted')
-          )`
-        )
-      )
+      .where(and(eq(reviews.notificationSent, false), sql`(${hasResponse} OR ${isFailed})`))
       .orderBy(reviews.receivedAt)
       .limit(50);
 
@@ -93,17 +94,23 @@ export async function GET(req: NextRequest) {
 
         const { userId, accountId, locationName } = cached;
 
-        const [latestResponse] = await db
-          .select({ text: reviewResponses.text })
-          .from(reviewResponses)
-          .where(and(eq(reviewResponses.reviewId, review.id), inArray(reviewResponses.status, ["draft", "posted"])))
-          .orderBy(sql`${reviewResponses.createdAt} DESC`)
-          .limit(1);
+        let aiReply: string | undefined;
 
-        if (!latestResponse) {
-          errors.push({ reviewId: review.id, error: "No response found" });
-          failed++;
-          continue;
+        if (review.replyStatus !== "failed") {
+          const [latestResponse] = await db
+            .select({ text: reviewResponses.text })
+            .from(reviewResponses)
+            .where(and(eq(reviewResponses.reviewId, review.id), inArray(reviewResponses.status, ["draft", "posted"])))
+            .orderBy(sql`${reviewResponses.createdAt} DESC`)
+            .limit(1);
+
+          if (!latestResponse) {
+            errors.push({ reviewId: review.id, error: "No response found" });
+            failed++;
+            continue;
+          }
+
+          aiReply = latestResponse.text;
         }
 
         await sendReviewNotifications({
@@ -114,8 +121,8 @@ export async function GET(req: NextRequest) {
           reviewerName: review.name,
           reviewRating: review.rating,
           reviewText: review.text || "",
-          aiReply: latestResponse.text,
-          replyStatus: review.replyStatus as "pending" | "posted",
+          aiReply,
+          replyStatus: review.replyStatus as "pending" | "posted" | "failed",
         });
 
         const reviewsRepo = new ReviewsRepository(userId, review.locationId);
