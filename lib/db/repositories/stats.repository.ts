@@ -77,7 +77,9 @@ export class StatsRepository {
     const result = await db
       .select({ count: countDistinct(reviews.id) })
       .from(reviews)
-      .where(and(eq(reviews.locationId, locationId), gte(reviews.receivedAt, startDate)));
+      .where(
+        and(eq(reviews.locationId, locationId), gte(reviews.receivedAt, startDate), eq(reviews.consumesQuota, true))
+      );
 
     return result[0]?.count || 0;
   }
