@@ -8,7 +8,6 @@ import { getDefaultLocationConfig } from "@/lib/utils/location-config";
 import { extractLocationId } from "@/lib/google/business-profile";
 import { revalidatePath } from "next/cache";
 import { createSafeAction } from "./safe-action";
-import { LocationMembersRepository } from "@/lib/db/repositories/location-members.repository";
 
 const getLocationCached = cache(async (userId: string, locationId: string): Promise<Location> => {
   const controller = new LocationsController(userId);
@@ -67,22 +66,6 @@ export const updateLocationConfig = createSafeAction(
   async ({ locationId, config }, { userId }) => {
     const controller = new LocationsController(userId);
     return controller.updateLocation(locationId, config as Partial<LocationUpdate>);
-  }
-);
-
-export const checkLocationsOwnership = createSafeAction(
-  z.object({
-    googleLocationIds: z.array(z.string()),
-  }),
-  async ({ googleLocationIds }) => {
-    const membersRepo = new LocationMembersRepository();
-    const results: Record<string, { owned: boolean }> = {};
-
-    for (const googleLocationId of googleLocationIds) {
-      results[googleLocationId] = await membersRepo.isLocationOwnedByGoogleId(googleLocationId);
-    }
-
-    return results;
   }
 );
 
