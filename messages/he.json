@@ -474,22 +474,19 @@
         "status": {
           "pending": "ממתין לאישור",
           "posted": "פורסם",
-          "rejected": "נדחה",
           "failed": "נכשל",
-          "quotaExceeded": "חריגה ממכסה"
+          "quotaExceeded": "חריגה ממכסה",
+          "generating": "מייצר..."
         },
         "statusDescription": {
           "pending": "ה-AI יצר תגובה שממתינה לאישורך לפני פרסום",
           "posted": "התגובה פורסמה בגוגל",
-          "rejected": "דחית את התגובה. ניתן ליצור תגובה חדשה",
           "failed": "יצירת או פרסום התגובה נכשלו. נסה שנית",
-          "quotaExceeded": "המכסה החודשית מוצתה. שדרג לתוכנית גבוהה יותר"
+          "failedQuota": "המכסה החודשית מוצתה. שדרג לתוכנית גבוהה יותר",
+          "generating": "ה-AI מייצר תגובה לביקורת זו"
         },
         "noText": "(אין טקסט)",
-        "imported": "מיובא",
-        "importedDescription": "ביקורות שיובאו מגוגל בעת ההרשמה שלך ל-Bottie ואינן נספרות במכסה",
         "aiReplyLabel": "תגובת בינה מלאכותית",
-        "externalReplyLabel": "תגובה חיצונית",
         "actions": {
           "regenerate": "צור מחדש",
           "edit": "ערוך",
@@ -540,9 +537,7 @@
         "status": {
           "pending": "ממתין",
           "posted": "פורסם",
-          "rejected": "נדחה",
-          "failed": "נכשל",
-          "quota_exceeded": "חריגה ממכסה"
+          "failed": "נכשל"
         },
         "rating": "דירוג",
         "dateRange": "טווח תאריכים",
@@ -573,7 +568,7 @@
         "removeFilter": "הסר מסנן"
       },
       "bulkActions": {
-        "selected": "{count} נבחרו",
+        "selected": "נבחרו",
         "selectAll": "בחר הכל ({count})",
         "deselectAll": "בטל בחירה",
         "publishSelected": "פרסם {count} תגובות",
@@ -621,14 +616,6 @@
         "description": "הגדר אילו התראות דוא״ל ברצונך לקבל",
         "label": "התראות על ביקורות",
         "tooltip": "קבל התראות דוא״ל כאשר מתקבלות ביקורות חדשות",
-        "enabled": "מופעל",
-        "disabled": "כבוי"
-      },
-      "weeklySummary": {
-        "title": "סיכום בינה מלאכותית שבועי",
-        "description": "קבל סיכום שבועי של הביקורות שלך",
-        "label": "סיכום שבועי בדוא״ל",
-        "tooltip": "קבל דוא״ל בכל יום ראשון עם תובנות והמלצות",
         "enabled": "מופעל",
         "disabled": "כבוי"
       },
@@ -1082,22 +1069,6 @@
       "statusPosted": "פורסמה",
       "viewReviewButton": "צפייה בביקורת",
       "footer": "קיבלת הודעת דוא״ל זו כי הפעלת התראות עבור ביקורות חדשות"
-    },
-    "weeklySummary": {
-      "subject": "סיכום שבועי: {businessName}",
-      "title": "סיכום שבועי",
-      "statsTitle": "סקירה",
-      "totalReviewsLabel": "סה״כ ביקורות",
-      "averageRatingLabel": "דירוג ממוצע",
-      "sentimentTitle": "התפלגות סנטימנט",
-      "sentimentPositive": "חיובי",
-      "sentimentNeutral": "ניטרלי",
-      "sentimentNegative": "שלילי",
-      "positiveThemesTitle": "מה לקוחות אהבו",
-      "negativeThemesTitle": "נקודות לשיפור",
-      "recommendationsTitle": "המלצות",
-      "viewDashboardButton": "צפייה בלוח הבקרה",
-      "footer": "נשלח על ידי Bottie"
     }
   },
   "errors": {

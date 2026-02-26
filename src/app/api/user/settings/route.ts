@@ -21,7 +21,6 @@ export async function GET() {
 
     return NextResponse.json({
       emailOnNewReview: config.configs.EMAIL_ON_NEW_REVIEW,
-      weeklySummaryEnabled: config.configs.WEEKLY_SUMMARY_ENABLED ?? false,
     });
   } catch (error) {
     console.error("Error fetching user settings:", error);
@@ -49,19 +48,11 @@ export async function PATCH(request: NextRequest) {
       updates.EMAIL_ON_NEW_REVIEW = body.emailOnNewReview;
     }
 
-    if (body.weeklySummaryEnabled !== undefined) {
-      if (typeof body.weeklySummaryEnabled !== "boolean") {
-        return NextResponse.json({ error: "Invalid weeklySummaryEnabled value" }, { status: 400 });
-      }
-      updates.WEEKLY_SUMMARY_ENABLED = body.weeklySummaryEnabled;
-    }
-
     const controller = new UsersController();
     const updatedConfig = await controller.updateUserConfig(session.user.id, updates);
 
     return NextResponse.json({
       emailOnNewReview: updatedConfig.configs.EMAIL_ON_NEW_REVIEW,
-      weeklySummaryEnabled: updatedConfig.configs.WEEKLY_SUMMARY_ENABLED ?? false,
     });
   } catch (error) {
     console.error("Error updating user settings:", error);

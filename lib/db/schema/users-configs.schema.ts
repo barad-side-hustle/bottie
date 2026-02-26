@@ -4,14 +4,12 @@ import { user } from "./auth.schema";
 
 export const USER_CONFIG_KEYS = {
   EMAIL_ON_NEW_REVIEW: "EMAIL_ON_NEW_REVIEW",
-  WEEKLY_SUMMARY_ENABLED: "WEEKLY_SUMMARY_ENABLED",
 } as const;
 
 export type UserConfigKey = keyof typeof USER_CONFIG_KEYS;
 
 export type UserConfigMap = {
   EMAIL_ON_NEW_REVIEW: boolean;
-  WEEKLY_SUMMARY_ENABLED: boolean;
 };
 
 export type UserConfigValue<K extends UserConfigKey> = UserConfigMap[K];

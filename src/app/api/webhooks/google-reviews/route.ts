@@ -1,15 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 import { db } from "@/lib/db/client";
-import { locations, accountLocations, type ReviewInsert, type Location } from "@/lib/db/schema";
+import { locations, type ReviewInsert, type Location } from "@/lib/db/schema";
 import { getReview, starRatingToNumber, parseGoogleTimestamp } from "@/lib/google/reviews";
 import { decryptToken, extractLocationId } from "@/lib/google/business-profile";
 import { ReviewsRepository } from "@/lib/db/repositories/reviews.repository";
 import { AccountsRepository } from "@/lib/db/repositories/accounts.repository";
 import { verifyPubSubToken, getPubSubWebhookAudience } from "@/lib/google/pubsub-auth";
 import { isDuplicateKeyError, getPostgresErrorCode, getPostgresErrorDetail } from "@/lib/db/error-handlers";
-import { classifyReview } from "@/lib/ai/classification";
-import { safeBackground } from "@/lib/utils/safe-background";
+import { findLocationOwner } from "@/lib/utils/find-location-owner";
 import { env } from "@/lib/env";
 
 export const runtime = "nodejs";
@@ -53,47 +52,18 @@ async function findLocationByGoogleBusinessId(googleBusinessId: string): Promise
       return null;
     }
 
-    const accountLocationConnections = await db.query.accountLocations.findMany({
-      where: eq(accountLocations.locationId, location.id),
-      with: {
-        account: {
-          with: {
-            userAccounts: true,
-          },
-        },
-      },
-    });
-
-    if (!accountLocationConnections || accountLocationConnections.length === 0) {
-      console.error("No account connections found for location:", location.id);
+    const owner = await findLocationOwner(location.id);
+    if (!owner) {
+      console.error("No owner user account found for location:", location.id);
       return null;
     }
 
-    const connectedAccounts = accountLocationConnections.filter((ac) => ac.connected);
-    const accountsToCheck = connectedAccounts.length > 0 ? connectedAccounts : accountLocationConnections;
-
-    for (const accountLocation of accountsToCheck) {
-      const ownerUser = accountLocation.account.userAccounts
-        .filter((ua) => ua.role === "owner")
-        .sort((a, b) => {
-          const dateA = a.addedAt ? new Date(a.addedAt).getTime() : 0;
-          const dateB = b.addedAt ? new Date(b.addedAt).getTime() : 0;
-          if (dateA !== dateB) return dateA - dateB;
-          return a.userId.localeCompare(b.userId);
-        })[0];
-
-      if (ownerUser) {
-        return {
-          userId: ownerUser.userId,
-          accountId: accountLocation.accountId,
-          location: location,
-          accountLocationId: accountLocation.id,
-        };
-      }
-    }
-
-    console.error("No owner user account found for location:", location.id);
-    return null;
+    return {
+      userId: owner.userId,
+      accountId: owner.accountId,
+      location,
+      accountLocationId: owner.accountLocationId,
+    };
   } catch (error) {
     console.error("Error finding location:", error);
     return null;
@@ -197,12 +167,6 @@ export async function POST(request: NextRequest) {
             isAnonymous: googleReview.reviewer.isAnonymous || false,
           });
 
-          safeBackground(`classify updated review ${existingReview.id}`, async () => {
-            const classification = await classifyReview({ rating: newRating, text: newText || null });
-            await reviewsRepo.update(existingReview.id, { classifications: classification });
-            console.log("Updated review re-classified successfully:", existingReview.id);
-          });
-
           console.log("Review updated successfully:", updatedReview.id);
           return NextResponse.json(
             {
@@ -240,62 +204,6 @@ export async function POST(request: NextRequest) {
     try {
       const newReview = await reviewsRepo.create(reviewData);
       console.log("Review created successfully:", newReview.id);
-
-      safeBackground(`classify new review ${newReview.id}`, async () => {
-        const classification = await classifyReview({ rating: reviewData.rating, text: reviewData.text || null });
-        await reviewsRepo.update(newReview.id, { classifications: classification });
-        console.log("Review classified successfully:", {
-          reviewId: newReview.id,
-          sentiment: classification.sentiment,
-          positives: classification.positives.length,
-          negatives: classification.negatives.length,
-        });
-      });
-
-      const processReviewUrl = `${env.NEXT_PUBLIC_APP_URL}/api/internal/process-review`;
-      console.log("Triggering review processing:", {
-        url: processReviewUrl,
-        reviewId: newReview.id,
-        userId,
-        accountId,
-        locationId: location.id,
-      });
-
-      try {
-        const response = await fetch(processReviewUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Internal-Secret": env.INTERNAL_API_SECRET,
-          },
-          body: JSON.stringify({
-            userId,
-            accountId,
-            locationId: location.id,
-            reviewId: newReview.id,
-          }),
-        });
-
-        console.log("Process-review endpoint responded:", {
-          status: response.status,
-          statusText: response.statusText,
-          reviewId: newReview.id,
-        });
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error("Process-review returned error:", {
-            status: response.status,
-            body: errorText.substring(0, 200),
-            reviewId: newReview.id,
-          });
-        }
-      } catch (error) {
-        console.error("Failed to trigger review processing:", {
-          error: error instanceof Error ? error.message : String(error),
-          reviewId: newReview.id,
-        });
-      }
 
       return NextResponse.json(
         {

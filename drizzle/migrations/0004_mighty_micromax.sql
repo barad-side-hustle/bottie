@@ -1,0 +1,2 @@
+ALTER TABLE "reviews" ADD COLUMN "notification_sent" boolean DEFAULT false NOT NULL;--> statement-breakpoint
+CREATE INDEX "reviews_notification_sent_idx" ON "reviews" USING btree ("notification_sent","reply_status");

@@ -90,7 +90,7 @@ export function ReviewFiltersForm({ filters: initialFilters, onApply, onReset }:
     <div className="space-y-6">
       <FilterSection title={t("replyStatus")}>
         <div className="flex flex-wrap gap-2">
-          {["pending", "posted", "rejected", "failed", "quota_exceeded"].map((status) => (
+          {["pending", "posted", "failed"].map((status) => (
             <ToggleChip
               key={status}
               selected={filters.replyStatus?.includes(status as ReplyStatus) ?? false}

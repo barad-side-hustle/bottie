@@ -8,5 +8,4 @@ export * from "./account-locations.repository";
 export * from "./users-configs.repository";
 export * from "./location-subscriptions.repository";
 export * from "./stats.repository";
-export * from "./weekly-summaries.repository";
 export * from "./insights.repository";

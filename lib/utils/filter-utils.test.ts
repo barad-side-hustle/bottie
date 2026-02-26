@@ -47,10 +47,10 @@ describe("filter-utils", () => {
 
     it("should parse replyStatus as comma-separated values", () => {
       const result = parseFiltersFromSearchParams({
-        replyStatus: "pending,posted,rejected",
+        replyStatus: "pending,posted,failed",
       });
 
-      expect(result.replyStatus).toEqual(["pending", "posted", "rejected"]);
+      expect(result.replyStatus).toEqual(["pending", "posted", "failed"]);
     });
 
     it("should parse rating as comma-separated numbers", () => {

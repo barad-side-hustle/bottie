@@ -505,14 +505,6 @@
         "enabled": "Habilitado",
         "disabled": "Deshabilitado"
       },
-      "weeklySummary": {
-        "title": "Resumen semanal con IA",
-        "description": "Recibe un resumen semanal generado por IA de tus resenas",
-        "label": "Emails de resumen semanal",
-        "tooltip": "Recibe un email cada domingo con insights y recomendaciones",
-        "enabled": "Habilitado",
-        "disabled": "Deshabilitado"
-      },
       "saveSuccess": "Configuracion guardada exitosamente",
       "saveError": "Error al guardar la configuracion. Por favor intenta de nuevo."
     },
@@ -525,22 +517,19 @@
         "status": {
           "pending": "Pendiente de aprobacion",
           "posted": "Publicado",
-          "rejected": "Rechazado",
           "failed": "Fallido",
-          "quotaExceeded": "Cuota excedida"
+          "quotaExceeded": "Cuota excedida",
+          "generating": "Generando..."
         },
         "statusDescription": {
           "pending": "La IA genero una respuesta esperando tu aprobacion antes de publicar",
           "posted": "La respuesta ha sido publicada en Google",
-          "rejected": "Rechazaste la respuesta de IA. Puedes regenerar una nueva",
           "failed": "No se pudo generar o publicar la respuesta. Intenta de nuevo",
-          "quotaExceeded": "Se alcanzo la cuota mensual de respuestas. Actualiza para obtener mas"
+          "failedQuota": "Se alcanzo la cuota mensual de respuestas. Actualiza para obtener mas",
+          "generating": "La IA esta generando una respuesta para esta resena"
         },
         "noText": "(sin texto)",
-        "imported": "Importada",
-        "importedDescription": "Esta resena fue importada de Google y no cuenta para tu cuota",
         "aiReplyLabel": "Respuesta de IA",
-        "externalReplyLabel": "Respuesta externa",
         "actions": {
           "regenerate": "Regenerar",
           "edit": "Editar",
@@ -591,9 +580,7 @@
         "status": {
           "pending": "Pendiente",
           "posted": "Publicado",
-          "rejected": "Rechazado",
-          "failed": "Fallido",
-          "quota_exceeded": "Cuota excedida"
+          "failed": "Fallido"
         },
         "rating": "Calificacion",
         "dateRange": "Rango de fechas",
@@ -624,7 +611,7 @@
         "removeFilter": "Eliminar filtro"
       },
       "bulkActions": {
-        "selected": "{count} seleccionadas",
+        "selected": "seleccionadas",
         "selectAll": "Seleccionar todas ({count})",
         "deselectAll": "Deseleccionar todas",
         "publishSelected": "Publicar {count} respuestas",
@@ -1089,22 +1076,6 @@
       "statusPosted": "Publicado",
       "viewReviewButton": "Ver resena",
       "footer": "Recibiste este email porque habilitaste las notificaciones de nuevas resenas"
-    },
-    "weeklySummary": {
-      "subject": "Resumen semanal: {businessName}",
-      "title": "Resumen semanal",
-      "statsTitle": "Resumen",
-      "totalReviewsLabel": "Total de resenas",
-      "averageRatingLabel": "Calif. promedio",
-      "sentimentTitle": "Desglose de sentimiento",
-      "sentimentPositive": "Positivo",
-      "sentimentNeutral": "Neutral",
-      "sentimentNegative": "Negativo",
-      "positiveThemesTitle": "Lo que les encanto a los clientes",
-      "negativeThemesTitle": "Areas de mejora",
-      "recommendationsTitle": "Recomendaciones",
-      "viewDashboardButton": "Ver panel de control",
-      "footer": "Enviado por Bottie"
     }
   }
 }

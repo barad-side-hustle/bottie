@@ -50,10 +50,6 @@ export class ReviewsController {
     return this.repository.markAsPosted(reviewId);
   }
 
-  async markAsRejected(reviewId: string): Promise<Review> {
-    return this.repository.markAsRejected(reviewId);
-  }
-
   async findByGoogleReviewId(googleReviewId: string): Promise<Review | null> {
     return this.repository.findByGoogleReviewId(googleReviewId);
   }

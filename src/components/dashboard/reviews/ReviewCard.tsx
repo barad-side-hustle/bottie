@@ -28,7 +28,7 @@ import { sendRybbitEvent } from "@/lib/analytics";
 import type { ReviewWithLatestGeneration } from "@/lib/db/repositories";
 
 export function isReviewPublishable(review: ReviewWithLatestGeneration): boolean {
-  return review.replyStatus === "pending" && !!review.latestAiReply && review.latestAiReplyType !== "imported";
+  return review.replyStatus === "pending" && !!review.latestAiReply;
 }
 
 interface ReviewCardProps {
@@ -82,27 +82,35 @@ export function ReviewCard({
 
   const getStatusBadge = (review: ReviewWithLatestGeneration) => {
     const status = review.replyStatus as ReplyStatus;
+
+    if (status === "pending" && !review.latestAiReply) {
+      return (
+        <ResponsiveTooltip title={t("status.generating")} description={t("statusDescription.generating")}>
+          <span className="cursor-default">
+            <Badge variant="muted">{t("status.generating")}</Badge>
+          </span>
+        </ResponsiveTooltip>
+      );
+    }
+
+    const failedDesc =
+      review.failureReason === "quota" ? t("statusDescription.failedQuota") : t("statusDescription.failed");
+
     const statusMap = {
       pending: {
         label: t("status.pending"),
         variant: "warning" as const,
-        descKey: "statusDescription.pending" as const,
+        description: t("statusDescription.pending"),
       },
-      posted: { label: t("status.posted"), variant: "success" as const, descKey: "statusDescription.posted" as const },
-      rejected: {
-        label: t("status.rejected"),
-        variant: "secondary" as const,
-        descKey: "statusDescription.rejected" as const,
+      posted: {
+        label: t("status.posted"),
+        variant: "success" as const,
+        description: t("statusDescription.posted"),
       },
       failed: {
-        label: t("status.failed"),
+        label: review.failureReason === "quota" ? t("status.quotaExceeded") : t("status.failed"),
         variant: "destructive" as const,
-        descKey: "statusDescription.failed" as const,
-      },
-      quota_exceeded: {
-        label: t("status.quotaExceeded"),
-        variant: "destructive" as const,
-        descKey: "statusDescription.quotaExceeded" as const,
+        description: failedDesc,
       },
     };
 
@@ -121,26 +129,11 @@ export function ReviewCard({
       badgeElement = <Badge variant={statusInfo.variant}>{statusInfo.label}</Badge>;
     }
 
-    const statusBadge = (
-      <ResponsiveTooltip title={statusInfo.label} description={t(statusInfo.descKey)}>
+    return (
+      <ResponsiveTooltip title={statusInfo.label} description={statusInfo.description}>
         <span className="cursor-default">{badgeElement}</span>
       </ResponsiveTooltip>
     );
-
-    if (!review.consumesQuota) {
-      return (
-        <div className="flex gap-2">
-          <ResponsiveTooltip title={t("imported")} description={t("importedDescription")}>
-            <span className="cursor-default">
-              <Badge variant="muted">{t("imported")}</Badge>
-            </span>
-          </ResponsiveTooltip>
-          {statusBadge}
-        </div>
-      );
-    }
-
-    return statusBadge;
   };
 
   const handlePublishConfirm = async () => {
@@ -239,18 +232,15 @@ export function ReviewCard({
   const hasActions =
     review.replyStatus === "pending" || review.replyStatus === "failed" || review.replyStatus === "posted";
 
-  const showFeedback = review.latestAiReply && review.latestAiReplyType !== "imported";
+  const showFeedback = !!review.latestAiReply;
 
   const statusAccentColor = (() => {
     switch (review.replyStatus as ReplyStatus) {
       case "pending":
-        return "bg-warning";
+        return review.latestAiReply ? "bg-warning" : "bg-muted-foreground/40";
       case "posted":
         return "bg-success";
-      case "rejected":
-        return "bg-muted-foreground/40";
       case "failed":
-      case "quota_exceeded":
         return "bg-destructive";
       default:
         return "bg-transparent";
@@ -333,9 +323,7 @@ export function ReviewCard({
               {review.latestAiReply && (
                 <div className="pt-3 mt-3 border-t border-border/30">
                   <div className="flex items-center gap-1.5 mb-2">
-                    <span className="text-xs font-medium text-muted-foreground">
-                      {review.latestAiReplyType === "imported" ? t("externalReplyLabel") : t("aiReplyLabel")}
-                    </span>
+                    <span className="text-xs font-medium text-muted-foreground">{t("aiReplyLabel")}</span>
                     {review.replyStatus === "posted" && review.latestAiReplyPostedAt && (
                       <>
                         <span className="text-xs text-muted-foreground/60">&middot;</span>

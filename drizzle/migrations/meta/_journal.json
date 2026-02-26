@@ -22,6 +22,27 @@
       "when": 1772028160409,
       "tag": "0002_plain_rockslide",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1772103573149,
+      "tag": "0003_steep_the_captain",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1772114188086,
+      "tag": "0004_mighty_micromax",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1772115057831,
+      "tag": "0005_bizarre_lifeguard",
+      "breakpoints": true
     }
   ]
 }

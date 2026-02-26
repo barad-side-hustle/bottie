@@ -8,4 +8,3 @@ export * from "./locations.schema";
 export * from "./account-locations.schema";
 export * from "./reviews.schema";
 export * from "./review-responses.schema";
-export * from "./weekly-summaries.schema";

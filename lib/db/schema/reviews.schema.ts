@@ -1,7 +1,7 @@
 import { boolean, integer, jsonb, pgTable, text, timestamp, uuid, index, pgPolicy, check } from "drizzle-orm/pg-core";
 import { sql, relations } from "drizzle-orm";
 import { locations } from "./locations.schema";
-import type { ReplyStatus } from "../../types/review.types";
+import type { ReplyStatus, FailureReason } from "../../types/review.types";
 import type { ReviewClassification } from "../../types/classification.types";
 import { reviewResponses } from "./review-responses.schema";
 
@@ -25,6 +25,7 @@ export const reviews = pgTable(
     date: timestamp("date", { withTimezone: true }).notNull(),
 
     replyStatus: text("reply_status").$type<ReplyStatus>().notNull().default("pending"),
+    failureReason: text("failure_reason").$type<FailureReason>(),
 
     consumesQuota: boolean("consumes_quota").notNull().default(true),
 
@@ -32,6 +33,8 @@ export const reviews = pgTable(
     updateTime: timestamp("update_time", { withTimezone: true }),
 
     classifications: jsonb("classifications").$type<ReviewClassification>(),
+
+    notificationSent: boolean("notification_sent").notNull().default(false),
   },
   (table) => [
     index("reviews_location_id_idx").on(table.locationId),
@@ -43,10 +46,13 @@ export const reviews = pgTable(
     index("reviews_location_date_idx").on(table.locationId, table.date),
     index("reviews_consumes_quota_received_at_idx").on(table.consumesQuota, table.receivedAt),
     index("reviews_location_rating_idx").on(table.locationId, table.rating),
+    index("reviews_notification_sent_idx").on(table.notificationSent, table.replyStatus),
+
+    check("reviews_reply_status_check", sql`${table.replyStatus} IN ('pending', 'posted', 'failed')`),
 
     check(
-      "reviews_reply_status_check",
-      sql`${table.replyStatus} IN ('pending', 'rejected', 'posted', 'failed', 'quota_exceeded')`
+      "reviews_failure_reason_check",
+      sql`${table.failureReason} IS NULL OR ${table.failureReason} IN ('generation', 'posting', 'quota')`
     ),
 
     pgPolicy("reviews_service_role_access", {

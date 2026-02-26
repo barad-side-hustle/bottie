@@ -12,7 +12,6 @@ import { updateUserSettings } from "@/lib/actions/users.actions";
 
 interface UserSettings {
   emailOnNewReview: boolean;
-  weeklySummaryEnabled: boolean;
 }
 
 interface SettingsFormProps {
@@ -54,14 +53,6 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
               </Badge>
             }
           />
-          <DashboardCardField
-            label={t("weeklySummary.label")}
-            value={
-              <Badge variant={initialSettings.weeklySummaryEnabled ? "default" : "secondary"}>
-                {initialSettings.weeklySummaryEnabled ? t("weeklySummary.enabled") : t("weeklySummary.disabled")}
-              </Badge>
-            }
-          />
         </>
       )}
       renderForm={({ data, isLoading, onChange }) => (
@@ -82,27 +73,6 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
                 id="emailOnNewReview"
                 checked={data.emailOnNewReview}
                 onCheckedChange={(checked) => onChange("emailOnNewReview", checked)}
-                disabled={isLoading}
-              />
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <h4 className="text-sm font-semibold mb-1">{t("weeklySummary.title")}</h4>
-              <p className="text-xs text-muted-foreground">{t("weeklySummary.description")}</p>
-            </div>
-            <div className="flex items-start justify-between gap-4">
-              <div className="space-y-1 flex-1">
-                <Label htmlFor="weeklySummaryEnabled" className="text-sm font-medium cursor-pointer">
-                  {t("weeklySummary.label")}
-                </Label>
-                <p className="text-xs text-muted-foreground">{t("weeklySummary.tooltip")}</p>
-              </div>
-              <Switch
-                id="weeklySummaryEnabled"
-                checked={data.weeklySummaryEnabled}
-                onCheckedChange={(checked) => onChange("weeklySummaryEnabled", checked)}
                 disabled={isLoading}
               />
             </div>

@@ -4,8 +4,20 @@
   "installCommand": "yarn install --frozen-lockfile --ignore-engines",
   "crons": [
     {
-      "path": "/api/cron/weekly-summaries",
-      "schedule": "0 9 * * 0"
+      "path": "/api/cron/classify-reviews",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/generate-replies",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/post-replies",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/send-notifications",
+      "schedule": "*/5 * * * *"
     }
   ]
 }

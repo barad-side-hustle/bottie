@@ -505,14 +505,6 @@
         "enabled": "Enabled",
         "disabled": "Disabled"
       },
-      "weeklySummary": {
-        "title": "Weekly AI Summary",
-        "description": "Receive a weekly AI-generated summary of your reviews",
-        "label": "Weekly Summary Emails",
-        "tooltip": "Receive an email every Sunday with insights and recommendations",
-        "enabled": "Enabled",
-        "disabled": "Disabled"
-      },
       "saveSuccess": "Settings saved successfully",
       "saveError": "Error saving settings. Please try again."
     },
@@ -525,22 +517,19 @@
         "status": {
           "pending": "Pending Approval",
           "posted": "Published",
-          "rejected": "Rejected",
           "failed": "Failed",
-          "quotaExceeded": "Quota Exceeded"
+          "quotaExceeded": "Quota Exceeded",
+          "generating": "Generating..."
         },
         "statusDescription": {
           "pending": "AI generated a reply waiting for your approval before publishing",
           "posted": "Reply has been published to Google",
-          "rejected": "You rejected the AI reply. You can regenerate a new one",
           "failed": "Failed to generate or publish the reply. Try again",
-          "quotaExceeded": "Monthly reply quota reached. Upgrade for more"
+          "failedQuota": "Monthly reply quota reached. Upgrade for more",
+          "generating": "AI is generating a reply for this review"
         },
         "noText": "(no text)",
-        "imported": "Imported",
-        "importedDescription": "This review was imported from Google and does not count towards your quota",
         "aiReplyLabel": "AI Response",
-        "externalReplyLabel": "External Response",
         "actions": {
           "regenerate": "Regenerate",
           "edit": "Edit",
@@ -591,9 +580,7 @@
         "status": {
           "pending": "Pending",
           "posted": "Posted",
-          "rejected": "Rejected",
-          "failed": "Failed",
-          "quota_exceeded": "Quota Exceeded"
+          "failed": "Failed"
         },
         "rating": "Rating",
         "dateRange": "Date Range",
@@ -624,7 +611,7 @@
         "removeFilter": "Remove filter"
       },
       "bulkActions": {
-        "selected": "{count} selected",
+        "selected": "selected",
         "selectAll": "Select all ({count})",
         "deselectAll": "Deselect all",
         "publishSelected": "Publish {count} replies",
@@ -1089,22 +1076,6 @@
       "statusPosted": "Posted",
       "viewReviewButton": "View Review",
       "footer": "You received this email because you enabled notifications for new reviews"
-    },
-    "weeklySummary": {
-      "subject": "Weekly Summary: {businessName}",
-      "title": "Weekly Summary",
-      "statsTitle": "Overview",
-      "totalReviewsLabel": "Total Reviews",
-      "averageRatingLabel": "Avg Rating",
-      "sentimentTitle": "Sentiment Breakdown",
-      "sentimentPositive": "Positive",
-      "sentimentNeutral": "Neutral",
-      "sentimentNegative": "Negative",
-      "positiveThemesTitle": "What Customers Loved",
-      "negativeThemesTitle": "Areas for Improvement",
-      "recommendationsTitle": "Recommendations",
-      "viewDashboardButton": "View Dashboard",
-      "footer": "Sent by Bottie"
     }
   }
 }

@@ -22,22 +22,9 @@ yarn-error.log*
 .env
 .env*.local
 
-# Vercel
-.vercel
-vercel.json
-
 # TypeScript
 *.tsbuildinfo
 next-env.d.ts
-
-# Firebase
-.firebase/
-firebase-debug*.log
-
-# Package manager
-yarn.lock
-package-lock.json
-pnpm-lock.yaml
 
 # Testing
 coverage/

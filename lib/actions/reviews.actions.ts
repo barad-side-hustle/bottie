@@ -15,7 +15,7 @@ const ReviewFiltersSchema = z
         orderDirection: z.enum(["asc", "desc"]),
       })
       .optional(),
-    replyStatus: z.array(z.enum(["pending", "rejected", "posted", "failed", "quota_exceeded"])).optional(),
+    replyStatus: z.array(z.enum(["pending", "posted", "failed"])).optional(),
     rating: z.array(z.number()).optional(),
     sentiment: z.array(z.enum(["positive", "neutral", "negative"])).optional(),
     dateFrom: z.date().optional(),

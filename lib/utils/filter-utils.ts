@@ -15,7 +15,7 @@ export function parseFiltersFromSearchParams(searchParams: {
 
   const replyStatus = searchParams.replyStatus;
   if (typeof replyStatus === "string") {
-    filters.replyStatus = replyStatus.split(",") as ("pending" | "rejected" | "posted" | "failed" | "quota_exceeded")[];
+    filters.replyStatus = replyStatus.split(",") as ("pending" | "posted" | "failed")[];
   }
 
   const rating = searchParams.rating;

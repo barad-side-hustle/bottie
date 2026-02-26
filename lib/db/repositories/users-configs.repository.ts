@@ -24,7 +24,6 @@ export class UsersConfigsRepository {
           userId,
           configs: {
             EMAIL_ON_NEW_REVIEW: true,
-            WEEKLY_SUMMARY_ENABLED: false,
           },
         })
         .onConflictDoUpdate({

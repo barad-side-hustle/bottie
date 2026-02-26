@@ -195,12 +195,6 @@ export class ReviewsRepository extends BaseRepository<ReviewInsert, Review, Part
     });
   }
 
-  async markAsRejected(reviewId: string): Promise<Review> {
-    return this.update(reviewId, {
-      replyStatus: "rejected",
-    });
-  }
-
   async findByGoogleReviewId(googleReviewId: string): Promise<Review | null> {
     const result = await db.query.reviews.findFirst({
       where: and(
