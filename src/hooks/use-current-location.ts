@@ -3,12 +3,11 @@
 import { usePathname } from "@/i18n/routing";
 
 interface CurrentLocation {
-  accountId: string;
   locationId: string;
   section?: string;
 }
 
-const LOCATION_PATTERN = /\/dashboard\/accounts\/([^/]+)\/locations\/([^/]+)(?:\/([^/]+))?/;
+const LOCATION_PATTERN = /\/dashboard\/locations\/([^/]+)(?:\/([^/]+))?/;
 
 export function useCurrentLocation(): CurrentLocation | null {
   const pathname = usePathname();
@@ -17,8 +16,7 @@ export function useCurrentLocation(): CurrentLocation | null {
   if (!match) return null;
 
   return {
-    accountId: match[1],
-    locationId: match[2],
-    section: match[3],
+    locationId: match[1],
+    section: match[2],
   };
 }

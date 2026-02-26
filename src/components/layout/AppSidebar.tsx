@@ -209,7 +209,7 @@ function SidebarNavLink({
 }: {
   item: SidebarNavItem;
   pathname: string;
-  locationCtx: { accountId: string; locationId: string } | null;
+  locationCtx: { locationId: string } | null;
   t: ReturnType<typeof useTranslations>;
 }) {
   const { dir } = useDirection();

@@ -1,33 +1,46 @@
 import { PageContainer } from "@/components/layout/PageContainer";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { Badge } from "@/components/ui/badge";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { buildLocationBreadcrumbs } from "@/lib/utils/breadcrumbs";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
-import { getLocation, getAccountLocations } from "@/lib/actions/locations.actions";
+import { getLocation } from "@/lib/actions/locations.actions";
+import { getLocationMembers, getPendingRequests, getPendingInvitations } from "@/lib/actions/location-members.actions";
+import { getAuthenticatedUserId } from "@/lib/api/auth";
+import { getUserLocationRole } from "@/lib/db/repositories/access-conditions";
 import { LocationSettingsActions } from "./LocationSettingsActions";
+import { MembersSection } from "@/components/dashboard/locations/MembersSection";
 
 export const dynamic = "force-dynamic";
 
 export default async function LocationSettingsPage({
   params,
 }: {
-  params: Promise<{ locale: string; accountId: string; locationId: string }>;
+  params: Promise<{ locale: string; locationId: string }>;
 }) {
-  const { locale, accountId, locationId } = await params;
+  const { locale, locationId } = await params;
   const t = await getTranslations({ locale, namespace: "dashboard.settings" });
   const tCommon = await getTranslations({ locale, namespace: "common" });
   const tBreadcrumbs = await getTranslations({ locale, namespace: "breadcrumbs" });
 
-  let location, accountLocations;
+  const { userId } = await getAuthenticatedUserId();
+
+  let location;
   try {
-    [location, accountLocations] = await Promise.all([getLocation({ locationId }), getAccountLocations({ accountId })]);
+    location = await getLocation({ locationId });
   } catch {
     redirect(`/${locale}/dashboard/home`);
   }
 
-  const accountLocation = accountLocations.find((al) => al.locationId === locationId);
+  const role = await getUserLocationRole(userId, locationId);
+  const currentUserRole = role ?? "admin";
+  const isOwner = currentUserRole === "owner";
+
+  const [members, requests, invitations] = await Promise.all([
+    getLocationMembers({ locationId }),
+    isOwner ? getPendingRequests({ locationId }) : Promise.resolve([]),
+    isOwner ? getPendingInvitations({ locationId }) : Promise.resolve([]),
+  ]);
 
   return (
     <PageContainer>
@@ -35,7 +48,6 @@ export default async function LocationSettingsPage({
         <Breadcrumbs
           items={buildLocationBreadcrumbs({
             locationName: location.name,
-            accountId,
             locationId,
             currentSection: "settings",
             t: tBreadcrumbs,
@@ -43,16 +55,20 @@ export default async function LocationSettingsPage({
         />
       </div>
 
-      <PageHeader
-        title={location.name}
-        description={location.address}
-        icon={accountLocation && !accountLocation.connected && <Badge variant="secondary">{t("disconnected")}</Badge>}
+      <PageHeader title={location.name} description={location.address} />
+
+      <MembersSection
+        locationId={locationId}
+        currentUserRole={currentUserRole}
+        currentUserId={userId}
+        initialMembers={members}
+        initialRequests={requests}
+        initialInvitations={invitations}
       />
 
       <LocationSettingsActions
         location={location}
-        accountId={accountId}
-        accountLocationId={accountLocation?.id}
+        currentUserRole={currentUserRole}
         translations={{
           disconnectLocation: t("deleteBusiness"),
           disconnectConfirmation: t("deleteConfirmation", { businessName: location.name }),

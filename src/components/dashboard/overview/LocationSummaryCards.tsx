@@ -23,7 +23,7 @@ export function LocationSummaryCards({ summaries }: { summaries: LocationSummary
             key={loc.locationId}
             type="button"
             onClick={() => {
-              const base = `/dashboard/accounts/${loc.accountId}/locations/${loc.locationId}/reviews`;
+              const base = `/dashboard/locations/${loc.locationId}/reviews`;
               router.push(loc.pendingCount > 0 ? `${base}?replyStatus=pending` : base);
             }}
             className="text-start w-full"

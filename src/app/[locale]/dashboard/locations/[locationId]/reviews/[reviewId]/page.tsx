@@ -12,18 +12,18 @@ import type { ReviewWithLatestGeneration } from "@/lib/db/repositories";
 export const dynamic = "force-dynamic";
 
 interface ReviewPageProps {
-  params: Promise<{ locale: string; accountId: string; locationId: string; reviewId: string }>;
+  params: Promise<{ locale: string; locationId: string; reviewId: string }>;
 }
 
 export default async function ReviewPage({ params }: ReviewPageProps) {
-  const { locale, accountId, locationId, reviewId } = await params;
+  const { locale, locationId, reviewId } = await params;
   const { userId } = await getAuthenticatedUserId();
   const t = await getTranslations({ locale, namespace: "dashboard.reviewDetail" });
   const tBreadcrumbs = await getTranslations({ locale, namespace: "breadcrumbs" });
 
   const [location, review] = await Promise.all([
     getLocation({ locationId }),
-    getReview({ accountId, locationId, reviewId }) as Promise<ReviewWithLatestGeneration>,
+    getReview({ locationId, reviewId }) as Promise<ReviewWithLatestGeneration>,
   ]);
 
   return (
@@ -32,7 +32,6 @@ export default async function ReviewPage({ params }: ReviewPageProps) {
         <Breadcrumbs
           items={buildLocationBreadcrumbs({
             locationName: location.name,
-            accountId,
             locationId,
             currentSection: "reviews",
             t: tBreadcrumbs,
@@ -43,7 +42,7 @@ export default async function ReviewPage({ params }: ReviewPageProps) {
       <PageHeader title={t("reviewFrom", { reviewerName: review.name })} description={location.name} />
 
       <div className="mt-6">
-        <ReviewCardWithRefresh review={review} accountId={accountId} locationId={locationId} userId={userId} />
+        <ReviewCardWithRefresh review={review} locationId={locationId} userId={userId} />
       </div>
     </PageContainer>
   );

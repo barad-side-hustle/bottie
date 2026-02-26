@@ -3,6 +3,17 @@ import { AccountLocationsRepository } from "./account-locations.repository";
 import { db } from "@/lib/db/client";
 import { NotFoundError } from "@/lib/api/errors";
 
+vi.mock("./location-members.repository", () => {
+  return {
+    LocationMembersRepository: class {
+      isLocationOwnedByGoogleId = vi.fn().mockResolvedValue({ owned: false });
+      getOwner = vi.fn().mockResolvedValue(null);
+      addMember = vi.fn().mockResolvedValue({ id: "member-1" });
+      getMember = vi.fn().mockResolvedValue(null);
+    },
+  };
+});
+
 vi.mock("@/lib/db/client", () => ({
   db: {
     query: {
@@ -425,8 +436,11 @@ describe("AccountLocationsRepository", () => {
 
       const result = await repository.findOrCreate("accounts/123/locations/456", "456", locationData);
 
-      expect(result.isNew).toBe(true);
-      expect(result.location).toEqual(newLocation);
+      expect("alreadyOwned" in result && result.alreadyOwned).toBeFalsy();
+      if (!("alreadyOwned" in result) || !result.alreadyOwned) {
+        expect(result.isNew).toBe(true);
+        expect(result.location).toEqual(newLocation);
+      }
     });
 
     it("should connect to existing location", async () => {
@@ -446,7 +460,9 @@ describe("AccountLocationsRepository", () => {
 
       const result = await repository.findOrCreate("accounts/123/locations/456", "456", locationData);
 
-      expect(result.location).toEqual(existingLocation);
+      if (!("alreadyOwned" in result) || !result.alreadyOwned) {
+        expect(result.location).toEqual(existingLocation);
+      }
     });
 
     it("should reconnect if disconnected", async () => {
@@ -469,7 +485,9 @@ describe("AccountLocationsRepository", () => {
 
       const result = await repository.findOrCreate("accounts/123/locations/456", "456", locationData);
 
-      expect(result.accountLocation.connected).toBe(true);
+      if (!("alreadyOwned" in result) || !result.alreadyOwned) {
+        expect(result.accountLocation.connected).toBe(true);
+      }
     });
   });
 });

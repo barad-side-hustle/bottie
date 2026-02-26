@@ -5,14 +5,13 @@ export interface BreadcrumbItem {
 
 export function buildLocationBreadcrumbs(params: {
   locationName: string;
-  accountId: string;
   locationId: string;
   currentSection: "reviews" | "insights" | "settings" | "getReviews";
   t: (key: string) => string;
   reviewerName?: string;
 }): BreadcrumbItem[] {
-  const { locationName, accountId, locationId, currentSection, t, reviewerName } = params;
-  const locationReviewsHref = `/dashboard/accounts/${accountId}/locations/${locationId}/reviews`;
+  const { locationName, locationId, currentSection, t, reviewerName } = params;
+  const locationReviewsHref = `/dashboard/locations/${locationId}/reviews`;
 
   const items: BreadcrumbItem[] = [
     { label: t("overview"), href: "/dashboard/home" },

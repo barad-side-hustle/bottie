@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { db } from "@/lib/db/client";
-import { accountLocations } from "@/lib/db/schema";
+import { accountLocations, locationMembers } from "@/lib/db/schema";
 
 interface LocationOwner {
   userId: string;
@@ -9,6 +9,31 @@ interface LocationOwner {
 }
 
 export async function findLocationOwner(locationId: string): Promise<LocationOwner | null> {
+  const memberOwner = await db.query.locationMembers.findFirst({
+    where: and(eq(locationMembers.locationId, locationId), eq(locationMembers.role, "owner")),
+  });
+
+  if (memberOwner) {
+    const connection = await db.query.accountLocations.findFirst({
+      where: and(eq(accountLocations.locationId, locationId), eq(accountLocations.connected, true)),
+      with: {
+        account: {
+          with: {
+            userAccounts: true,
+          },
+        },
+      },
+    });
+
+    if (connection) {
+      return {
+        userId: memberOwner.userId,
+        accountId: connection.accountId,
+        accountLocationId: connection.id,
+      };
+    }
+  }
+
   const connections = await db.query.accountLocations.findMany({
     where: eq(accountLocations.locationId, locationId),
     with: {

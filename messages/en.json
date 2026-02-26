@@ -604,7 +604,6 @@
           "negative": "Negative"
         },
         "reset": "Reset",
-        "apply": "Apply",
         "filter": "Filter",
         "filters": "Filters",
         "clearAll": "Clear All",
@@ -773,12 +772,37 @@
       }
     },
     "settings": {
-      "disconnected": "Disconnected",
       "deleteBusiness": "Delete Business",
       "deleteConfirmation": "This action will permanently delete the business \"{businessName}\"!",
       "deleteConfirmationLabel": "To confirm, enter the business name:",
       "deleteConfirmationPlaceholder": "Business name",
-      "deleteButton": "Delete Business"
+      "deleteButton": "Delete Business",
+      "members": {
+        "title": "Team Members",
+        "description": "Manage who has access to this location",
+        "owner": "Owner",
+        "admin": "Admin",
+        "you": "You",
+        "pendingRequests": "Pending Access Requests",
+        "pendingRequestsDescription": "Users who have requested access to this location",
+        "pendingInvitations": "Pending Invitations",
+        "invitedAs": "Invited as {role}",
+        "approve": "Approve",
+        "reject": "Reject",
+        "inviteTitle": "Invite Team Member",
+        "inviteDescription": "Send an invitation by email to add a new team member",
+        "inviteEmailPlaceholder": "Enter email address",
+        "inviteButton": "Send Invite",
+        "memberRemoved": "Member removed",
+        "requestApproved": "Access request approved",
+        "invitationSent": "Invitation sent",
+        "errorUpdatingRole": "Failed to update role",
+        "errorRemovingMember": "Failed to remove member",
+        "errorApprovingRequest": "Failed to approve request",
+        "errorRejectingRequest": "Failed to reject request",
+        "errorInviting": "Failed to send invitation",
+        "errorCancellingInvitation": "Failed to cancel invitation"
+      }
     },
     "components": {
       "upgradeBanner": {
@@ -1027,9 +1051,18 @@
       "descriptionWithCount": "Select the business you want to connect (found {count} businesses)",
       "connectButton": "Connect this business",
       "connectingButton": "Connecting...",
+      "alreadyOwned": "{location} is already managed by {name}",
+      "requestAccessDescription": "You can request access to collaborate on this location. The owner will be notified.",
+      "accessRequestSent": "Access request sent!",
+      "accessRequestSentDescription": "Your request has been sent. You'll be notified when the owner responds.",
+      "requestMessagePlaceholder": "Add an optional message to the owner...",
+      "sendRequest": "Request Access",
+      "sendingRequest": "Sending...",
+      "managedBy": "Managed by {name}",
       "errors": {
         "noBusinessesFound": "No businesses found in your Google Business Profile account",
-        "failedToConnect": "Unable to connect the business"
+        "failedToConnect": "Unable to connect the business",
+        "failedToRequestAccess": "Unable to send access request"
       }
     },
     "configure": {
@@ -1077,5 +1110,10 @@
       "viewReviewButton": "View Review",
       "footer": "You received this email because you enabled notifications for new reviews"
     }
+  },
+  "invitation": {
+    "title": "Location Invitation",
+    "genericError": "Something went wrong while processing your invitation.",
+    "goToDashboard": "Go to Dashboard"
   }
 }

@@ -9,6 +9,7 @@ import {
   type Location,
 } from "@/lib/db/schema";
 import { NotFoundError } from "@/lib/api/errors";
+import { LocationMembersRepository } from "./location-members.repository";
 
 export type { AccountLocation };
 
@@ -172,14 +173,25 @@ export class AccountLocationsRepository {
         5: { customInstructions: string; autoReply: boolean };
       };
     }
-  ): Promise<{ accountLocation: AccountLocation; location: typeof locations.$inferSelect; isNew: boolean }> {
+  ): Promise<
+    | {
+        accountLocation: AccountLocation;
+        location: typeof locations.$inferSelect;
+        isNew: boolean;
+        alreadyOwned?: false;
+      }
+    | { alreadyOwned: true; ownerName: string; locationId: string }
+  > {
     if (!(await this.verifyAccess())) throw new NotFoundError("Access denied");
+
+    const membersRepo = new LocationMembersRepository();
 
     let location = await db.query.locations.findFirst({
       where: eq(locations.googleLocationId, googleLocationId),
     });
 
     let isNew = false;
+    let locationIsNew = false;
 
     if (!location) {
       const [newLocation] = await db
@@ -191,6 +203,24 @@ export class AccountLocationsRepository {
         .returning();
       location = newLocation;
       isNew = true;
+      locationIsNew = true;
+    } else {
+      const ownership = await membersRepo.isLocationOwnedByGoogleId(googleLocationId);
+      if (ownership.owned) {
+        const currentUserMember = await membersRepo.getMember(location.id, this.userId);
+        if (!currentUserMember) {
+          return { alreadyOwned: true, ownerName: ownership.ownerName!, locationId: location.id };
+        }
+      }
+    }
+
+    if (locationIsNew) {
+      await membersRepo.addMember(location.id, this.userId, "owner");
+    } else {
+      const existingOwner = await membersRepo.getOwner(location.id);
+      if (!existingOwner) {
+        await membersRepo.addMember(location.id, this.userId, "owner");
+      }
     }
 
     let accountLocation = await db.query.accountLocations.findFirst({

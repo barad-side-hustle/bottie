@@ -12,7 +12,6 @@ export function useActiveLocation() {
   const locations = sidebarData?.locations;
   if (locations && locations.length > 0) {
     return {
-      accountId: locations[0].accountId,
       locationId: locations[0].locationId,
     };
   }

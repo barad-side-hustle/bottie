@@ -13,12 +13,12 @@ import { subDays } from "date-fns";
 export const dynamic = "force-dynamic";
 
 interface InsightsPageProps {
-  params: Promise<{ locale: string; accountId: string; locationId: string }>;
+  params: Promise<{ locale: string; locationId: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 export default async function InsightsPage({ params, searchParams }: InsightsPageProps) {
-  const { locale, accountId, locationId } = await params;
+  const { locale, locationId } = await params;
   const resolvedSearchParams = await searchParams;
 
   const t = await getTranslations({ locale, namespace: "dashboard.insights" });
@@ -52,7 +52,6 @@ export default async function InsightsPage({ params, searchParams }: InsightsPag
         <Breadcrumbs
           items={buildLocationBreadcrumbs({
             locationName: location.name,
-            accountId,
             locationId,
             currentSection: "insights",
             t: tBreadcrumbs,

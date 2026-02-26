@@ -3,12 +3,12 @@
 import { cache } from "react";
 import { z } from "zod";
 import { LocationsController, AccountLocationsController } from "@/lib/controllers";
-import type { Location, LocationUpdate, AccountLocation } from "@/lib/types";
-import type { Location as DBLocation } from "@/lib/db/schema";
+import type { Location, LocationUpdate } from "@/lib/types";
 import { getDefaultLocationConfig } from "@/lib/utils/location-config";
 import { extractLocationId } from "@/lib/google/business-profile";
 import { revalidatePath } from "next/cache";
 import { createSafeAction } from "./safe-action";
+import { LocationMembersRepository } from "@/lib/db/repositories/location-members.repository";
 
 const getLocationCached = cache(async (userId: string, locationId: string): Promise<Location> => {
   const controller = new LocationsController(userId);
@@ -19,14 +19,6 @@ export const getLocation = createSafeAction(
   z.object({ locationId: z.string() }),
   async ({ locationId }, { userId }) => {
     return getLocationCached(userId, locationId);
-  }
-);
-
-export const getAccountLocations = createSafeAction(
-  z.object({ accountId: z.string() }),
-  async ({ accountId }, { userId }): Promise<Array<AccountLocation & { location: DBLocation }>> => {
-    const controller = new AccountLocationsController(userId, accountId);
-    return controller.getAccountLocationsWithDetails();
   }
 );
 
@@ -78,14 +70,33 @@ export const updateLocationConfig = createSafeAction(
   }
 );
 
+export const checkLocationsOwnership = createSafeAction(
+  z.object({
+    googleLocationIds: z.array(z.string()),
+  }),
+  async ({ googleLocationIds }) => {
+    const membersRepo = new LocationMembersRepository();
+    const results: Record<string, { owned: boolean; ownerName?: string }> = {};
+
+    for (const googleLocationId of googleLocationIds) {
+      results[googleLocationId] = await membersRepo.isLocationOwnedByGoogleId(googleLocationId);
+    }
+
+    return results;
+  }
+);
+
 export const disconnectLocation = createSafeAction(
   z.object({
-    accountId: z.string(),
-    accountLocationId: z.string(),
+    locationId: z.string(),
   }),
-  async ({ accountId, accountLocationId }, { userId }): Promise<void> => {
-    const controller = new AccountLocationsController(userId, accountId);
-    await controller.disconnectLocation(accountLocationId);
+  async ({ locationId }, { userId }): Promise<void> => {
+    const { findLocationOwner } = await import("@/lib/utils/find-location-owner");
+    const owner = await findLocationOwner(locationId);
+    if (!owner) throw new Error("No owner found for location");
+
+    const controller = new AccountLocationsController(userId, owner.accountId);
+    await controller.disconnectLocation(owner.accountLocationId);
     revalidatePath("/dashboard", "layout");
   }
 );

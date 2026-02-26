@@ -2,6 +2,9 @@ import { integer, jsonb, pgTable, text, timestamp, uuid, index, pgPolicy } from 
 import { sql, relations } from "drizzle-orm";
 import { reviews } from "./reviews.schema";
 import { accountLocations } from "./account-locations.schema";
+import { locationMembers } from "./location-members.schema";
+import { locationAccessRequests } from "./location-access-requests.schema";
+import { locationInvitations } from "./location-invitations.schema";
 import type { QrCodeSettings } from "@/lib/types/qr-settings.types";
 
 export const locations = pgTable(
@@ -64,6 +67,9 @@ export const locations = pgTable(
 export const locationsRelations = relations(locations, ({ many }) => ({
   reviews: many(reviews),
   accountLocations: many(accountLocations),
+  members: many(locationMembers),
+  accessRequests: many(locationAccessRequests),
+  invitations: many(locationInvitations),
 }));
 
 export type Location = typeof locations.$inferSelect;

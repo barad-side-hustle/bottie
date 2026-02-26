@@ -6,13 +6,11 @@ import { AccountLocationsRepository } from "@/lib/db/repositories/account-locati
 import { listReviews, starRatingToNumber, parseGoogleTimestamp, GoogleReview } from "@/lib/google/reviews";
 import { decryptToken } from "@/lib/google/business-profile";
 import { ReviewInsert, ReviewResponseInsert } from "@/lib/db/schema";
-import { isDuplicateKeyError } from "@/lib/db/error-handlers";
 
 export const runtime = "nodejs";
 
-const MAX_IMPORT_COUNT = 500;
-const BATCH_SIZE = 50;
-const CONCURRENCY_LIMIT = 5;
+const MAX_IMPORT_COUNT = 200;
+const BATCH_SIZE = 100;
 
 function sendEvent(controller: ReadableStreamDefaultController, encoder: TextEncoder, data: Record<string, unknown>) {
   try {
@@ -75,59 +73,52 @@ export async function POST(request: Request) {
         let reviewBuffer: GoogleReview[] = [];
         let totalSent = false;
 
-        const processReviewBatch = async (reviews: GoogleReview[]) => {
-          for (let i = 0; i < reviews.length; i += CONCURRENCY_LIMIT) {
-            const chunk = reviews.slice(i, i + CONCURRENCY_LIMIT);
-            await Promise.all(
-              chunk.map(async (googleReview) => {
-                const existingReview = await reviewsRepo.findByGoogleReviewId(googleReview.reviewId);
+        const processReviewBatch = async (batch: GoogleReview[]) => {
+          const reviewInserts: ReviewInsert[] = batch.map((g) => {
+            const hasReply = !!g.reviewReply;
+            return {
+              locationId,
+              googleReviewId: g.reviewId,
+              googleReviewName: g.name,
+              name: g.reviewer.displayName,
+              photoUrl: g.reviewer.profilePhotoUrl || null,
+              rating: starRatingToNumber(g.starRating),
+              text: g.comment || "",
+              date: parseGoogleTimestamp(g.createTime),
+              updateTime: parseGoogleTimestamp(g.updateTime),
+              receivedAt: new Date(),
+              isAnonymous: g.reviewer.isAnonymous || false,
+              replyStatus: hasReply ? "posted" : "pending",
+              consumesQuota: false,
+              notificationSent: hasReply,
+            };
+          });
 
-                if (!existingReview) {
-                  const hasReply = !!googleReview.reviewReply;
+          const inserted = await reviewsRepo.createMany(reviewInserts);
+          importedCount += inserted.length;
 
-                  const reviewData: ReviewInsert = {
-                    locationId,
-                    googleReviewId: googleReview.reviewId,
-                    googleReviewName: googleReview.name,
-                    name: googleReview.reviewer.displayName,
-                    photoUrl: googleReview.reviewer.profilePhotoUrl || null,
-                    rating: starRatingToNumber(googleReview.starRating),
-                    text: googleReview.comment || "",
-                    date: parseGoogleTimestamp(googleReview.createTime),
-                    updateTime: parseGoogleTimestamp(googleReview.updateTime),
-                    receivedAt: new Date(),
-                    isAnonymous: googleReview.reviewer.isAnonymous || false,
-                    replyStatus: hasReply ? "posted" : "pending",
-                    consumesQuota: false,
-                    notificationSent: hasReply,
-                  };
+          const insertedByGoogleId = new Map(inserted.map((r) => [r.googleReviewId, r]));
 
-                  try {
-                    const newReview = await reviewsRepo.create(reviewData);
-                    importedCount++;
+          const responseInserts: Omit<ReviewResponseInsert, "accountId" | "locationId">[] = [];
+          for (const g of batch) {
+            if (g.reviewReply?.comment) {
+              const insertedReview = insertedByGoogleId.get(g.reviewId);
+              if (insertedReview) {
+                responseInserts.push({
+                  reviewId: insertedReview.id,
+                  text: g.reviewReply.comment,
+                  status: "posted",
+                  postedAt: parseGoogleTimestamp(g.reviewReply.updateTime),
+                  createdAt: new Date(),
+                  generatedBy: null,
+                  type: "imported",
+                });
+              }
+            }
+          }
 
-                    if (hasReply && googleReview.reviewReply && googleReview.reviewReply.comment) {
-                      const responseData: Omit<ReviewResponseInsert, "accountId" | "locationId"> = {
-                        reviewId: newReview.id,
-                        text: googleReview.reviewReply.comment,
-                        status: "posted",
-                        postedAt: parseGoogleTimestamp(googleReview.reviewReply.updateTime),
-                        createdAt: new Date(),
-                        generatedBy: null,
-                        type: "imported",
-                      };
-
-                      await reviewResponsesRepo.create(responseData);
-                    }
-                  } catch (error) {
-                    if (isDuplicateKeyError(error)) {
-                      return;
-                    }
-                    throw error;
-                  }
-                }
-              })
-            );
+          if (responseInserts.length > 0) {
+            await reviewResponsesRepo.createMany(responseInserts);
           }
         };
 

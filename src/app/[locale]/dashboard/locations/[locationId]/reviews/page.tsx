@@ -19,12 +19,12 @@ import { buildLocationBreadcrumbs } from "@/lib/utils/breadcrumbs";
 export const dynamic = "force-dynamic";
 
 interface LocationReviewsPageProps {
-  params: Promise<{ locale: string; accountId: string; locationId: string }>;
+  params: Promise<{ locale: string; locationId: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
 export default async function LocationReviewsPage({ params, searchParams }: LocationReviewsPageProps) {
-  const { locale, accountId, locationId } = await params;
+  const { locale, locationId } = await params;
   const resolvedSearchParams = await searchParams;
   const filters = parseFiltersFromSearchParams(resolvedSearchParams);
   const { userId } = await getAuthenticatedUserId();
@@ -33,7 +33,6 @@ export default async function LocationReviewsPage({ params, searchParams }: Loca
   const [location, reviews] = await Promise.all([
     getLocation({ locationId }),
     getReviews({
-      accountId,
       locationId,
       filters: {
         ...filters,
@@ -48,7 +47,6 @@ export default async function LocationReviewsPage({ params, searchParams }: Loca
         <Breadcrumbs
           items={buildLocationBreadcrumbs({
             locationName: location.name,
-            accountId,
             locationId,
             currentSection: "reviews",
             t: tBreadcrumbs,
@@ -74,7 +72,7 @@ export default async function LocationReviewsPage({ params, searchParams }: Loca
             <EmptyState title={t("noReviews")} description={t("noReviewsDescription")} />
           ) : (
             <Suspense>
-              <ReviewsList reviews={reviews} accountId={accountId} locationId={locationId} userId={userId} />
+              <ReviewsList reviews={reviews} locationId={locationId} userId={userId} />
             </Suspense>
           )}
         </div>

@@ -561,7 +561,6 @@
           "negative": "שלילי"
         },
         "reset": "איפוס",
-        "apply": "החל",
         "filter": "סינון",
         "filters": "מסננים",
         "clearAll": "נקה הכל",
@@ -766,12 +765,37 @@
       }
     },
     "settings": {
-      "disconnected": "מנותק",
       "deleteBusiness": "מחיקת עסק",
       "deleteConfirmation": "פעולה זו תמחק את העסק \"{businessName}\" לצמיתות!",
       "deleteConfirmationLabel": "כדי לאשר, הקלד את שם העסק:",
       "deleteConfirmationPlaceholder": "שם העסק",
-      "deleteButton": "מחק עסק"
+      "deleteButton": "מחק עסק",
+      "members": {
+        "title": "חברי צוות",
+        "description": "נהל מי יש גישה למיקום זה",
+        "owner": "בעלים",
+        "admin": "מנהל",
+        "you": "אתה",
+        "pendingRequests": "בקשות גישה ממתינות",
+        "pendingRequestsDescription": "משתמשים שביקשו גישה למיקום זה",
+        "pendingInvitations": "הזמנות ממתינות",
+        "invitedAs": "הוזמן כ{role}",
+        "approve": "אשר",
+        "reject": "דחה",
+        "inviteTitle": "הזמן חבר צוות",
+        "inviteDescription": "שלח הזמנה באימייל להוספת חבר צוות חדש",
+        "inviteEmailPlaceholder": "הכנס כתובת אימייל",
+        "inviteButton": "שלח הזמנה",
+        "memberRemoved": "חבר צוות הוסר",
+        "requestApproved": "בקשת הגישה אושרה",
+        "invitationSent": "ההזמנה נשלחה",
+        "errorUpdatingRole": "עדכון התפקיד נכשל",
+        "errorRemovingMember": "הסרת חבר הצוות נכשלה",
+        "errorApprovingRequest": "אישור הבקשה נכשל",
+        "errorRejectingRequest": "דחיית הבקשה נכשלה",
+        "errorInviting": "שליחת ההזמנה נכשלה",
+        "errorCancellingInvitation": "ביטול ההזמנה נכשל"
+      }
     },
     "components": {
       "upgradeBanner": {
@@ -1020,9 +1044,18 @@
       "descriptionWithCount": "בחר את העסק שברצונך לחבר (נמצאו {count} עסקים)",
       "connectButton": "חבר עסק זה",
       "connectingButton": "מחבר...",
+      "alreadyOwned": "{location} כבר מנוהל על ידי {name}",
+      "requestAccessDescription": "ניתן לבקש גישה לשיתוף פעולה במיקום זה. הבעלים יקבל הודעה.",
+      "accessRequestSent": "בקשת הגישה נשלחה!",
+      "accessRequestSentDescription": "הבקשה שלך נשלחה. תקבל הודעה כשהבעלים יגיב.",
+      "requestMessagePlaceholder": "הוסף הודעה אופציונלית לבעלים...",
+      "sendRequest": "בקש גישה",
+      "sendingRequest": "שולח...",
+      "managedBy": "מנוהל ע\"י {name}",
       "errors": {
         "noBusinessesFound": "לא נמצאו עסקים בחשבון Google Business Profile שלך",
-        "failedToConnect": "לא ניתן לחבר את העסק"
+        "failedToConnect": "לא ניתן לחבר את העסק",
+        "failedToRequestAccess": "לא ניתן לשלוח בקשת גישה"
       }
     },
     "configure": {
@@ -1077,5 +1110,10 @@
       "description": "אופס, נראה שהדף שאתה מחפש לא קיים.",
       "homeButton": "חזור לדף הבית"
     }
+  },
+  "invitation": {
+    "title": "הזמנה למיקום",
+    "genericError": "משהו השתבש בעת עיבוד ההזמנה שלך.",
+    "goToDashboard": "עבור לדשבורד"
   }
 }

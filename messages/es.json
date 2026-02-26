@@ -604,7 +604,6 @@
           "negative": "Negativo"
         },
         "reset": "Restablecer",
-        "apply": "Aplicar",
         "filter": "Filtrar",
         "filters": "Filtros",
         "clearAll": "Limpiar todo",
@@ -773,12 +772,37 @@
       }
     },
     "settings": {
-      "disconnected": "Desconectado",
       "deleteBusiness": "Eliminar negocio",
       "deleteConfirmation": "Esta accion eliminara permanentemente el negocio \"{businessName}\"!",
       "deleteConfirmationLabel": "Para confirmar, ingresa el nombre del negocio:",
       "deleteConfirmationPlaceholder": "Nombre del negocio",
-      "deleteButton": "Eliminar negocio"
+      "deleteButton": "Eliminar negocio",
+      "members": {
+        "title": "Miembros del equipo",
+        "description": "Gestiona quién tiene acceso a esta ubicación",
+        "owner": "Propietario",
+        "admin": "Administrador",
+        "you": "Tú",
+        "pendingRequests": "Solicitudes de acceso pendientes",
+        "pendingRequestsDescription": "Usuarios que han solicitado acceso a esta ubicación",
+        "pendingInvitations": "Invitaciones pendientes",
+        "invitedAs": "Invitado como {role}",
+        "approve": "Aprobar",
+        "reject": "Rechazar",
+        "inviteTitle": "Invitar miembro del equipo",
+        "inviteDescription": "Envía una invitación por email para agregar un nuevo miembro del equipo",
+        "inviteEmailPlaceholder": "Ingresa la dirección de email",
+        "inviteButton": "Enviar invitación",
+        "memberRemoved": "Miembro eliminado",
+        "requestApproved": "Solicitud de acceso aprobada",
+        "invitationSent": "Invitación enviada",
+        "errorUpdatingRole": "No se pudo actualizar el rol",
+        "errorRemovingMember": "No se pudo eliminar al miembro",
+        "errorApprovingRequest": "No se pudo aprobar la solicitud",
+        "errorRejectingRequest": "No se pudo rechazar la solicitud",
+        "errorInviting": "No se pudo enviar la invitación",
+        "errorCancellingInvitation": "No se pudo cancelar la invitación"
+      }
     },
     "components": {
       "upgradeBanner": {
@@ -1027,9 +1051,18 @@
       "descriptionWithCount": "Selecciona el negocio que deseas conectar (se encontraron {count} negocios)",
       "connectButton": "Conectar este negocio",
       "connectingButton": "Conectando...",
+      "alreadyOwned": "{location} ya está gestionado por {name}",
+      "requestAccessDescription": "Puedes solicitar acceso para colaborar en esta ubicación. El propietario será notificado.",
+      "accessRequestSent": "¡Solicitud de acceso enviada!",
+      "accessRequestSentDescription": "Tu solicitud ha sido enviada. Se te notificará cuando el propietario responda.",
+      "requestMessagePlaceholder": "Agrega un mensaje opcional para el propietario...",
+      "sendRequest": "Solicitar acceso",
+      "sendingRequest": "Enviando...",
+      "managedBy": "Gestionado por {name}",
       "errors": {
         "noBusinessesFound": "No se encontraron negocios en tu cuenta de Google Business Profile",
-        "failedToConnect": "No se pudo conectar el negocio"
+        "failedToConnect": "No se pudo conectar el negocio",
+        "failedToRequestAccess": "No se pudo enviar la solicitud de acceso"
       }
     },
     "configure": {
@@ -1077,5 +1110,10 @@
       "viewReviewButton": "Ver resena",
       "footer": "Recibiste este email porque habilitaste las notificaciones de nuevas resenas"
     }
+  },
+  "invitation": {
+    "title": "Invitación a ubicación",
+    "genericError": "Algo salió mal al procesar tu invitación.",
+    "goToDashboard": "Ir al panel de control"
   }
 }

@@ -41,6 +41,26 @@ export class ReviewResponsesRepository {
     return created;
   }
 
+  async createMany(data: Omit<ReviewResponseInsert, "accountId" | "locationId">[]): Promise<void> {
+    if (data.length === 0) return;
+
+    const accessCheck = await db
+      .select({ hasAccess: sql<boolean>`${this.getAccessCondition()}` })
+      .from(sql`(SELECT 1) as _dummy`);
+
+    if (!accessCheck[0]?.hasAccess) {
+      throw new ForbiddenError("Access denied");
+    }
+
+    const rows = data.map((d) => ({
+      ...d,
+      accountId: this.accountId,
+      locationId: this.locationId,
+    }));
+
+    await db.insert(reviewResponses).values(rows);
+  }
+
   async updateStatus(id: string, status: "draft" | "posted" | "rejected"): Promise<ReviewResponse | undefined> {
     const [updated] = await db
       .update(reviewResponses)

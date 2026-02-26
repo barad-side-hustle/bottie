@@ -17,12 +17,11 @@ import { parseFiltersFromSearchParams } from "@/lib/utils/filter-utils";
 
 interface ReviewsListProps {
   reviews: ReviewWithLatestGeneration[];
-  accountId: string;
   locationId: string;
   userId: string;
 }
 
-export function ReviewsList({ reviews: initialReviews, accountId, locationId, userId }: ReviewsListProps) {
+export function ReviewsList({ reviews: initialReviews, locationId, userId }: ReviewsListProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const t = useTranslations("dashboard.reviews.bulkActions");
@@ -87,7 +86,6 @@ export function ReviewsList({ reviews: initialReviews, accountId, locationId, us
     setIsLoading(true);
     try {
       const nextBatch = await getReviews({
-        accountId,
         locationId,
         filters: {
           ...parseFiltersFromSearchParams(Object.fromEntries(searchParams.entries())),
@@ -106,7 +104,7 @@ export function ReviewsList({ reviews: initialReviews, accountId, locationId, us
     } finally {
       setIsLoading(false);
     }
-  }, [accountId, locationId, hasMore, isLoading, reviews.length, searchParams]);
+  }, [locationId, hasMore, isLoading, reviews.length, searchParams]);
 
   const handleUpdate = (updatedReview?: ReviewWithLatestGeneration) => {
     if (updatedReview) {
@@ -132,7 +130,6 @@ export function ReviewsList({ reviews: initialReviews, accountId, locationId, us
         <div key={review.id}>
           <ReviewCard
             review={review}
-            accountId={accountId}
             locationId={locationId}
             userId={userId}
             onUpdate={handleUpdate}
@@ -175,7 +172,6 @@ export function ReviewsList({ reviews: initialReviews, accountId, locationId, us
         open={showBulkPublishDialog}
         onOpenChange={setShowBulkPublishDialog}
         selectedReviews={selectedPublishable}
-        accountId={accountId}
         locationId={locationId}
         onComplete={handleBulkPublishComplete}
       />

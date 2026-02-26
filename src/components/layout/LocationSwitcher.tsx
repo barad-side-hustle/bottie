@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { ChevronsUpDown, MapPin, Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/routing";
@@ -10,9 +9,7 @@ import { useDirection } from "@/contexts/DirectionProvider";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
@@ -31,23 +28,13 @@ export function LocationSwitcher() {
 
   const currentSection = locationCtx?.section || "reviews";
 
-  const handleSelectLocation = (accountId: string, locationId: string) => {
-    router.push(`/dashboard/accounts/${accountId}/locations/${locationId}/${currentSection}`);
+  const handleSelectLocation = (locationId: string) => {
+    router.push(`/dashboard/locations/${locationId}/${currentSection}`);
   };
 
   const handleAddLocation = () => {
     router.push("/onboarding");
   };
-
-  const grouped = locations.reduce<Record<string, typeof locations>>(
-    (acc, loc) => {
-      const key = loc.accountName;
-      if (!acc[key]) acc[key] = [];
-      acc[key].push(loc);
-      return acc;
-    },
-    {} as Record<string, typeof locations>
-  );
 
   return (
     <SidebarMenu>
@@ -75,9 +62,6 @@ export function LocationSwitcher() {
                 <span className="truncate font-semibold">
                   {currentLocation?.locationName || t("navigation.sidebar.selectLocation")}
                 </span>
-                {currentLocation && (
-                  <span className="truncate text-xs text-muted-foreground">{currentLocation.accountName}</span>
-                )}
               </div>
               <ChevronsUpDown className="ms-auto" />
             </SidebarMenuButton>
@@ -88,35 +72,27 @@ export function LocationSwitcher() {
             side={isMobile ? "bottom" : dir === "rtl" ? "left" : "right"}
             sideOffset={4}
           >
-            {Object.entries(grouped).map(([accountName, locs], index) => (
-              <React.Fragment key={accountName}>
-                {index > 0 && <DropdownMenuSeparator />}
-                <DropdownMenuGroup>
-                  <DropdownMenuLabel className="text-xs text-muted-foreground">{accountName}</DropdownMenuLabel>
-                  {locs.map((loc) => (
-                    <DropdownMenuItem
-                      key={loc.locationId}
-                      onClick={() => handleSelectLocation(loc.accountId, loc.locationId)}
-                      className="gap-2 p-2"
-                    >
-                      <div className="flex size-6 items-center justify-center rounded-sm border border-border/50 overflow-hidden">
-                        {loc.photoUrl ? (
-                          <Image
-                            src={loc.photoUrl}
-                            alt={loc.locationName}
-                            width={24}
-                            height={24}
-                            className="size-full object-cover"
-                          />
-                        ) : (
-                          <MapPin className="size-4 shrink-0 text-muted-foreground" />
-                        )}
-                      </div>
-                      <span className="truncate">{loc.locationName}</span>
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuGroup>
-              </React.Fragment>
+            {locations.map((loc) => (
+              <DropdownMenuItem
+                key={loc.locationId}
+                onClick={() => handleSelectLocation(loc.locationId)}
+                className="gap-2 p-2"
+              >
+                <div className="flex size-6 items-center justify-center rounded-sm border border-border/50 overflow-hidden">
+                  {loc.photoUrl ? (
+                    <Image
+                      src={loc.photoUrl}
+                      alt={loc.locationName}
+                      width={24}
+                      height={24}
+                      className="size-full object-cover"
+                    />
+                  ) : (
+                    <MapPin className="size-4 shrink-0 text-muted-foreground" />
+                  )}
+                </div>
+                <span className="truncate">{loc.locationName}</span>
+              </DropdownMenuItem>
             ))}
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleAddLocation} className="gap-2 p-2">

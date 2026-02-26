@@ -9,3 +9,6 @@ export * from "./users-configs.repository";
 export * from "./location-subscriptions.repository";
 export * from "./stats.repository";
 export * from "./insights.repository";
+export * from "./location-members.repository";
+export * from "./location-access-requests.repository";
+export * from "./location-invitations.repository";

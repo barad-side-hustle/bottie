@@ -195,6 +195,26 @@ export class ReviewsRepository extends BaseRepository<ReviewInsert, Review, Part
     });
   }
 
+  async createMany(data: ReviewInsert[]): Promise<Review[]> {
+    if (data.length === 0) return [];
+
+    const accessCheck = await db
+      .select({ hasAccess: sql<boolean>`${this.getAccessCondition()}` })
+      .from(sql`(SELECT 1) as _dummy`);
+
+    if (!accessCheck[0]?.hasAccess) {
+      throw new ForbiddenError("Access denied");
+    }
+
+    const rows = data.map((d) => ({
+      ...d,
+      locationId: this.locationId,
+      replyStatus: d.replyStatus || ("pending" as const),
+    }));
+
+    return db.insert(reviews).values(rows).onConflictDoNothing({ target: reviews.googleReviewId }).returning();
+  }
+
   async findByGoogleReviewId(googleReviewId: string): Promise<Review | null> {
     const result = await db.query.reviews.findFirst({
       where: and(

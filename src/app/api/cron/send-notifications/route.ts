@@ -58,7 +58,6 @@ export async function GET(req: NextRequest) {
       string,
       | {
           userId: string;
-          accountId: string;
           locationName: string;
         }
       | "skip"
@@ -78,7 +77,6 @@ export async function GET(req: NextRequest) {
             } else {
               locationCache.set(review.locationId, {
                 userId: owner.userId,
-                accountId: owner.accountId,
                 locationName: location.name,
               });
             }
@@ -92,7 +90,7 @@ export async function GET(req: NextRequest) {
           continue;
         }
 
-        const { userId, accountId, locationName } = cached;
+        const { userId, locationName } = cached;
 
         let aiReply: string | undefined;
 
@@ -116,7 +114,6 @@ export async function GET(req: NextRequest) {
         await sendReviewNotifications({
           reviewId: review.id,
           locationId: review.locationId,
-          accountId,
           locationName,
           reviewerName: review.name,
           reviewRating: review.rating,

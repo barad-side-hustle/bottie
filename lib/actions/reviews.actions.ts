@@ -2,6 +2,7 @@
 
 import { ReviewsController } from "@/lib/controllers/reviews.controller";
 import { createSafeAction } from "./safe-action";
+import { findLocationOwner } from "@/lib/utils/find-location-owner";
 import { z } from "zod";
 
 const ReviewFiltersSchema = z
@@ -24,7 +25,6 @@ const ReviewFiltersSchema = z
   .optional();
 
 const ContextSchema = z.object({
-  accountId: z.string().uuid(),
   locationId: z.string().uuid(),
 });
 
@@ -50,27 +50,34 @@ const SetFeedbackSchema = ContextSchema.extend({
   comment: z.string().max(500).optional(),
 });
 
-export const getReviews = createSafeAction(GetReviewsSchema, async ({ accountId, locationId, filters }, { userId }) => {
+async function resolveAccountId(locationId: string): Promise<string> {
+  const owner = await findLocationOwner(locationId);
+  if (!owner) throw new Error("No owner found for location");
+  return owner.accountId;
+}
+
+export const getReviews = createSafeAction(GetReviewsSchema, async ({ locationId, filters }, { userId }) => {
+  const accountId = await resolveAccountId(locationId);
   const controller = new ReviewsController(userId, accountId, locationId);
   return controller.getReviews(filters);
 });
 
-export const getReview = createSafeAction(ReviewIdSchema, async ({ accountId, locationId, reviewId }, { userId }) => {
+export const getReview = createSafeAction(ReviewIdSchema, async ({ locationId, reviewId }, { userId }) => {
+  const accountId = await resolveAccountId(locationId);
   const controller = new ReviewsController(userId, accountId, locationId);
   return controller.getReview(reviewId);
 });
 
-export const generateReviewReply = createSafeAction(
-  ReviewIdSchema,
-  async ({ accountId, locationId, reviewId }, { userId }) => {
-    const controller = new ReviewsController(userId, accountId, locationId);
-    return controller.generateReply(reviewId);
-  }
-);
+export const generateReviewReply = createSafeAction(ReviewIdSchema, async ({ locationId, reviewId }, { userId }) => {
+  const accountId = await resolveAccountId(locationId);
+  const controller = new ReviewsController(userId, accountId, locationId);
+  return controller.generateReply(reviewId);
+});
 
 export const saveReviewDraft = createSafeAction(
   SaveReviewDraftSchema,
-  async ({ accountId, locationId, reviewId, customReply }, { userId }) => {
+  async ({ locationId, reviewId, customReply }, { userId }) => {
+    const accountId = await resolveAccountId(locationId);
     const controller = new ReviewsController(userId, accountId, locationId);
     return controller.saveDraft(reviewId, customReply);
   }
@@ -78,7 +85,8 @@ export const saveReviewDraft = createSafeAction(
 
 export const postReviewReply = createSafeAction(
   PostReviewReplySchema,
-  async ({ accountId, locationId, reviewId, customReply }, { userId }) => {
+  async ({ locationId, reviewId, customReply }, { userId }) => {
+    const accountId = await resolveAccountId(locationId);
     const controller = new ReviewsController(userId, accountId, locationId);
     const { review } = await controller.postReply(reviewId, customReply, userId);
     return review;
@@ -87,7 +95,8 @@ export const postReviewReply = createSafeAction(
 
 export const setReviewResponseFeedback = createSafeAction(
   SetFeedbackSchema,
-  async ({ accountId, locationId, responseId, feedback, comment }, { userId }) => {
+  async ({ locationId, responseId, feedback, comment }, { userId }) => {
+    const accountId = await resolveAccountId(locationId);
     const controller = new ReviewsController(userId, accountId, locationId);
     return controller.setFeedback(responseId, feedback, comment);
   }

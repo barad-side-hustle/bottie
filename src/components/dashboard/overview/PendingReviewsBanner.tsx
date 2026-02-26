@@ -18,9 +18,7 @@ export function PendingReviewsBanner({ data }: { data: OverviewData }) {
   if (!topPending) return null;
 
   const handleNavigate = () => {
-    router.push(
-      `/dashboard/accounts/${topPending.accountId}/locations/${topPending.locationId}/reviews?replyStatus=pending`
-    );
+    router.push(`/dashboard/locations/${topPending.locationId}/reviews?replyStatus=pending`);
   };
 
   return (

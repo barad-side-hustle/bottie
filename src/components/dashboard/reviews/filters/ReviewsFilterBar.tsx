@@ -51,17 +51,15 @@ function useReviewFilters() {
     (filters.sentiment?.length ?? 0) +
     (filters.dateFrom || filters.dateTo ? 1 : 0);
 
-  const handleApply = (newFilters: ReviewFilters) => {
+  const handleFilterChange = (newFilters: ReviewFilters) => {
     storeSetFilters(locationId, newFilters);
     const params = buildSearchParams(newFilters);
     router.push(`${pathname}?${params.toString()}`);
-    setIsOpen(false);
   };
 
   const handleReset = () => {
     clearFilters(locationId);
     router.push(pathname);
-    setIsOpen(false);
   };
 
   const handleRemoveFilter = (key: keyof ReviewFilters, value?: string | number) => {
@@ -78,19 +76,20 @@ function useReviewFilters() {
       delete newFilters.dateTo;
     }
 
-    handleApply(newFilters);
+    handleFilterChange(newFilters);
   };
 
-  return { filters, activeCount, isOpen, setIsOpen, handleApply, handleReset, handleRemoveFilter };
+  return { filters, activeCount, isOpen, setIsOpen, handleFilterChange, handleReset, handleRemoveFilter };
 }
 
 export function ReviewsFilterBar() {
-  const { filters, activeCount, isOpen, setIsOpen, handleApply, handleReset, handleRemoveFilter } = useReviewFilters();
+  const { filters, activeCount, isOpen, setIsOpen, handleFilterChange, handleReset, handleRemoveFilter } =
+    useReviewFilters();
 
   return (
     <div className="mb-6">
       <ResponsiveFilterPanel activeCount={activeCount} open={isOpen} onOpenChange={setIsOpen}>
-        <ReviewFiltersForm filters={filters} onApply={handleApply} onReset={handleReset} />
+        <ReviewFiltersForm filters={filters} onApply={handleFilterChange} onReset={handleReset} />
       </ResponsiveFilterPanel>
       <ActiveFilters filters={filters} onRemove={handleRemoveFilter} onClearAll={handleReset} />
     </div>
@@ -99,7 +98,7 @@ export function ReviewsFilterBar() {
 
 export function ReviewsDesktopFilterPanel() {
   const t = useTranslations("dashboard.reviews.filters");
-  const { filters, handleApply, handleReset } = useReviewFilters();
+  const { filters, handleFilterChange, handleReset } = useReviewFilters();
 
   return (
     <DashboardCard>
@@ -107,7 +106,7 @@ export function ReviewsDesktopFilterPanel() {
         <DashboardCardTitle icon={<Filter className="size-5" />}>{t("filters")}</DashboardCardTitle>
       </DashboardCardHeader>
       <DashboardCardContent>
-        <ReviewFiltersForm filters={filters} onApply={handleApply} onReset={handleReset} />
+        <ReviewFiltersForm filters={filters} onApply={handleFilterChange} onReset={handleReset} />
       </DashboardCardContent>
     </DashboardCard>
   );

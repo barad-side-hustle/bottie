@@ -25,7 +25,10 @@ export class AccountLocationsController {
 
   async connectLocation(
     data: LocationCreate
-  ): Promise<{ accountLocation: AccountLocation; location: Location; isNew: boolean }> {
+  ): Promise<
+    | { accountLocation: AccountLocation; location: Location; isNew: boolean; alreadyOwned?: false }
+    | { alreadyOwned: true; ownerName: string; locationId: string }
+  > {
     return this.repository.findOrCreate(data.googleBusinessId, data.googleLocationId, {
       name: data.name,
       address: data.address,

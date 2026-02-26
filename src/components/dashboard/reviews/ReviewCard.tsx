@@ -33,7 +33,6 @@ export function isReviewPublishable(review: ReviewWithLatestGeneration): boolean
 
 interface ReviewCardProps {
   review: ReviewWithLatestGeneration;
-  accountId: string;
   userId: string;
   locationId: string;
   onUpdate?: (updatedReview?: ReviewWithLatestGeneration) => void;
@@ -44,7 +43,6 @@ interface ReviewCardProps {
 
 export function ReviewCard({
   review,
-  accountId,
   userId,
   locationId,
   onUpdate,
@@ -140,7 +138,7 @@ export function ReviewCard({
     if (!user) return;
 
     try {
-      const updatedReview = await postReviewReply({ accountId, locationId, reviewId: review.id });
+      const updatedReview = await postReviewReply({ locationId, reviewId: review.id });
       sendRybbitEvent("reply_published", {
         rating: review.rating,
         is_update: review.replyStatus === "posted",
@@ -159,7 +157,7 @@ export function ReviewCard({
 
     try {
       setIsLoading(true);
-      const result = await generateReviewReply({ accountId, locationId, reviewId: review.id });
+      const result = await generateReviewReply({ locationId, reviewId: review.id });
       sendRybbitEvent("reply_regenerated", { rating: review.rating });
       onUpdate?.(result.review);
     } catch (error) {
@@ -189,7 +187,6 @@ export function ReviewCard({
 
     try {
       await setReviewResponseFeedback({
-        accountId,
         locationId,
         responseId: review.latestAiReplyId,
         feedback: newFeedback,
@@ -215,7 +212,6 @@ export function ReviewCard({
     setIsFeedbackLoading(true);
     try {
       await setReviewResponseFeedback({
-        accountId,
         locationId,
         responseId: review.latestAiReplyId,
         feedback: "disliked",
@@ -502,7 +498,6 @@ export function ReviewCard({
 
       <ReplyEditor
         review={review}
-        accountId={accountId}
         userId={userId}
         locationId={locationId}
         open={showEditor}
@@ -549,18 +544,16 @@ export function ReviewCard({
 
 interface ReviewCardWithRefreshProps {
   review: ReviewWithLatestGeneration;
-  accountId: string;
   userId: string;
   locationId: string;
 }
 
-export function ReviewCardWithRefresh({ review, accountId, userId, locationId }: ReviewCardWithRefreshProps) {
+export function ReviewCardWithRefresh({ review, userId, locationId }: ReviewCardWithRefreshProps) {
   const router = useRouter();
 
   return (
     <ReviewCard
       review={review}
-      accountId={accountId}
       userId={userId}
       locationId={locationId}
       onUpdate={() => {

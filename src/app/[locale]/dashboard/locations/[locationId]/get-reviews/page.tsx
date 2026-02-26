@@ -8,12 +8,8 @@ import { SolicitationContent } from "@/components/dashboard/solicitation/Solicit
 
 export const dynamic = "force-dynamic";
 
-export default async function GetReviewsPage({
-  params,
-}: {
-  params: Promise<{ locale: string; accountId: string; locationId: string }>;
-}) {
-  const { locale, accountId, locationId } = await params;
+export default async function GetReviewsPage({ params }: { params: Promise<{ locale: string; locationId: string }> }) {
+  const { locale, locationId } = await params;
   const t = await getTranslations({ locale, namespace: "dashboard.solicitation" });
   const tBreadcrumbs = await getTranslations({ locale, namespace: "breadcrumbs" });
 
@@ -25,7 +21,6 @@ export default async function GetReviewsPage({
         <Breadcrumbs
           items={buildLocationBreadcrumbs({
             locationName: location.name,
-            accountId,
             locationId,
             currentSection: "getReviews",
             t: tBreadcrumbs,

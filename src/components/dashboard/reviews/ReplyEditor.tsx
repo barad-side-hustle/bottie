@@ -19,7 +19,6 @@ import type { ReviewWithLatestGeneration } from "@/lib/db/repositories";
 
 interface ReplyEditorProps {
   review: ReviewWithLatestGeneration;
-  accountId: string;
   userId: string;
   locationId: string;
   open: boolean;
@@ -31,7 +30,6 @@ interface ReplyEditorProps {
 
 export function ReplyEditor({
   review,
-  accountId,
   locationId,
   open,
   onClose,
@@ -50,7 +48,6 @@ export function ReplyEditor({
       setIsLoading(true);
 
       await saveReviewDraft({
-        accountId,
         locationId,
         reviewId: review.id,
         customReply: replyText,

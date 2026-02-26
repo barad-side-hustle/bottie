@@ -1,5 +1,5 @@
 import { db } from "@/lib/db/client";
-import { accountLocations, userAccounts } from "@/lib/db/schema";
+import { accountLocations, userAccounts, locationMembers } from "@/lib/db/schema";
 import { user as userTable } from "@/lib/db/schema/auth.schema";
 import { eq, inArray } from "drizzle-orm";
 import { UsersConfigsRepository } from "@/lib/db/repositories/users-configs.repository";
@@ -10,7 +10,6 @@ import { env } from "@/lib/env";
 interface SendReviewNotificationsParams {
   reviewId: string;
   locationId: string;
-  accountId: string;
   locationName: string;
   reviewerName: string;
   reviewRating: number;
@@ -20,17 +19,7 @@ interface SendReviewNotificationsParams {
 }
 
 export async function sendReviewNotifications(params: SendReviewNotificationsParams): Promise<void> {
-  const {
-    reviewId,
-    locationId,
-    accountId,
-    locationName,
-    reviewerName,
-    reviewRating,
-    reviewText,
-    aiReply,
-    replyStatus,
-  } = params;
+  const { reviewId, locationId, locationName, reviewerName, reviewRating, reviewText, aiReply, replyStatus } = params;
 
   try {
     console.log("Sending email notifications to all opted-in users connected to location", {
@@ -45,11 +34,16 @@ export async function sendReviewNotifications(params: SendReviewNotificationsPar
 
     const accountIds = [...new Set(locationConnections.map((lc) => lc.accountId))];
 
-    const allUserAccounts = await db.query.userAccounts.findMany({
-      where: inArray(userAccounts.accountId, accountIds),
+    const allUserAccounts =
+      accountIds.length > 0
+        ? await db.query.userAccounts.findMany({ where: inArray(userAccounts.accountId, accountIds) })
+        : [];
+
+    const members = await db.query.locationMembers.findMany({
+      where: eq(locationMembers.locationId, locationId),
     });
 
-    const uniqueUserIds = [...new Set(allUserAccounts.map((ua) => ua.userId))];
+    const uniqueUserIds = [...new Set([...allUserAccounts.map((ua) => ua.userId), ...members.map((m) => m.userId)])];
 
     console.log(`Found ${uniqueUserIds.length} unique users connected to location ${locationId}`);
 
@@ -78,7 +72,7 @@ export async function sendReviewNotifications(params: SendReviewNotificationsPar
       const recipientName = userData.name || userData.email;
       const locale = "en";
 
-      const reviewPageUrl = `${env.NEXT_PUBLIC_APP_URL}/${locale}/dashboard/accounts/${accountId}/locations/${locationId}/reviews/${reviewId}`;
+      const reviewPageUrl = `${env.NEXT_PUBLIC_APP_URL}/${locale}/dashboard/locations/${locationId}/reviews/${reviewId}`;
 
       const statusTextMap = {
         pending: "Pending Approval",

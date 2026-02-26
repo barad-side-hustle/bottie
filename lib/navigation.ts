@@ -26,7 +26,7 @@ export const landingNavItems: NavItem[] = [
 ];
 
 export interface SidebarNavItem {
-  href: string | ((ctx: { accountId: string; locationId: string }) => string);
+  href: string | ((ctx: { locationId: string }) => string);
   label: string;
   icon: LucideIcon;
   scope: "location" | "global";
@@ -34,35 +34,32 @@ export interface SidebarNavItem {
 
 export const sidebarLocationItems: SidebarNavItem[] = [
   {
-    href: (ctx) => `/dashboard/accounts/${ctx.accountId}/locations/${ctx.locationId}/reviews`,
+    href: (ctx) => `/dashboard/locations/${ctx.locationId}/reviews`,
     label: "navigation.sidebar.reviews",
     icon: Star,
     scope: "location",
   },
   {
-    href: (ctx) => `/dashboard/accounts/${ctx.accountId}/locations/${ctx.locationId}/insights`,
+    href: (ctx) => `/dashboard/locations/${ctx.locationId}/insights`,
     label: "navigation.sidebar.insights",
     icon: BarChart3,
     scope: "location",
   },
   {
-    href: (ctx) => `/dashboard/accounts/${ctx.accountId}/locations/${ctx.locationId}/get-reviews`,
+    href: (ctx) => `/dashboard/locations/${ctx.locationId}/get-reviews`,
     label: "navigation.sidebar.getReviews",
     icon: QrCode,
     scope: "location",
   },
   {
-    href: (ctx) => `/dashboard/accounts/${ctx.accountId}/locations/${ctx.locationId}/settings`,
+    href: (ctx) => `/dashboard/locations/${ctx.locationId}/settings`,
     label: "navigation.sidebar.locationSettings",
     icon: Settings2,
     scope: "location",
   },
 ];
 
-export function resolveHref(
-  item: SidebarNavItem,
-  ctx: { accountId: string; locationId: string } | null
-): string | null {
+export function resolveHref(item: SidebarNavItem, ctx: { locationId: string } | null): string | null {
   if (typeof item.href === "string") return item.href;
   if (!ctx) return null;
   return item.href(ctx);

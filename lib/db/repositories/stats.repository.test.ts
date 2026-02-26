@@ -9,6 +9,7 @@ vi.mock("@/lib/db/client", () => ({
     innerJoin: vi.fn().mockReturnThis(),
     leftJoin: vi.fn().mockReturnThis(),
     where: vi.fn().mockReturnThis(),
+    groupBy: vi.fn().mockReturnThis(),
   },
 }));
 
@@ -34,11 +35,7 @@ describe("StatsRepository", () => {
 
       (db.select as Mock).mockReturnValue({
         from: vi.fn().mockReturnValue({
-          innerJoin: vi.fn().mockReturnValue({
-            innerJoin: vi.fn().mockReturnValue({
-              where: vi.fn().mockResolvedValue(mockResult),
-            }),
-          }),
+          where: vi.fn().mockResolvedValue(mockResult),
         }),
       });
 
@@ -51,11 +48,7 @@ describe("StatsRepository", () => {
 
       (db.select as Mock).mockReturnValue({
         from: vi.fn().mockReturnValue({
-          innerJoin: vi.fn().mockReturnValue({
-            innerJoin: vi.fn().mockReturnValue({
-              where: vi.fn().mockResolvedValue(mockResult),
-            }),
-          }),
+          where: vi.fn().mockResolvedValue(mockResult),
         }),
       });
 

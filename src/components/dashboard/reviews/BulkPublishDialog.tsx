@@ -25,7 +25,6 @@ interface BulkPublishDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   selectedReviews: ReviewWithLatestGeneration[];
-  accountId: string;
   locationId: string;
   onComplete: (results: {
     succeeded: string[];
@@ -41,7 +40,6 @@ export function BulkPublishDialog({
   open,
   onOpenChange,
   selectedReviews,
-  accountId,
   locationId,
   onComplete,
 }: BulkPublishDialogProps) {
@@ -77,7 +75,7 @@ export function BulkPublishDialog({
       setStatusMap((prev) => new Map(prev).set(review.id, "publishing"));
 
       try {
-        await postReviewReply({ accountId, locationId, reviewId: review.id });
+        await postReviewReply({ locationId, reviewId: review.id });
         acc.succeeded.push(review.id);
         setStatusMap((prev) => new Map(prev).set(review.id, "succeeded"));
       } catch (error) {

@@ -10,8 +10,7 @@ import { sendRybbitEvent } from "@/lib/analytics";
 
 interface LocationSettingsActionsProps {
   location: Location;
-  accountId: string;
-  accountLocationId?: string;
+  currentUserRole: "owner" | "admin";
   translations: {
     disconnectLocation: string;
     disconnectConfirmation: string;
@@ -26,12 +25,7 @@ interface LocationSettingsActionsProps {
   };
 }
 
-export function LocationSettingsActions({
-  location,
-  accountId,
-  accountLocationId,
-  translations,
-}: LocationSettingsActionsProps) {
+export function LocationSettingsActions({ location, currentUserRole, translations }: LocationSettingsActionsProps) {
   const router = useRouter();
   const [loading, _setLoading] = useState(false);
 
@@ -40,9 +34,8 @@ export function LocationSettingsActions({
   };
 
   const handleDisconnect = async () => {
-    if (!accountLocationId) return;
     try {
-      await disconnectLocation({ accountId, accountLocationId });
+      await disconnectLocation({ locationId: location.id });
       sendRybbitEvent("location_disconnected");
       router.push("/dashboard/home");
     } catch (error) {
@@ -54,7 +47,7 @@ export function LocationSettingsActions({
     <>
       <LocationDetailsCard location={location} loading={loading} onUpdate={handleUpdate} />
 
-      {accountLocationId && (
+      {currentUserRole === "owner" && (
         <DeleteConfirmation
           title={translations.disconnectLocation}
           description={translations.disconnectConfirmation}

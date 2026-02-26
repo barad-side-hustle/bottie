@@ -1,6 +1,13 @@
 import { eq, and, inArray, sql } from "drizzle-orm";
 import { db } from "@/lib/db/client";
-import { locations, accountLocations, userAccounts, type Location, type LocationInsert } from "@/lib/db/schema";
+import {
+  locations,
+  accountLocations,
+  userAccounts,
+  locationMembers,
+  type Location,
+  type LocationInsert,
+} from "@/lib/db/schema";
 import type { LocationFilters } from "@/lib/types";
 import { BaseRepository } from "./base.repository";
 import { NotFoundError } from "@/lib/api/errors";
@@ -14,11 +21,18 @@ export class LocationsRepository extends BaseRepository<LocationInsert, Location
 
   private getAccessCondition(locationIdRef: typeof locations.id | string) {
     const locationIdValue = typeof locationIdRef === "string" ? sql`${locationIdRef}` : locationIdRef;
-    return sql`EXISTS (
-      SELECT 1 FROM ${accountLocations} al
-      INNER JOIN ${userAccounts} ua ON ua.account_id = al.account_id
-      WHERE al.location_id = ${locationIdValue}
-      AND ua.user_id = ${this.userId}
+    return sql`(
+      EXISTS (
+        SELECT 1 FROM ${accountLocations} al
+        INNER JOIN ${userAccounts} ua ON ua.account_id = al.account_id
+        WHERE al.location_id = ${locationIdValue}
+        AND ua.user_id = ${this.userId}
+      )
+      OR EXISTS (
+        SELECT 1 FROM ${locationMembers} lm
+        WHERE lm.location_id = ${locationIdValue}
+        AND lm.user_id = ${this.userId}
+      )
     )`;
   }
 
@@ -37,6 +51,9 @@ export class LocationsRepository extends BaseRepository<LocationInsert, Location
         INNER JOIN ${userAccounts} ua ON ua.account_id = al.account_id
         WHERE ua.user_id = ${this.userId}
         ${filters.connected !== undefined ? sql`AND al.connected = ${filters.connected}` : sql``}
+        UNION
+        SELECT lm.location_id FROM ${locationMembers} lm
+        WHERE lm.user_id = ${this.userId}
       )`,
     ];
 

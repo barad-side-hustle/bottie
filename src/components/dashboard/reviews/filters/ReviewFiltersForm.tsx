@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useCallback } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { ToggleChip } from "@/components/ui/toggle-chip";
@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DateRangePicker } from "@/components/ui/date-range-picker";
 import { FilterSection } from "./FilterSection";
 import { ReviewFilters, ReviewSortField, ReplyStatus, Sentiment } from "@/lib/types";
-import { ArrowDown, ArrowUp } from "lucide-react";
+import { ArrowDown, ArrowUp, Star } from "lucide-react";
 import { he, enUS } from "date-fns/locale";
 import { Locale } from "date-fns";
 
@@ -23,51 +23,35 @@ interface ReviewFiltersFormProps {
   onReset: () => void;
 }
 
-export function ReviewFiltersForm({ filters: initialFilters, onApply, onReset }: ReviewFiltersFormProps) {
+export function ReviewFiltersForm({ filters, onApply, onReset }: ReviewFiltersFormProps) {
   const t = useTranslations("dashboard.reviews.filters");
   const locale = useLocale();
   const dateLocale = localeMap[locale] || enUS;
-  const [filters, setFilters] = useState<ReviewFilters>(initialFilters);
 
-  useEffect(() => {
-    setFilters(initialFilters);
-  }, [initialFilters]);
+  const apply = useCallback((newFilters: ReviewFilters) => onApply(newFilters), [onApply]);
 
   const handleReplyStatusChange = (status: string, checked: boolean) => {
     const currentStatuses = filters.replyStatus || [];
-    let newStatuses;
-    if (checked) {
-      newStatuses = [...currentStatuses, status];
-    } else {
-      newStatuses = currentStatuses.filter((s) => s !== status);
-    }
-    setFilters({ ...filters, replyStatus: newStatuses as ReplyStatus[] });
+    const newStatuses = checked ? [...currentStatuses, status] : currentStatuses.filter((s) => s !== status);
+    apply({ ...filters, replyStatus: newStatuses as ReplyStatus[] });
   };
 
   const handleRatingChange = (rating: number, checked: boolean) => {
     const currentRatings = filters.rating || [];
-    let newRatings;
-    if (checked) {
-      newRatings = [...currentRatings, rating];
-    } else {
-      newRatings = currentRatings.filter((r) => r !== rating);
-    }
-    setFilters({ ...filters, rating: newRatings });
+    const newRatings = checked ? [...currentRatings, rating] : currentRatings.filter((r) => r !== rating);
+    apply({ ...filters, rating: newRatings });
   };
 
   const handleSentimentChange = (sentiment: string, checked: boolean) => {
     const currentSentiments = filters.sentiment || [];
-    let newSentiments;
-    if (checked) {
-      newSentiments = [...currentSentiments, sentiment];
-    } else {
-      newSentiments = currentSentiments.filter((s) => s !== sentiment);
-    }
-    setFilters({ ...filters, sentiment: newSentiments as Sentiment[] });
+    const newSentiments = checked
+      ? [...currentSentiments, sentiment]
+      : currentSentiments.filter((s) => s !== sentiment);
+    apply({ ...filters, sentiment: newSentiments as Sentiment[] });
   };
 
   const handleSortFieldChange = (value: string) => {
-    setFilters({
+    apply({
       ...filters,
       sort: {
         orderBy: value as ReviewSortField,
@@ -77,7 +61,7 @@ export function ReviewFiltersForm({ filters: initialFilters, onApply, onReset }:
   };
 
   const toggleSortDirection = () => {
-    setFilters({
+    apply({
       ...filters,
       sort: {
         orderBy: filters.sort?.orderBy || "date",
@@ -110,7 +94,11 @@ export function ReviewFiltersForm({ filters: initialFilters, onApply, onReset }:
               selected={filters.rating?.includes(rating) ?? false}
               onToggle={(checked) => handleRatingChange(rating, checked)}
             >
-              {rating} ★
+              <span className="flex items-center gap-0.5" dir="ltr">
+                {Array.from({ length: rating }).map((_, i) => (
+                  <Star key={i} size={14} className="fill-star-filled text-star-filled" />
+                ))}
+              </span>
             </ToggleChip>
           ))}
         </div>
@@ -133,7 +121,7 @@ export function ReviewFiltersForm({ filters: initialFilters, onApply, onReset }:
       <FilterSection title={t("dateRange")}>
         <DateRangePicker
           date={{ from: filters.dateFrom, to: filters.dateTo }}
-          setDate={(range) => setFilters({ ...filters, dateFrom: range?.from, dateTo: range?.to })}
+          setDate={(range) => apply({ ...filters, dateFrom: range?.from, dateTo: range?.to })}
           locale={dateLocale}
           placeholder={t("pickDate")}
           showPresets
@@ -169,11 +157,10 @@ export function ReviewFiltersForm({ filters: initialFilters, onApply, onReset }:
         </div>
       </FilterSection>
 
-      <div className="flex justify-end gap-2 pt-4 border-t border-border/40">
-        <Button variant="outline" onClick={onReset}>
+      <div className="flex justify-end pt-4 border-t border-border/40">
+        <Button variant="ghost" size="sm" onClick={onReset} className="text-xs">
           {t("reset")}
         </Button>
-        <Button onClick={() => onApply(filters)}>{t("apply")}</Button>
       </div>
     </div>
   );

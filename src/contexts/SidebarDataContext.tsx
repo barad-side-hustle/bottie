@@ -3,12 +3,11 @@
 import * as React from "react";
 
 export interface SidebarLocation {
-  accountId: string;
-  accountName: string;
   locationId: string;
   locationName: string;
   photoUrl: string | null;
   connected: boolean;
+  role: "owner" | "admin";
 }
 
 interface SidebarDataContextValue {

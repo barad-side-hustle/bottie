@@ -10,6 +10,7 @@ import type { AIResponseSettingsFormData } from "@/components/dashboard/location
 import type { StarRatingConfigFormData } from "@/components/dashboard/locations/forms/StarRatingConfigForm";
 import { getDefaultLocationConfig } from "@/lib/utils/location-config";
 import { connectLocation, updateLocationConfig } from "@/lib/actions/locations.actions";
+import { requestLocationAccess } from "@/lib/actions/location-members.actions";
 import { subscribeToGoogleNotifications } from "@/lib/actions/google.actions";
 import { updateOnboardingStatus } from "@/lib/actions/onboarding.actions";
 import { sendRybbitEvent } from "@/lib/analytics";
@@ -63,6 +64,12 @@ export function OnboardingWizard({
   const [locationId, setLocationId] = useState<string | null>(initialLocationId);
   const [locationData, setLocationData] = useState<Location | null>(location);
   const [isExistingLocation, setIsExistingLocation] = useState(false);
+  const [alreadyOwnedInfo, setAlreadyOwnedInfo] = useState<{
+    ownerName: string;
+    locationId: string;
+    locationName: string;
+    requestSent: boolean;
+  } | null>(null);
 
   const storeSetAccountId = useOnboardingStore((s) => s.setAccountId);
   const storeSetLocationId = useOnboardingStore((s) => s.setLocationId);
@@ -139,6 +146,16 @@ export function OnboardingWizard({
         photoUrl: selectedLocation.photoUrl,
       });
 
+      if ("alreadyOwned" in result && result.alreadyOwned) {
+        setAlreadyOwnedInfo({
+          ownerName: result.ownerName,
+          locationId: result.locationId,
+          locationName: selectedLocation.name,
+          requestSent: false,
+        });
+        return;
+      }
+
       const { location: connectedLocation, isNew } = result;
 
       sendRybbitEvent("location_connected", { location_name: selectedLocation.name });
@@ -164,6 +181,24 @@ export function OnboardingWizard({
       const errorMessage = err instanceof Error ? err.message : t("chooseBusiness.errors.failedToConnect");
       sileo.error({ title: errorMessage });
     }
+  };
+
+  const handleRequestAccess = async (message?: string) => {
+    if (!alreadyOwnedInfo) return;
+
+    try {
+      await requestLocationAccess({ locationId: alreadyOwnedInfo.locationId, message });
+      setAlreadyOwnedInfo((prev) => (prev ? { ...prev, requestSent: true } : null));
+      sileo.success({ title: t("chooseBusiness.accessRequestSent") });
+    } catch (err) {
+      console.error("Error requesting access:", err);
+      const errorMessage = err instanceof Error ? err.message : t("chooseBusiness.errors.failedToRequestAccess");
+      sileo.error({ title: errorMessage });
+    }
+  };
+
+  const handleDismissAlreadyOwned = () => {
+    setAlreadyOwnedInfo(null);
   };
 
   const handleConfigureNext = async (details: LocationDetailsFormData, aiSettings: AIResponseSettingsFormData) => {
@@ -263,6 +298,9 @@ export function OnboardingWizard({
             onConnect={handleConnectLocation}
             onBack={() => goBackward("connect")}
             progressBar={progressBar}
+            alreadyOwnedInfo={alreadyOwnedInfo}
+            onRequestAccess={handleRequestAccess}
+            onDismissAlreadyOwned={handleDismissAlreadyOwned}
           />
         );
 
