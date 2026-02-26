@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db/client";
 import { userAccounts } from "@/lib/db/schema/user-accounts.schema";
 import { accountLocations } from "@/lib/db/schema/account-locations.schema";
+import { locationMembers } from "@/lib/db/schema";
 import { eq, inArray, count } from "drizzle-orm";
 import type { NextRequest } from "next/server";
 
@@ -18,6 +19,13 @@ export async function getSessionFromRequest(request: NextRequest) {
 
 export async function checkOnboardingStatus(userId: string): Promise<boolean> {
   try {
+    const [memberResult] = await db
+      .select({ count: count() })
+      .from(locationMembers)
+      .where(eq(locationMembers.userId, userId));
+
+    if ((memberResult?.count || 0) > 0) return true;
+
     const userAccountRows = await db
       .select({ accountId: userAccounts.accountId })
       .from(userAccounts)

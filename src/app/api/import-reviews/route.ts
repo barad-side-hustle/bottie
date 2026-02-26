@@ -166,7 +166,7 @@ export async function POST(request: Request) {
           await processReviewBatch(reviewBuffer);
         }
 
-        sendEvent(controller, encoder, { type: "complete", imported: importedCount });
+        sendEvent(controller, encoder, { type: "complete", imported: totalFetchedCount });
         controller.close();
       } catch (error) {
         console.error("Error in review import stream:", error);

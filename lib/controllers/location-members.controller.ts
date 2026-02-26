@@ -155,7 +155,7 @@ export class LocationMembersController {
       .then(([inviter, location]) => {
         if (!inviter || !location) return;
         const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-        const acceptUrl = `${appUrl}/invitation/${invitation.token}`;
+        const acceptUrl = `${appUrl}/en/invitation/${invitation.token}`;
         sendEmail(
           email,
           `${inviter.name} invited you to manage ${location.name} on Bottie`,
