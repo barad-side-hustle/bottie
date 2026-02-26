@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "yarn format:check && next build",
+    "build": "next build",
     "start": "next start",
     "test": "vitest",
     "test:watch": "vitest watch",
