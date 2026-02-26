@@ -63,7 +63,10 @@ export function ReviewsList({ reviews: initialReviews, accountId, locationId, us
     }
   }, [inView, loadMoreReviews]);
 
-  const handleUpdate = () => {
+  const handleUpdate = (updatedReview?: ReviewWithLatestGeneration) => {
+    if (updatedReview) {
+      setReviews((prev) => prev.map((r) => (r.id === updatedReview.id ? updatedReview : r)));
+    }
     router.refresh();
   };
 

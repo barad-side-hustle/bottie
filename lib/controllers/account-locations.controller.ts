@@ -1,9 +1,6 @@
 import type { LocationCreate } from "@/lib/types";
 import { AccountLocationsRepository, type Location, type AccountLocation } from "@/lib/db/repositories";
 import { NotFoundError } from "@/lib/api/errors";
-import { db } from "@/lib/db/client";
-import { locations } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
 
 export class AccountLocationsController {
   private repository: AccountLocationsRepository;
@@ -46,9 +43,9 @@ export class AccountLocationsController {
     });
   }
 
-  async disconnectLocation(accountLocationId: string): Promise<void> {
-    const accountLocation = await this.getAccountLocation(accountLocationId);
-    await db.delete(locations).where(eq(locations.id, accountLocation.locationId));
+  async disconnectLocation(accountLocationId: string): Promise<AccountLocation> {
+    await this.getAccountLocation(accountLocationId);
+    return this.repository.disconnect(accountLocationId);
   }
 
   async reconnectLocation(accountLocationId: string): Promise<AccountLocation> {

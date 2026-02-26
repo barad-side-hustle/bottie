@@ -32,7 +32,7 @@ interface ReviewCardProps {
   accountId: string;
   userId: string;
   locationId: string;
-  onUpdate?: () => void;
+  onUpdate?: (updatedReview?: ReviewWithLatestGeneration) => void;
 }
 
 export function ReviewCard({ review, accountId, userId, locationId, onUpdate }: ReviewCardProps) {
@@ -131,12 +131,12 @@ export function ReviewCard({ review, accountId, userId, locationId, onUpdate }: 
     if (!user) return;
 
     try {
-      await postReviewReply({ accountId, locationId, reviewId: review.id });
+      const updatedReview = await postReviewReply({ accountId, locationId, reviewId: review.id });
       sendRybbitEvent("reply_published", {
         rating: review.rating,
         is_update: review.replyStatus === "posted",
       });
-      onUpdate?.();
+      onUpdate?.(updatedReview);
     } catch (error) {
       console.error("Error publishing reply:", error);
       throw error;
@@ -150,9 +150,9 @@ export function ReviewCard({ review, accountId, userId, locationId, onUpdate }: 
 
     try {
       setIsLoading(true);
-      await generateReviewReply({ accountId, locationId, reviewId: review.id });
+      const result = await generateReviewReply({ accountId, locationId, reviewId: review.id });
       sendRybbitEvent("reply_regenerated", { rating: review.rating });
-      onUpdate?.();
+      onUpdate?.(result.review);
     } catch (error) {
       console.error("Error regenerating reply:", error);
     } finally {
@@ -508,7 +508,9 @@ export function ReviewCardWithRefresh({ review, accountId, userId, locationId }:
       accountId={accountId}
       userId={userId}
       locationId={locationId}
-      onUpdate={() => router.refresh()}
+      onUpdate={() => {
+        router.refresh();
+      }}
     />
   );
 }
