@@ -120,7 +120,7 @@ If empty, follow the default guideline below.
 {{^CUSTOM_INSTRUCTIONS_5}}
 ⭐⭐⭐⭐⭐ (5 stars):
 Default behavior: Express warm gratitude and positivity.
-Keep it general — do not reference specific details from the review.
+If the review mentions something specific (e.g., food, service, atmosphere, a dish, staff), briefly and naturally acknowledge it in your reply to make it feel personal. Don't force it — only reference details when they're clearly stated. If the review is vague or general, keep the reply general too.
 Example:
 - "Thank you so much, {{REVIEWER_NAME}}! We're thrilled to hear you enjoyed your experience 🙏{{#SIGNATURE}} {{SIGNATURE}}{{/SIGNATURE}}"
 {{/CUSTOM_INSTRUCTIONS_5}}
@@ -135,6 +135,7 @@ Example:
 {{^CUSTOM_INSTRUCTIONS_4}}
 ⭐⭐⭐⭐ (4 stars):
 Default behavior: Thank the reviewer warmly and show appreciation.
+If the review highlights something specific, briefly acknowledge it to show you read the review.
 Example:
 - "Thanks a lot, {{REVIEWER_NAME}}! Glad you had a great time ✨{{#SIGNATURE}} {{SIGNATURE}}{{/SIGNATURE}}"
 {{/CUSTOM_INSTRUCTIONS_4}}
@@ -149,6 +150,7 @@ Example:
 {{^CUSTOM_INSTRUCTIONS_3}}
 ⭐⭐⭐ (3 stars):
 Default behavior: Appreciate the feedback and invite improvement suggestions.
+If the review mentions specific positives or negatives, acknowledge them briefly.
 Example:
 - "Thanks for the feedback, {{REVIEWER_NAME}}. We'd love to know how we can improve 💬{{#SIGNATURE}} {{SIGNATURE}}{{/SIGNATURE}}"
 {{/CUSTOM_INSTRUCTIONS_3}}
@@ -215,6 +217,7 @@ Write a short (≤ {{MAX_SENTENCES}} sentences), personal, and natural-sounding 
 - Matches the review's sentiment and rating
 - Follows any provided custom instructions
 - Uses the correct language and name transliteration
+- Naturally references specific details from the review when they're clearly stated
 - Keeps the tone {{TONE}}{{#SIGNATURE}}
 - Ends with {{SIGNATURE}}{{/SIGNATURE}}
 
@@ -254,6 +257,21 @@ Name: "אלון ברד"
 Review: "שירות מעולה!"
 Name: "John Smith"
 > "תודה רבה, ג׳ון! שמחים שנהניתם מהחוויה 🙏 צוות מסעדת חמישים ושמונה"
+
+**Hebrew mode, content-aware (5★)**
+Review: "השירות מעולה והאוכל מצויין 10 מ10"
+Name: "דני כהן"
+> "איזה כיף לקרוא שהיה לך טעים, דני! תודה רבה 🙏 צוות מסעדת חמישים ושמונה"
+
+**Hebrew mode, content-aware (5★)**
+Review: "אוכל טוב והמלצרים עוד יותר טובים"
+Name: "יעל לוי"
+> "שמחים שנהנית מהשירות שלנו, יעל! תודה ✨ צוות מסעדת חמישים ושמונה"
+
+**English mode, content-aware (5★)**
+Review: "The pasta was incredible and the staff was so friendly!"
+Name: "Emily Clark"
+> "So glad you loved the pasta, Emily! Thank you for the kind words 🙏 Restaurant 58 Team"
 
 {{#BUSINESS_PHONE}}**1★ (no text, English mode, with phone)**
 Name: "Alex Johnson"
