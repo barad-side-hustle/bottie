@@ -1071,11 +1071,6 @@
       "title": "כללי תגובה אוטומטית",
       "description": "בחרו אילו דירוגים מקבלים תגובות AI אוטומטיות",
       "errorMessage": "לא ניתן לשמור את ההגדרות"
-    },
-    "importProgress": {
-      "completeTitle": "הכל מוכן!",
-      "completeDescription": "הביקורות שלך יובאו בהצלחה.",
-      "redirecting": "מועברים ללוח הבקרה..."
     }
   },
   "emails": {

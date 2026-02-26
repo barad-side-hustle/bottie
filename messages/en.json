@@ -1078,11 +1078,6 @@
       "title": "Auto-Reply Rules",
       "description": "Choose which ratings get automatic AI responses",
       "errorMessage": "Unable to save settings"
-    },
-    "importProgress": {
-      "completeTitle": "All Set!",
-      "completeDescription": "Your reviews have been imported successfully.",
-      "redirecting": "Redirecting to your dashboard..."
     }
   },
   "emails": {

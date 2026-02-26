@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useMemo } from "react";
 import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/routing";
 import { sileo } from "sileo";
 import type { Location, GoogleBusinessProfileLocation } from "@/lib/types";
 
@@ -18,7 +19,6 @@ import { useOnboardingStore } from "@/lib/store/onboarding-store";
 import { OnboardingLayout } from "./OnboardingLayout";
 import { SteppedProgressBar } from "./SteppedProgressBar";
 import { StepTransition } from "./StepTransition";
-import { CompletionCelebration } from "./CompletionCelebration";
 import { ConnectStep } from "./steps/ConnectStep";
 import { ChooseLocationStep } from "./steps/ChooseLocationStep";
 import { ConfigureStep } from "./steps/ConfigureStep";
@@ -26,7 +26,7 @@ import { AutoReplyStep } from "./steps/AutoReplyStep";
 import { SubscribeStep } from "./steps/SubscribeStep";
 import { ImportReviewsStep } from "./steps/ImportReviewsStep";
 
-type WizardStep = "connect" | "choose" | "configure" | "autoReply" | "import" | "subscribe" | "celebration";
+type WizardStep = "connect" | "choose" | "configure" | "autoReply" | "import" | "subscribe";
 
 const STEP_TO_PROGRESS: Record<WizardStep, number> = {
   connect: 0,
@@ -35,7 +35,6 @@ const STEP_TO_PROGRESS: Record<WizardStep, number> = {
   autoReply: 2,
   import: 3,
   subscribe: 4,
-  celebration: 5,
 };
 
 interface OnboardingWizardProps {
@@ -52,6 +51,7 @@ export function OnboardingWizard({
   location,
 }: OnboardingWizardProps) {
   const t = useTranslations("onboarding");
+  const router = useRouter();
 
   const getInitialStep = (): WizardStep => {
     if (initialLocationId && location) return "configure";
@@ -159,7 +159,7 @@ export function OnboardingWizard({
         await updateOnboardingStatus(true);
         sendRybbitEvent("onboarding_completed");
         storeReset();
-        goForward("celebration");
+        router.push("/dashboard/home");
       } else {
         goForward("configure");
       }
@@ -240,16 +240,12 @@ export function OnboardingWizard({
       await updateOnboardingStatus(true);
       sendRybbitEvent("onboarding_completed");
       storeReset();
-      goForward("celebration");
+      router.push("/dashboard/home");
     } catch (error) {
       console.error("Error completing onboarding:", error);
       sileo.error({ title: t("subscribe.errorMessage") });
     }
   };
-
-  if (currentStep === "celebration") {
-    return <CompletionCelebration />;
-  }
 
   const progressBar = <SteppedProgressBar steps={stepLabels} currentStep={STEP_TO_PROGRESS[currentStep]} />;
 
