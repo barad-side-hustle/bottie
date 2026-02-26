@@ -21,46 +21,52 @@ export function ReviewsListSkeleton() {
           </div>
 
           {[1, 2, 3].map((index) => (
-            <div key={index} className="rounded-2xl border border-border/40 bg-card p-5 sm:p-6">
-              <div className="space-y-3">
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="flex items-center gap-3 min-w-0 flex-1">
-                    <Skeleton className="h-10 w-10 rounded-full shrink-0" />
-                    <div className="min-w-0">
-                      <Skeleton className="h-5 w-32 mb-1" />
-                      <Skeleton className="h-3 w-20" />
+            <div key={index} className="rounded-2xl border border-border/40 bg-card overflow-hidden">
+              <div className="flex">
+                <div className="w-[3px] shrink-0 bg-muted" />
+                <div className="flex-1 p-5 sm:p-6">
+                  <div className="space-y-3">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <Skeleton className="h-10 w-10 rounded-full shrink-0" />
+                        <div className="min-w-0">
+                          <Skeleton className="h-5 w-32 mb-1" />
+                          <Skeleton className="h-3 w-20" />
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Skeleton className="h-5 w-20" />
+                        <Skeleton className="h-5 w-20 rounded-full" />
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Skeleton className="h-5 w-20" />
-                    <Skeleton className="h-5 w-20 rounded-full" />
-                  </div>
-                </div>
 
-                <div className="space-y-2">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-3/4" />
-                </div>
-
-                {index !== 3 && (
-                  <div>
-                    <Skeleton className="h-3 w-16 mb-2" />
-                    <div className="border-s-2 border-primary/30 ps-3 space-y-2">
+                    <div className="space-y-2">
                       <Skeleton className="h-4 w-full" />
                       <Skeleton className="h-4 w-full" />
-                      <Skeleton className="h-4 w-2/3" />
+                      <Skeleton className="h-4 w-3/4" />
                     </div>
-                  </div>
-                )}
 
-                {index <= 2 && (
-                  <div className="flex items-center justify-end gap-1">
-                    <Skeleton className="h-9 w-9 rounded-md" />
-                    <Skeleton className="h-9 w-9 rounded-md" />
-                    <Skeleton className="h-8 w-20 rounded-md ms-2" />
+                    {index !== 3 && (
+                      <div className="pt-3 mt-3 border-t border-border/30">
+                        <Skeleton className="h-3 w-16 mb-2" />
+                        <div className="border-s-2 border-primary/30 ps-3 pe-3 py-2.5 rounded-e-lg bg-muted/30 space-y-2">
+                          <Skeleton className="h-4 w-full" />
+                          <Skeleton className="h-4 w-full" />
+                          <Skeleton className="h-4 w-2/3" />
+                        </div>
+                      </div>
+                    )}
+
+                    {index <= 2 && (
+                      <div className="pt-2 mt-1 border-t border-border/20 flex items-center justify-end gap-1">
+                        <Skeleton className="h-9 w-9 rounded-md" />
+                        <Skeleton className="h-9 w-9 rounded-md" />
+                        <div className="h-5 w-px bg-border/40 mx-0.5" />
+                        <Skeleton className="h-8 w-20 rounded-md" />
+                      </div>
+                    )}
                   </div>
-                )}
+                </div>
               </div>
             </div>
           ))}

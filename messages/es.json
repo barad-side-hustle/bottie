@@ -622,6 +622,24 @@
         "filters": "Filtros",
         "clearAll": "Limpiar todo",
         "removeFilter": "Eliminar filtro"
+      },
+      "bulkActions": {
+        "selected": "{count} seleccionadas",
+        "selectAll": "Seleccionar todas ({count})",
+        "deselectAll": "Deseleccionar todas",
+        "publishSelected": "Publicar {count} respuestas",
+        "dialogTitle": "Publicar {count} respuestas en Google",
+        "dialogDescription": "Las siguientes respuestas se publicaran en Google. Esta accion no se puede deshacer.",
+        "confirm": "Publicar todas",
+        "cancel": "Cancelar",
+        "publishing": "Publicando {completed} de {total}...",
+        "complete": "Se publicaron {succeeded} de {total} respuestas",
+        "someFailed": "{count} no se pudieron publicar",
+        "done": "Listo",
+        "selectAllHint": "Seleccionar las {count} respuestas pendientes para publicar",
+        "loadMore": "Cargar mas resenas",
+        "reviewRemoved": "Eliminada de Google",
+        "removedCount": "{count} eliminadas (borradas de Google)"
       }
     },
     "reviewDetail": {

@@ -571,6 +571,24 @@
         "filters": "מסננים",
         "clearAll": "נקה הכל",
         "removeFilter": "הסר מסנן"
+      },
+      "bulkActions": {
+        "selected": "{count} נבחרו",
+        "selectAll": "בחר הכל ({count})",
+        "deselectAll": "בטל בחירה",
+        "publishSelected": "פרסם {count} תגובות",
+        "dialogTitle": "פרסום {count} תגובות לגוגל",
+        "dialogDescription": "התגובות הבאות יפורסמו לגוגל. לא ניתן לבטל פעולה זו.",
+        "confirm": "פרסם הכל",
+        "cancel": "ביטול",
+        "publishing": "מפרסם {completed} מתוך {total}...",
+        "complete": "פורסמו {succeeded} מתוך {total} תגובות",
+        "someFailed": "{count} נכשלו בפרסום",
+        "done": "סיום",
+        "selectAllHint": "בחר את כל {count} התגובות הממתינות לפרסום",
+        "loadMore": "טען עוד ביקורות",
+        "reviewRemoved": "נמחקה מגוגל",
+        "removedCount": "{count} הוסרו (נמחקו מגוגל)"
       }
     },
     "subscription": {

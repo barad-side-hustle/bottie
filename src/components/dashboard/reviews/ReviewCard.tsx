@@ -18,7 +18,7 @@ import { postReviewReply, generateReviewReply, setReviewResponseFeedback } from 
 import { useAuth } from "@/contexts/AuthContext";
 import { ReplyEditor } from "@/components/dashboard/reviews/ReplyEditor";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
-import { User, Bot, RotateCcw, Pencil, Send, ThumbsUp, ThumbsDown } from "lucide-react";
+import { User, Bot, RotateCcw, Pencil, Send, ThumbsUp, ThumbsDown, Check } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -27,15 +27,31 @@ import { useRouter } from "@/i18n/routing";
 import { sendRybbitEvent } from "@/lib/analytics";
 import type { ReviewWithLatestGeneration } from "@/lib/db/repositories";
 
+export function isReviewPublishable(review: ReviewWithLatestGeneration): boolean {
+  return review.replyStatus === "pending" && !!review.latestAiReply && review.latestAiReplyType !== "imported";
+}
+
 interface ReviewCardProps {
   review: ReviewWithLatestGeneration;
   accountId: string;
   userId: string;
   locationId: string;
   onUpdate?: (updatedReview?: ReviewWithLatestGeneration) => void;
+  isSelectable?: boolean;
+  isSelected?: boolean;
+  onSelectionChange?: (reviewId: string, selected: boolean) => void;
 }
 
-export function ReviewCard({ review, accountId, userId, locationId, onUpdate }: ReviewCardProps) {
+export function ReviewCard({
+  review,
+  accountId,
+  userId,
+  locationId,
+  onUpdate,
+  isSelectable,
+  isSelected,
+  onSelectionChange,
+}: ReviewCardProps) {
   const t = useTranslations("dashboard.reviews.card");
 
   const format = useFormatter();
@@ -225,223 +241,274 @@ export function ReviewCard({ review, accountId, userId, locationId, onUpdate }: 
 
   const showFeedback = review.latestAiReply && review.latestAiReplyType !== "imported";
 
+  const statusAccentColor = (() => {
+    switch (review.replyStatus as ReplyStatus) {
+      case "pending":
+        return "bg-warning";
+      case "posted":
+        return "bg-success";
+      case "rejected":
+        return "bg-muted-foreground/40";
+      case "failed":
+      case "quota_exceeded":
+        return "bg-destructive";
+      default:
+        return "bg-transparent";
+    }
+  })();
+
   return (
     <>
-      <div className="w-full rounded-2xl border border-border/40 bg-card p-5 sm:p-6">
-        <div className="space-y-3">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center justify-between gap-2 w-full sm:w-auto sm:flex-1">
-              <div className="flex items-center gap-3 min-w-0">
-                <Avatar className="h-10 w-10 shrink-0">
-                  <AvatarImage src={review.photoUrl || undefined} alt={`${review.name} profile`} />
-                  <AvatarFallback className="bg-primary/10">
-                    {review.photoUrl ? (
-                      <User className="h-5 w-5 text-primary" />
-                    ) : (
-                      <span className="text-sm font-medium text-primary">{getInitials(review.name)}</span>
+      <div
+        className={cn(
+          "w-full rounded-2xl border border-border/40 bg-card overflow-hidden transition-all duration-200",
+          isSelected ? "ring-2 ring-primary/30 bg-primary/[0.02]" : "hover:shadow-md hover:border-border/60"
+        )}
+      >
+        <div className="flex">
+          <div className={cn("w-[3px] shrink-0", statusAccentColor)} />
+          <div className="flex-1 p-5 sm:p-6">
+            <div className="space-y-3">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center justify-between gap-2 w-full sm:w-auto sm:flex-1">
+                  <div className="flex items-center gap-3 min-w-0">
+                    {isSelectable && (
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onSelectionChange?.(review.id, !isSelected);
+                        }}
+                        className="flex h-8 w-8 shrink-0 items-center justify-center -ms-1 rounded-md transition-colors hover:bg-accent/50"
+                        aria-label={isSelected ? "Deselect review" : "Select review"}
+                      >
+                        <span
+                          className={cn(
+                            "flex h-[18px] w-[18px] items-center justify-center rounded-[4px] border-[1.5px] transition-all duration-150",
+                            isSelected
+                              ? "border-primary bg-primary text-primary-foreground"
+                              : "border-muted-foreground/30 hover:border-primary/50"
+                          )}
+                        >
+                          {isSelected && <Check className="h-3 w-3" strokeWidth={3} />}
+                        </span>
+                      </button>
                     )}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="min-w-0">
-                  <h3 className="font-semibold truncate">{review.name}</h3>
-                  <div className="flex items-center gap-1">
-                    <p className="text-xs text-muted-foreground">
-                      {format.dateTime(new Date(review.date), {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                      })}
-                    </p>
-                    <TooltipIcon text={t("dateTooltip")} additionalInfoLabel={t("reviewDateLabel")} />
+                    <Avatar className="h-10 w-10 shrink-0">
+                      <AvatarImage src={review.photoUrl || undefined} alt={`${review.name} profile`} />
+                      <AvatarFallback className="bg-primary/10">
+                        {review.photoUrl ? (
+                          <User className="h-5 w-5 text-primary" />
+                        ) : (
+                          <span className="text-sm font-medium text-primary">{getInitials(review.name)}</span>
+                        )}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0">
+                      <h3 className="font-semibold truncate">{review.name}</h3>
+                      <div className="flex items-center gap-1">
+                        <p className="text-xs text-muted-foreground">
+                          {format.dateTime(new Date(review.date), {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          })}
+                        </p>
+                        <TooltipIcon text={t("dateTooltip")} additionalInfoLabel={t("reviewDateLabel")} />
+                      </div>
+                    </div>
                   </div>
+                  <div className="sm:hidden">{getStatusBadge(review)}</div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <StarRating rating={review.rating} size={18} />
+                  <div className="hidden sm:block">{getStatusBadge(review)}</div>
                 </div>
               </div>
-              <div className="sm:hidden">{getStatusBadge(review)}</div>
-            </div>
-            <div className="flex items-center gap-2">
-              <StarRating rating={review.rating} size={18} />
-              <div className="hidden sm:block">{getStatusBadge(review)}</div>
-            </div>
-          </div>
 
-          <p className={cn("text-sm leading-relaxed", !review.text && "italic text-muted-foreground")}>
-            {review.text || t("noText")}
-          </p>
+              <p className={cn("text-sm leading-relaxed", !review.text && "italic text-muted-foreground")}>
+                {review.text || t("noText")}
+              </p>
 
-          {review.latestAiReply && (
-            <div>
-              <div className="flex items-center gap-1.5 mb-2">
-                <span className="text-xs font-medium text-muted-foreground">
-                  {review.latestAiReplyType === "imported" ? t("externalReplyLabel") : t("aiReplyLabel")}
-                </span>
-                {review.replyStatus === "posted" && review.latestAiReplyPostedAt && (
-                  <>
-                    <span className="text-xs text-muted-foreground/60">&middot;</span>
-                    <span className="text-xs text-muted-foreground">
-                      {format.dateTime(new Date(review.latestAiReplyPostedAt), {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                      })}
+              {review.latestAiReply && (
+                <div className="pt-3 mt-3 border-t border-border/30">
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <span className="text-xs font-medium text-muted-foreground">
+                      {review.latestAiReplyType === "imported" ? t("externalReplyLabel") : t("aiReplyLabel")}
                     </span>
-                    <TooltipIcon text={t("replyDateTooltip")} additionalInfoLabel={t("replyDateLabel")} />
-                  </>
-                )}
-              </div>
-              <div className="border-s-2 border-primary/30 ps-3">
-                {isLoading ? (
-                  <div className="space-y-2">
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-3/4" />
+                    {review.replyStatus === "posted" && review.latestAiReplyPostedAt && (
+                      <>
+                        <span className="text-xs text-muted-foreground/60">&middot;</span>
+                        <span className="text-xs text-muted-foreground">
+                          {format.dateTime(new Date(review.latestAiReplyPostedAt), {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          })}
+                        </span>
+                        <TooltipIcon text={t("replyDateTooltip")} additionalInfoLabel={t("replyDateLabel")} />
+                      </>
+                    )}
                   </div>
-                ) : (
-                  <p className="text-sm leading-relaxed">{review.latestAiReply}</p>
-                )}
-              </div>
-            </div>
-          )}
+                  <div className="border-s-2 border-primary/30 ps-3 py-2.5 pe-3 rounded-e-lg bg-muted/30">
+                    {isLoading ? (
+                      <div className="space-y-2">
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-3/4" />
+                      </div>
+                    ) : (
+                      <p className="text-sm leading-relaxed">{review.latestAiReply}</p>
+                    )}
+                  </div>
+                </div>
+              )}
 
-          {(hasActions || showFeedback) && (
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                {showFeedback && (
-                  <div className="flex items-center gap-1">
-                    <TooltipProvider delayDuration={300}>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            type="button"
-                            onClick={(e) => handleFeedback("liked", e)}
-                            disabled={isFeedbackLoading || isLoading}
-                            size="icon"
-                            variant="ghost"
-                            aria-label={t("feedback.like")}
-                            className={cn(
-                              "h-7 w-7",
-                              feedbackState === "liked" &&
-                                "text-green-600 bg-green-50 hover:bg-green-100 dark:bg-green-950 dark:hover:bg-green-900"
-                            )}
-                          >
-                            <ThumbsUp className="size-3.5" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>{t("feedback.like")}</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                    <TooltipProvider delayDuration={300}>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            type="button"
-                            onClick={(e) => handleFeedback("disliked", e)}
-                            disabled={isFeedbackLoading || isLoading}
-                            size="icon"
-                            variant="ghost"
-                            aria-label={t("feedback.dislike")}
-                            className={cn(
-                              "h-7 w-7",
-                              feedbackState === "disliked" &&
-                                "text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-950 dark:hover:bg-red-900"
-                            )}
-                          >
-                            <ThumbsDown className="size-3.5" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>{t("feedback.dislike")}</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
+              {(hasActions || showFeedback) && (
+                <div className="space-y-2 pt-2 mt-1 border-t border-border/20">
+                  <div className="flex items-center justify-between">
+                    {showFeedback && (
+                      <div className="flex items-center gap-1">
+                        <TooltipProvider delayDuration={300}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                type="button"
+                                onClick={(e) => handleFeedback("liked", e)}
+                                disabled={isFeedbackLoading || isLoading}
+                                size="icon"
+                                variant="ghost"
+                                aria-label={t("feedback.like")}
+                                className={cn(
+                                  "h-7 w-7",
+                                  feedbackState === "liked" &&
+                                    "text-green-600 bg-green-50 hover:bg-green-100 dark:bg-green-950 dark:hover:bg-green-900"
+                                )}
+                              >
+                                <ThumbsUp className="size-3.5" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>{t("feedback.like")}</TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                        <TooltipProvider delayDuration={300}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                type="button"
+                                onClick={(e) => handleFeedback("disliked", e)}
+                                disabled={isFeedbackLoading || isLoading}
+                                size="icon"
+                                variant="ghost"
+                                aria-label={t("feedback.dislike")}
+                                className={cn(
+                                  "h-7 w-7",
+                                  feedbackState === "disliked" &&
+                                    "text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-950 dark:hover:bg-red-900"
+                                )}
+                              >
+                                <ThumbsDown className="size-3.5" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>{t("feedback.dislike")}</TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                    )}
+                    {hasActions && (
+                      <div className="flex items-center gap-1 ms-auto">
+                        <TooltipProvider delayDuration={300}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                type="button"
+                                onClick={handleRegenerate}
+                                disabled={isLoading}
+                                size="icon"
+                                variant="ghost"
+                                aria-label={t("actions.regenerate")}
+                              >
+                                <RotateCcw className="size-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>{t("actions.regenerate")}</TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                        <TooltipProvider delayDuration={300}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                type="button"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  setShowEditor(true);
+                                }}
+                                disabled={isLoading}
+                                size="icon"
+                                variant="ghost"
+                                aria-label={t("actions.edit")}
+                              >
+                                <Pencil className="size-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>{t("actions.edit")}</TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                        <div className="h-5 w-px bg-border/40 mx-0.5" />
+                        <TooltipProvider delayDuration={300}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                type="button"
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  setShowPublishDialog(true);
+                                }}
+                                disabled={isLoading}
+                                size="icon"
+                                variant="default"
+                                aria-label={
+                                  review.replyStatus === "posted" ? t("actions.update") : t("actions.publish")
+                                }
+                              >
+                                <Send className="size-4" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              {review.replyStatus === "posted" ? t("actions.update") : t("actions.publish")}
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                    )}
                   </div>
-                )}
-                {hasActions && (
-                  <div className="flex items-center gap-1 ms-auto">
-                    <TooltipProvider delayDuration={300}>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            type="button"
-                            onClick={handleRegenerate}
-                            disabled={isLoading}
-                            size="icon"
-                            variant="ghost"
-                            aria-label={t("actions.regenerate")}
-                          >
-                            <RotateCcw className="size-4" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>{t("actions.regenerate")}</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                    <TooltipProvider delayDuration={300}>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            type="button"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              setShowEditor(true);
-                            }}
-                            disabled={isLoading}
-                            size="icon"
-                            variant="ghost"
-                            aria-label={t("actions.edit")}
-                          >
-                            <Pencil className="size-4" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>{t("actions.edit")}</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                    <TooltipProvider delayDuration={300}>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            type="button"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              e.stopPropagation();
-                              setShowPublishDialog(true);
-                            }}
-                            disabled={isLoading}
-                            size="icon"
-                            variant="default"
-                            aria-label={review.replyStatus === "posted" ? t("actions.update") : t("actions.publish")}
-                          >
-                            <Send className="size-4" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          {review.replyStatus === "posted" ? t("actions.update") : t("actions.publish")}
-                        </TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
-                )}
-              </div>
 
-              {showCommentInput && feedbackState === "disliked" && (
-                <form onSubmit={handleSaveComment} className="flex items-center gap-2">
-                  <Input
-                    value={feedbackComment}
-                    onChange={(e) => setFeedbackComment(e.target.value)}
-                    placeholder={t("feedback.commentPlaceholder")}
-                    maxLength={500}
-                    className="h-8 text-sm"
-                    disabled={isFeedbackLoading}
-                  />
-                  <Button
-                    type="submit"
-                    size="sm"
-                    variant="outline"
-                    disabled={isFeedbackLoading || !feedbackComment.trim()}
-                    className="h-8 shrink-0"
-                  >
-                    {t("feedback.saveComment")}
-                  </Button>
-                </form>
+                  {showCommentInput && feedbackState === "disliked" && (
+                    <form onSubmit={handleSaveComment} className="flex items-center gap-2">
+                      <Input
+                        value={feedbackComment}
+                        onChange={(e) => setFeedbackComment(e.target.value)}
+                        placeholder={t("feedback.commentPlaceholder")}
+                        maxLength={500}
+                        className="h-8 text-sm"
+                        disabled={isFeedbackLoading}
+                      />
+                      <Button
+                        type="submit"
+                        size="sm"
+                        variant="outline"
+                        disabled={isFeedbackLoading || !feedbackComment.trim()}
+                        className="h-8 shrink-0"
+                      >
+                        {t("feedback.saveComment")}
+                      </Button>
+                    </form>
+                  )}
+                </div>
               )}
             </div>
-          )}
+          </div>
         </div>
       </div>
 

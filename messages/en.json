@@ -622,6 +622,24 @@
         "filters": "Filters",
         "clearAll": "Clear All",
         "removeFilter": "Remove filter"
+      },
+      "bulkActions": {
+        "selected": "{count} selected",
+        "selectAll": "Select all ({count})",
+        "deselectAll": "Deselect all",
+        "publishSelected": "Publish {count} replies",
+        "dialogTitle": "Publish {count} replies to Google",
+        "dialogDescription": "The following replies will be published to Google. This action cannot be undone.",
+        "confirm": "Publish all",
+        "cancel": "Cancel",
+        "publishing": "Publishing {completed} of {total}...",
+        "complete": "Published {succeeded} of {total} replies",
+        "someFailed": "{count} failed to publish",
+        "done": "Done",
+        "selectAllHint": "Select all {count} pending replies to publish",
+        "loadMore": "Load more reviews",
+        "reviewRemoved": "Deleted from Google",
+        "removedCount": "{count} removed (deleted from Google)"
       }
     },
     "reviewDetail": {

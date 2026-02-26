@@ -165,13 +165,21 @@ export class ReviewsController {
 
     const refreshToken = await decryptToken(account.googleRefreshToken);
 
-    await postReplyToGoogle(
-      review.googleReviewName || review.googleReviewId,
-      replyToPost,
-      refreshToken,
-      env.GOOGLE_CLIENT_ID,
-      env.GOOGLE_CLIENT_SECRET
-    );
+    try {
+      await postReplyToGoogle(
+        review.googleReviewName || review.googleReviewId,
+        replyToPost,
+        refreshToken,
+        env.GOOGLE_CLIENT_ID,
+        env.GOOGLE_CLIENT_SECRET
+      );
+    } catch (error) {
+      if (error instanceof Error && error.message.includes("404")) {
+        await this.repository.delete(reviewId);
+        throw new Error("REVIEW_DELETED_FROM_GOOGLE");
+      }
+      throw error;
+    }
 
     const updatedReview = await this.markAsPosted(reviewId);
 
