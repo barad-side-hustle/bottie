@@ -1,5 +1,5 @@
 {
-  "id": "476f6132-0591-4f5e-b285-77b0a8b99e7c",
+  "id": "43364546-e008-47b2-ae7d-55f5926f39ff",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -640,8 +640,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.subscriptions": {
-      "name": "subscriptions",
+    "public.location_subscriptions": {
+      "name": "location_subscriptions",
       "schema": "",
       "columns": {
         "id": {
@@ -657,6 +657,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "location_id": {
+          "name": "location_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
         "status": {
           "name": "status",
           "type": "text",
@@ -664,15 +670,22 @@
           "notNull": true,
           "default": "'active'"
         },
-        "polar_customer_id": {
-          "name": "polar_customer_id",
+        "polar_subscription_id": {
+          "name": "polar_subscription_id",
           "type": "text",
           "primaryKey": false,
           "notNull": false
         },
-        "polar_subscription_id": {
-          "name": "polar_subscription_id",
-          "type": "text",
+        "activated_at": {
+          "name": "activated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "canceled_at": {
+          "name": "canceled_at",
+          "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false
         },
@@ -685,8 +698,8 @@
         }
       },
       "indexes": {
-        "subscriptions_user_id_idx": {
-          "name": "subscriptions_user_id_idx",
+        "location_subscriptions_user_id_idx": {
+          "name": "location_subscriptions_user_id_idx",
           "columns": [
             {
               "expression": "user_id",
@@ -700,11 +713,11 @@
           "method": "btree",
           "with": {}
         },
-        "subscriptions_status_idx": {
-          "name": "subscriptions_status_idx",
+        "location_subscriptions_location_id_idx": {
+          "name": "location_subscriptions_location_id_idx",
           "columns": [
             {
-              "expression": "status",
+              "expression": "location_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -715,15 +728,9 @@
           "method": "btree",
           "with": {}
         },
-        "subscriptions_user_status_idx": {
-          "name": "subscriptions_user_status_idx",
+        "location_subscriptions_status_idx": {
+          "name": "location_subscriptions_status_idx",
           "columns": [
-            {
-              "expression": "user_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
             {
               "expression": "status",
               "isExpression": false,
@@ -738,11 +745,20 @@
         }
       },
       "foreignKeys": {
-        "subscriptions_user_id_user_id_fk": {
-          "name": "subscriptions_user_id_user_id_fk",
-          "tableFrom": "subscriptions",
+        "location_subscriptions_user_id_user_id_fk": {
+          "name": "location_subscriptions_user_id_user_id_fk",
+          "tableFrom": "location_subscriptions",
           "tableTo": "user",
           "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "location_subscriptions_location_id_locations_id_fk": {
+          "name": "location_subscriptions_location_id_locations_id_fk",
+          "tableFrom": "location_subscriptions",
+          "tableTo": "locations",
+          "columnsFrom": ["location_id"],
           "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
@@ -750,15 +766,15 @@
       },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "subscriptions_user_id_unique": {
-          "name": "subscriptions_user_id_unique",
+        "location_subscriptions_user_location_unique": {
+          "name": "location_subscriptions_user_location_unique",
           "nullsNotDistinct": false,
-          "columns": ["user_id"]
+          "columns": ["user_id", "location_id"]
         }
       },
       "policies": {
-        "subscriptions_service_role_access": {
-          "name": "subscriptions_service_role_access",
+        "location_subscriptions_service_role_access": {
+          "name": "location_subscriptions_service_role_access",
           "as": "PERMISSIVE",
           "for": "ALL",
           "to": ["postgres", "service_role"],
@@ -1182,6 +1198,12 @@
           "notNull": true,
           "default": "'pending'"
         },
+        "failure_reason": {
+          "name": "failure_reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
         "consumes_quota": {
           "name": "consumes_quota",
           "type": "boolean",
@@ -1207,6 +1229,13 @@
           "type": "jsonb",
           "primaryKey": false,
           "notNull": false
+        },
+        "notification_sent": {
+          "name": "notification_sent",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
         }
       },
       "indexes": {
@@ -1374,6 +1403,27 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
+        },
+        "reviews_notification_sent_idx": {
+          "name": "reviews_notification_sent_idx",
+          "columns": [
+            {
+              "expression": "notification_sent",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "reply_status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {
@@ -1408,7 +1458,11 @@
       "checkConstraints": {
         "reviews_reply_status_check": {
           "name": "reviews_reply_status_check",
-          "value": "\"reviews\".\"reply_status\" IN ('pending', 'rejected', 'posted', 'failed', 'quota_exceeded')"
+          "value": "\"reviews\".\"reply_status\" IN ('pending', 'posted', 'failed')"
+        },
+        "reviews_failure_reason_check": {
+          "name": "reviews_failure_reason_check",
+          "value": "\"reviews\".\"failure_reason\" IS NULL OR \"reviews\".\"failure_reason\" IN ('generation', 'posting', 'quota')"
         }
       },
       "isRLSEnabled": false
@@ -1460,6 +1514,18 @@
           "primaryKey": false,
           "notNull": true,
           "default": "'ai_generated'"
+        },
+        "feedback": {
+          "name": "feedback",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "feedback_comment": {
+          "name": "feedback_comment",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
         },
         "generated_by": {
           "name": "generated_by",
@@ -1581,6 +1647,33 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
+        },
+        "review_responses_location_feedback_created_idx": {
+          "name": "review_responses_location_feedback_created_idx",
+          "columns": [
+            {
+              "expression": "location_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "feedback",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {
@@ -1646,139 +1739,12 @@
         "review_responses_status_check": {
           "name": "review_responses_status_check",
           "value": "\"review_responses\".\"status\" IN ('draft', 'posted', 'rejected')"
+        },
+        "review_responses_feedback_check": {
+          "name": "review_responses_feedback_check",
+          "value": "\"review_responses\".\"feedback\" IS NULL OR \"review_responses\".\"feedback\" IN ('liked', 'disliked')"
         }
       },
-      "isRLSEnabled": false
-    },
-    "public.weekly_summaries": {
-      "name": "weekly_summaries",
-      "schema": "",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "primaryKey": true,
-          "notNull": true,
-          "default": "gen_random_uuid()"
-        },
-        "location_id": {
-          "name": "location_id",
-          "type": "uuid",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "week_start_date": {
-          "name": "week_start_date",
-          "type": "date",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "week_end_date": {
-          "name": "week_end_date",
-          "type": "date",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "total_reviews": {
-          "name": "total_reviews",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "average_rating": {
-          "name": "average_rating",
-          "type": "real",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "positive_themes": {
-          "name": "positive_themes",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'[]'::jsonb"
-        },
-        "negative_themes": {
-          "name": "negative_themes",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'[]'::jsonb"
-        },
-        "recommendations": {
-          "name": "recommendations",
-          "type": "jsonb",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'[]'::jsonb"
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        }
-      },
-      "indexes": {
-        "weekly_summaries_location_week_idx": {
-          "name": "weekly_summaries_location_week_idx",
-          "columns": [
-            {
-              "expression": "location_id",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "week_start_date",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            },
-            {
-              "expression": "week_end_date",
-              "isExpression": false,
-              "asc": true,
-              "nulls": "last"
-            }
-          ],
-          "isUnique": false,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
-      "foreignKeys": {
-        "weekly_summaries_location_id_locations_id_fk": {
-          "name": "weekly_summaries_location_id_locations_id_fk",
-          "tableFrom": "weekly_summaries",
-          "tableTo": "locations",
-          "columnsFrom": ["location_id"],
-          "columnsTo": ["id"],
-          "onDelete": "cascade",
-          "onUpdate": "no action"
-        }
-      },
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "weekly_summaries_location_week_unique": {
-          "name": "weekly_summaries_location_week_unique",
-          "nullsNotDistinct": false,
-          "columns": ["location_id", "week_start_date", "week_end_date"]
-        }
-      },
-      "policies": {
-        "weekly_summaries_service_role_access": {
-          "name": "weekly_summaries_service_role_access",
-          "as": "PERMISSIVE",
-          "for": "ALL",
-          "to": ["postgres", "service_role"],
-          "using": "true",
-          "withCheck": "true"
-        }
-      },
-      "checkConstraints": {},
       "isRLSEnabled": false
     }
   },

@@ -80,17 +80,19 @@ CREATE TABLE "user_accounts" (
 );
 --> statement-breakpoint
 ALTER TABLE "user_accounts" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
-CREATE TABLE "subscriptions" (
+CREATE TABLE "location_subscriptions" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"user_id" text NOT NULL,
+	"location_id" uuid NOT NULL,
 	"status" text DEFAULT 'active' NOT NULL,
-	"polar_customer_id" text,
 	"polar_subscription_id" text,
+	"activated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"canceled_at" timestamp with time zone,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
-	CONSTRAINT "subscriptions_user_id_unique" UNIQUE("user_id")
+	CONSTRAINT "location_subscriptions_user_location_unique" UNIQUE("user_id","location_id")
 );
 --> statement-breakpoint
-ALTER TABLE "subscriptions" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
+ALTER TABLE "location_subscriptions" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
 CREATE TABLE "locations" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"google_location_id" text NOT NULL,
@@ -143,12 +145,15 @@ CREATE TABLE "reviews" (
 	"text" text,
 	"date" timestamp with time zone NOT NULL,
 	"reply_status" text DEFAULT 'pending' NOT NULL,
+	"failure_reason" text,
 	"consumes_quota" boolean DEFAULT true NOT NULL,
 	"received_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"update_time" timestamp with time zone,
 	"classifications" jsonb,
+	"notification_sent" boolean DEFAULT false NOT NULL,
 	CONSTRAINT "reviews_google_review_id_unique" UNIQUE("google_review_id"),
-	CONSTRAINT "reviews_reply_status_check" CHECK ("reviews"."reply_status" IN ('pending', 'rejected', 'posted', 'failed', 'quota_exceeded'))
+	CONSTRAINT "reviews_reply_status_check" CHECK ("reviews"."reply_status" IN ('pending', 'posted', 'failed')),
+	CONSTRAINT "reviews_failure_reason_check" CHECK ("reviews"."failure_reason" IS NULL OR "reviews"."failure_reason" IN ('generation', 'posting', 'quota'))
 );
 --> statement-breakpoint
 ALTER TABLE "reviews" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
@@ -160,36 +165,25 @@ CREATE TABLE "review_responses" (
 	"text" text NOT NULL,
 	"status" text NOT NULL,
 	"type" text DEFAULT 'ai_generated' NOT NULL,
+	"feedback" text,
+	"feedback_comment" text,
 	"generated_by" text,
 	"posted_by" text,
 	"posted_at" timestamp with time zone,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"generated_at" timestamp with time zone DEFAULT now(),
-	CONSTRAINT "review_responses_status_check" CHECK ("review_responses"."status" IN ('draft', 'posted', 'rejected'))
+	CONSTRAINT "review_responses_status_check" CHECK ("review_responses"."status" IN ('draft', 'posted', 'rejected')),
+	CONSTRAINT "review_responses_feedback_check" CHECK ("review_responses"."feedback" IS NULL OR "review_responses"."feedback" IN ('liked', 'disliked'))
 );
 --> statement-breakpoint
 ALTER TABLE "review_responses" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
-CREATE TABLE "weekly_summaries" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"location_id" uuid NOT NULL,
-	"week_start_date" date NOT NULL,
-	"week_end_date" date NOT NULL,
-	"total_reviews" integer NOT NULL,
-	"average_rating" real NOT NULL,
-	"positive_themes" jsonb DEFAULT '[]'::jsonb,
-	"negative_themes" jsonb DEFAULT '[]'::jsonb,
-	"recommendations" jsonb DEFAULT '[]'::jsonb,
-	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
-	CONSTRAINT "weekly_summaries_location_week_unique" UNIQUE("location_id","week_start_date","week_end_date")
-);
---> statement-breakpoint
-ALTER TABLE "weekly_summaries" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
 ALTER TABLE "account" ADD CONSTRAINT "account_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "session" ADD CONSTRAINT "session_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "users_configs" ADD CONSTRAINT "users_configs_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "user_accounts" ADD CONSTRAINT "user_accounts_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "user_accounts" ADD CONSTRAINT "user_accounts_account_id_google_accounts_id_fk" FOREIGN KEY ("account_id") REFERENCES "public"."google_accounts"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "subscriptions" ADD CONSTRAINT "subscriptions_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "location_subscriptions" ADD CONSTRAINT "location_subscriptions_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "location_subscriptions" ADD CONSTRAINT "location_subscriptions_location_id_locations_id_fk" FOREIGN KEY ("location_id") REFERENCES "public"."locations"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "account_locations" ADD CONSTRAINT "account_locations_account_id_google_accounts_id_fk" FOREIGN KEY ("account_id") REFERENCES "public"."google_accounts"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "account_locations" ADD CONSTRAINT "account_locations_location_id_locations_id_fk" FOREIGN KEY ("location_id") REFERENCES "public"."locations"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "reviews" ADD CONSTRAINT "reviews_location_id_locations_id_fk" FOREIGN KEY ("location_id") REFERENCES "public"."locations"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -198,16 +192,15 @@ ALTER TABLE "review_responses" ADD CONSTRAINT "review_responses_location_id_loca
 ALTER TABLE "review_responses" ADD CONSTRAINT "review_responses_account_id_google_accounts_id_fk" FOREIGN KEY ("account_id") REFERENCES "public"."google_accounts"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "review_responses" ADD CONSTRAINT "review_responses_generated_by_user_id_fk" FOREIGN KEY ("generated_by") REFERENCES "public"."user"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "review_responses" ADD CONSTRAINT "review_responses_posted_by_user_id_fk" FOREIGN KEY ("posted_by") REFERENCES "public"."user"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "weekly_summaries" ADD CONSTRAINT "weekly_summaries_location_id_locations_id_fk" FOREIGN KEY ("location_id") REFERENCES "public"."locations"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "verification_identifier_idx" ON "verification" USING btree ("identifier");--> statement-breakpoint
 CREATE INDEX "users_configs_user_id_idx" ON "users_configs" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX "google_accounts_email_idx" ON "google_accounts" USING btree ("email");--> statement-breakpoint
 CREATE INDEX "google_accounts_connected_at_idx" ON "google_accounts" USING btree ("connected_at");--> statement-breakpoint
 CREATE INDEX "user_accounts_user_id_idx" ON "user_accounts" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX "user_accounts_account_id_idx" ON "user_accounts" USING btree ("account_id");--> statement-breakpoint
-CREATE INDEX "subscriptions_user_id_idx" ON "subscriptions" USING btree ("user_id");--> statement-breakpoint
-CREATE INDEX "subscriptions_status_idx" ON "subscriptions" USING btree ("status");--> statement-breakpoint
-CREATE INDEX "subscriptions_user_status_idx" ON "subscriptions" USING btree ("user_id","status");--> statement-breakpoint
+CREATE INDEX "location_subscriptions_user_id_idx" ON "location_subscriptions" USING btree ("user_id");--> statement-breakpoint
+CREATE INDEX "location_subscriptions_location_id_idx" ON "location_subscriptions" USING btree ("location_id");--> statement-breakpoint
+CREATE INDEX "location_subscriptions_status_idx" ON "location_subscriptions" USING btree ("status");--> statement-breakpoint
 CREATE INDEX "locations_google_location_id_idx" ON "locations" USING btree ("google_location_id");--> statement-breakpoint
 CREATE INDEX "account_locations_account_id_idx" ON "account_locations" USING btree ("account_id");--> statement-breakpoint
 CREATE INDEX "account_locations_location_id_idx" ON "account_locations" USING btree ("location_id");--> statement-breakpoint
@@ -222,12 +215,13 @@ CREATE INDEX "reviews_received_status_idx" ON "reviews" USING btree ("received_a
 CREATE INDEX "reviews_location_date_idx" ON "reviews" USING btree ("location_id","date");--> statement-breakpoint
 CREATE INDEX "reviews_consumes_quota_received_at_idx" ON "reviews" USING btree ("consumes_quota","received_at");--> statement-breakpoint
 CREATE INDEX "reviews_location_rating_idx" ON "reviews" USING btree ("location_id","rating");--> statement-breakpoint
+CREATE INDEX "reviews_notification_sent_idx" ON "reviews" USING btree ("notification_sent","reply_status");--> statement-breakpoint
 CREATE INDEX "review_responses_location_id_idx" ON "review_responses" USING btree ("location_id");--> statement-breakpoint
 CREATE INDEX "review_responses_review_id_idx" ON "review_responses" USING btree ("review_id");--> statement-breakpoint
 CREATE INDEX "review_responses_status_idx" ON "review_responses" USING btree ("status");--> statement-breakpoint
 CREATE INDEX "review_responses_created_at_idx" ON "review_responses" USING btree ("created_at");--> statement-breakpoint
 CREATE INDEX "review_responses_location_status_created_idx" ON "review_responses" USING btree ("location_id","status","created_at");--> statement-breakpoint
-CREATE INDEX "weekly_summaries_location_week_idx" ON "weekly_summaries" USING btree ("location_id","week_start_date","week_end_date");--> statement-breakpoint
+CREATE INDEX "review_responses_location_feedback_created_idx" ON "review_responses" USING btree ("location_id","feedback","created_at");--> statement-breakpoint
 CREATE POLICY "account_service_role_access" ON "account" AS PERMISSIVE FOR ALL TO "postgres", "service_role" USING (true) WITH CHECK (true);--> statement-breakpoint
 CREATE POLICY "session_service_role_access" ON "session" AS PERMISSIVE FOR ALL TO "postgres", "service_role" USING (true) WITH CHECK (true);--> statement-breakpoint
 CREATE POLICY "user_service_role_access" ON "user" AS PERMISSIVE FOR ALL TO "postgres", "service_role" USING (true) WITH CHECK (true);--> statement-breakpoint
@@ -235,9 +229,8 @@ CREATE POLICY "verification_service_role_access" ON "verification" AS PERMISSIVE
 CREATE POLICY "users_configs_service_role_access" ON "users_configs" AS PERMISSIVE FOR ALL TO "postgres", "service_role" USING (true) WITH CHECK (true);--> statement-breakpoint
 CREATE POLICY "google_accounts_service_role_access" ON "google_accounts" AS PERMISSIVE FOR ALL TO "postgres", "service_role" USING (true) WITH CHECK (true);--> statement-breakpoint
 CREATE POLICY "user_accounts_service_role_access" ON "user_accounts" AS PERMISSIVE FOR ALL TO "postgres", "service_role" USING (true) WITH CHECK (true);--> statement-breakpoint
-CREATE POLICY "subscriptions_service_role_access" ON "subscriptions" AS PERMISSIVE FOR ALL TO "postgres", "service_role" USING (true) WITH CHECK (true);--> statement-breakpoint
+CREATE POLICY "location_subscriptions_service_role_access" ON "location_subscriptions" AS PERMISSIVE FOR ALL TO "postgres", "service_role" USING (true) WITH CHECK (true);--> statement-breakpoint
 CREATE POLICY "locations_service_role_access" ON "locations" AS PERMISSIVE FOR ALL TO "postgres", "service_role" USING (true) WITH CHECK (true);--> statement-breakpoint
 CREATE POLICY "account_locations_service_role_access" ON "account_locations" AS PERMISSIVE FOR ALL TO "postgres", "service_role" USING (true) WITH CHECK (true);--> statement-breakpoint
 CREATE POLICY "reviews_service_role_access" ON "reviews" AS PERMISSIVE FOR ALL TO "postgres", "service_role" USING (true) WITH CHECK (true);--> statement-breakpoint
-CREATE POLICY "review_responses_service_role_access" ON "review_responses" AS PERMISSIVE FOR ALL TO "postgres", "service_role" USING (true) WITH CHECK (true);--> statement-breakpoint
-CREATE POLICY "weekly_summaries_service_role_access" ON "weekly_summaries" AS PERMISSIVE FOR ALL TO "postgres", "service_role" USING (true) WITH CHECK (true);
+CREATE POLICY "review_responses_service_role_access" ON "review_responses" AS PERMISSIVE FOR ALL TO "postgres", "service_role" USING (true) WITH CHECK (true);

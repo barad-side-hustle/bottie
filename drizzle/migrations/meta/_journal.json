@@ -5,43 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1771984027196,
-      "tag": "0000_smiling_maginty",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1772017380915,
-      "tag": "0001_strange_big_bertha",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1772028160409,
-      "tag": "0002_plain_rockslide",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1772103573149,
-      "tag": "0003_steep_the_captain",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1772114188086,
-      "tag": "0004_mighty_micromax",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1772115057831,
-      "tag": "0005_bizarre_lifeguard",
+      "when": 1772117502698,
+      "tag": "0000_orange_the_twelve",
       "breakpoints": true
     }
   ]
