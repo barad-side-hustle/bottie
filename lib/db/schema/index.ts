@@ -1,6 +1,6 @@
 export * from "./roles";
 export * from "./auth.schema";
-export * from "./users-configs.schema";
+
 export * from "./accounts.schema";
 export * from "./user-accounts.schema";
 export * from "./location-subscriptions.schema";

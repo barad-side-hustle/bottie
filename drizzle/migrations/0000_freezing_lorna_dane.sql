@@ -36,6 +36,7 @@ CREATE TABLE "user" (
 	"image" text,
 	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
 	"updated_at" timestamp with time zone DEFAULT now() NOT NULL,
+	"email_on_new_review" boolean DEFAULT true NOT NULL,
 	CONSTRAINT "user_email_unique" UNIQUE("email")
 );
 --> statement-breakpoint
@@ -50,16 +51,6 @@ CREATE TABLE "verification" (
 );
 --> statement-breakpoint
 ALTER TABLE "verification" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
-CREATE TABLE "users_configs" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"user_id" text NOT NULL,
-	"configs" jsonb DEFAULT '{}'::jsonb NOT NULL,
-	"created_at" timestamp with time zone DEFAULT now() NOT NULL,
-	"updated_at" timestamp with time zone,
-	CONSTRAINT "users_configs_user_id_unique" UNIQUE("user_id")
-);
---> statement-breakpoint
-ALTER TABLE "users_configs" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
 CREATE TABLE "google_accounts" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"email" text NOT NULL,
@@ -216,7 +207,6 @@ CREATE TABLE "location_invitations" (
 ALTER TABLE "location_invitations" ENABLE ROW LEVEL SECURITY;--> statement-breakpoint
 ALTER TABLE "account" ADD CONSTRAINT "account_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "session" ADD CONSTRAINT "session_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "users_configs" ADD CONSTRAINT "users_configs_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "user_accounts" ADD CONSTRAINT "user_accounts_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "user_accounts" ADD CONSTRAINT "user_accounts_account_id_google_accounts_id_fk" FOREIGN KEY ("account_id") REFERENCES "public"."google_accounts"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "location_subscriptions" ADD CONSTRAINT "location_subscriptions_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
@@ -238,7 +228,6 @@ ALTER TABLE "location_access_requests" ADD CONSTRAINT "location_access_requests_
 ALTER TABLE "location_invitations" ADD CONSTRAINT "location_invitations_location_id_locations_id_fk" FOREIGN KEY ("location_id") REFERENCES "public"."locations"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "location_invitations" ADD CONSTRAINT "location_invitations_invited_by_user_id_fk" FOREIGN KEY ("invited_by") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "verification_identifier_idx" ON "verification" USING btree ("identifier");--> statement-breakpoint
-CREATE INDEX "users_configs_user_id_idx" ON "users_configs" USING btree ("user_id");--> statement-breakpoint
 CREATE INDEX "google_accounts_email_idx" ON "google_accounts" USING btree ("email");--> statement-breakpoint
 CREATE INDEX "google_accounts_connected_at_idx" ON "google_accounts" USING btree ("connected_at");--> statement-breakpoint
 CREATE INDEX "user_accounts_user_id_idx" ON "user_accounts" USING btree ("user_id");--> statement-breakpoint
@@ -279,7 +268,6 @@ CREATE POLICY "account_service_role_access" ON "account" AS PERMISSIVE FOR ALL T
 CREATE POLICY "session_service_role_access" ON "session" AS PERMISSIVE FOR ALL TO "postgres", "service_role" USING (true) WITH CHECK (true);--> statement-breakpoint
 CREATE POLICY "user_service_role_access" ON "user" AS PERMISSIVE FOR ALL TO "postgres", "service_role" USING (true) WITH CHECK (true);--> statement-breakpoint
 CREATE POLICY "verification_service_role_access" ON "verification" AS PERMISSIVE FOR ALL TO "postgres", "service_role" USING (true) WITH CHECK (true);--> statement-breakpoint
-CREATE POLICY "users_configs_service_role_access" ON "users_configs" AS PERMISSIVE FOR ALL TO "postgres", "service_role" USING (true) WITH CHECK (true);--> statement-breakpoint
 CREATE POLICY "google_accounts_service_role_access" ON "google_accounts" AS PERMISSIVE FOR ALL TO "postgres", "service_role" USING (true) WITH CHECK (true);--> statement-breakpoint
 CREATE POLICY "user_accounts_service_role_access" ON "user_accounts" AS PERMISSIVE FOR ALL TO "postgres", "service_role" USING (true) WITH CHECK (true);--> statement-breakpoint
 CREATE POLICY "location_subscriptions_service_role_access" ON "location_subscriptions" AS PERMISSIVE FOR ALL TO "postgres", "service_role" USING (true) WITH CHECK (true);--> statement-breakpoint

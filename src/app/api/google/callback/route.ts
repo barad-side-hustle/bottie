@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { exchangeCodeForTokens, encryptToken, getUserInfo } from "@/lib/google/oauth";
 import { getAuthenticatedUserId, createLocaleAwareRedirect } from "@/lib/api/auth";
-import { AccountsController, UsersController } from "@/lib/controllers";
+import { AccountsController } from "@/lib/controllers";
 
 export const runtime = "nodejs";
 
@@ -69,7 +69,6 @@ export async function GET(request: NextRequest) {
 
     const encryptedToken = await encryptToken(tokens.refresh_token);
 
-    const usersController = new UsersController();
     const accountsController = new AccountsController(authenticatedUserId);
 
     let accountId: string;
@@ -82,8 +81,6 @@ export async function GET(request: NextRequest) {
       accountId = existingAccountId;
     } else {
       const userInfo = await getUserInfo(tokens.access_token);
-
-      await usersController.getUserConfig(authenticatedUserId);
 
       const existingAccount = await accountsController.findByEmail(userInfo.email);
 

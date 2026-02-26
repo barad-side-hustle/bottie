@@ -1001,7 +1001,16 @@
       "connect": "חיבור",
       "configure": "הגדרות",
       "autoReply": "תגובות אוטומטיות",
+      "import": "ייבוא",
       "subscribe": "מנוי"
+    },
+    "importStep": {
+      "title": "מייבא את הביקורות שלך",
+      "description": "אנחנו מייבאים את ביקורות Google הקיימות שלך. זה ייקח רק רגע.",
+      "loading": "מייבא ביקורות...",
+      "loadingDescription": "אנא המתן בזמן שאנחנו מביאים את הביקורות שלך מגוגל.",
+      "errorDescription": "לא הצלחנו לייבא את הביקורות שלך כרגע, אבל אתה יכול להמשיך והן יסתנכרנו אוטומטית.",
+      "continue": "המשך"
     },
     "subscribe": {
       "title": "שחרר תגובות AI ללא הגבלה",
@@ -1042,11 +1051,9 @@
       "descriptionWithCount": "בחר את העסק שברצונך לחבר (נמצאו {count} עסקים)",
       "connectButton": "חבר עסק זה",
       "connectingButton": "מחבר...",
-      "accessRequestSent": "בקשת הגישה נשלחה!",
       "errors": {
         "noBusinessesFound": "לא נמצאו עסקים בחשבון Google Business Profile שלך",
-        "failedToConnect": "לא ניתן לחבר את העסק",
-        "failedToRequestAccess": "לא ניתן לשלוח בקשת גישה"
+        "failedToConnect": "לא ניתן לחבר את העסק"
       }
     },
     "configure": {
@@ -1066,19 +1073,9 @@
       "errorMessage": "לא ניתן לשמור את ההגדרות"
     },
     "importProgress": {
-      "title": "מייבאים את הביקורות שלך",
-      "description": "אנחנו מייבאים את הביקורות הקיימות שלך מגוגל. זה ייקח רק רגע.",
       "completeTitle": "הכל מוכן!",
       "completeDescription": "הביקורות שלך יובאו בהצלחה.",
-      "preparingImport": "מכינים את הייבוא...",
-      "importingCount": "{imported} מתוך {total} ביקורות יובאו",
-      "pleaseWait": "נא להמתין בזמן שאנחנו מייבאים את הביקורות...",
-      "importComplete": "{count} ביקורות יובאו בהצלחה!",
-      "redirecting": "מועברים ללוח הבקרה...",
-      "errorDescription": "לא הצלחנו לייבא את הביקורות כרגע, אבל עדיין ניתן להמשיך ללוח הבקרה.",
-      "skipToDashboard": "עבור ללוח הבקרה",
-      "existingTitle": "העסק כבר מחובר!",
-      "existingDescription": "העסק הזה כבר מוגדר במערכת. מעבירים אותך ללוח הבקרה..."
+      "redirecting": "מועברים ללוח הבקרה..."
     }
   },
   "emails": {

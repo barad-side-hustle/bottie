@@ -1,8 +1,9 @@
 "use server";
 
 import { getAuthenticatedUserId } from "@/lib/api/auth";
-import { UsersController } from "@/lib/controllers/users.controller";
-import type { UserConfigUpdate } from "@/lib/types/user.types";
+import { db } from "@/lib/db/client";
+import { user } from "@/lib/db/schema/auth.schema";
+import { eq } from "drizzle-orm";
 
 interface UserSettings {
   emailOnNewReview: boolean;
@@ -11,30 +12,30 @@ interface UserSettings {
 export async function getUserSettings(): Promise<UserSettings> {
   const { userId } = await getAuthenticatedUserId();
 
-  const controller = new UsersController();
-  const config = await controller.getUserConfig(userId);
+  const [row] = await db
+    .select({ emailOnNewReview: user.emailOnNewReview })
+    .from(user)
+    .where(eq(user.id, userId))
+    .limit(1);
 
   return {
-    emailOnNewReview: config.configs.EMAIL_ON_NEW_REVIEW,
+    emailOnNewReview: row?.emailOnNewReview ?? true,
   };
 }
 
 export async function updateUserSettings(settings: Partial<UserSettings>): Promise<UserSettings> {
   const { userId } = await getAuthenticatedUserId();
 
-  const updates: UserConfigUpdate = {};
-
   if (settings.emailOnNewReview !== undefined) {
     if (typeof settings.emailOnNewReview !== "boolean") {
       throw new Error("Invalid emailOnNewReview value");
     }
-    updates.EMAIL_ON_NEW_REVIEW = settings.emailOnNewReview;
+
+    await db
+      .update(user)
+      .set({ emailOnNewReview: settings.emailOnNewReview, updatedAt: new Date() })
+      .where(eq(user.id, userId));
   }
 
-  const controller = new UsersController();
-  const updatedConfig = await controller.updateUserConfig(userId, updates);
-
-  return {
-    emailOnNewReview: updatedConfig.configs.EMAIL_ON_NEW_REVIEW,
-  };
+  return getUserSettings();
 }

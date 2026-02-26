@@ -11,6 +11,7 @@ export const user = pgTable(
     image: text("image"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+    emailOnNewReview: boolean("email_on_new_review").notNull().default(true),
   },
   () => [
     pgPolicy("user_service_role_access", {

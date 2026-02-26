@@ -2,7 +2,7 @@ import { db } from "@/lib/db/client";
 import { accountLocations, userAccounts, locationMembers } from "@/lib/db/schema";
 import { user as userTable } from "@/lib/db/schema/auth.schema";
 import { eq, inArray } from "drizzle-orm";
-import { UsersConfigsRepository } from "@/lib/db/repositories/users-configs.repository";
+
 import ReviewNotificationEmail, { type ReviewNotificationEmailProps } from "@/lib/emails/review-notification";
 import { sendEmail } from "@/lib/utils/email-service";
 import { env } from "@/lib/env";
@@ -47,24 +47,20 @@ export async function sendReviewNotifications(params: SendReviewNotificationsPar
 
     console.log(`Found ${uniqueUserIds.length} unique users connected to location ${locationId}`);
 
-    const usersConfigsRepo = new UsersConfigsRepository();
-
     const emailPromises = uniqueUserIds.map(async (currentUserId) => {
-      const userConfig = await usersConfigsRepo.getOrCreate(currentUserId);
-
-      if (!userConfig.configs.EMAIL_ON_NEW_REVIEW) {
-        console.log(`User ${currentUserId} has email notifications disabled, skipping`);
-        return;
-      }
-
       const [userData] = await db
-        .select({ email: userTable.email, name: userTable.name })
+        .select({ email: userTable.email, name: userTable.name, emailOnNewReview: userTable.emailOnNewReview })
         .from(userTable)
         .where(eq(userTable.id, currentUserId))
         .limit(1);
 
       if (!userData?.email) {
         console.error("User or email not found", { userId: currentUserId });
+        return;
+      }
+
+      if (!userData.emailOnNewReview) {
+        console.log(`User ${currentUserId} has email notifications disabled, skipping`);
         return;
       }
 

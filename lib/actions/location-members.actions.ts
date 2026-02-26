@@ -8,11 +8,6 @@ const LocationIdSchema = z.object({
   locationId: z.string().uuid(),
 });
 
-const RequestAccessSchema = z.object({
-  locationId: z.string().uuid(),
-  message: z.string().max(500).optional(),
-});
-
 const RequestIdSchema = z.object({
   requestId: z.string().uuid(),
 });
@@ -43,14 +38,6 @@ export const getLocationMembers = createSafeAction(LocationIdSchema, async ({ lo
   const controller = new LocationMembersController(userId);
   return controller.getMembers(locationId);
 });
-
-export const requestLocationAccess = createSafeAction(
-  RequestAccessSchema,
-  async ({ locationId, message }, { userId }) => {
-    const controller = new LocationMembersController(userId);
-    return controller.requestAccess(locationId, message);
-  }
-);
 
 export const approveAccessRequest = createSafeAction(RequestIdSchema, async ({ requestId }, { userId }) => {
   const controller = new LocationMembersController(userId);

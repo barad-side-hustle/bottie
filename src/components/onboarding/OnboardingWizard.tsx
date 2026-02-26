@@ -10,7 +10,6 @@ import type { AIResponseSettingsFormData } from "@/components/dashboard/location
 import type { StarRatingConfigFormData } from "@/components/dashboard/locations/forms/StarRatingConfigForm";
 import { getDefaultLocationConfig } from "@/lib/utils/location-config";
 import { connectLocation, updateLocationConfig } from "@/lib/actions/locations.actions";
-import { requestLocationAccess } from "@/lib/actions/location-members.actions";
 import { subscribeToGoogleNotifications } from "@/lib/actions/google.actions";
 import { updateOnboardingStatus } from "@/lib/actions/onboarding.actions";
 import { sendRybbitEvent } from "@/lib/analytics";
@@ -25,16 +24,18 @@ import { ChooseLocationStep } from "./steps/ChooseLocationStep";
 import { ConfigureStep } from "./steps/ConfigureStep";
 import { AutoReplyStep } from "./steps/AutoReplyStep";
 import { SubscribeStep } from "./steps/SubscribeStep";
+import { ImportReviewsStep } from "./steps/ImportReviewsStep";
 
-type WizardStep = "connect" | "choose" | "configure" | "autoReply" | "subscribe" | "celebration";
+type WizardStep = "connect" | "choose" | "configure" | "autoReply" | "import" | "subscribe" | "celebration";
 
 const STEP_TO_PROGRESS: Record<WizardStep, number> = {
   connect: 0,
   choose: 0,
   configure: 1,
   autoReply: 2,
-  subscribe: 3,
-  celebration: 4,
+  import: 3,
+  subscribe: 4,
+  celebration: 5,
 };
 
 interface OnboardingWizardProps {
@@ -63,12 +64,6 @@ export function OnboardingWizard({
   const [accountId] = useState<string | null>(initialAccountId);
   const [locationId, setLocationId] = useState<string | null>(initialLocationId);
   const [locationData, setLocationData] = useState<Location | null>(location);
-  const [isExistingLocation, setIsExistingLocation] = useState(false);
-  const [alreadyOwnedInfo, setAlreadyOwnedInfo] = useState<{
-    locationId: string;
-    locationName: string;
-    requestSent: boolean;
-  } | null>(null);
 
   const storeSetAccountId = useOnboardingStore((s) => s.setAccountId);
   const storeSetLocationId = useOnboardingStore((s) => s.setLocationId);
@@ -91,7 +86,7 @@ export function OnboardingWizard({
   }, []);
 
   const stepLabels = useMemo(
-    () => [t("steps.connect"), t("steps.configure"), t("steps.autoReply"), t("steps.subscribe")],
+    () => [t("steps.connect"), t("steps.configure"), t("steps.autoReply"), t("steps.import"), t("steps.subscribe")],
     [t]
   );
 
@@ -146,11 +141,6 @@ export function OnboardingWizard({
       });
 
       if ("alreadyOwned" in result && result.alreadyOwned) {
-        setAlreadyOwnedInfo({
-          locationId: result.locationId,
-          locationName: selectedLocation.name,
-          requestSent: false,
-        });
         return;
       }
 
@@ -166,7 +156,6 @@ export function OnboardingWizard({
       subscribeToGoogleNotifications({ accountId }).catch(console.error);
 
       if (!isNew) {
-        setIsExistingLocation(true);
         await updateOnboardingStatus(true);
         sendRybbitEvent("onboarding_completed");
         storeReset();
@@ -179,24 +168,6 @@ export function OnboardingWizard({
       const errorMessage = err instanceof Error ? err.message : t("chooseBusiness.errors.failedToConnect");
       sileo.error({ title: errorMessage });
     }
-  };
-
-  const handleRequestAccess = async (message?: string) => {
-    if (!alreadyOwnedInfo) return;
-
-    try {
-      await requestLocationAccess({ locationId: alreadyOwnedInfo.locationId, message });
-      setAlreadyOwnedInfo((prev) => (prev ? { ...prev, requestSent: true } : null));
-      sileo.success({ title: t("chooseBusiness.accessRequestSent") });
-    } catch (err) {
-      console.error("Error requesting access:", err);
-      const errorMessage = err instanceof Error ? err.message : t("chooseBusiness.errors.failedToRequestAccess");
-      sileo.error({ title: errorMessage });
-    }
-  };
-
-  const handleDismissAlreadyOwned = () => {
-    setAlreadyOwnedInfo(null);
   };
 
   const handleConfigureNext = async (details: LocationDetailsFormData, aiSettings: AIResponseSettingsFormData) => {
@@ -256,7 +227,7 @@ export function OnboardingWizard({
 
       await updateLocationConfig({ locationId, config: combinedConfig });
 
-      goForward("subscribe");
+      goForward("import");
     } catch (error) {
       console.error("Error saving configuration:", error);
       sileo.error({ title: t("starRatings.errorMessage") });
@@ -276,10 +247,8 @@ export function OnboardingWizard({
     }
   };
 
-  if (currentStep === "celebration" && accountId && locationId) {
-    return (
-      <CompletionCelebration accountId={accountId} locationId={locationId} isExistingLocation={isExistingLocation} />
-    );
+  if (currentStep === "celebration") {
+    return <CompletionCelebration />;
   }
 
   const progressBar = <SteppedProgressBar steps={stepLabels} currentStep={STEP_TO_PROGRESS[currentStep]} />;
@@ -296,9 +265,6 @@ export function OnboardingWizard({
             onConnect={handleConnectLocation}
             onBack={() => goBackward("connect")}
             progressBar={progressBar}
-            alreadyOwnedInfo={alreadyOwnedInfo}
-            onRequestAccess={handleRequestAccess}
-            onDismissAlreadyOwned={handleDismissAlreadyOwned}
           />
         );
 
@@ -324,13 +290,23 @@ export function OnboardingWizard({
           />
         );
 
+      case "import":
+        return (
+          <ImportReviewsStep
+            accountId={accountId!}
+            locationId={locationId!}
+            onComplete={() => goForward("subscribe")}
+            progressBar={progressBar}
+          />
+        );
+
       case "subscribe":
         return (
           <SubscribeStep
             locationId={locationId!}
             locationName={locationData?.name || ""}
             onSkip={handleSubscribeSkip}
-            onBack={() => goBackward("autoReply")}
+            onBack={() => goBackward("import")}
             progressBar={progressBar}
           />
         );

@@ -1,4 +1,3 @@
-export * from "./users.controller";
 export * from "./accounts.controller";
 export * from "./locations.controller";
 export * from "./account-locations.controller";

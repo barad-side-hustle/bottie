@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
-import { UsersController } from "@/lib/controllers/users.controller";
-import type { UserConfigUpdate } from "@/lib/types/user.types";
+import { db } from "@/lib/db/client";
+import { user } from "@/lib/db/schema/auth.schema";
+import { eq } from "drizzle-orm";
 
 export const runtime = "nodejs";
 
@@ -16,11 +17,14 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const controller = new UsersController();
-    const config = await controller.getUserConfig(session.user.id);
+    const [row] = await db
+      .select({ emailOnNewReview: user.emailOnNewReview })
+      .from(user)
+      .where(eq(user.id, session.user.id))
+      .limit(1);
 
     return NextResponse.json({
-      emailOnNewReview: config.configs.EMAIL_ON_NEW_REVIEW,
+      emailOnNewReview: row?.emailOnNewReview ?? true,
     });
   } catch (error) {
     console.error("Error fetching user settings:", error);
@@ -39,20 +43,26 @@ export async function PATCH(request: NextRequest) {
     }
 
     const body = await request.json();
-    const updates: UserConfigUpdate = {};
 
     if (body.emailOnNewReview !== undefined) {
       if (typeof body.emailOnNewReview !== "boolean") {
         return NextResponse.json({ error: "Invalid emailOnNewReview value" }, { status: 400 });
       }
-      updates.EMAIL_ON_NEW_REVIEW = body.emailOnNewReview;
+
+      await db
+        .update(user)
+        .set({ emailOnNewReview: body.emailOnNewReview, updatedAt: new Date() })
+        .where(eq(user.id, session.user.id));
     }
 
-    const controller = new UsersController();
-    const updatedConfig = await controller.updateUserConfig(session.user.id, updates);
+    const [row] = await db
+      .select({ emailOnNewReview: user.emailOnNewReview })
+      .from(user)
+      .where(eq(user.id, session.user.id))
+      .limit(1);
 
     return NextResponse.json({
-      emailOnNewReview: updatedConfig.configs.EMAIL_ON_NEW_REVIEW,
+      emailOnNewReview: row?.emailOnNewReview ?? true,
     });
   } catch (error) {
     console.error("Error updating user settings:", error);

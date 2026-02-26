@@ -1008,7 +1008,16 @@
       "connect": "Conectar",
       "configure": "Configurar",
       "autoReply": "Respuesta automatica",
+      "import": "Importar",
       "subscribe": "Suscripcion"
+    },
+    "importStep": {
+      "title": "Importando tus resenas",
+      "description": "Estamos importando tus resenas existentes de Google. Solo tomara un momento.",
+      "loading": "Importando resenas...",
+      "loadingDescription": "Por favor espera mientras obtenemos tus resenas de Google.",
+      "errorDescription": "No pudimos importar tus resenas en este momento, pero puedes continuar y se sincronizaran automaticamente.",
+      "continue": "Continuar"
     },
     "subscribe": {
       "title": "Desbloquea respuestas con IA ilimitadas",
@@ -1049,11 +1058,9 @@
       "descriptionWithCount": "Selecciona el negocio que deseas conectar (se encontraron {count} negocios)",
       "connectButton": "Conectar este negocio",
       "connectingButton": "Conectando...",
-      "accessRequestSent": "¡Solicitud de acceso enviada!",
       "errors": {
         "noBusinessesFound": "No se encontraron negocios en tu cuenta de Google Business Profile",
-        "failedToConnect": "No se pudo conectar el negocio",
-        "failedToRequestAccess": "No se pudo enviar la solicitud de acceso"
+        "failedToConnect": "No se pudo conectar el negocio"
       }
     },
     "configure": {
@@ -1073,19 +1080,9 @@
       "errorMessage": "No se pudo guardar la configuracion"
     },
     "importProgress": {
-      "title": "Importando tus resenas",
-      "description": "Estamos importando tus resenas existentes de Google. Esto solo tomara un momento.",
       "completeTitle": "Todo listo!",
       "completeDescription": "Tus resenas han sido importadas exitosamente.",
-      "preparingImport": "Preparando la importacion...",
-      "importingCount": "{imported} de {total} resenas importadas",
-      "pleaseWait": "Por favor espera mientras importamos tus resenas...",
-      "importComplete": "{count} resenas importadas exitosamente!",
-      "redirecting": "Redirigiendo a tu panel de control...",
-      "errorDescription": "No pudimos importar tus resenas en este momento, pero puedes continuar al panel de control.",
-      "skipToDashboard": "Ir al panel de control",
-      "existingTitle": "Ubicacion ya conectada!",
-      "existingDescription": "Esta ubicacion ya esta configurada. Redirigiendo a tu panel de control..."
+      "redirecting": "Redirigiendo a tu panel de control..."
     }
   },
   "emails": {
