@@ -8,14 +8,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Crown, Shield, UserMinus, Check, X, Send, Trash2, Mail } from "lucide-react";
 import type { LocationMemberWithUser } from "@/lib/db/repositories/location-members.repository";
 import type { AccessRequestWithRequester } from "@/lib/db/repositories/location-access-requests.repository";
 import type { LocationInvitation } from "@/lib/db/schema";
 import {
   getLocationMembers,
-  updateMemberRole,
   removeMember,
   approveAccessRequest,
   rejectAccessRequest,
@@ -67,18 +65,6 @@ export function MembersSection({
       setRequests(newRequests);
       setInvitations(newInvitations);
     } catch {}
-  };
-
-  const handleUpdateRole = async (targetUserId: string, role: "owner" | "admin") => {
-    setLoading(targetUserId, true);
-    try {
-      await updateMemberRole({ locationId, targetUserId, role });
-      await refreshData();
-    } catch (err) {
-      sileo.error({ title: err instanceof Error ? err.message : t("errorUpdatingRole") });
-    } finally {
-      setLoading(targetUserId, false);
-    }
   };
 
   const handleRemoveMember = async (targetUserId: string) => {
@@ -184,46 +170,20 @@ export function MembersSection({
               </div>
 
               <div className="flex items-center gap-2 shrink-0">
-                {isOwner && member.userId !== currentUserId ? (
-                  <>
-                    <Select
-                      value={member.role}
-                      onValueChange={(value) => handleUpdateRole(member.userId, value as "owner" | "admin")}
-                      disabled={loadingActions[member.userId]}
-                    >
-                      <SelectTrigger className="w-24 h-8 text-xs">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="owner">
-                          <span className="flex items-center gap-1.5">
-                            <Crown className="h-3 w-3" />
-                            {t("owner")}
-                          </span>
-                        </SelectItem>
-                        <SelectItem value="admin">
-                          <span className="flex items-center gap-1.5">
-                            <Shield className="h-3 w-3" />
-                            {t("admin")}
-                          </span>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-destructive hover:text-destructive"
-                      onClick={() => handleRemoveMember(member.userId)}
-                      disabled={loadingActions[`remove-${member.userId}`]}
-                    >
-                      <UserMinus className="h-4 w-4" />
-                    </Button>
-                  </>
-                ) : (
-                  <Badge variant={member.role === "owner" ? "default" : "secondary"} className="gap-1">
-                    {member.role === "owner" ? <Crown className="h-3 w-3" /> : <Shield className="h-3 w-3" />}
-                    {t(member.role)}
-                  </Badge>
+                <Badge variant={member.role === "owner" ? "default" : "secondary"} className="gap-1">
+                  {member.role === "owner" ? <Crown className="h-3 w-3" /> : <Shield className="h-3 w-3" />}
+                  {t(member.role)}
+                </Badge>
+                {isOwner && member.userId !== currentUserId && member.role !== "owner" && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-destructive hover:text-destructive"
+                    onClick={() => handleRemoveMember(member.userId)}
+                    disabled={loadingActions[`remove-${member.userId}`]}
+                  >
+                    <UserMinus className="h-4 w-4" />
+                  </Button>
                 )}
               </div>
             </div>

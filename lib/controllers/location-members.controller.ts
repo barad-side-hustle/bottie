@@ -43,17 +43,8 @@ export class LocationMembersController {
     return this.membersRepo.getMembers(locationId);
   }
 
-  async updateRole(locationId: string, targetUserId: string, role: "owner" | "admin"): Promise<LocationMember> {
+  async updateRole(locationId: string, targetUserId: string, role: "admin"): Promise<LocationMember> {
     await this.requireOwner(locationId);
-
-    if (role === "admin") {
-      const ownerCount = await this.membersRepo.countOwners(locationId);
-      const currentMember = await this.membersRepo.getMember(locationId, targetUserId);
-      if (currentMember?.role === "owner" && ownerCount <= 1) {
-        throw new ForbiddenError("Cannot demote the last owner");
-      }
-    }
-
     return this.membersRepo.updateRole(locationId, targetUserId, role);
   }
 

@@ -2,7 +2,6 @@ import { PageContainer } from "@/components/layout/PageContainer";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { getTranslations } from "next-intl/server";
 import { getOverviewData } from "@/lib/actions/overview.actions";
-import { getAccountsWithLocations } from "@/lib/actions/accounts.actions";
 import { RedirectToOnboarding } from "@/components/dashboard/home/RedirectToOnboarding";
 import { OverviewStats } from "@/components/dashboard/overview/OverviewStats";
 import { PendingReviewsBanner } from "@/components/dashboard/overview/PendingReviewsBanner";
@@ -14,14 +13,11 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: "dashboard.home" });
 
-  const allAccounts = await getAccountsWithLocations();
-  const hasLocations = allAccounts.some((account) => account.accountLocations.length > 0);
+  const overviewData = await getOverviewData();
 
-  if (!hasLocations) {
+  if (overviewData.locationCount === 0) {
     return <RedirectToOnboarding href="/onboarding" />;
   }
-
-  const overviewData = await getOverviewData();
 
   return (
     <PageContainer>

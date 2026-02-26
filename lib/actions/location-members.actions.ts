@@ -17,12 +17,6 @@ const RequestIdSchema = z.object({
   requestId: z.string().uuid(),
 });
 
-const UpdateRoleSchema = z.object({
-  locationId: z.string().uuid(),
-  targetUserId: z.string(),
-  role: z.enum(["owner", "admin"]),
-});
-
 const RemoveMemberSchema = z.object({
   locationId: z.string().uuid(),
   targetUserId: z.string(),
@@ -64,14 +58,6 @@ export const rejectAccessRequest = createSafeAction(RequestIdSchema, async ({ re
   const controller = new LocationMembersController(userId);
   return controller.rejectRequest(requestId);
 });
-
-export const updateMemberRole = createSafeAction(
-  UpdateRoleSchema,
-  async ({ locationId, targetUserId, role }, { userId }) => {
-    const controller = new LocationMembersController(userId);
-    return controller.updateRole(locationId, targetUserId, role);
-  }
-);
 
 export const removeMember = createSafeAction(RemoveMemberSchema, async ({ locationId, targetUserId }, { userId }) => {
   const controller = new LocationMembersController(userId);

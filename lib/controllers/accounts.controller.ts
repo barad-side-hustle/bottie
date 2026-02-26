@@ -1,6 +1,5 @@
 import type { AccountFilters, AccountLocationFilters, Account, AccountCreate, AccountWithLocations } from "@/lib/types";
 
-export type { AccountWithLocations };
 import { AccountsRepository } from "@/lib/db/repositories";
 import { db } from "@/lib/db/client";
 import { NotFoundError } from "@/lib/api/errors";
