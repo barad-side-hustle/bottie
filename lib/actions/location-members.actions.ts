@@ -24,7 +24,10 @@ const RemoveMemberSchema = z.object({
 
 const InviteMemberSchema = z.object({
   locationId: z.string().uuid(),
-  email: z.string().email(),
+  email: z
+    .string()
+    .email()
+    .transform((e) => e.toLowerCase()),
   role: z.enum(["admin"]),
 });
 

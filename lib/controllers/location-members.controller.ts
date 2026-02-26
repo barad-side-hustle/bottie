@@ -16,6 +16,7 @@ import { eq } from "drizzle-orm";
 import { sendEmail } from "@/lib/utils/email-service";
 import LocationInvitationEmail from "@/lib/emails/location-invitation";
 import AccessRequestNotificationEmail from "@/lib/emails/access-request-notification";
+import { defaultLocale } from "@/lib/locale";
 
 export class LocationMembersController {
   private membersRepo = new LocationMembersRepository();
@@ -77,30 +78,39 @@ export class LocationMembersController {
 
     const request = await this.requestsRepo.create(this.userId, locationId, message);
 
-    Promise.all([
+    const [requester, location, owner] = await Promise.all([
       db.query.user.findFirst({ where: eq(userTable.id, this.userId) }),
       db.query.locations.findFirst({ where: eq(locations.id, locationId) }),
       this.membersRepo.getOwner(locationId),
-    ])
-      .then(async ([requester, location, owner]) => {
-        if (!requester || !location || !owner) return;
-        const ownerUser = await db.query.user.findFirst({ where: eq(userTable.id, owner.userId) });
-        if (!ownerUser?.email) return;
-        const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-        const settingsUrl = `${appUrl}/dashboard/locations/${locationId}/settings`;
-        sendEmail(
-          ownerUser.email,
-          `${requester.name} requested access to ${location.name}`,
-          AccessRequestNotificationEmail({
-            requesterName: requester.name,
-            requesterEmail: requester.email,
-            locationName: location.name,
-            message: message ?? undefined,
-            settingsUrl,
-          })
-        ).catch(console.error);
-      })
-      .catch(console.error);
+    ]);
+
+    if (requester && location && owner) {
+      db.query.user
+        .findFirst({ where: eq(userTable.id, owner.userId) })
+        .then((ownerUser) => {
+          if (!ownerUser?.email) return;
+          const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+          const settingsUrl = `${appUrl}/dashboard/locations/${locationId}/settings`;
+          return sendEmail(
+            ownerUser.email,
+            `${requester.name} requested access to ${location.name}`,
+            AccessRequestNotificationEmail({
+              requesterName: requester.name,
+              requesterEmail: requester.email,
+              locationName: location.name,
+              message: message ?? undefined,
+              settingsUrl,
+            })
+          );
+        })
+        .catch((err) => {
+          console.error("[EMAIL_FAILED] access_request_notification", {
+            requestId: request.id,
+            locationId,
+            error: err instanceof Error ? err.message : String(err),
+          });
+        });
+    }
 
     return request;
   }
@@ -111,10 +121,20 @@ export class LocationMembersController {
 
     await this.requireOwner(request.locationId);
 
-    const updatedRequest = await this.requestsRepo.approve(requestId, this.userId);
-    const member = await this.membersRepo.addMember(request.locationId, request.requesterId, "admin", this.userId);
-
-    return { request: updatedRequest, member };
+    return await db.transaction(async (tx) => {
+      const updatedRequest = await this.requestsRepo.approve(requestId, this.userId, tx);
+      if (!updatedRequest) {
+        throw new ForbiddenError("Request is no longer pending");
+      }
+      const member = await this.membersRepo.addMember(
+        request.locationId,
+        request.requesterId,
+        "admin",
+        this.userId,
+        tx
+      );
+      return { request: updatedRequest, member };
+    });
   }
 
   async rejectRequest(requestId: string): Promise<LocationAccessRequest> {
@@ -123,7 +143,11 @@ export class LocationMembersController {
 
     await this.requireOwner(request.locationId);
 
-    return this.requestsRepo.reject(requestId, this.userId);
+    const updatedRequest = await this.requestsRepo.reject(requestId, this.userId);
+    if (!updatedRequest) {
+      throw new ForbiddenError("Request is no longer pending");
+    }
+    return updatedRequest;
   }
 
   async getPendingRequests(locationId: string): Promise<AccessRequestWithRequester[]> {
@@ -137,46 +161,90 @@ export class LocationMembersController {
 
   async inviteByEmail(locationId: string, email: string, role: "admin"): Promise<LocationInvitation> {
     await this.requireOwner(locationId);
-    const invitation = await this.invitationsRepo.create(locationId, email, role, this.userId);
 
-    Promise.all([
-      db.query.user.findFirst({ where: eq(userTable.id, this.userId) }),
+    const normalizedEmail = email.toLowerCase();
+
+    const currentUser = await db.query.user.findFirst({ where: eq(userTable.id, this.userId) });
+    if (currentUser && currentUser.email.toLowerCase() === normalizedEmail) {
+      throw new ForbiddenError("You cannot invite yourself");
+    }
+
+    const existingUser = await db.query.user.findFirst({ where: eq(userTable.email, normalizedEmail) });
+    if (existingUser) {
+      const existingMember = await this.membersRepo.getMember(locationId, existingUser.id);
+      if (existingMember) {
+        throw new ForbiddenError("This user is already a member of this location");
+      }
+    }
+
+    const existing = await this.invitationsRepo.findPendingByEmail(locationId, normalizedEmail);
+    if (existing) {
+      await this.invitationsRepo.cancel(existing.id);
+    }
+
+    const { invitation, rawToken } = await this.invitationsRepo.create(locationId, normalizedEmail, role, this.userId);
+
+    const [inviter, location] = await Promise.all([
+      currentUser ? Promise.resolve(currentUser) : db.query.user.findFirst({ where: eq(userTable.id, this.userId) }),
       db.query.locations.findFirst({ where: eq(locations.id, locationId) }),
-    ])
-      .then(([inviter, location]) => {
-        if (!inviter || !location) return;
-        const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-        const acceptUrl = `${appUrl}/en/invitation/${invitation.token}`;
-        sendEmail(
-          email,
-          `${inviter.name} invited you to manage ${location.name} on Bottie`,
-          LocationInvitationEmail({ inviterName: inviter.name, locationName: location.name, acceptUrl })
-        ).catch(console.error);
-      })
-      .catch(console.error);
+    ]);
+
+    if (inviter && location) {
+      const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+      const acceptUrl = `${appUrl}/${defaultLocale}/invitation/${rawToken}`;
+      sendEmail(
+        normalizedEmail,
+        `${inviter.name} invited you to manage ${location.name} on Bottie`,
+        LocationInvitationEmail({ inviterName: inviter.name, locationName: location.name, acceptUrl })
+      ).catch((err) => {
+        console.error("[EMAIL_FAILED] location_invitation", {
+          invitationId: invitation.id,
+          locationId,
+          recipientEmail: normalizedEmail,
+          error: err instanceof Error ? err.message : String(err),
+        });
+      });
+    }
 
     return invitation;
   }
 
   async acceptInvitation(token: string): Promise<LocationMember> {
     const invitation = await this.invitationsRepo.getByToken(token);
-    if (!invitation) throw new NotFoundError("Invitation not found");
+    if (!invitation) throw new NotFoundError("INVITATION_NOT_FOUND");
 
+    const currentUser = await db.query.user.findFirst({ where: eq(userTable.id, this.userId) });
+    if (!currentUser || currentUser.email.toLowerCase() !== invitation.email.toLowerCase()) {
+      throw new ForbiddenError("INVITATION_EMAIL_MISMATCH");
+    }
+
+    if (invitation.status === "cancelled") {
+      throw new ForbiddenError("INVITATION_CANCELLED");
+    }
+    if (invitation.status === "accepted") {
+      throw new ForbiddenError("INVITATION_ALREADY_USED");
+    }
     if (invitation.status !== "pending") {
-      throw new ForbiddenError("This invitation has already been used or expired");
+      throw new ForbiddenError("INVITATION_INVALID");
     }
 
     if (new Date() > invitation.expiresAt) {
-      throw new ForbiddenError("This invitation has expired");
+      throw new ForbiddenError("INVITATION_EXPIRED");
     }
 
-    await this.invitationsRepo.accept(token);
-    return this.membersRepo.addMember(
-      invitation.locationId,
-      this.userId,
-      invitation.role as "admin",
-      invitation.invitedBy
-    );
+    return await db.transaction(async (tx) => {
+      const accepted = await this.invitationsRepo.accept(token, tx);
+      if (!accepted) {
+        throw new ForbiddenError("INVITATION_ALREADY_USED");
+      }
+      return this.membersRepo.addMember(
+        invitation.locationId,
+        this.userId,
+        invitation.role as "admin",
+        invitation.invitedBy,
+        tx
+      );
+    });
   }
 
   async getPendingInvitations(locationId: string): Promise<LocationInvitation[]> {
@@ -185,6 +253,9 @@ export class LocationMembersController {
   }
 
   async cancelInvitation(invitationId: string): Promise<void> {
+    const invitation = await this.invitationsRepo.getById(invitationId);
+    if (!invitation) throw new NotFoundError("Invitation not found");
+    await this.requireOwner(invitation.locationId);
     await this.invitationsRepo.cancel(invitationId);
   }
 }

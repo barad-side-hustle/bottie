@@ -19,6 +19,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "db:drop": "drizzle-kit drop",
+    "db:drop-all": "dotenv -e .env -- tsx scripts/drop-all-tables.ts",
     "db:triggers": "dotenv -e .env -- tsx scripts/setup-trigger.ts",
     "webhook:trigger": "tsx scripts/trigger-review-webhook.ts",
     "cron:classify-reviews": "dotenv -e .env -- bash -c 'curl -s -H \"Authorization: Bearer $CRON_SECRET\" http://localhost:3000/api/cron/classify-reviews'",

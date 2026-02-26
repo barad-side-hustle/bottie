@@ -1,8 +1,13 @@
 import crypto from "crypto";
-import { eq, and } from "drizzle-orm";
+import { eq, and, gt } from "drizzle-orm";
 import { db } from "@/lib/db/client";
 import { locationInvitations, locations, type LocationInvitation } from "@/lib/db/schema";
 import { user as userTable } from "@/lib/db/schema/auth.schema";
+import type { DbClient } from "./location-members.repository";
+
+function hashToken(raw: string): string {
+  return crypto.createHash("sha256").update(raw).digest("hex");
+}
 
 interface InvitationWithDetails extends LocationInvitation {
   location: { id: string; name: string };
@@ -10,18 +15,29 @@ interface InvitationWithDetails extends LocationInvitation {
 }
 
 export class LocationInvitationsRepository {
-  async create(locationId: string, email: string, role: "admin", invitedBy: string): Promise<LocationInvitation> {
-    const token = crypto.randomBytes(32).toString("hex");
+  async create(
+    locationId: string,
+    email: string,
+    role: "admin",
+    invitedBy: string
+  ): Promise<{ invitation: LocationInvitation; rawToken: string }> {
+    const rawToken = crypto.randomBytes(32).toString("hex");
+    const token = hashToken(rawToken);
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
 
     const [invitation] = await db
       .insert(locationInvitations)
       .values({ locationId, email, role, invitedBy, token, expiresAt })
       .returning();
-    return invitation;
+    return { invitation, rawToken };
   }
 
-  async getByToken(token: string): Promise<InvitationWithDetails | null> {
+  async getById(id: string): Promise<LocationInvitation | null> {
+    return (await db.query.locationInvitations.findFirst({ where: eq(locationInvitations.id, id) })) ?? null;
+  }
+
+  async getByToken(rawToken: string): Promise<InvitationWithDetails | null> {
+    const token = hashToken(rawToken);
     const results = await db
       .select({
         id: locationInvitations.id,
@@ -62,21 +78,38 @@ export class LocationInvitationsRepository {
 
   async getPendingForLocation(locationId: string): Promise<LocationInvitation[]> {
     return db.query.locationInvitations.findMany({
-      where: and(eq(locationInvitations.locationId, locationId), eq(locationInvitations.status, "pending")),
+      where: and(
+        eq(locationInvitations.locationId, locationId),
+        eq(locationInvitations.status, "pending"),
+        gt(locationInvitations.expiresAt, new Date())
+      ),
       orderBy: locationInvitations.createdAt,
     });
   }
 
-  async accept(token: string): Promise<LocationInvitation> {
-    const [updated] = await db
+  async accept(rawToken: string, txClient: DbClient = db): Promise<LocationInvitation | null> {
+    const token = hashToken(rawToken);
+    const [updated] = await txClient
       .update(locationInvitations)
       .set({ status: "accepted" })
       .where(and(eq(locationInvitations.token, token), eq(locationInvitations.status, "pending")))
       .returning();
-    return updated;
+    return updated ?? null;
+  }
+
+  async findPendingByEmail(locationId: string, email: string): Promise<LocationInvitation | null> {
+    return (
+      (await db.query.locationInvitations.findFirst({
+        where: and(
+          eq(locationInvitations.locationId, locationId),
+          eq(locationInvitations.email, email.toLowerCase()),
+          eq(locationInvitations.status, "pending")
+        ),
+      })) ?? null
+    );
   }
 
   async cancel(invitationId: string): Promise<void> {
-    await db.delete(locationInvitations).where(eq(locationInvitations.id, invitationId));
+    await db.update(locationInvitations).set({ status: "cancelled" }).where(eq(locationInvitations.id, invitationId));
   }
 }

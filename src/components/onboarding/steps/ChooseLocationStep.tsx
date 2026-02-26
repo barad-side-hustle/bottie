@@ -16,7 +16,6 @@ function extractLocationId(googleBusinessId: string): string | null {
 }
 
 interface AlreadyOwnedInfo {
-  ownerName: string;
   locationId: string;
   locationName: string;
   requestSent: boolean;
@@ -47,7 +46,7 @@ export function ChooseLocationStep({
   const [connecting, setConnecting] = useState(false);
   const [requestMessage, setRequestMessage] = useState("");
   const [sendingRequest, setSendingRequest] = useState(false);
-  const [ownershipMap, setOwnershipMap] = useState<Record<string, { owned: boolean; ownerName?: string }>>({});
+  const [ownershipMap, setOwnershipMap] = useState<Record<string, { owned: boolean }>>({});
 
   useEffect(() => {
     if (availableLocations.length === 1) {
@@ -86,12 +85,10 @@ export function ChooseLocationStep({
     }
   };
 
-  const getOwnershipForLocation = (location: GoogleBusinessProfileLocation) => {
+  const isLocationOwned = (location: GoogleBusinessProfileLocation) => {
     const googleLocationId = extractLocationId(location.id);
-    if (!googleLocationId) return null;
-    const ownership = ownershipMap[googleLocationId];
-    if (ownership?.owned) return ownership.ownerName;
-    return null;
+    if (!googleLocationId) return false;
+    return ownershipMap[googleLocationId]?.owned ?? false;
   };
 
   const hasNoLocations = availableLocations.length === 0;
@@ -121,7 +118,7 @@ export function ChooseLocationStep({
               <ShieldCheck className="h-5 w-5 text-amber-600 mt-0.5 shrink-0" />
               <div className="space-y-1">
                 <p className="font-medium text-amber-900 dark:text-amber-100">
-                  {t("alreadyOwned", { name: alreadyOwnedInfo.ownerName, location: alreadyOwnedInfo.locationName })}
+                  {t("alreadyOwnedGeneric", { location: alreadyOwnedInfo.locationName })}
                 </p>
                 {alreadyOwnedInfo.requestSent ? (
                   <p className="text-sm text-amber-700 dark:text-amber-300">{t("accessRequestSentDescription")}</p>
@@ -183,7 +180,7 @@ export function ChooseLocationStep({
               key={location.id}
               location={location}
               selected={selectedLocation?.id === location.id}
-              ownerName={getOwnershipForLocation(location)}
+              isOwned={isLocationOwned(location)}
             />
           ))}
         </RadioGroup>

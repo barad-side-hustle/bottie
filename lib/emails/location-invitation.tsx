@@ -45,6 +45,7 @@ export default function LocationInvitationEmail({
         }}
       >
         <Head>
+          <meta name="referrer" content="no-referrer" />
           <Font
             fontFamily="Tomorrow"
             fallbackFontFamily="sans-serif"

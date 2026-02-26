@@ -9,6 +9,9 @@ import {
   AccountLocationsRepository,
   type ReviewWithLatestGeneration,
 } from "@/lib/db/repositories";
+import { db } from "@/lib/db/client";
+import { reviews, reviewResponses } from "@/lib/db/schema";
+import { eq, and, desc } from "drizzle-orm";
 import { generateAIReply } from "@/lib/ai/gemini";
 import { buildReplyPrompt, type PromptSample } from "@/lib/ai/prompts/builder";
 import { postReplyToGoogle } from "@/lib/google/reviews";
@@ -21,9 +24,13 @@ export class ReviewsController {
   private locationsRepo: LocationsRepository;
   private accountLocationsRepo: AccountLocationsRepository;
   private userId: string;
+  private accountId: string;
+  private locationId: string;
 
   constructor(userId: string, accountId: string, locationId: string) {
     this.userId = userId;
+    this.accountId = accountId;
+    this.locationId = locationId;
     this.repository = new ReviewsRepository(userId, locationId);
     this.responsesRepo = new ReviewResponsesRepository(userId, accountId, locationId);
     this.accountsRepo = new AccountsRepository(userId);
@@ -79,10 +86,20 @@ export class ReviewsController {
       comment: g.feedbackComment,
     }));
 
-    const latestGen = await this.responsesRepo.getLatestDraft(reviewId);
-    if (latestGen) {
-      await this.responsesRepo.updateStatus(latestGen.id, "rejected");
-    }
+    await db.transaction(async (tx) => {
+      const latestGen = await tx.query.reviewResponses.findFirst({
+        where: and(
+          eq(reviewResponses.reviewId, reviewId),
+          eq(reviewResponses.accountId, this.accountId),
+          eq(reviewResponses.locationId, this.locationId),
+          eq(reviewResponses.status, "draft")
+        ),
+        orderBy: [desc(reviewResponses.createdAt)],
+      });
+      if (latestGen) {
+        await tx.update(reviewResponses).set({ status: "rejected" }).where(eq(reviewResponses.id, latestGen.id));
+      }
+    });
 
     const prompt = buildReplyPrompt(location, review, approvedSamples, rejectedSamples);
     const aiReply = await generateAIReply(prompt);
@@ -177,23 +194,36 @@ export class ReviewsController {
       throw error;
     }
 
-    const updatedReview = await this.markAsPosted(reviewId);
-
     const generatedBy =
       customReply && customReply !== latestDraft?.text ? (userId ?? null) : (latestDraft?.generatedBy ?? null);
 
     const type = generatedBy ? "human_generated" : "ai_generated";
 
-    await this.responsesRepo.create({
-      reviewId,
-      text: replyToPost,
-      status: "posted",
-      generatedBy,
-      postedBy: userId || null,
-      postedAt: new Date(),
-      type,
-    });
+    try {
+      await db.transaction(async (tx) => {
+        await tx.update(reviews).set({ replyStatus: "posted" }).where(eq(reviews.id, reviewId));
 
+        await tx.insert(reviewResponses).values({
+          reviewId,
+          accountId: this.accountId,
+          locationId: this.locationId,
+          text: replyToPost,
+          status: "posted",
+          generatedBy,
+          postedBy: userId || null,
+          postedAt: new Date(),
+          type,
+        });
+      });
+    } catch (dbError) {
+      console.error("CRITICAL: Reply posted to Google but DB update failed", {
+        reviewId,
+        replyText: replyToPost,
+        error: dbError instanceof Error ? dbError.message : String(dbError),
+      });
+    }
+
+    const updatedReview = await this.getReview(reviewId);
     return { review: updatedReview, replyPosted: replyToPost };
   }
 }

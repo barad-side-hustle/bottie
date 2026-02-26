@@ -8,7 +8,7 @@ const MESSAGES_DIR = "messages";
 const SOURCE_GLOBS = ["src/**/*.{ts,tsx}", "lib/**/*.{ts,tsx}"];
 const IGNORE_PATTERNS = ["node_modules/**", ".next/**", "**/*.test.ts", "scripts/**"];
 
-const IGNORED_NAMESPACES_FOR_UNUSED = ["emails", "dashboard.insights.categories"];
+const IGNORED_NAMESPACES_FOR_UNUSED = ["emails", "dashboard.insights.categories", "invitation"];
 
 function flattenJSON(obj: unknown, prefix = ""): Map<string, string> {
   const result = new Map<string, string>();

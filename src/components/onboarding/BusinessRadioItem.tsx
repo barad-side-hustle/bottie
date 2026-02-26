@@ -10,10 +10,10 @@ import { Building2, MapPin, ShieldCheck } from "lucide-react";
 interface LocationRadioItemProps {
   location: GoogleBusinessProfileLocation;
   selected: boolean;
-  ownerName?: string | null;
+  isOwned?: boolean;
 }
 
-export function LocationRadioItem({ location, selected, ownerName }: LocationRadioItemProps) {
+export function LocationRadioItem({ location, selected, isOwned }: LocationRadioItemProps) {
   const t = useTranslations("onboarding.chooseBusiness");
 
   return (
@@ -27,10 +27,10 @@ export function LocationRadioItem({ location, selected, ownerName }: LocationRad
             <Building2 className="h-4 w-4 text-primary" />
           </div>
           <span className="font-semibold text-lg">{location.name}</span>
-          {ownerName && (
+          {isOwned && (
             <Badge variant="secondary" className="gap-1 text-xs">
               <ShieldCheck className="h-3 w-3" />
-              {t("managedBy", { name: ownerName })}
+              {t("alreadyManaged")}
             </Badge>
           )}
         </div>

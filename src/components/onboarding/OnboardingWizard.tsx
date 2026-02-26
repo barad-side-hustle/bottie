@@ -65,7 +65,6 @@ export function OnboardingWizard({
   const [locationData, setLocationData] = useState<Location | null>(location);
   const [isExistingLocation, setIsExistingLocation] = useState(false);
   const [alreadyOwnedInfo, setAlreadyOwnedInfo] = useState<{
-    ownerName: string;
     locationId: string;
     locationName: string;
     requestSent: boolean;
@@ -148,7 +147,6 @@ export function OnboardingWizard({
 
       if ("alreadyOwned" in result && result.alreadyOwned) {
         setAlreadyOwnedInfo({
-          ownerName: result.ownerName,
           locationId: result.locationId,
           locationName: selectedLocation.name,
           requestSent: false,

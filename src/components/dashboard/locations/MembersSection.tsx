@@ -6,9 +6,15 @@ import { sileo } from "sileo";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  DashboardCard,
+  DashboardCardHeader,
+  DashboardCardTitle,
+  DashboardCardDescription,
+  DashboardCardContent,
+} from "@/components/ui/dashboard-card";
 import { Input } from "@/components/ui/input";
-import { Crown, Shield, UserMinus, Check, X, Send, Trash2, Mail } from "lucide-react";
+import { Crown, Shield, Users, UserMinus, Check, X, Send, Trash2, Mail, UserPlus, ClipboardList } from "lucide-react";
 import type { LocationMemberWithUser } from "@/lib/db/repositories/location-members.repository";
 import type { AccessRequestWithRequester } from "@/lib/db/repositories/location-access-requests.repository";
 import type { LocationInvitation } from "@/lib/db/schema";
@@ -49,6 +55,12 @@ export function MembersSection({
   const [loadingActions, setLoadingActions] = useState<Record<string, boolean>>({});
 
   const isOwner = currentUserRole === "owner";
+
+  const sortedMembers = [...members].sort((a, b) => {
+    if (a.userId === currentUserId) return -1;
+    if (b.userId === currentUserId) return 1;
+    return 0;
+  });
 
   const setLoading = (id: string, loading: boolean) => {
     setLoadingActions((prev) => ({ ...prev, [id]: loading }));
@@ -143,13 +155,13 @@ export function MembersSection({
 
   return (
     <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>{t("title")}</CardTitle>
-          <CardDescription>{t("description")}</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {members.map((member) => (
+      <DashboardCard>
+        <DashboardCardHeader>
+          <DashboardCardTitle icon={<Users className="h-5 w-5" />}>{t("title")}</DashboardCardTitle>
+          <DashboardCardDescription>{t("description")}</DashboardCardDescription>
+        </DashboardCardHeader>
+        <DashboardCardContent className="space-y-4">
+          {sortedMembers.map((member) => (
             <div key={member.id} className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-3 min-w-0">
                 <Avatar className="h-9 w-9">
@@ -157,14 +169,7 @@ export function MembersSection({
                   <AvatarFallback className="text-xs">{getInitials(member.user.name)}</AvatarFallback>
                 </Avatar>
                 <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <p className="text-sm font-medium truncate">{member.user.name}</p>
-                    {member.userId === currentUserId && (
-                      <Badge variant="outline" className="text-[10px] px-1.5 py-0">
-                        {t("you")}
-                      </Badge>
-                    )}
-                  </div>
+                  <p className="text-sm font-medium truncate">{member.user.name}</p>
                   <p className="text-xs text-muted-foreground truncate">{member.user.email}</p>
                 </div>
               </div>
@@ -188,16 +193,16 @@ export function MembersSection({
               </div>
             </div>
           ))}
-        </CardContent>
-      </Card>
+        </DashboardCardContent>
+      </DashboardCard>
 
       {isOwner && requests.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("pendingRequests")}</CardTitle>
-            <CardDescription>{t("pendingRequestsDescription")}</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <DashboardCard>
+          <DashboardCardHeader>
+            <DashboardCardTitle icon={<ClipboardList className="h-5 w-5" />}>{t("pendingRequests")}</DashboardCardTitle>
+            <DashboardCardDescription>{t("pendingRequestsDescription")}</DashboardCardDescription>
+          </DashboardCardHeader>
+          <DashboardCardContent className="space-y-4">
             {requests.map((request) => (
               <div key={request.id} className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3 min-w-0">
@@ -240,16 +245,16 @@ export function MembersSection({
                 </div>
               </div>
             ))}
-          </CardContent>
-        </Card>
+          </DashboardCardContent>
+        </DashboardCard>
       )}
 
       {isOwner && invitations.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("pendingInvitations")}</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
+        <DashboardCard>
+          <DashboardCardHeader>
+            <DashboardCardTitle icon={<Mail className="h-5 w-5" />}>{t("pendingInvitations")}</DashboardCardTitle>
+          </DashboardCardHeader>
+          <DashboardCardContent className="space-y-3">
             {invitations.map((invitation) => (
               <div key={invitation.id} className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3 min-w-0">
@@ -272,17 +277,17 @@ export function MembersSection({
                 </Button>
               </div>
             ))}
-          </CardContent>
-        </Card>
+          </DashboardCardContent>
+        </DashboardCard>
       )}
 
       {isOwner && (
-        <Card>
-          <CardHeader>
-            <CardTitle>{t("inviteTitle")}</CardTitle>
-            <CardDescription>{t("inviteDescription")}</CardDescription>
-          </CardHeader>
-          <CardContent>
+        <DashboardCard>
+          <DashboardCardHeader>
+            <DashboardCardTitle icon={<UserPlus className="h-5 w-5" />}>{t("inviteTitle")}</DashboardCardTitle>
+            <DashboardCardDescription>{t("inviteDescription")}</DashboardCardDescription>
+          </DashboardCardHeader>
+          <DashboardCardContent>
             <div className="flex gap-2">
               <Input
                 type="email"
@@ -297,8 +302,8 @@ export function MembersSection({
                 {t("inviteButton")}
               </Button>
             </div>
-          </CardContent>
-        </Card>
+          </DashboardCardContent>
+        </DashboardCard>
       )}
     </div>
   );

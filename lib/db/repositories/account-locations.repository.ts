@@ -14,16 +14,20 @@ import { LocationMembersRepository } from "./location-members.repository";
 export type { AccountLocation };
 
 export class AccountLocationsRepository {
+  private accessVerified: boolean | null = null;
+
   constructor(
     private userId: string,
     private accountId: string
   ) {}
 
   private async verifyAccess(): Promise<boolean> {
+    if (this.accessVerified !== null) return this.accessVerified;
     const access = await db.query.userAccounts.findFirst({
       where: and(eq(userAccounts.userId, this.userId), eq(userAccounts.accountId, this.accountId)),
     });
-    return !!access;
+    this.accessVerified = !!access;
+    return this.accessVerified;
   }
 
   async get(accountLocationId: string): Promise<AccountLocation | null> {
@@ -180,74 +184,76 @@ export class AccountLocationsRepository {
         isNew: boolean;
         alreadyOwned?: false;
       }
-    | { alreadyOwned: true; ownerName: string; locationId: string }
+    | { alreadyOwned: true; locationId: string }
   > {
     if (!(await this.verifyAccess())) throw new NotFoundError("Access denied");
 
-    const membersRepo = new LocationMembersRepository();
+    return await db.transaction(async (tx) => {
+      const membersRepo = new LocationMembersRepository();
 
-    let location = await db.query.locations.findFirst({
-      where: eq(locations.googleLocationId, googleLocationId),
-    });
+      let location = await tx.query.locations.findFirst({
+        where: eq(locations.googleLocationId, googleLocationId),
+      });
 
-    let isNew = false;
-    let locationIsNew = false;
+      let isNew = false;
+      let locationIsNew = false;
 
-    if (!location) {
-      const [newLocation] = await db
-        .insert(locations)
-        .values({
-          googleLocationId,
-          ...locationData,
-        })
-        .returning();
-      location = newLocation;
-      isNew = true;
-      locationIsNew = true;
-    } else {
-      const ownership = await membersRepo.isLocationOwnedByGoogleId(googleLocationId);
-      if (ownership.owned) {
-        const currentUserMember = await membersRepo.getMember(location.id, this.userId);
-        if (!currentUserMember) {
-          return { alreadyOwned: true, ownerName: ownership.ownerName!, locationId: location.id };
+      if (!location) {
+        const [newLocation] = await tx
+          .insert(locations)
+          .values({
+            googleLocationId,
+            ...locationData,
+          })
+          .returning();
+        location = newLocation;
+        isNew = true;
+        locationIsNew = true;
+      } else {
+        const ownership = await membersRepo.isLocationOwnedByGoogleId(googleLocationId, tx);
+        if (ownership.owned) {
+          const currentUserMember = await membersRepo.getMember(location.id, this.userId, tx);
+          if (!currentUserMember) {
+            return { alreadyOwned: true, locationId: location.id };
+          }
         }
       }
-    }
 
-    if (locationIsNew) {
-      await membersRepo.addMember(location.id, this.userId, "owner");
-    } else {
-      const existingOwner = await membersRepo.getOwner(location.id);
-      if (!existingOwner) {
-        await membersRepo.addMember(location.id, this.userId, "owner");
+      if (locationIsNew) {
+        await membersRepo.addMember(location.id, this.userId, "owner", undefined, tx);
+      } else {
+        const existingOwner = await membersRepo.getOwner(location.id, tx);
+        if (!existingOwner) {
+          await membersRepo.addMember(location.id, this.userId, "owner", undefined, tx);
+        }
       }
-    }
 
-    let accountLocation = await db.query.accountLocations.findFirst({
-      where: and(eq(accountLocations.accountId, this.accountId), eq(accountLocations.locationId, location.id)),
+      let accountLocation = await tx.query.accountLocations.findFirst({
+        where: and(eq(accountLocations.accountId, this.accountId), eq(accountLocations.locationId, location.id)),
+      });
+
+      if (!accountLocation) {
+        const [newAccountLocation] = await tx
+          .insert(accountLocations)
+          .values({
+            accountId: this.accountId,
+            locationId: location.id,
+            googleBusinessId,
+            connected: true,
+          })
+          .returning();
+        accountLocation = newAccountLocation;
+        isNew = true;
+      } else if (!accountLocation.connected) {
+        const [reconnected] = await tx
+          .update(accountLocations)
+          .set({ connected: true, connectedAt: new Date() })
+          .where(eq(accountLocations.id, accountLocation.id))
+          .returning();
+        accountLocation = reconnected;
+      }
+
+      return { accountLocation, location, isNew };
     });
-
-    if (!accountLocation) {
-      const [newAccountLocation] = await db
-        .insert(accountLocations)
-        .values({
-          accountId: this.accountId,
-          locationId: location.id,
-          googleBusinessId,
-          connected: true,
-        })
-        .returning();
-      accountLocation = newAccountLocation;
-      isNew = true;
-    } else if (!accountLocation.connected) {
-      const [reconnected] = await db
-        .update(accountLocations)
-        .set({ connected: true, connectedAt: new Date() })
-        .where(eq(accountLocations.id, accountLocation.id))
-        .returning();
-      accountLocation = reconnected;
-    }
-
-    return { accountLocation, location, isNew };
   }
 }

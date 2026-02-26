@@ -3,13 +3,16 @@ import { db } from "@/lib/db/client";
 import { locationMembers, locations, type LocationMember } from "@/lib/db/schema";
 import { user as userTable } from "@/lib/db/schema/auth.schema";
 
+type TransactionClient = Parameters<Parameters<typeof db.transaction>[0]>[0];
+export type DbClient = typeof db | TransactionClient;
+
 export interface LocationMemberWithUser extends LocationMember {
   user: { id: string; name: string; email: string; image: string | null };
 }
 
 export class LocationMembersRepository {
-  async getMembers(locationId: string): Promise<LocationMemberWithUser[]> {
-    const results = await db
+  async getMembers(locationId: string, txClient: DbClient = db): Promise<LocationMemberWithUser[]> {
+    const results = await txClient
       .select({
         id: locationMembers.id,
         userId: locationMembers.userId,
@@ -37,8 +40,8 @@ export class LocationMembersRepository {
     }));
   }
 
-  async getMember(locationId: string, userId: string): Promise<LocationMember | null> {
-    const result = await db.query.locationMembers.findFirst({
+  async getMember(locationId: string, userId: string, txClient: DbClient = db): Promise<LocationMember | null> {
+    const result = await txClient.query.locationMembers.findFirst({
       where: and(eq(locationMembers.locationId, locationId), eq(locationMembers.userId, userId)),
     });
     return result ?? null;
@@ -48,14 +51,22 @@ export class LocationMembersRepository {
     locationId: string,
     userId: string,
     role: "owner" | "admin",
-    invitedBy?: string
+    invitedBy?: string,
+    txClient: DbClient = db
   ): Promise<LocationMember> {
-    const [member] = await db
+    const [member] = await txClient
       .insert(locationMembers)
       .values({ locationId, userId, role, invitedBy: invitedBy ?? null })
       .onConflictDoNothing()
       .returning();
-    return member;
+
+    if (member) return member;
+
+    const existing = await txClient.query.locationMembers.findFirst({
+      where: and(eq(locationMembers.locationId, locationId), eq(locationMembers.userId, userId)),
+    });
+    if (!existing) throw new Error("Failed to add member: conflict but record not found");
+    return existing;
   }
 
   async updateRole(locationId: string, userId: string, role: "owner" | "admin"): Promise<LocationMember> {
@@ -73,8 +84,8 @@ export class LocationMembersRepository {
       .where(and(eq(locationMembers.locationId, locationId), eq(locationMembers.userId, userId)));
   }
 
-  async getOwner(locationId: string): Promise<LocationMember | null> {
-    const result = await db.query.locationMembers.findFirst({
+  async getOwner(locationId: string, txClient: DbClient = db): Promise<LocationMember | null> {
+    const result = await txClient.query.locationMembers.findFirst({
       where: and(eq(locationMembers.locationId, locationId), eq(locationMembers.role, "owner")),
     });
     return result ?? null;
@@ -87,19 +98,17 @@ export class LocationMembersRepository {
     return !!result;
   }
 
-  async isLocationOwnedByGoogleId(googleLocationId: string): Promise<{ owned: boolean; ownerName?: string }> {
-    const result = await db
+  async isLocationOwnedByGoogleId(googleLocationId: string, txClient: DbClient = db): Promise<{ owned: boolean }> {
+    const result = await txClient
       .select({
-        ownerName: userTable.name,
+        id: locationMembers.id,
       })
       .from(locationMembers)
       .innerJoin(locations, eq(locations.id, locationMembers.locationId))
-      .innerJoin(userTable, eq(userTable.id, locationMembers.userId))
       .where(and(eq(locations.googleLocationId, googleLocationId), eq(locationMembers.role, "owner")))
       .limit(1);
 
-    if (result.length === 0) return { owned: false };
-    return { owned: true, ownerName: result[0].ownerName };
+    return { owned: result.length > 0 };
   }
 
   async countOwners(locationId: string): Promise<number> {

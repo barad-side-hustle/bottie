@@ -14,8 +14,8 @@ vi.mock("./location-members.repository", () => {
   };
 });
 
-vi.mock("@/lib/db/client", () => ({
-  db: {
+vi.mock("@/lib/db/client", () => {
+  const dbMock: Record<string, unknown> = {
     query: {
       userAccounts: {
         findFirst: vi.fn(),
@@ -31,8 +31,12 @@ vi.mock("@/lib/db/client", () => ({
     insert: vi.fn().mockReturnThis(),
     update: vi.fn().mockReturnThis(),
     delete: vi.fn().mockReturnThis(),
-  },
-}));
+    transaction: vi
+      .fn()
+      .mockImplementation(async (callback: (tx: Record<string, unknown>) => unknown) => callback(dbMock)),
+  };
+  return { db: dbMock };
+});
 
 vi.mock("drizzle-orm", async (importOriginal) => {
   const actual = await importOriginal();

@@ -76,7 +76,7 @@ export const checkLocationsOwnership = createSafeAction(
   }),
   async ({ googleLocationIds }) => {
     const membersRepo = new LocationMembersRepository();
-    const results: Record<string, { owned: boolean; ownerName?: string }> = {};
+    const results: Record<string, { owned: boolean }> = {};
 
     for (const googleLocationId of googleLocationIds) {
       results[googleLocationId] = await membersRepo.isLocationOwnedByGoogleId(googleLocationId);

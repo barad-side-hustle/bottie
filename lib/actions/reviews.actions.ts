@@ -1,5 +1,6 @@
 "use server";
 
+import { cache } from "react";
 import { ReviewsController } from "@/lib/controllers/reviews.controller";
 import { createSafeAction } from "./safe-action";
 import { findLocationOwner } from "@/lib/utils/find-location-owner";
@@ -50,11 +51,11 @@ const SetFeedbackSchema = ContextSchema.extend({
   comment: z.string().max(500).optional(),
 });
 
-async function resolveAccountId(locationId: string): Promise<string> {
+const resolveAccountId = cache(async (locationId: string): Promise<string> => {
   const owner = await findLocationOwner(locationId);
   if (!owner) throw new Error("No owner found for location");
   return owner.accountId;
-}
+});
 
 export const getReviews = createSafeAction(GetReviewsSchema, async ({ locationId, filters }, { userId }) => {
   const accountId = await resolveAccountId(locationId);

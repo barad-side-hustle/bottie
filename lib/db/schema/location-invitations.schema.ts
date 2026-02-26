@@ -16,7 +16,7 @@ export const locationInvitations = pgTable(
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
     token: text("token").notNull().unique(),
-    status: text("status").$type<"pending" | "accepted" | "expired">().notNull().default("pending"),
+    status: text("status").$type<"pending" | "accepted" | "expired" | "cancelled">().notNull().default("pending"),
     expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },

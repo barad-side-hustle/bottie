@@ -2,6 +2,7 @@ import { eq, and, sql } from "drizzle-orm";
 import { db } from "@/lib/db/client";
 import { locationAccessRequests, locationMembers, locations, type LocationAccessRequest } from "@/lib/db/schema";
 import { user as userTable } from "@/lib/db/schema/auth.schema";
+import type { DbClient } from "./location-members.repository";
 
 export interface AccessRequestWithRequester extends LocationAccessRequest {
   requester: { id: string; name: string; email: string; image: string | null };
@@ -69,22 +70,22 @@ export class LocationAccessRequestsRepository {
     return result?.count ?? 0;
   }
 
-  async approve(requestId: string, reviewedBy: string): Promise<LocationAccessRequest> {
-    const [updated] = await db
+  async approve(requestId: string, reviewedBy: string, txClient: DbClient = db): Promise<LocationAccessRequest | null> {
+    const [updated] = await txClient
       .update(locationAccessRequests)
       .set({ status: "approved", reviewedBy, reviewedAt: new Date() })
-      .where(eq(locationAccessRequests.id, requestId))
+      .where(and(eq(locationAccessRequests.id, requestId), eq(locationAccessRequests.status, "pending")))
       .returning();
-    return updated;
+    return updated ?? null;
   }
 
-  async reject(requestId: string, reviewedBy: string): Promise<LocationAccessRequest> {
-    const [updated] = await db
+  async reject(requestId: string, reviewedBy: string, txClient: DbClient = db): Promise<LocationAccessRequest | null> {
+    const [updated] = await txClient
       .update(locationAccessRequests)
       .set({ status: "rejected", reviewedBy, reviewedAt: new Date() })
-      .where(eq(locationAccessRequests.id, requestId))
+      .where(and(eq(locationAccessRequests.id, requestId), eq(locationAccessRequests.status, "pending")))
       .returning();
-    return updated;
+    return updated ?? null;
   }
 
   async getById(requestId: string): Promise<LocationAccessRequest | null> {

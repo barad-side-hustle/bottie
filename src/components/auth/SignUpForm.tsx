@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "@/i18n/routing";
+import { useSearchParams } from "next/navigation";
 import { useTranslations, useLocale } from "next-intl";
 import { useAuthError } from "@/hooks/use-auth-error";
 
@@ -30,6 +31,8 @@ export function SignUpForm() {
   const [loading, setLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const searchParams = useSearchParams();
+  const callbackURL = searchParams.get("callbackURL") || `/${locale}/dashboard/home`;
 
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true);
@@ -37,7 +40,7 @@ export function SignUpForm() {
 
     const { error } = await authClient.signIn.social({
       provider: "google",
-      callbackURL: `/${locale}/dashboard/home`,
+      callbackURL,
     });
 
     if (error) {
@@ -80,7 +83,13 @@ export function SignUpForm() {
               <DashboardCardDescription>{t("checkEmailDescription", { email })}</DashboardCardDescription>
             </DashboardCardHeader>
             <DashboardCardContent>
-              <Link href="/login">
+              <Link
+                href={
+                  callbackURL !== `/${locale}/dashboard/home`
+                    ? `/login?callbackURL=${encodeURIComponent(callbackURL)}`
+                    : "/login"
+                }
+              >
                 <Button variant="outline" className="w-full cursor-pointer">
                   {t("goToSignIn")}
                 </Button>
@@ -168,7 +177,14 @@ export function SignUpForm() {
 
             <p className="text-muted-foreground text-center text-sm">
               {t("hasAccount")}{" "}
-              <Link href="/login" className="text-primary hover:underline">
+              <Link
+                href={
+                  callbackURL !== `/${locale}/dashboard/home`
+                    ? `/login?callbackURL=${encodeURIComponent(callbackURL)}`
+                    : "/login"
+                }
+                className="text-primary hover:underline"
+              >
                 {t("signInLink")}
               </Link>
             </p>

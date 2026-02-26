@@ -1,6 +1,6 @@
 import { eq, and } from "drizzle-orm";
 import { db } from "@/lib/db/client";
-import { accountLocations, locationMembers } from "@/lib/db/schema";
+import { accountLocations, locationMembers, userAccounts } from "@/lib/db/schema";
 
 interface LocationOwner {
   userId: string;
@@ -13,60 +13,27 @@ export async function findLocationOwner(locationId: string): Promise<LocationOwn
     where: and(eq(locationMembers.locationId, locationId), eq(locationMembers.role, "owner")),
   });
 
-  if (memberOwner) {
-    const connection = await db.query.accountLocations.findFirst({
-      where: and(eq(accountLocations.locationId, locationId), eq(accountLocations.connected, true)),
-      with: {
-        account: {
-          with: {
-            userAccounts: true,
-          },
-        },
-      },
-    });
-
-    if (connection) {
-      return {
-        userId: memberOwner.userId,
-        accountId: connection.accountId,
-        accountLocationId: connection.id,
-      };
-    }
-  }
-
-  const connections = await db.query.accountLocations.findMany({
-    where: eq(accountLocations.locationId, locationId),
-    with: {
-      account: {
-        with: {
-          userAccounts: true,
-        },
-      },
-    },
+  const connection = await db.query.accountLocations.findFirst({
+    where: and(eq(accountLocations.locationId, locationId), eq(accountLocations.connected, true)),
   });
 
-  if (!connections || connections.length === 0) {
-    return null;
+  if (memberOwner && connection) {
+    return {
+      userId: memberOwner.userId,
+      accountId: connection.accountId,
+      accountLocationId: connection.id,
+    };
   }
 
-  const connectedAccounts = connections.filter((ac) => ac.connected);
-  const accountsToCheck = connectedAccounts.length > 0 ? connectedAccounts : connections;
-
-  for (const accountLocation of accountsToCheck) {
-    const ownerUser = accountLocation.account.userAccounts
-      .filter((ua) => ua.role === "owner")
-      .sort((a, b) => {
-        const dateA = a.addedAt ? new Date(a.addedAt).getTime() : 0;
-        const dateB = b.addedAt ? new Date(b.addedAt).getTime() : 0;
-        if (dateA !== dateB) return dateA - dateB;
-        return a.userId.localeCompare(b.userId);
-      })[0];
-
-    if (ownerUser) {
+  if (connection) {
+    const userAccount = await db.query.userAccounts.findFirst({
+      where: eq(userAccounts.accountId, connection.accountId),
+    });
+    if (userAccount) {
       return {
-        userId: ownerUser.userId,
-        accountId: accountLocation.accountId,
-        accountLocationId: accountLocation.id,
+        userId: userAccount.userId,
+        accountId: connection.accountId,
+        accountLocationId: connection.id,
       };
     }
   }

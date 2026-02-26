@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link, useRouter } from "@/i18n/routing";
+import { useSearchParams } from "next/navigation";
 import { sileo } from "sileo";
 import { useTranslations } from "next-intl";
 import { useAuthError } from "@/hooks/use-auth-error";
@@ -31,6 +32,8 @@ export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const callbackURL = searchParams.get("callbackURL") || `/${locale}/dashboard/home`;
 
   const handleGoogleSignIn = async () => {
     setIsGoogleLoading(true);
@@ -38,7 +41,7 @@ export function LoginForm() {
 
     const { error } = await authClient.signIn.social({
       provider: "google",
-      callbackURL: `/${locale}/dashboard/home`,
+      callbackURL,
     });
 
     if (error) {
@@ -63,7 +66,7 @@ export function LoginForm() {
       return;
     }
 
-    router.push("/dashboard/home");
+    router.push(callbackURL);
     router.refresh();
   };
 
@@ -135,7 +138,14 @@ export function LoginForm() {
 
             <p className="text-muted-foreground text-center text-sm">
               {t("noAccount")}{" "}
-              <Link href="/sign-up" className="text-primary hover:underline">
+              <Link
+                href={
+                  callbackURL !== `/${locale}/dashboard/home`
+                    ? `/sign-up?callbackURL=${encodeURIComponent(callbackURL)}`
+                    : "/sign-up"
+                }
+                className="text-primary hover:underline"
+              >
                 {t("signUpLink")}
               </Link>
             </p>

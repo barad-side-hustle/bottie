@@ -27,7 +27,7 @@ export class AccountLocationsController {
     data: LocationCreate
   ): Promise<
     | { accountLocation: AccountLocation; location: Location; isNew: boolean; alreadyOwned?: false }
-    | { alreadyOwned: true; ownerName: string; locationId: string }
+    | { alreadyOwned: true; locationId: string }
   > {
     return this.repository.findOrCreate(data.googleBusinessId, data.googleLocationId, {
       name: data.name,
