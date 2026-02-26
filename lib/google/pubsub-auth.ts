@@ -4,10 +4,6 @@ export async function verifyPubSubToken(
   authHeader: string | null,
   expectedAudience: string
 ): Promise<{ valid: boolean; email?: string; error?: string }> {
-  console.log("🔐 Starting Pub/Sub token verification");
-  console.log("Expected audience:", expectedAudience);
-  console.log("NEXT_PUBLIC_APP_URL:", process.env.NEXT_PUBLIC_APP_URL);
-
   if (process.env.SKIP_PUBSUB_VERIFICATION === "true" || process.env.NODE_ENV === "development") {
     console.warn("⚠️ Skipping Pub/Sub token verification (SKIP_PUBSUB_VERIFICATION=true or NODE_ENV=development)");
     return { valid: true, email: "skipped-verification@example.com" };
@@ -37,11 +33,6 @@ export async function verifyPubSubToken(
     if (!payload) {
       return { valid: false, error: "Token payload is empty" };
     }
-
-    console.log("✅ Token verified successfully");
-    console.log("Token audience (aud):", payload.aud);
-    console.log("Token issuer (iss):", payload.iss);
-    console.log("Token email:", payload.email);
 
     const validIssuers = ["accounts.google.com", "https://accounts.google.com"];
     if (!validIssuers.includes(payload.iss)) {

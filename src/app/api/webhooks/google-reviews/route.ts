@@ -44,14 +44,12 @@ async function findLocationByGoogleBusinessId(googleBusinessId: string): Promise
       return null;
     }
 
-    console.log("Searching for location with googleLocationId", locationId);
-
     const location = await db.query.locations.findFirst({
       where: eq(locations.googleLocationId, locationId),
     });
 
     if (!location) {
-      console.error("No location found for googleLocationId", locationId);
+      console.log("Skipping untracked location:", locationId);
       return null;
     }
 
@@ -131,22 +129,17 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized", details: verificationResult.error }, { status: 401 });
     }
 
-    console.log("Pub/Sub authentication successful:", {
-      serviceAccount: verificationResult.email,
-    });
-
     const body = (await request.json()) as PubSubMessage;
-
-    console.log("Received Pub/Sub notification:", {
-      messageId: body.message.messageId,
-      publishTime: body.message.publishTime,
-    });
 
     const messageData = body.message.data;
     const notificationJson = Buffer.from(messageData, "base64").toString("utf-8");
     const notification: PubSubNotificationData = JSON.parse(notificationJson);
 
-    console.log("Parsed notification:", notification);
+    console.log("Webhook received:", {
+      messageId: body.message.messageId,
+      type: notification.type,
+      location: notification.location,
+    });
 
     const { type: notificationType, review: reviewName, location: locationName } = notification;
 
@@ -157,8 +150,8 @@ export async function POST(request: NextRequest) {
 
     const locationData = await findLocationByGoogleBusinessId(locationName);
     if (!locationData) {
-      console.error("Location not found for:", locationName);
-      return NextResponse.json({ error: "Location not found" }, { status: 404 });
+      console.log("Notification ignored: untracked location", locationName);
+      return NextResponse.json({ message: "Location not tracked" }, { status: 200 });
     }
 
     const { userId, accountId, location, accountLocationId } = locationData;
