@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
-import { and, eq, or, sql } from "drizzle-orm";
+import { and, eq, gte, lt, or, sql } from "drizzle-orm";
 import { db } from "@/lib/db/client";
 import { reviews } from "@/lib/db/schema";
 import { ReviewsRepository } from "@/lib/db/repositories/reviews.repository";
@@ -28,8 +28,10 @@ export async function GET(req: NextRequest) {
   }
 
   try {
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
     const pendingWithDraft = and(
       eq(reviews.replyStatus, "pending"),
+      gte(reviews.receivedAt, sevenDaysAgo),
       sql`EXISTS (
         SELECT 1 FROM review_responses rr
         WHERE rr.review_id = ${reviews.id}
@@ -37,7 +39,12 @@ export async function GET(req: NextRequest) {
       )`
     );
 
-    const failedPosting = and(eq(reviews.replyStatus, "failed"), eq(reviews.failureReason, "posting"));
+    const maxRetries = 5;
+    const failedPosting = and(
+      eq(reviews.replyStatus, "failed"),
+      eq(reviews.failureReason, "posting"),
+      lt(reviews.retryCount, maxRetries)
+    );
 
     const reviewsToPost = await db
       .select()
@@ -112,7 +119,11 @@ export async function GET(req: NextRequest) {
         if (!encryptedToken) {
           console.error("Cannot auto-post: no refresh token", { reviewId: review.id });
           const reviewsRepo = new ReviewsRepository(userId, review.locationId);
-          await reviewsRepo.update(review.id, { replyStatus: "failed", failureReason: "posting" });
+          await reviewsRepo.update(review.id, {
+            replyStatus: "failed",
+            failureReason: "posting",
+            retryCount: (review.retryCount ?? 0) + 1,
+          });
           failed++;
           continue;
         }
@@ -131,7 +142,11 @@ export async function GET(req: NextRequest) {
           }
           console.error("Failed to post reply", { reviewId: review.id, error });
           const reviewsRepo = new ReviewsRepository(userId, review.locationId);
-          await reviewsRepo.update(review.id, { replyStatus: "failed", failureReason: "posting" });
+          await reviewsRepo.update(review.id, {
+            replyStatus: "failed",
+            failureReason: "posting",
+            retryCount: (review.retryCount ?? 0) + 1,
+          });
           errors.push({ reviewId: review.id, error: "Posting failed" });
           failed++;
         }

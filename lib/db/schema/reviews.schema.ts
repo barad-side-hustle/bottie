@@ -26,6 +26,7 @@ export const reviews = pgTable(
 
     replyStatus: text("reply_status").$type<ReplyStatus>().notNull().default("pending"),
     failureReason: text("failure_reason").$type<FailureReason>(),
+    retryCount: integer("retry_count").notNull().default(0),
 
     consumesQuota: boolean("consumes_quota").notNull().default(true),
 

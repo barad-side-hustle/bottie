@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const hasResponse = and(
-      inArray(reviews.replyStatus, ["pending", "posted"]),
+      eq(reviews.replyStatus, "posted"),
       sql`EXISTS (
         SELECT 1 FROM review_responses rr
         WHERE rr.review_id = ${reviews.id}

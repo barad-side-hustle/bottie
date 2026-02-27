@@ -218,5 +218,5 @@ ReviewNotificationEmail.PreviewProps = {
   reviewText: "Excellent! Highly recommended",
   aiReply: "Thank you so much for the great feedback!",
   status: "pending",
-  reviewPageUrl: "https://bottie.ai/en/dashboard/locations/456/reviews/789",
+  reviewPageUrl: "https://bottie.ai/dashboard/locations/456/reviews/789",
 } as ReviewNotificationEmailProps;

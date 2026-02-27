@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
-import { and, eq, or, sql } from "drizzle-orm";
+import { and, eq, lt, or, sql } from "drizzle-orm";
 import { db } from "@/lib/db/client";
 import { reviews } from "@/lib/db/schema";
 import { ReviewsRepository } from "@/lib/db/repositories/reviews.repository";
@@ -36,8 +36,17 @@ export async function GET(req: NextRequest) {
       )`
     );
 
-    const failedGeneration = and(eq(reviews.replyStatus, "failed"), eq(reviews.failureReason, "generation"));
-    const failedQuota = and(eq(reviews.replyStatus, "failed"), eq(reviews.failureReason, "quota"));
+    const maxRetries = 5;
+    const failedGeneration = and(
+      eq(reviews.replyStatus, "failed"),
+      eq(reviews.failureReason, "generation"),
+      lt(reviews.retryCount, maxRetries)
+    );
+    const failedQuota = and(
+      eq(reviews.replyStatus, "failed"),
+      eq(reviews.failureReason, "quota"),
+      lt(reviews.retryCount, maxRetries)
+    );
 
     const reviewsToProcess = await db
       .select()
@@ -61,7 +70,7 @@ export async function GET(req: NextRequest) {
       | {
           userId: string;
           accountId: string;
-          quotaAllowed: boolean;
+          remainingQuota: number;
         }
       | "skip"
     >();
@@ -82,10 +91,11 @@ export async function GET(req: NextRequest) {
             } else {
               const subscriptionsController = new SubscriptionsController();
               const quotaCheck = await subscriptionsController.checkLocationQuota(review.locationId);
+              const remainingQuota = quotaCheck.limit === -1 ? Infinity : quotaCheck.limit - quotaCheck.currentCount;
               locationCache.set(review.locationId, {
                 userId: owner.userId,
                 accountId: owner.accountId,
-                quotaAllowed: quotaCheck.allowed,
+                remainingQuota,
               });
             }
           }
@@ -98,12 +108,16 @@ export async function GET(req: NextRequest) {
           continue;
         }
 
-        const { userId, accountId, quotaAllowed } = cached;
+        const { userId, accountId } = cached;
 
-        if (!quotaAllowed) {
+        if (review.consumesQuota && cached.remainingQuota <= 0) {
           const reviewsRepo = new ReviewsRepository(userId, review.locationId);
           console.log("Quota exceeded, skipping", { reviewId: review.id, locationId: review.locationId });
-          await reviewsRepo.update(review.id, { replyStatus: "failed", failureReason: "quota" });
+          await reviewsRepo.update(review.id, {
+            replyStatus: "failed",
+            failureReason: "quota",
+            retryCount: (review.retryCount ?? 0) + 1,
+          });
           failed++;
           continue;
         }
@@ -113,14 +127,24 @@ export async function GET(req: NextRequest) {
         console.log("Generating AI reply", { reviewId: review.id });
         try {
           await reviewsController.generateReply(review.id);
+          const reviewsRepo = new ReviewsRepository(userId, review.locationId);
+          await reviewsRepo.update(review.id, { replyStatus: "pending", failureReason: null, retryCount: 0 });
           console.log("AI reply generated", { reviewId: review.id });
         } catch (error) {
           console.error("Failed to generate AI reply", { reviewId: review.id, error });
           const reviewsRepo = new ReviewsRepository(userId, review.locationId);
-          await reviewsRepo.update(review.id, { replyStatus: "failed", failureReason: "generation" });
+          await reviewsRepo.update(review.id, {
+            replyStatus: "failed",
+            failureReason: "generation",
+            retryCount: (review.retryCount ?? 0) + 1,
+          });
           errors.push({ reviewId: review.id, error: "Generation failed" });
           failed++;
           continue;
+        }
+
+        if (review.consumesQuota) {
+          cached.remainingQuota--;
         }
 
         processed++;
