@@ -37,11 +37,12 @@ export async function GET(req: NextRequest) {
     );
 
     const failedGeneration = and(eq(reviews.replyStatus, "failed"), eq(reviews.failureReason, "generation"));
+    const failedQuota = and(eq(reviews.replyStatus, "failed"), eq(reviews.failureReason, "quota"));
 
     const reviewsToProcess = await db
       .select()
       .from(reviews)
-      .where(or(pendingWithNoDraft, failedGeneration))
+      .where(or(pendingWithNoDraft, failedGeneration, failedQuota))
       .orderBy(reviews.receivedAt)
       .limit(100);
 
