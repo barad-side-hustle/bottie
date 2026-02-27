@@ -112,6 +112,12 @@ export class ReviewsController {
       type: "ai_generated",
     });
 
+    await this.repository.update(reviewId, {
+      replyStatus: "pending",
+      failureReason: null,
+      retryCount: 0,
+    });
+
     const updatedReview = await this.getReview(reviewId);
 
     return {

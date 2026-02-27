@@ -1,6 +1,7 @@
 import { eq, and, gte, lte, sql, count, avg, isNotNull, desc } from "drizzle-orm";
 import { db } from "@/lib/db/client";
-import { reviews, accountLocations, userAccounts } from "@/lib/db/schema";
+import { reviews } from "@/lib/db/schema";
+import { createLocationAccessCondition } from "./access-conditions";
 import type {
   ClassificationStats,
   CategoryCount,
@@ -17,12 +18,7 @@ export class InsightsRepository {
   ) {}
 
   private getAccessCondition() {
-    return sql`EXISTS (
-      SELECT 1 FROM ${accountLocations} al
-      INNER JOIN ${userAccounts} ua ON ua.account_id = al.account_id
-      WHERE al.location_id = ${this.locationId}
-      AND ua.user_id = ${this.userId}
-    )`;
+    return createLocationAccessCondition(this.userId, this.locationId);
   }
 
   private async getClassifiedReviews(dateFrom: Date, dateTo: Date, limit?: number) {

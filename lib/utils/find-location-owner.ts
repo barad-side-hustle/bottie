@@ -15,6 +15,7 @@ export async function findLocationOwner(locationId: string): Promise<LocationOwn
 
   const connection = await db.query.accountLocations.findFirst({
     where: and(eq(accountLocations.locationId, locationId), eq(accountLocations.connected, true)),
+    orderBy: (al, { asc }) => [asc(al.createdAt)],
   });
 
   if (memberOwner && connection) {

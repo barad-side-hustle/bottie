@@ -127,8 +127,6 @@ export async function GET(req: NextRequest) {
         console.log("Generating AI reply", { reviewId: review.id });
         try {
           await reviewsController.generateReply(review.id);
-          const reviewsRepo = new ReviewsRepository(userId, review.locationId);
-          await reviewsRepo.update(review.id, { replyStatus: "pending", failureReason: null, retryCount: 0 });
           console.log("AI reply generated", { reviewId: review.id });
         } catch (error) {
           console.error("Failed to generate AI reply", { reviewId: review.id, error });
