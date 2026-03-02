@@ -22,6 +22,11 @@
       "title": "Something went wrong!",
       "description": "An error occurred while loading this page.",
       "retry": "Try again"
+    },
+    "pwaInstall": {
+      "title": "Install Bottie.ai",
+      "description": "Add to your home screen for quick access",
+      "install": "Install"
     }
   },
   "errors": {

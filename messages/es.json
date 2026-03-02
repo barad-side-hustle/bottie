@@ -22,6 +22,11 @@
       "title": "Algo salio mal!",
       "description": "Ocurrio un error al cargar esta pagina.",
       "retry": "Intentar de nuevo"
+    },
+    "pwaInstall": {
+      "title": "Instalar Bottie.ai",
+      "description": "Agrega a tu pantalla de inicio para acceso rapido",
+      "install": "Instalar"
     }
   },
   "errors": {

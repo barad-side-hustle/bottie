@@ -22,6 +22,11 @@
       "title": "משהו השתבש!",
       "description": "אירעה שגיאה בטעינת הדף.",
       "retry": "נסה שוב"
+    },
+    "pwaInstall": {
+      "title": "התקן את Bottie.ai",
+      "description": "הוסף למסך הבית לגישה מהירה",
+      "install": "התקן"
     }
   },
   "navigation": {
