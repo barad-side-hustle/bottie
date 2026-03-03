@@ -7,7 +7,6 @@ import { useNavigation } from "@/hooks/use-navigation";
 import { AuthButton } from "@/components/auth/AuthButton";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/contexts/AuthContext";
-import { User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -50,17 +49,9 @@ export function UnifiedNavbar() {
 
       <div className="flex items-center gap-2 shrink-0 pe-2">
         {user ? (
-          <>
-            <Link href="/dashboard/home" className="md:hidden">
-              <Button variant="ghost" size="icon" aria-label={t("auth.dashboard")}>
-                <User className="h-5 w-5" />
-              </Button>
-            </Link>
-
-            <Link href="/dashboard/home" className="hidden md:block">
-              <Button size="sm">{t("auth.dashboard")}</Button>
-            </Link>
-          </>
+          <Link href="/dashboard/home">
+            <Button size="sm">{t("auth.dashboard")}</Button>
+          </Link>
         ) : (
           <AuthButton />
         )}
