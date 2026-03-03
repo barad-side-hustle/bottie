@@ -65,7 +65,7 @@ export async function sendReviewNotifications(params: SendReviewNotificationsPar
 
     const recipientEmail = userData.email;
     const recipientName = userData.name || userData.email;
-    const reviewPageUrl = `${env.NEXT_PUBLIC_APP_URL}/dashboard/locations/${locationId}/reviews/${reviewId}`;
+    const reviewPageUrl = `${env.NEXT_PUBLIC_APP_URL}/en/dashboard/locations/${locationId}/reviews/${reviewId}`;
 
     const statusTextMap = {
       pending: "Pending Approval",
