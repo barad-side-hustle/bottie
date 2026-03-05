@@ -12,7 +12,7 @@ Bottie is a Next.js 16 application that helps businesses manage Google reviews w
 - **AI**: Google Gemini API for reply generation and review classification
 - **Payments**: Polar for usage-based billing
 - **Email**: Resend with React Email templates
-- **i18n**: next-intl (Hebrew/English)
+- **i18n**: next-intl (All supported languages are under messages directory)
 - **Styling**: Tailwind CSS 4, shadcn/UI, Radix UI
 
 ## Requirements

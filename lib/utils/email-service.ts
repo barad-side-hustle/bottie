@@ -2,6 +2,7 @@ import { Resend } from "resend";
 import { ReactElement } from "react";
 import NewUserSignupEmail from "@/lib/emails/new-user-signup";
 import UserWelcomeEmail from "@/lib/emails/user-welcome";
+import ContactFormEmail from "@/lib/emails/contact-form";
 
 interface EmailResult {
   success: boolean;
@@ -36,6 +37,18 @@ const getFromEmail = (): string => {
 
 const getAdminEmail = (): string => {
   return process.env.ADMIN_NOTIFICATION_EMAIL || "alon@bottie.ai";
+};
+
+const getContactRecipients = (): string[] => {
+  const recipients = process.env.CONTACT_FORM_RECIPIENTS;
+  if (recipients) {
+    const parsed = recipients
+      .split(";")
+      .map((e) => e.trim())
+      .filter(Boolean);
+    if (parsed.length > 0) return parsed;
+  }
+  return ["alon710@gmail.com"];
 };
 
 const getAppUrl = (): string => {
@@ -174,4 +187,24 @@ export async function sendUserWelcomeEmail(data: UserWelcomeData): Promise<Email
   }
 
   return result;
+}
+
+interface ContactFormData {
+  email: string;
+  subject: string;
+  message: string;
+}
+
+export async function sendContactFormEmail(data: ContactFormData): Promise<EmailResult> {
+  const { email, subject, message } = data;
+
+  const recipients = getContactRecipients();
+
+  const emailComponent = ContactFormEmail({
+    senderEmail: email,
+    subject,
+    message,
+  });
+
+  return sendEmail(recipients, `Contact Form: ${subject}`, emailComponent, undefined, email);
 }

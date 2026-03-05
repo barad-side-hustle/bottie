@@ -222,7 +222,7 @@
         "name": "Bottie.ai",
         "description": "Advanced AI solution for managing and automating customer review responses. Save time and improve your business reputation.",
         "location": "Tel Aviv, Israel",
-        "email": "alon@bottie.ai"
+        "contact": "Contact Us"
       },
       "product": {
         "title": "Product",
@@ -931,6 +931,37 @@
       "title": "Ready to Save Time on Reviews?",
       "subtitle": "Join businesses already using Bottie.ai to respond to every Google review automatically.",
       "button": "Get Started for Free"
+    }
+  },
+  "contact": {
+    "meta": {
+      "title": "Contact Us - Bottie.ai",
+      "description": "Get in touch with the Bottie.ai team. We're here to help with any questions about our AI-powered review management platform.",
+      "keywords": "contact Bottie, support, help, get in touch, customer service"
+    },
+    "page": {
+      "title": "Contact Us",
+      "description": "Have a question or feedback? We'd love to hear from you. Fill out the form below and we'll get back to you as soon as possible."
+    },
+    "form": {
+      "subject": "Subject",
+      "subjectPlaceholder": "Select a subject",
+      "email": "Your Email",
+      "emailPlaceholder": "you@example.com",
+      "message": "Message",
+      "messagePlaceholder": "Tell us how we can help...",
+      "submit": "Send Message",
+      "submitting": "Sending...",
+      "successTitle": "Message Sent!",
+      "successMessage": "Thank you for reaching out. We'll get back to you shortly.",
+      "error": "Something went wrong. Please try again.",
+      "subjects": {
+        "general": "General Inquiry",
+        "support": "Support Request",
+        "bug": "Bug Report",
+        "feature": "Feature Request",
+        "business": "Business Partnership"
+      }
     }
   },
   "privacy": {

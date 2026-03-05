@@ -222,7 +222,7 @@
         "name": "Bottie.ai",
         "description": "Solucion avanzada de IA para gestionar y automatizar respuestas a resenas de clientes. Ahorra tiempo y mejora la reputacion de tu negocio.",
         "location": "Tel Aviv, Israel",
-        "email": "alon@bottie.ai"
+        "contact": "Contactanos"
       },
       "product": {
         "title": "Producto",
@@ -931,6 +931,37 @@
       "title": "Listo para ahorrar tiempo en resenas?",
       "subtitle": "Unete a los negocios que ya usan Bottie.ai para responder a cada resena de Google automaticamente.",
       "button": "Comienza gratis"
+    }
+  },
+  "contact": {
+    "meta": {
+      "title": "Contactanos - Bottie.ai",
+      "description": "Ponte en contacto con el equipo de Bottie.ai. Estamos aqui para ayudarte con cualquier pregunta sobre nuestra plataforma de gestion de resenas con IA.",
+      "keywords": "contacto Bottie, soporte, ayuda, servicio al cliente"
+    },
+    "page": {
+      "title": "Contactanos",
+      "description": "Tienes alguna pregunta o comentario? Nos encantaria saber de ti. Completa el formulario y te responderemos lo antes posible."
+    },
+    "form": {
+      "subject": "Asunto",
+      "subjectPlaceholder": "Selecciona un asunto",
+      "email": "Tu correo electronico",
+      "emailPlaceholder": "tu@ejemplo.com",
+      "message": "Mensaje",
+      "messagePlaceholder": "Cuentanos como podemos ayudarte...",
+      "submit": "Enviar mensaje",
+      "submitting": "Enviando...",
+      "successTitle": "Mensaje enviado!",
+      "successMessage": "Gracias por contactarnos. Te responderemos pronto.",
+      "error": "Algo salio mal. Por favor intenta de nuevo.",
+      "subjects": {
+        "general": "Consulta general",
+        "support": "Solicitud de soporte",
+        "bug": "Reporte de error",
+        "feature": "Solicitud de funcion",
+        "business": "Alianza comercial"
+      }
     }
   },
   "privacy": {

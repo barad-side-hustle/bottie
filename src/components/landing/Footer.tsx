@@ -17,13 +17,13 @@ export function Footer() {
             <h3 className="text-lg font-bold text-foreground mb-4 text-start">{t("company.name")}</h3>
             <p className="text-sm text-muted-foreground mb-4">{t("company.description")}</p>
             <div className="flex flex-col gap-2">
-              <a
-                href={`mailto:${t("company.email")}`}
+              <Link
+                href="/contact"
                 className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
               >
                 <Mail className="h-4 w-4" />
-                <span>{t("company.email")}</span>
-              </a>
+                <span>{t("company.contact")}</span>
+              </Link>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <MapPin className="h-4 w-4" />
                 <span>{t("company.location")}</span>
