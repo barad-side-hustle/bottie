@@ -37,9 +37,10 @@ nvm use 22.13.0
 - **`user_accounts`**: Links users to Google accounts
 - **`reviews`**: Reviews stored once per location (linked via `locationId`)
 - **`review_responses`**: AI-generated and posted replies
-- **`subscriptions`**: Polar subscription data (polarCustomerId, polarSubscriptionId)
-- **`users_configs`**: User preferences
-- **`weekly_summaries`**: Weekly email summary data
+- **`location_subscriptions`**: Per-location Polar subscription data
+- **`location_members`**: Team members linked to locations with roles
+- **`location_access_requests`**: Pending access requests to locations
+- **`location_invitations`**: Invitation tokens for team members
 
 ### Key Relationships
 
@@ -49,8 +50,12 @@ users (Better Auth user table)
         └── google_accounts (Google OAuth)
               └── account_locations (many-to-many)
                     └── locations (shared business data)
-                          └── reviews
-                                └── review_responses
+                          ├── reviews
+                          │     └── review_responses
+                          ├── location_subscriptions
+                          ├── location_members
+                          ├── location_access_requests
+                          └── location_invitations
 ```
 
 ## Directory Structure
@@ -80,7 +85,7 @@ lib/
 src/
 ├── app/
 │   ├── [locale]/     # i18n routes
-│   │   ├── (landing)/  # Public pages (privacy, terms)
+│   │   ├── (landing)/  # Public pages (about, contact, privacy, terms)
 │   │   ├── (auth)/     # Auth flows (login, sign-up, forgot/reset password)
 │   │   ├── dashboard/
 │   │   │   ├── home/   # Overview page
@@ -172,6 +177,7 @@ Required in `.env.local`:
 - `POLAR_PRODUCT_ID`
 - `RESEND_API_KEY`
 - `RESEND_FROM_EMAIL`
+- `CONTACT_FORM_RECIPIENTS`
 
 ## Testing
 
@@ -187,4 +193,4 @@ Required in `.env.local`:
 - Reviews are stored once per `location`, not per account
 - Multiple users can connect to the same physical location
 - AI settings (tone, language, star configs) are shared per location
-- Payments use Polar with usage-based billing (free tier: 10 reviews/month, paid: $0.20/reply)
+- Payments use Polar with per-location billing (free tier: 5 reviews/month per location, paid: $39/month per location for unlimited replies)

@@ -164,7 +164,7 @@
         },
         "6": {
           "question": "Es seguro el sistema? Que hay sobre la privacidad de datos?",
-          "answer": "El sistema utiliza la integracion oficial de la API de Google Business Profile con OAuth 2.0, por lo que nunca almacenamos tu contrasena de Google. Toda la informacion esta encriptada y almacenada de forma segura en Supabase (PostgreSQL). Cumplimos con los mas altos estandares de seguridad y privacidad de datos."
+          "answer": "El sistema utiliza la integracion oficial de la API de Google Business Profile con OAuth 2.0, por lo que nunca almacenamos tu contrasena de Google. Toda la informacion esta encriptada y almacenada de forma segura en PostgreSQL. Cumplimos con los mas altos estandares de seguridad y privacidad de datos."
         },
         "7": {
           "question": "Puedo probar el sistema antes de pagar?",
