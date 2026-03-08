@@ -24,9 +24,10 @@ interface PostsListProps {
   posts: LocationPost[];
   locationId: string;
   onRefresh: () => void;
+  onEdit: (post: LocationPost) => void;
 }
 
-export function PostsList({ posts, locationId, onRefresh }: PostsListProps) {
+export function PostsList({ posts, locationId, onRefresh, onEdit }: PostsListProps) {
   const t = useTranslations("dashboard.posts");
 
   if (posts.length === 0) {
@@ -44,7 +45,7 @@ export function PostsList({ posts, locationId, onRefresh }: PostsListProps) {
     <DashboardCard>
       <DashboardCardContent className="p-0 divide-y divide-border/40">
         {posts.map((post) => (
-          <PostRow key={post.id} post={post} locationId={locationId} onRefresh={onRefresh} />
+          <PostRow key={post.id} post={post} locationId={locationId} onRefresh={onRefresh} onEdit={onEdit} />
         ))}
       </DashboardCardContent>
     </DashboardCard>
@@ -75,7 +76,17 @@ const STATUS_CONFIG = {
   },
 } as const;
 
-function PostRow({ post, locationId, onRefresh }: { post: LocationPost; locationId: string; onRefresh: () => void }) {
+function PostRow({
+  post,
+  locationId,
+  onRefresh,
+  onEdit,
+}: {
+  post: LocationPost;
+  locationId: string;
+  onRefresh: () => void;
+  onEdit: (post: LocationPost) => void;
+}) {
   const t = useTranslations("dashboard.posts");
   const format = useFormatter();
   const [isLoading, setIsLoading] = useState(false);
@@ -155,7 +166,7 @@ function PostRow({ post, locationId, onRefresh }: { post: LocationPost; location
       <div className="flex items-center gap-1 shrink-0">
         {post.status === "draft" && (
           <>
-            <Button size="icon" variant="ghost" className="size-8" disabled={isLoading}>
+            <Button size="icon" variant="ghost" className="size-8" onClick={() => onEdit(post)} disabled={isLoading}>
               <Pencil className="size-3.5" />
             </Button>
             <Button size="icon" variant="ghost" className="size-8" onClick={handleDelete} disabled={isLoading}>

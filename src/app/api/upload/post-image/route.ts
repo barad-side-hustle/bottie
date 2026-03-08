@@ -40,7 +40,6 @@ export async function POST(request: NextRequest) {
 
     const r2Url = await uploadToR2({ key, body: buffer, contentType: file.type });
 
-    // Return a public proxy URL so external services (like Google) can fetch the image
     const proxyUrl = `${env.NEXT_PUBLIC_APP_URL}/api/upload/post-image/proxy?url=${encodeURIComponent(r2Url)}`;
 
     return NextResponse.json({ url: proxyUrl });

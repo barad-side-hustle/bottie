@@ -15,33 +15,39 @@ import {
 } from "@/components/ui/dashboard-card";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { createPost } from "@/lib/actions/posts.actions";
+import { createPost, updatePost } from "@/lib/actions/posts.actions";
 import { Upload, X, Loader2, ImageIcon, RefreshCw, CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
-import type { PostType, CallToActionType } from "@/lib/db/schema/location-posts.schema";
+import { format, parseISO } from "date-fns";
+import type { LocationPost, PostType, CallToActionType } from "@/lib/db/schema/location-posts.schema";
 
 interface PostComposerProps {
   locationId: string;
+  editingPost?: LocationPost | null;
   onPostCreated: () => void;
+  onCancelEdit?: () => void;
 }
 
-export function PostComposer({ locationId, onPostCreated }: PostComposerProps) {
+export function PostComposer({ locationId, editingPost, onPostCreated, onCancelEdit }: PostComposerProps) {
   const t = useTranslations("dashboard.posts.composer");
   const [isLoading, setIsLoading] = useState(false);
 
-  const [summary, setSummary] = useState("");
-  const [topicType, setTopicType] = useState<PostType>("STANDARD");
-  const [mediaUrl, setMediaUrl] = useState("");
-  const [ctaType, setCtaType] = useState<CallToActionType | "">("");
-  const [ctaUrl, setCtaUrl] = useState("");
+  const [summary, setSummary] = useState(editingPost?.summary ?? "");
+  const [topicType, setTopicType] = useState<PostType>(editingPost?.topicType ?? "STANDARD");
+  const [mediaUrl, setMediaUrl] = useState(editingPost?.mediaUrl ?? "");
+  const [ctaType, setCtaType] = useState<CallToActionType | "">(editingPost?.callToAction?.actionType ?? "");
+  const [ctaUrl, setCtaUrl] = useState(editingPost?.callToAction?.url ?? "");
 
-  const [eventTitle, setEventTitle] = useState("");
-  const [eventStartDate, setEventStartDate] = useState<Date | undefined>();
-  const [eventEndDate, setEventEndDate] = useState<Date | undefined>();
+  const [eventTitle, setEventTitle] = useState(editingPost?.event?.title ?? "");
+  const [eventStartDate, setEventStartDate] = useState<Date | undefined>(
+    editingPost?.event?.startDate ? parseISO(editingPost.event.startDate) : undefined
+  );
+  const [eventEndDate, setEventEndDate] = useState<Date | undefined>(
+    editingPost?.event?.endDate ? parseISO(editingPost.event.endDate) : undefined
+  );
 
-  const [offerCode, setOfferCode] = useState("");
-  const [offerTerms, setOfferTerms] = useState("");
+  const [offerCode, setOfferCode] = useState(editingPost?.offer?.couponCode ?? "");
+  const [offerTerms, setOfferTerms] = useState(editingPost?.offer?.termsConditions ?? "");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
@@ -106,31 +112,37 @@ export function PostComposer({ locationId, onPostCreated }: PostComposerProps) {
     if (!summary.trim()) return;
     setIsLoading(true);
 
+    const postData = {
+      locationId,
+      summary: summary.trim(),
+      topicType,
+      mediaUrl: mediaUrl.trim() || undefined,
+      callToAction: ctaType && ctaUrl ? { actionType: ctaType, url: ctaUrl } : undefined,
+      event:
+        (topicType === "EVENT" || topicType === "OFFER") && eventTitle
+          ? {
+              title: eventTitle,
+              startDate: formatDateForApi(eventStartDate),
+              endDate: formatDateForApi(eventEndDate),
+            }
+          : undefined,
+      offer:
+        topicType === "OFFER"
+          ? { couponCode: offerCode || undefined, termsConditions: offerTerms || undefined }
+          : undefined,
+    };
+
     try {
-      await createPost({
-        locationId,
-        summary: summary.trim(),
-        topicType,
-        mediaUrl: mediaUrl.trim() || undefined,
-        callToAction: ctaType && ctaUrl ? { actionType: ctaType, url: ctaUrl } : undefined,
-        event:
-          (topicType === "EVENT" || topicType === "OFFER") && eventTitle
-            ? {
-                title: eventTitle,
-                startDate: formatDateForApi(eventStartDate),
-                endDate: formatDateForApi(eventEndDate),
-              }
-            : undefined,
-        offer:
-          topicType === "OFFER"
-            ? { couponCode: offerCode || undefined, termsConditions: offerTerms || undefined }
-            : undefined,
-        publishImmediately,
-      });
+      if (editingPost) {
+        await updatePost({ ...postData, postId: editingPost.id });
+      } else {
+        await createPost({ ...postData, publishImmediately });
+      }
       resetForm();
+      onCancelEdit?.();
       onPostCreated();
     } catch (error) {
-      console.error("Failed to create post:", error);
+      console.error("Failed to save post:", error);
     } finally {
       setIsLoading(false);
     }
@@ -139,7 +151,7 @@ export function PostComposer({ locationId, onPostCreated }: PostComposerProps) {
   return (
     <DashboardCard>
       <DashboardCardHeader>
-        <DashboardCardTitle>{t("title")}</DashboardCardTitle>
+        <DashboardCardTitle>{editingPost ? t("editTitle") : t("title")}</DashboardCardTitle>
       </DashboardCardHeader>
       <DashboardCardContent className="pt-0 space-y-4">
         <div>
@@ -317,12 +329,25 @@ export function PostComposer({ locationId, onPostCreated }: PostComposerProps) {
         )}
 
         <div className="flex gap-2 pt-2 justify-end">
-          <Button onClick={() => handleSubmit(false)} disabled={isLoading || !summary.trim()} variant="outline">
-            {t("saveDraft")}
-          </Button>
-          <Button onClick={() => handleSubmit(true)} disabled={isLoading || !summary.trim()}>
-            {t("publishNow")}
-          </Button>
+          {editingPost ? (
+            <>
+              <Button onClick={() => onCancelEdit?.()} variant="outline" disabled={isLoading}>
+                {t("cancel")}
+              </Button>
+              <Button onClick={() => handleSubmit(false)} disabled={isLoading || !summary.trim()}>
+                {t("saveChanges")}
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button onClick={() => handleSubmit(false)} disabled={isLoading || !summary.trim()} variant="outline">
+                {t("saveDraft")}
+              </Button>
+              <Button onClick={() => handleSubmit(true)} disabled={isLoading || !summary.trim()}>
+                {t("publishNow")}
+              </Button>
+            </>
+          )}
         </div>
       </DashboardCardContent>
     </DashboardCard>

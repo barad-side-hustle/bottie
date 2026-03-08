@@ -7,8 +7,20 @@ import { createLocalPost, deleteLocalPost } from "@/lib/google/posts";
 import { db } from "@/lib/db/client";
 import { accountLocations, googleAccounts } from "@/lib/db/schema";
 import { eq, and } from "drizzle-orm";
+import { getPresignedR2Url } from "@/lib/r2/presign";
 import { z } from "zod";
 import { cache } from "react";
+
+async function resolveMediaUrlForGoogle(url: string): Promise<string> {
+  if (url.includes("/api/upload/post-image/proxy?url=")) {
+    const proxyUrl = new URL(url);
+    const r2Url = proxyUrl.searchParams.get("url");
+    if (r2Url) {
+      return getPresignedR2Url(r2Url);
+    }
+  }
+  return getPresignedR2Url(url);
+}
 
 const ContextSchema = z.object({
   locationId: z.string().uuid(),
@@ -104,7 +116,8 @@ export const createPost = createSafeAction(
         };
 
         if (mediaUrl) {
-          googlePost.media = [{ mediaFormat: "PHOTO", sourceUrl: mediaUrl }];
+          const publicMediaUrl = await resolveMediaUrlForGoogle(mediaUrl);
+          googlePost.media = [{ mediaFormat: "PHOTO", sourceUrl: publicMediaUrl }];
         }
 
         if (callToAction) {
@@ -161,7 +174,8 @@ export const publishPost = createSafeAction(PostIdSchema, async ({ locationId, p
   };
 
   if (post.mediaUrl) {
-    googlePost.media = [{ mediaFormat: "PHOTO", sourceUrl: post.mediaUrl }];
+    const publicMediaUrl = await resolveMediaUrlForGoogle(post.mediaUrl);
+    googlePost.media = [{ mediaFormat: "PHOTO", sourceUrl: publicMediaUrl }];
   }
 
   if (post.callToAction) {
@@ -194,6 +208,47 @@ export const publishPost = createSafeAction(PostIdSchema, async ({ locationId, p
     publishedAt: new Date(),
   });
 });
+
+const UpdatePostSchema = PostIdSchema.extend({
+  summary: z.string().min(1).max(1500),
+  topicType: z.enum(["STANDARD", "EVENT", "OFFER"]).default("STANDARD"),
+  mediaUrl: z.string().url().optional(),
+  callToAction: z
+    .object({
+      actionType: z.enum(["BOOK", "ORDER", "SHOP", "LEARN_MORE", "SIGN_UP", "CALL"]),
+      url: z.string().url(),
+    })
+    .optional(),
+  event: z
+    .object({
+      title: z.string().min(1),
+      startDate: z.string(),
+      endDate: z.string(),
+    })
+    .optional(),
+  offer: z
+    .object({
+      couponCode: z.string().optional(),
+      redeemOnlineUrl: z.string().url().optional(),
+      termsConditions: z.string().optional(),
+    })
+    .optional(),
+});
+
+export const updatePost = createSafeAction(
+  UpdatePostSchema,
+  async ({ locationId, postId, summary, topicType, mediaUrl, callToAction, event, offer }, { userId }) => {
+    const repo = new PostsRepository(userId, locationId);
+    return repo.update(postId, {
+      summary,
+      topicType,
+      mediaUrl: mediaUrl || null,
+      callToAction: callToAction || null,
+      event: event || null,
+      offer: offer || null,
+    });
+  }
+);
 
 export const deletePost = createSafeAction(PostIdSchema, async ({ locationId, postId }, { userId }) => {
   const repo = new PostsRepository(userId, locationId);

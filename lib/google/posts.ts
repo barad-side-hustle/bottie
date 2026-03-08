@@ -2,7 +2,7 @@ import { getAccessTokenFromRefreshToken } from "./business-profile";
 
 const GOOGLE_MY_BUSINESS_API_BASE = "https://mybusiness.googleapis.com/v4";
 
-export interface GoogleLocalPost {
+interface GoogleLocalPost {
   name: string;
   languageCode?: string;
   summary: string;
@@ -46,11 +46,6 @@ interface CreatePostRequest {
   event?: GoogleLocalPost["event"];
   offer?: GoogleLocalPost["offer"];
   media?: GoogleLocalPost["media"];
-}
-
-interface ListPostsResponse {
-  localPosts: GoogleLocalPost[];
-  nextPageToken?: string;
 }
 
 async function makeAuthorizedRequest<T>(
@@ -98,34 +93,6 @@ export async function createLocalPost(
   const accessToken = await getAccessTokenFromRefreshToken(refreshToken);
   const url = `${GOOGLE_MY_BUSINESS_API_BASE}/${locationName}/localPosts`;
   return makeAuthorizedRequest<GoogleLocalPost>(url, accessToken, "POST", post);
-}
-
-export async function listLocalPosts(
-  locationName: string,
-  refreshToken: string,
-  pageSize: number = 20
-): Promise<GoogleLocalPost[]> {
-  const accessToken = await getAccessTokenFromRefreshToken(refreshToken);
-  const allPosts: GoogleLocalPost[] = [];
-  let pageToken: string | undefined;
-
-  do {
-    const url = new URL(`${GOOGLE_MY_BUSINESS_API_BASE}/${locationName}/localPosts`);
-    url.searchParams.set("pageSize", String(pageSize));
-    if (pageToken) {
-      url.searchParams.set("pageToken", pageToken);
-    }
-
-    const response = await makeAuthorizedRequest<ListPostsResponse>(url.toString(), accessToken);
-
-    if (response.localPosts) {
-      allPosts.push(...response.localPosts);
-    }
-
-    pageToken = response.nextPageToken;
-  } while (pageToken);
-
-  return allPosts;
 }
 
 export async function deleteLocalPost(postName: string, refreshToken: string): Promise<void> {

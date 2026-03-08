@@ -1,4 +1,4 @@
-export interface ProfileHealthBreakdown {
+interface ProfileHealthBreakdown {
   label: string;
   status: "complete" | "incomplete" | "warning";
   score: number;

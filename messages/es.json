@@ -768,7 +768,10 @@
         "couponCodePlaceholder": "Codigo de cupon (opcional)",
         "termsPlaceholder": "Terminos y condiciones (opcional)",
         "saveDraft": "Guardar borrador",
-        "publishNow": "Publicar ahora"
+        "publishNow": "Publicar ahora",
+        "editTitle": "Editar publicacion",
+        "saveChanges": "Guardar cambios",
+        "cancel": "Cancelar"
       }
     },
     "profileHealth": {
@@ -811,36 +814,6 @@
           "title": "Calificacion promedio",
           "description": "Tu calificacion promedio por estrellas es uno de los factores mas importantes que consideran los clientes. Una calificacion de 4.0 o superior genera confianza y atrae mas clientes.",
           "action": "Enfocate en brindar excelentes experiencias al cliente. Anima a los clientes satisfechos a dejar resenas para mejorar tu calificacion promedio."
-        }
-      },
-      "tips": {
-        "title": "Consejos para mejorar tu puntuacion",
-        "respondQuickly": {
-          "title": "Responde a las resenas rapidamente",
-          "description": "Intenta responder a las nuevas resenas dentro de las 24 horas. Las respuestas rapidas muestran a los clientes que valoras sus comentarios y pueden revertir experiencias negativas."
-        },
-        "completeProfile": {
-          "title": "Manten tu perfil 100% completo",
-          "description": "Completa todos los campos de tu Perfil de Negocio de Google: descripcion, telefono, sitio web, direccion, horarios, fotos. Los perfiles completos se posicionan mejor en la busqueda local."
-        },
-        "encourageReviews": {
-          "title": "Anima a los clientes satisfechos a dejar resenas",
-          "description": "Usa la funcion Obtener Resenas de Bottie para compartir codigos QR y enlaces con clientes satisfechos. Mas resenas positivas mejoran tu calificacion y visibilidad."
-        }
-      },
-      "scoring": {
-        "title": "Que significa tu puntuacion",
-        "excellent": {
-          "title": "Excelente (80-100)",
-          "description": "Tu perfil esta bien optimizado. Estas respondiendo a las resenas, tu listado esta completo y los clientes tienen una gran impresion de tu negocio."
-        },
-        "needsWork": {
-          "title": "Necesita mejora (50-79)",
-          "description": "Tu perfil esta parcialmente optimizado. Enfocate en los elementos marcados en amarillo para desbloquear mas visibilidad y confianza del cliente."
-        },
-        "critical": {
-          "title": "Necesita atencion (Menos de 50)",
-          "description": "Tu perfil tiene brechas significativas. Aborda primero los elementos marcados en rojo, ya que tienen el mayor impacto en tu visibilidad en Google y la percepcion del cliente."
         }
       }
     },

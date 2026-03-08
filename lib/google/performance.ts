@@ -2,7 +2,7 @@ import { getAccessTokenFromRefreshToken } from "./business-profile";
 
 const PERFORMANCE_API_BASE = "https://businessprofileperformance.googleapis.com/v1";
 
-export type DailyMetric =
+type DailyMetric =
   | "BUSINESS_IMPRESSIONS_DESKTOP_MAPS"
   | "BUSINESS_IMPRESSIONS_DESKTOP_SEARCH"
   | "BUSINESS_IMPRESSIONS_MOBILE_MAPS"
@@ -37,7 +37,7 @@ interface FetchMultiDailyMetricsResponse {
   }[];
 }
 
-export interface DailyMetricsData {
+interface DailyMetricsData {
   date: string;
   searchImpressionsDesktop: number;
   searchImpressionsMobile: number;
