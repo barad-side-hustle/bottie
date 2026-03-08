@@ -22,12 +22,7 @@ export function InsightsScoreboard({ stats, performance }: InsightsScoreboardPro
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-      <StatCard
-        label={t("overview.totalReviews")}
-        value={stats.totalReviews}
-        icon={MessageSquare}
-        delta={{ current: stats.totalReviews, previous: stats.delta.totalReviews }}
-      />
+      <StatCard label={t("overview.totalReviews")} value={stats.totalReviews} icon={MessageSquare} />
 
       <StatCard label={t("overview.averageRating")} value={stats.averageRating.toFixed(1)} icon={Star} />
 
