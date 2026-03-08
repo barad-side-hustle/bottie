@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { uploadToR2 } from "@/lib/r2/upload";
+import { env } from "@/lib/env";
 
 export const runtime = "nodejs";
 
@@ -37,9 +38,12 @@ export async function POST(request: NextRequest) {
     const key = `post-images/${locationId}/${Date.now()}`;
     const buffer = Buffer.from(await file.arrayBuffer());
 
-    const url = await uploadToR2({ key, body: buffer, contentType: file.type });
+    const r2Url = await uploadToR2({ key, body: buffer, contentType: file.type });
 
-    return NextResponse.json({ url });
+    // Return a public proxy URL so external services (like Google) can fetch the image
+    const proxyUrl = `${env.NEXT_PUBLIC_APP_URL}/api/upload/post-image/proxy?url=${encodeURIComponent(r2Url)}`;
+
+    return NextResponse.json({ url: proxyUrl });
   } catch (error) {
     console.error("Error uploading post image:", error);
     const message = error instanceof Error ? error.message : "Internal server error";
