@@ -22,11 +22,6 @@
       "title": "Something went wrong!",
       "description": "An error occurred while loading this page.",
       "retry": "Try again"
-    },
-    "pwaInstall": {
-      "title": "Install Bottie.ai",
-      "description": "Add to your home screen for quick access",
-      "install": "Install"
     }
   },
   "errors": {
@@ -65,7 +60,8 @@
     "insights": "Insights",
     "settings": "Settings",
     "profileHealth": "Profile Health",
-    "getReviews": "Get Reviews"
+    "getReviews": "Get Reviews",
+    "posts": "Posts"
   },
   "landing": {
     "hero": {
@@ -663,8 +659,7 @@
         "averageRating": "Avg Rating",
         "positiveSentiment": "Positive",
         "negativeSentiment": "Negative",
-        "neutralSentiment": "Neutral",
-        "responseRate": "Response Rate"
+        "neutralSentiment": "Neutral"
       },
       "trends": {
         "reviews": "Reviews",
@@ -675,10 +670,19 @@
         "neutral": "Neutral"
       },
       "noCategories": "No categories to display",
+      "showAll": "Show all {count} topics",
+      "showLess": "Show less",
+      "scoreboard": {
+        "sentiment": "Sentiment",
+        "customerActions": "Customer Actions"
+      },
+      "discovery": {
+        "title": "Business Discovery"
+      },
       "sections": {
         "trends": "Review Trends",
-        "categories": "Categories",
-        "topics": "Top Topics"
+        "topics": "Top Topics",
+        "customerFeedback": "What Customers Are Saying"
       },
       "modal": {
         "title": "Reviews: {category}",
@@ -707,14 +711,9 @@
         "safety": "Safety"
       },
       "performance": {
-        "title": "Business Performance",
         "totalImpressions": "Total Impressions",
-        "searchImpressions": "Search Impressions",
-        "mapsImpressions": "Maps Impressions",
         "websiteClicks": "Website Clicks",
-        "phoneCalls": "Phone Calls",
-        "directionRequests": "Directions",
-        "noData": "No performance data available yet. Data will appear once the metrics sync runs."
+        "phoneCalls": "Phone Calls"
       }
     },
     "posts": {
@@ -939,7 +938,6 @@
     "components": {
       "upgradeBanner": {
         "title": "Activate AI Replies",
-        "description": "Upgrade this location for unlimited AI replies - $39/month",
         "upgradeNow": "Upgrade Now"
       }
     }

@@ -6,8 +6,11 @@ import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { buildLocationBreadcrumbs } from "@/lib/utils/breadcrumbs";
 import { getLocation } from "@/lib/actions/locations.actions";
 import { getInsights, getInsightsTrends } from "@/lib/actions/insights.actions";
-import { InsightsDateFilter, InsightsOverview, InsightsCharts } from "@/components/dashboard/insights";
-import { PerformanceMetrics } from "@/components/dashboard/insights/PerformanceMetrics";
+import { getPerformanceMetrics } from "@/lib/actions/metrics.actions";
+import { InsightsDateFilter, InsightsCharts } from "@/components/dashboard/insights";
+import { InsightsScoreboard } from "@/components/dashboard/insights/InsightsScoreboard";
+import { TrendsChart } from "@/components/dashboard/insights/TrendsChart";
+import { DiscoveryTrendsChart } from "@/components/dashboard/insights/DiscoveryTrendsChart";
 import { EmptyState } from "@/components/ui/empty-state";
 import { subDays } from "date-fns";
 
@@ -40,9 +43,10 @@ export default async function InsightsPage({ params, searchParams }: InsightsPag
     dateFrom = subDays(dateTo, 30);
   }
 
-  const [insights, trends] = await Promise.all([
+  const [insights, trends, performanceMetrics] = await Promise.all([
     getInsights({ locationId, dateFrom, dateTo }),
     getInsightsTrends({ locationId, dateFrom, dateTo, groupBy: "day" }),
+    getPerformanceMetrics({ locationId, dateFrom, dateTo }).catch(() => null),
   ]);
 
   const hasData = insights.totalReviews > 0;
@@ -60,26 +64,26 @@ export default async function InsightsPage({ params, searchParams }: InsightsPag
         />
       </div>
 
-      <PageHeader title={t("title", { businessName: location.name })} description={t("description")} />
-
-      <div className="mt-6 space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+        <PageHeader title={t("title", { businessName: location.name })} description={t("description")} />
         <Suspense>
           <InsightsDateFilter dateFrom={dateFrom} dateTo={dateTo} />
         </Suspense>
+      </div>
 
+      <div className="mt-6 space-y-6">
         {!hasData ? (
           <EmptyState title={t("noData")} description={t("noDataDescription")} />
         ) : (
           <>
-            <PerformanceMetrics locationId={locationId} dateFrom={dateFrom} dateTo={dateTo} />
-            <InsightsOverview stats={insights} />
-            <InsightsCharts
-              stats={insights}
-              trends={trends}
-              locationId={locationId}
-              dateFrom={dateFrom}
-              dateTo={dateTo}
-            />
+            <InsightsScoreboard stats={insights} performance={performanceMetrics?.totals ?? null} />
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <TrendsChart trends={trends} locale={locale} />
+              {performanceMetrics && <DiscoveryTrendsChart daily={performanceMetrics.daily} />}
+            </div>
+
+            <InsightsCharts stats={insights} locationId={locationId} dateFrom={dateFrom} dateTo={dateTo} />
           </>
         )}
       </div>

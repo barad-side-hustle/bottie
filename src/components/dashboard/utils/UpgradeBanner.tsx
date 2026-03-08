@@ -1,13 +1,12 @@
 "use client";
 
-import { useEffect, useRef, createElement } from "react";
-import { sileo } from "sileo";
+import { useTranslations } from "next-intl";
+import { Sparkles } from "lucide-react";
 import { useLocationSubscriptions } from "@/hooks/use-subscription";
 import { useCurrentLocation } from "@/hooks/use-current-location";
-import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/routing";
+import { SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@/components/ui/sidebar";
 import { useDirection } from "@/contexts/DirectionProvider";
-import { useRouter } from "@/i18n/routing";
-import { ArrowLeft } from "lucide-react";
 
 export function UpgradeBanner() {
   const t = useTranslations("dashboard.components.upgradeBanner");
@@ -15,28 +14,28 @@ export function UpgradeBanner() {
   const currentLocation = useCurrentLocation();
   const locationId = currentLocation?.locationId;
   const { dir } = useDirection();
-  const router = useRouter();
-  const hasShown = useRef(false);
 
   const currentLocationPaid = locationId ? isLocationPaid(locationId) : true;
 
-  useEffect(() => {
-    if (loading || currentLocationPaid || hasShown.current || !locationId) return;
-    hasShown.current = true;
+  if (loading || currentLocationPaid || !locationId) return null;
 
-    sileo.action({
-      title: t("title"),
-      description: t("description"),
-      duration: 10000,
-      ...(dir === "rtl" && { icon: createElement(ArrowLeft, { size: 16 }) }),
-      button: {
-        title: t("upgradeNow"),
-        onClick: () => {
-          router.push("/dashboard/subscription");
-        },
-      },
-    });
-  }, [loading, currentLocationPaid, locationId, t, dir, router]);
-
-  return null;
+  return (
+    <SidebarMenu>
+      <SidebarMenuItem>
+        <SidebarMenuButton
+          asChild
+          className="bg-primary/10 hover:bg-primary/15 text-primary h-auto py-2"
+          tooltip={{ children: t("title"), side: dir === "rtl" ? "left" : "right" }}
+        >
+          <Link href="/dashboard/subscription">
+            <Sparkles className="size-4 shrink-0" />
+            <div className="grid text-start text-xs leading-tight">
+              <span className="font-semibold truncate">{t("title")}</span>
+              <span className="text-muted-foreground truncate">{t("upgradeNow")}</span>
+            </div>
+          </Link>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    </SidebarMenu>
+  );
 }
