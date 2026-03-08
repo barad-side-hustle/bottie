@@ -675,10 +675,20 @@
         "neutral": "Neutral"
       },
       "noCategories": "No categories to display",
+      "showAll": "Show all {count} topics",
+      "showLess": "Show less",
+      "scoreboard": {
+        "sentiment": "Sentiment",
+        "customerActions": "Customer Actions"
+      },
+      "discovery": {
+        "title": "Business Discovery"
+      },
       "sections": {
         "trends": "Review Trends",
         "categories": "Categories",
-        "topics": "Top Topics"
+        "topics": "Top Topics",
+        "customerFeedback": "What Customers Are Saying"
       },
       "modal": {
         "title": "Reviews: {category}",
