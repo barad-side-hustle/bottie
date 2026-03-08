@@ -5,3 +5,4 @@ export * from "./StatCard";
 export * from "./TrendsChart";
 export * from "./CategoriesCard";
 export * from "./CategoryReviewsModal";
+export * from "./TopTopicsCard";

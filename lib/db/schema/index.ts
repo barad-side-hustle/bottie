@@ -11,3 +11,5 @@ export * from "./review-responses.schema";
 export * from "./location-members.schema";
 export * from "./location-access-requests.schema";
 export * from "./location-invitations.schema";
+export * from "./location-metrics.schema";
+export * from "./location-posts.schema";

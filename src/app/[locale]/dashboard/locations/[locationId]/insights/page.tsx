@@ -7,6 +7,7 @@ import { buildLocationBreadcrumbs } from "@/lib/utils/breadcrumbs";
 import { getLocation } from "@/lib/actions/locations.actions";
 import { getInsights, getInsightsTrends } from "@/lib/actions/insights.actions";
 import { InsightsDateFilter, InsightsOverview, InsightsCharts } from "@/components/dashboard/insights";
+import { PerformanceMetrics } from "@/components/dashboard/insights/PerformanceMetrics";
 import { EmptyState } from "@/components/ui/empty-state";
 import { subDays } from "date-fns";
 
@@ -70,6 +71,7 @@ export default async function InsightsPage({ params, searchParams }: InsightsPag
           <EmptyState title={t("noData")} description={t("noDataDescription")} />
         ) : (
           <>
+            <PerformanceMetrics locationId={locationId} dateFrom={dateFrom} dateTo={dateTo} />
             <InsightsOverview stats={insights} />
             <InsightsCharts
               stats={insights}

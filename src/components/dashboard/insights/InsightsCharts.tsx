@@ -10,6 +10,7 @@ import type {
 import { TrendsChart } from "./TrendsChart";
 import { CategoriesCard } from "./CategoriesCard";
 import { CategoryReviewsModal } from "./CategoryReviewsModal";
+import { TopTopicsCard } from "./TopTopicsCard";
 
 interface InsightsChartsProps {
   stats: ClassificationStats;
@@ -47,6 +48,7 @@ export function InsightsCharts({ stats, trends, locationId, dateFrom, dateTo }: 
         dateFrom={dateFrom}
         dateTo={dateTo}
       />
+      {stats.topTopics.length > 0 && <TopTopicsCard topics={stats.topTopics} />}
       <TrendsChart trends={trends} locale={locale} />
     </div>
   );

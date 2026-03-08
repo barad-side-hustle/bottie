@@ -32,7 +32,8 @@
     "i18n:check": "tsx scripts/check-translations.ts"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.997.0",
+    "@aws-sdk/client-s3": "3.1004.0",
+    "@aws-sdk/s3-request-presigner": "^3.1004.0",
     "@google/generative-ai": "^0.24.1",
     "@hapi/iron": "^7.0.1",
     "@polar-sh/better-auth": "^1.8.1",

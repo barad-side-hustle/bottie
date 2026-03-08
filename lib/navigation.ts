@@ -8,6 +8,8 @@ import {
   BarChart3,
   Settings2,
   QrCode,
+  FileText,
+  HeartPulse,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -43,6 +45,18 @@ export const sidebarLocationItems: SidebarNavItem[] = [
     href: (ctx) => `/dashboard/locations/${ctx.locationId}/insights`,
     label: "navigation.sidebar.insights",
     icon: BarChart3,
+    scope: "location",
+  },
+  {
+    href: (ctx) => `/dashboard/locations/${ctx.locationId}/posts`,
+    label: "navigation.sidebar.posts",
+    icon: FileText,
+    scope: "location",
+  },
+  {
+    href: (ctx) => `/dashboard/locations/${ctx.locationId}/profile-health`,
+    label: "navigation.sidebar.profileHealth",
+    icon: HeartPulse,
     scope: "location",
   },
   {

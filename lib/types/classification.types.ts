@@ -39,10 +39,23 @@ export interface ReviewClassification {
   modelVersion: string;
 }
 
+export interface TopicCount {
+  topic: string;
+  count: number;
+}
+
+export interface PeriodDelta {
+  totalReviews: number | null;
+  averageRating: number | null;
+  positivePercent: number | null;
+  negativePercent: number | null;
+}
+
 export interface ClassificationStats {
   totalReviews: number;
   classifiedReviews: number;
   averageRating: number;
+  responseRate: number;
   sentimentBreakdown: {
     positive: number;
     neutral: number;
@@ -50,6 +63,8 @@ export interface ClassificationStats {
   };
   topPositives: CategoryCount[];
   topNegatives: CategoryCount[];
+  topTopics: TopicCount[];
+  delta: PeriodDelta;
 }
 
 export interface CategoryCount {
