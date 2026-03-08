@@ -22,11 +22,6 @@
       "title": "Algo salio mal!",
       "description": "Ocurrio un error al cargar esta pagina.",
       "retry": "Intentar de nuevo"
-    },
-    "pwaInstall": {
-      "title": "Instalar Bottie.ai",
-      "description": "Agrega a tu pantalla de inicio para acceso rapido",
-      "install": "Instalar"
     }
   },
   "errors": {
@@ -65,7 +60,8 @@
     "insights": "Insights",
     "settings": "Configuracion",
     "profileHealth": "Salud del perfil",
-    "getReviews": "Obtener resenas"
+    "getReviews": "Obtener resenas",
+    "posts": "Publicaciones"
   },
   "landing": {
     "hero": {
@@ -663,8 +659,7 @@
         "averageRating": "Calif. promedio",
         "positiveSentiment": "Positivo",
         "negativeSentiment": "Negativo",
-        "neutralSentiment": "Neutral",
-        "responseRate": "Tasa de respuesta"
+        "neutralSentiment": "Neutral"
       },
       "trends": {
         "reviews": "Resenas",
@@ -675,10 +670,19 @@
         "neutral": "Neutral"
       },
       "noCategories": "No hay categorias para mostrar",
+      "showAll": "Mostrar los {count} temas",
+      "showLess": "Mostrar menos",
+      "scoreboard": {
+        "sentiment": "Sentimiento",
+        "customerActions": "Acciones de clientes"
+      },
+      "discovery": {
+        "title": "Descubrimiento del negocio"
+      },
       "sections": {
         "trends": "Tendencias de resenas",
-        "categories": "Categorias",
-        "topics": "Temas"
+        "topics": "Temas",
+        "customerFeedback": "Lo que dicen los clientes"
       },
       "modal": {
         "title": "Resenas: {category}",
@@ -707,14 +711,9 @@
         "safety": "Seguridad"
       },
       "performance": {
-        "title": "Rendimiento del negocio",
         "totalImpressions": "Impresiones totales",
-        "searchImpressions": "Impresiones en busqueda",
-        "mapsImpressions": "Impresiones en mapas",
         "websiteClicks": "Clics al sitio web",
-        "phoneCalls": "Llamadas telefonicas",
-        "directionRequests": "Solicitudes de direccion",
-        "noData": "Aún no hay datos de rendimiento disponibles. Los datos aparecerán una vez que se ejecute la sincronización de métricas."
+        "phoneCalls": "Llamadas telefonicas"
       }
     },
     "posts": {
@@ -939,7 +938,6 @@
     "components": {
       "upgradeBanner": {
         "title": "Activa las respuestas con IA",
-        "description": "Actualiza esta ubicacion para respuestas con IA ilimitadas - $39/mes",
         "upgradeNow": "Actualizar ahora"
       }
     }

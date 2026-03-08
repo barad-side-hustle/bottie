@@ -1,17 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import type {
-  ClassificationStats,
-  ClassificationTrend,
-  ClassificationCategory,
-} from "@/lib/types/classification.types";
+import type { ClassificationStats, ClassificationCategory } from "@/lib/types/classification.types";
 import { CustomerFeedbackCard } from "./CustomerFeedbackCard";
 import { CategoryReviewsModal } from "./CategoryReviewsModal";
 
 interface InsightsChartsProps {
   stats: ClassificationStats;
-  trends: ClassificationTrend[];
   locationId: string;
   dateFrom: Date;
   dateTo: Date;

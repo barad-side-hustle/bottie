@@ -22,11 +22,6 @@
       "title": "משהו השתבש!",
       "description": "אירעה שגיאה בטעינת הדף.",
       "retry": "נסה שוב"
-    },
-    "pwaInstall": {
-      "title": "התקן את Bottie.ai",
-      "description": "הוסף למסך הבית לגישה מהירה",
-      "install": "התקן"
     }
   },
   "navigation": {
@@ -58,7 +53,8 @@
     "insights": "תובנות",
     "settings": "הגדרות",
     "profileHealth": "בריאות פרופיל",
-    "getReviews": "קבלת ביקורות"
+    "getReviews": "קבלת ביקורות",
+    "posts": "פוסטים"
   },
   "landing": {
     "hero": {
@@ -656,8 +652,7 @@
         "averageRating": "דירוג ממוצע",
         "positiveSentiment": "חיובי",
         "negativeSentiment": "שלילי",
-        "neutralSentiment": "ניטרלי",
-        "responseRate": "אחוז מענה"
+        "neutralSentiment": "ניטרלי"
       },
       "trends": {
         "reviews": "ביקורות",
@@ -679,7 +674,6 @@
       },
       "sections": {
         "trends": "מגמות ביקורות",
-        "categories": "קטגוריות",
         "topics": "נושאים מובילים",
         "customerFeedback": "מה לקוחות אומרים"
       },
@@ -710,14 +704,9 @@
         "safety": "בטיחות"
       },
       "performance": {
-        "title": "ביצועי העסק",
         "totalImpressions": "סה״כ חשיפות",
-        "searchImpressions": "חשיפות בחיפוש",
-        "mapsImpressions": "חשיפות במפות",
         "websiteClicks": "לחיצות לאתר",
-        "phoneCalls": "שיחות טלפון",
-        "directionRequests": "בקשות ניווט",
-        "noData": "אין נתוני ביצועים זמינים עדיין. הנתונים יופיעו לאחר הפעלת סנכרון המדדים."
+        "phoneCalls": "שיחות טלפון"
       }
     },
     "posts": {
@@ -942,7 +931,6 @@
     "components": {
       "upgradeBanner": {
         "title": "הפעל תגובות AI",
-        "description": "שדרג מיקום זה לתגובות AI ללא הגבלה - $39/חודש",
         "upgradeNow": "שדרג עכשיו"
       }
     }

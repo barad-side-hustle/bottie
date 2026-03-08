@@ -83,13 +83,7 @@ export default async function InsightsPage({ params, searchParams }: InsightsPag
               {performanceMetrics && <DiscoveryTrendsChart daily={performanceMetrics.daily} />}
             </div>
 
-            <InsightsCharts
-              stats={insights}
-              trends={trends}
-              locationId={locationId}
-              dateFrom={dateFrom}
-              dateTo={dateTo}
-            />
+            <InsightsCharts stats={insights} locationId={locationId} dateFrom={dateFrom} dateTo={dateTo} />
           </>
         )}
       </div>

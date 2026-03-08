@@ -7,7 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { DirectionProvider } from "@/contexts/DirectionProvider";
 import { DirectionalToaster } from "@/components/DirectionalToaster";
 import { RybbitProvider } from "@/components/RybbitProvider";
-import { PwaInstallPrompt } from "@/components/PwaInstallPrompt";
+
 import { locales, getLocaleDir, getLocaleCode, localeCodeMap, type Locale } from "@/lib/locale";
 import "../globals.css";
 import Script from "next/script";
@@ -112,7 +112,7 @@ export default async function LocaleLayout({
           <DirectionProvider initialDir={dir}>
             <AuthProvider>
               <RybbitProvider />
-              <PwaInstallPrompt />
+
               {children}
               <DirectionalToaster />
             </AuthProvider>
