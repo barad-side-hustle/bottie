@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
 
-const FAQ_ITEM_COUNT = 8;
+const FAQ_ITEM_COUNT = 10;
 
 export function FAQ() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);

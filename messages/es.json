@@ -52,6 +52,8 @@
       "billing": "Facturacion",
       "settings": "Configuracion",
       "getReviews": "Obtener resenas",
+      "posts": "Publicaciones",
+      "profileHealth": "Salud del perfil",
       "locationLabel": "Ubicacion",
       "addLocation": "Agregar ubicacion",
       "selectLocation": "Seleccionar ubicacion"
@@ -62,6 +64,7 @@
     "reviews": "Resenas",
     "insights": "Insights",
     "settings": "Configuracion",
+    "profileHealth": "Salud del perfil",
     "getReviews": "Obtener resenas"
   },
   "landing": {
@@ -169,6 +172,14 @@
         "7": {
           "question": "Puedo probar el sistema antes de pagar?",
           "answer": "Si! Tenemos un plan gratuito que te permite administrar un negocio y hasta 5 resenas por mes sin necesidad de tarjeta de credito. Puedes actualizar a un plan de pago en cualquier momento."
+        },
+        "8": {
+          "question": "Puedo crear publicaciones de Google directamente desde Bottie?",
+          "answer": "Si! Bottie te permite crear y publicar publicaciones en tu Perfil de Negocio de Google, incluyendo actualizaciones estandar, eventos y ofertas promocionales, directamente desde tu panel de control. Puedes agregar imagenes, llamadas a la accion, fechas de eventos y codigos de cupon. Las publicaciones se pueden guardar como borradores o publicar inmediatamente."
+        },
+        "9": {
+          "question": "Que analiticas e insights ofrece Bottie?",
+          "answer": "Bottie ofrece un panel de analiticas completo que incluye metricas de rendimiento del Perfil de Negocio de Google (impresiones, clics al sitio web, llamadas telefonicas, solicitudes de direccion), analisis de sentimiento de resenas, desgloses por categorias, tendencias de temas y una Puntuacion de Salud del Perfil que evalua la completitud de tu listado y tu tasa de respuesta."
         }
       }
     },
@@ -651,16 +662,23 @@
         "totalReviews": "Total de resenas",
         "averageRating": "Calif. promedio",
         "positiveSentiment": "Positivo",
-        "negativeSentiment": "Negativo"
+        "negativeSentiment": "Negativo",
+        "neutralSentiment": "Neutral",
+        "responseRate": "Tasa de respuesta"
       },
       "trends": {
         "reviews": "Resenas",
-        "average": "Prom."
+        "average": "Prom.",
+        "totalReviews": "Total de resenas",
+        "positive": "Positivo",
+        "negative": "Negativo",
+        "neutral": "Neutral"
       },
       "noCategories": "No hay categorias para mostrar",
       "sections": {
         "trends": "Tendencias de resenas",
-        "categories": "Categorias"
+        "categories": "Categorias",
+        "topics": "Temas"
       },
       "modal": {
         "title": "Resenas: {category}",
@@ -687,6 +705,143 @@
         "expertise": "Experiencia",
         "results": "Resultados",
         "safety": "Seguridad"
+      },
+      "performance": {
+        "title": "Rendimiento del negocio",
+        "totalImpressions": "Impresiones totales",
+        "searchImpressions": "Impresiones en busqueda",
+        "mapsImpressions": "Impresiones en mapas",
+        "websiteClicks": "Clics al sitio web",
+        "phoneCalls": "Llamadas telefonicas",
+        "directionRequests": "Solicitudes de direccion"
+      }
+    },
+    "posts": {
+      "pageTitle": "Publicaciones de Google",
+      "pageDescription": "Crea y gestiona publicaciones en tu perfil de Google Business",
+      "noPosts": "Aun no hay publicaciones. Crea tu primera publicacion arriba.",
+      "publish": "Publicar",
+      "status": {
+        "draft": "Borrador",
+        "published": "Publicado",
+        "failed": "Fallido"
+      },
+      "types": {
+        "STANDARD": "Actualizacion",
+        "EVENT": "Evento",
+        "OFFER": "Oferta"
+      },
+      "composer": {
+        "title": "Crear publicacion",
+        "postType": "Tipo de publicacion",
+        "types": {
+          "standard": "Actualizacion",
+          "event": "Evento",
+          "offer": "Oferta"
+        },
+        "content": "Contenido",
+        "contentPlaceholder": "Escribe el contenido de tu publicacion...",
+        "image": "Imagen",
+        "imageUpload": "Haz clic para subir una imagen",
+        "imageUploading": "Subiendo...",
+        "imageUploaded": "Imagen subida",
+        "imageChange": "Cambiar",
+        "imageRemove": "Eliminar",
+        "imageMaxSize": "PNG, JPEG o WebP. Max 5MB.",
+        "pickDate": "Elegir fecha",
+        "ctaType": "Llamada a la accion",
+        "ctaNone": "Ninguna",
+        "ctaUrl": "URL del boton",
+        "cta": {
+          "learnMore": "Mas informacion",
+          "book": "Reservar",
+          "order": "Ordenar",
+          "shop": "Comprar",
+          "signUp": "Registrarse",
+          "call": "Llamar"
+        },
+        "eventDetails": "Detalles del evento",
+        "eventTitlePlaceholder": "Titulo del evento",
+        "startDate": "Fecha de inicio",
+        "endDate": "Fecha de fin",
+        "offerDetails": "Detalles de la oferta",
+        "couponCodePlaceholder": "Codigo de cupon (opcional)",
+        "termsPlaceholder": "Terminos y condiciones (opcional)",
+        "saveDraft": "Guardar borrador",
+        "publishNow": "Publicar ahora"
+      }
+    },
+    "profileHealth": {
+      "title": "Salud del perfil",
+      "subtitle": "Mira que tan completo y optimizado esta tu Perfil de Negocio de Google y aprende que hacer para mejorarlo.",
+      "noData": "No se pudieron cargar los datos de salud del perfil. Intentalo de nuevo mas tarde.",
+      "outOf100": "de 100",
+      "points": "pts",
+      "scoreExcellent": "Excelente",
+      "scoreNeedsWork": "Necesita mejora",
+      "scoreCritical": "Necesita atencion",
+      "completedItems": "{completed} de {total} elementos completados",
+      "items": {
+        "description": {
+          "title": "Descripcion del negocio",
+          "description": "Una descripcion detallada del negocio ayuda a los clientes a entender lo que ofreces y mejora tu visibilidad en la Busqueda y Maps de Google.",
+          "action": "Agrega una descripcion del negocio en tu Perfil de Negocio de Google. Incluye que haces, que te hace unico y los servicios clave que ofreces."
+        },
+        "phoneNumber": {
+          "title": "Numero de telefono",
+          "description": "Un numero de telefono permite a los clientes contactarte directamente desde tu listado de Google. Los negocios con numero de telefono reciben significativamente mas consultas.",
+          "action": "Agrega un numero de telefono a tu Perfil de Negocio de Google para que los clientes puedan contactarte con un toque."
+        },
+        "websiteUrl": {
+          "title": "URL del sitio web",
+          "description": "Vincular tu sitio web dirige trafico desde tu listado de Google y les da a los clientes un lugar para aprender mas, ver tu menu o hacer una reserva.",
+          "action": "Agrega la URL de tu sitio web a tu Perfil de Negocio de Google para mayor visibilidad y compromiso del cliente."
+        },
+        "address": {
+          "title": "Direccion completa",
+          "description": "Una direccion completa con ciudad y pais ayuda a los clientes a encontrar tu ubicacion fisica y mejora tu ranking en los resultados de busqueda local.",
+          "action": "Asegurate de que la direccion de tu negocio incluya calle, ciudad y pais en tu Perfil de Negocio de Google."
+        },
+        "responseRate": {
+          "title": "Tasa de respuesta a resenas",
+          "description": "Responder a las resenas muestra a los clientes que te importa su experiencia. Google favorece a los negocios con altas tasas de respuesta en los rankings de busqueda local.",
+          "action": "Responde a mas resenas para alcanzar una tasa de respuesta del 80% o superior. Usa la respuesta automatica de Bottie para responder mas rapido."
+        },
+        "averageRating": {
+          "title": "Calificacion promedio",
+          "description": "Tu calificacion promedio por estrellas es uno de los factores mas importantes que consideran los clientes. Una calificacion de 4.0 o superior genera confianza y atrae mas clientes.",
+          "action": "Enfocate en brindar excelentes experiencias al cliente. Anima a los clientes satisfechos a dejar resenas para mejorar tu calificacion promedio."
+        }
+      },
+      "tips": {
+        "title": "Consejos para mejorar tu puntuacion",
+        "respondQuickly": {
+          "title": "Responde a las resenas rapidamente",
+          "description": "Intenta responder a las nuevas resenas dentro de las 24 horas. Las respuestas rapidas muestran a los clientes que valoras sus comentarios y pueden revertir experiencias negativas."
+        },
+        "completeProfile": {
+          "title": "Manten tu perfil 100% completo",
+          "description": "Completa todos los campos de tu Perfil de Negocio de Google: descripcion, telefono, sitio web, direccion, horarios, fotos. Los perfiles completos se posicionan mejor en la busqueda local."
+        },
+        "encourageReviews": {
+          "title": "Anima a los clientes satisfechos a dejar resenas",
+          "description": "Usa la funcion Obtener Resenas de Bottie para compartir codigos QR y enlaces con clientes satisfechos. Mas resenas positivas mejoran tu calificacion y visibilidad."
+        }
+      },
+      "scoring": {
+        "title": "Que significa tu puntuacion",
+        "excellent": {
+          "title": "Excelente (80-100)",
+          "description": "Tu perfil esta bien optimizado. Estas respondiendo a las resenas, tu listado esta completo y los clientes tienen una gran impresion de tu negocio."
+        },
+        "needsWork": {
+          "title": "Necesita mejora (50-79)",
+          "description": "Tu perfil esta parcialmente optimizado. Enfocate en los elementos marcados en amarillo para desbloquear mas visibilidad y confianza del cliente."
+        },
+        "critical": {
+          "title": "Necesita atencion (Menos de 50)",
+          "description": "Tu perfil tiene brechas significativas. Aborda primero los elementos marcados en rojo, ya que tienen el mayor impacto en tu visibilidad en Google y la percepcion del cliente."
+        }
       }
     },
     "solicitation": {
@@ -870,66 +1025,111 @@
   },
   "about": {
     "meta": {
-      "title": "Acerca de Bottie - Gestion de resenas de Google con IA",
-      "description": "Descubre como Bottie.ai ayuda a las empresas a responder automaticamente a las resenas de Google con IA. Ahorra tiempo, mejora tu reputacion online y comprende el sentimiento de tus clientes.",
-      "keywords": "acerca de Bottie, gestion de resenas con IA, automatizacion de Google Business Profile, herramienta de respuesta a resenas, gestion de reputacion empresarial"
+      "title": "Acerca de Bottie - Plataforma de gestion de resenas de Google con IA",
+      "description": "Descubre como Bottie.ai ayuda a las empresas a responder automaticamente a las resenas de Google con IA, crear publicaciones de Google, rastrear metricas de rendimiento y monitorear la salud del perfil. Ahorra tiempo y construye una reputacion online mas solida.",
+      "keywords": "acerca de Bottie, gestion de resenas con IA, automatizacion de Google Business Profile, herramienta de respuesta a resenas, gestion de reputacion empresarial, publicaciones de Google, analiticas de rendimiento, puntuacion de salud del perfil"
     },
     "hero": {
       "title": "Acerca de Bottie.ai",
-      "subtitle": "Ayudamos a las empresas a ahorrar tiempo y construir una reputacion mas solida automatizando las respuestas a resenas de Google con inteligencia artificial."
+      "subtitle": "La plataforma integral para gestionar tu Perfil de Negocio de Google. Automatiza respuestas a resenas, publica posts, rastrea metricas de rendimiento y optimiza tu presencia online, todo impulsado por IA."
     },
     "mission": {
       "title": "Nuestra mision",
-      "content": "Cada resena de cliente merece una respuesta profesional y reflexiva, pero para los duenos de negocios ocupados, encontrar el tiempo para responder a cada una es casi imposible. Bottie.ai fue creado para resolver este problema. Nuestra mision es dar a cada negocio, desde tiendas locales hasta empresas con multiples ubicaciones, la capacidad de interactuar con los comentarios de los clientes de manera instantanea y autentica."
+      "content": "Cada resena de cliente merece una respuesta profesional y reflexiva, pero para los duenos de negocios ocupados, encontrar el tiempo para responder a cada una es casi imposible. Bottie.ai fue creado para resolver este problema. Nuestra mision es dar a cada negocio, desde tiendas locales hasta empresas con multiples ubicaciones, la capacidad de interactuar con los comentarios de los clientes de manera instantanea y autentica, proporcionando las herramientas e insights necesarios para hacer crecer su reputacion online."
     },
     "problem": {
       "title": "El problema que resolvemos",
-      "content": "Las resenas online impactan directamente en las decisiones de compra. Los estudios muestran que el 93% de los consumidores lee resenas online antes de visitar un negocio, y las empresas que responden a las resenas son percibidas como 1.7 veces mas confiables. Sin embargo, la mayoria de los duenos de negocios tienen dificultades para responder de manera consistente, lo que lleva a oportunidades perdidas, quejas sin respuesta y una presencia online debilitada."
+      "content": "Las resenas online impactan directamente en las decisiones de compra. Los estudios muestran que el 93% de los consumidores lee resenas online antes de visitar un negocio, y las empresas que responden a las resenas son percibidas como 1.7 veces mas confiables. Sin embargo, la mayoria de los duenos de negocios tienen dificultades para responder de manera consistente, lo que lleva a oportunidades perdidas, quejas sin respuesta y una presencia online debilitada.",
+      "content2": "Mas alla de las resenas, mantener un Perfil de Negocio de Google activo requiere publicaciones regulares, monitoreo de metricas de rendimiento y asegurar que tu listado este completo y optimizado. Gestionar todo esto manualmente en multiples ubicaciones es abrumador, y es exactamente donde Bottie interviene."
     },
     "solution": {
       "title": "Como ayuda Bottie.ai",
-      "content": "Bottie.ai se conecta directamente a tu Perfil de Negocio de Google y monitorea las resenas entrantes en tiempo real. Cuando llega una nueva resena, nuestra IA genera una respuesta personalizada que coincide con el tono y las preferencias de idioma de tu negocio. Puedes revisar y aprobar las respuestas manualmente, o habilitar la publicacion automatica para ahorrar aun mas tiempo."
+      "content": "Bottie.ai se conecta directamente a tu Perfil de Negocio de Google y monitorea las resenas entrantes en tiempo real. Cuando llega una nueva resena, nuestra IA genera una respuesta personalizada que coincide con el tono y las preferencias de idioma de tu negocio. Puedes revisar y aprobar las respuestas manualmente, o habilitar la publicacion automatica para ahorrar aun mas tiempo.",
+      "content2": "Pero Bottie va mucho mas alla de las respuestas a resenas. Puedes crear y publicar publicaciones de Google directamente desde tu panel de control, rastrear metricas de rendimiento detalladas como impresiones, clics y llamadas telefonicas, analizar el sentimiento de los clientes con insights impulsados por IA y monitorear tu Puntuacion de Salud del Perfil para asegurarte de que tu listado este completamente optimizado."
     },
     "features": {
       "title": "Que hace diferente a Bottie.ai",
+      "subtitle": "Un conjunto completo de herramientas disenado para ayudarte a gestionar cada aspecto de tu Perfil de Negocio de Google desde un solo lugar.",
       "items": {
         "aiPowered": {
           "title": "Respuestas con IA",
-          "description": "Genera respuestas profesionales y contextuales adaptadas a cada resena utilizando modelos de lenguaje avanzados."
+          "description": "Genera respuestas profesionales y contextuales adaptadas a cada resena utilizando Gemini AI de Google. La IA considera la descripcion de tu negocio, el tono preferido, la calificacion por estrellas e instrucciones personalizadas por nivel de calificacion."
         },
         "autoPublish": {
           "title": "Publicacion automatica o manual",
-          "description": "Elige revisar cada respuesta manualmente o deja que Bottie publique respuestas automaticamente segun tus reglas."
+          "description": "Elige revisar cada respuesta manualmente, o deja que Bottie publique respuestas automaticamente segun tus reglas. Configura el modo hibrido donde las resenas con alta calificacion se publican automaticamente mientras que las calificaciones bajas requieren aprobacion manual."
         },
         "reputation": {
           "title": "Gestion de reputacion",
-          "description": "Sigue las tendencias de resenas, analisis de sentimiento e insights accionables para mejorar tu negocio."
+          "description": "Sigue las tendencias de resenas a lo largo del tiempo, analiza la distribucion de sentimiento, identifica los temas mas mencionados y visualiza desgloses por categorias para entender exactamente que aman los clientes y que necesita mejora."
         },
         "multiLanguage": {
           "title": "Soporte multiidioma",
-          "description": "Responde a resenas en hebreo, ingles, espanol y mas, en el idioma de tus clientes."
+          "description": "Responde a resenas en hebreo, ingles, espanol y mas, en el idioma de tus clientes. El modo de auto-deteccion identifica el idioma de la resena y responde en consecuencia."
         },
         "customTone": {
           "title": "Tono y voz personalizados",
-          "description": "Configura la IA para que coincida con la personalidad de tu marca: profesional, amigable, casual o cualquier cosa intermedia."
+          "description": "Configura la IA para que coincida con la personalidad de tu marca: profesional, amigable, casual o cualquier cosa intermedia. Establece instrucciones diferentes para cada calificacion por estrellas para asegurar el tono adecuado en cada situacion."
         },
         "multiLocation": {
           "title": "Gestion multi-ubicacion",
-          "description": "Gestiona resenas en todas las ubicaciones de tu negocio desde un unico panel de control."
+          "description": "Gestiona resenas en todas las ubicaciones de tu negocio desde un unico panel de control. Cada ubicacion puede tener sus propias configuraciones de IA, miembros de equipo y suscripcion."
+        },
+        "googlePosts": {
+          "title": "Publicaciones de Google",
+          "description": "Crea y publica actualizaciones, eventos y ofertas promocionales directamente en tu Perfil de Negocio de Google. Agrega imagenes, llamadas a la accion, fechas de eventos y codigos de cupon sin salir de Bottie."
+        },
+        "performanceAnalytics": {
+          "title": "Analiticas de rendimiento",
+          "description": "Rastrea como los clientes encuentran e interactuan con tu listado de negocio. Monitorea impresiones de Busqueda y Maps, clics al sitio web, llamadas telefonicas y solicitudes de direccion con graficos detallados a lo largo del tiempo."
+        },
+        "profileHealth": {
+          "title": "Puntuacion de salud del perfil",
+          "description": "Obtiene una puntuacion en tiempo real que evalua la completitud de tu Perfil de Negocio de Google, incluyendo descripcion del negocio, numero de telefono, sitio web, direccion, tasa de respuesta y calificacion promedio, con recomendaciones accionables."
         }
       }
     },
+    "platform": {
+      "title": "Una plataforma completa de gestion del Perfil de Negocio de Google",
+      "content": "Bottie.ai es mas que una herramienta de respuesta a resenas: es una plataforma completa para gestionar tu Perfil de Negocio de Google. Desde el momento en que un cliente deja una resena hasta el momento en que publicas una publicacion promocional, Bottie maneja cada paso de tu flujo de trabajo de gestion de reputacion online.",
+      "content2": "El motor de insights impulsado por IA clasifica cada resena por sentimiento y categoria, extrae los temas clave que discuten los clientes y rastrea tendencias a lo largo del tiempo. Esto te da una imagen clara y basada en datos del rendimiento de tu negocio desde la perspectiva del cliente, abarcando calidad de servicio, valor, limpieza, tiempo de espera y docenas de otras dimensiones.",
+      "content3": "Tu Puntuacion de Salud del Perfil proporciona una vision rapida de que tan bien optimizado esta tu listado de negocio en Google. Verifica informacion faltante como descripcion del negocio, numero de telefono y sitio web, monitorea tu tasa de respuesta a resenas y rastrea tu calificacion promedio, dandote una puntuacion sobre 100 con acciones especificas para mejorar."
+    },
     "howItWorks": {
       "title": "Como funciona",
-      "content": "Comenzar toma solo unos minutos. Conecta tu Perfil de Negocio de Google, selecciona tus ubicaciones y configura tu tono de respuesta e idioma preferidos. Bottie.ai luego monitorea tus resenas las 24 horas. Cuando llega una nueva resena, la IA elabora una respuesta y la publica automaticamente o la pone en cola para tu aprobacion, segun tu configuracion."
+      "content": "Comenzar toma solo unos minutos. Conecta tu Perfil de Negocio de Google a traves de OAuth seguro, selecciona tus ubicaciones y configura tu tono de respuesta e idioma preferidos. Bottie.ai luego monitorea tus resenas las 24 horas a traves de webhooks de Google Pub/Sub. Cuando llega una nueva resena, la IA elabora una respuesta en 1-2 minutos y la publica automaticamente o la pone en cola para tu aprobacion, segun tu configuracion.",
+      "content2": "Desde tu panel de control, puedes ver todas las resenas en todas las ubicaciones, filtrar por calificacion, sentimiento o estado de respuesta, editar respuestas generadas por IA, crear publicaciones de Google, rastrear metricas de rendimiento, gestionar el acceso del equipo y monitorear tu Puntuacion de Salud del Perfil. Todo lo que necesitas para gestionar tu Perfil de Negocio de Google esta en un solo lugar."
+    },
+    "security": {
+      "title": "Seguridad y privacidad",
+      "items": {
+        "oauth": {
+          "title": "OAuth 2.0 seguro",
+          "description": "Usamos la integracion oficial de la API de Google Business Profile con OAuth 2.0. Nunca almacenamos tu contrasena de Google, solo tokens de actualizacion encriptados de forma segura."
+        },
+        "encryption": {
+          "title": "Almacenamiento de datos encriptado",
+          "description": "Todos los datos estan encriptados y almacenados de forma segura en PostgreSQL. Los tokens sensibles se encriptan con AES-256 antes del almacenamiento. Seguimos las mejores practicas de la industria para la proteccion de datos."
+        },
+        "realtime": {
+          "title": "Sincronizacion en tiempo real",
+          "description": "Las resenas se reciben en tiempo real a traves de webhooks de Google Pub/Sub, asegurando que tu panel de control siempre refleje los comentarios mas recientes de los clientes sin sondeos ni retrasos."
+        }
+      }
+    },
+    "pricing": {
+      "title": "Precios simples y transparentes",
+      "content": "Bottie.ai ofrece un nivel gratuito que te permite gestionar una ubicacion de negocio con hasta 5 respuestas a resenas generadas por IA al mes, sin necesidad de tarjeta de credito. Es una excelente manera de probar la plataforma y ver la calidad de las respuestas generadas por IA por ti mismo.",
+      "content2": "Para negocios que necesitan respuestas ilimitadas, el plan de pago es de $39 por mes por ubicacion e incluye respuestas de IA ilimitadas, publicacion automatica, publicaciones de Google, analiticas de rendimiento, monitoreo de salud del perfil, acceso para miembros del equipo y soporte prioritario. Cada ubicacion se factura de forma independiente, por lo que solo pagas por las ubicaciones que gestionas activamente."
     },
     "team": {
       "title": "Hecho en Tel Aviv",
-      "content": "Bottie.ai esta construido por un pequeno equipo en Tel Aviv, Israel, apasionado por ayudar a los negocios locales a prosperar en linea. Entendemos los desafios de gestionar una presencia online porque lo hemos vivido de primera mano, y construimos Bottie para ser la herramienta que deseabamos que existiera."
+      "content": "Bottie.ai esta construido por un pequeno equipo en Tel Aviv, Israel, apasionado por ayudar a los negocios locales a prosperar en linea. Entendemos los desafios de gestionar una presencia online porque lo hemos vivido de primera mano, y construimos Bottie para ser la herramienta que deseabamos que existiera.",
+      "content2": "Estamos comprometidos con la mejora continua. Lanzamos nuevas funciones regularmente, respondemos a los comentarios de los usuarios y optimizamos nuestros modelos de IA para generar respuestas mejores y mas naturales. Si tienes ideas o comentarios, nos encantaria escucharte."
     },
     "cta": {
       "title": "Listo para ahorrar tiempo en resenas?",
-      "subtitle": "Unete a los negocios que ya usan Bottie.ai para responder a cada resena de Google automaticamente.",
+      "subtitle": "Unete a los negocios que ya usan Bottie.ai para responder a cada resena de Google automaticamente, publicar posts y rastrear su rendimiento.",
       "button": "Comienza gratis"
     }
   },

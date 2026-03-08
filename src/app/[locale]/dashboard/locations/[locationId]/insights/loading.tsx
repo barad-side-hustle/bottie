@@ -16,6 +16,26 @@ export default function InsightsLoading() {
       <div className="mt-6 space-y-6">
         <Skeleton className="h-10 w-64" />
 
+        <div className="rounded-2xl bg-card shadow-xs p-6">
+          <Skeleton className="h-5 w-40 mb-4" />
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="rounded-lg border border-border/40 p-4">
+                <div className="flex items-center gap-2 mb-1">
+                  <Skeleton className="h-4 w-4" />
+                  <Skeleton className="h-3 w-20" />
+                </div>
+                <Skeleton className="h-7 w-16" />
+              </div>
+            ))}
+          </div>
+          <div className="flex items-center gap-4 mb-3">
+            <Skeleton className="h-4 w-36" />
+            <Skeleton className="h-4 w-36" />
+          </div>
+          <Skeleton className="h-[200px] w-full" />
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => (
             <div key={i} className="rounded-2xl bg-card shadow-xs p-5">

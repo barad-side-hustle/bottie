@@ -8,6 +8,8 @@ import type {
   ClassificationTrend,
   ClassificationCategory,
   ReviewClassification,
+  TopicCount,
+  PeriodDelta,
 } from "@/lib/types/classification.types";
 import { CLASSIFICATION_CATEGORIES } from "@/lib/types/classification.types";
 
@@ -81,6 +83,90 @@ export class InsightsRepository {
       .slice(0, limit);
   }
 
+  private async getResponseRate(dateFrom: Date, dateTo: Date): Promise<number> {
+    const result = await db
+      .select({
+        totalReviews: count(),
+        repliedReviews: sql<number>`COUNT(*) FILTER (WHERE ${reviews.replyStatus} = 'posted')`,
+      })
+      .from(reviews)
+      .where(
+        and(
+          eq(reviews.locationId, this.locationId),
+          gte(reviews.date, dateFrom),
+          lte(reviews.date, dateTo),
+          this.getAccessCondition()
+        )
+      );
+
+    const total = Number(result[0]?.totalReviews || 0);
+    const replied = Number(result[0]?.repliedReviews || 0);
+    return total > 0 ? Math.round((replied / total) * 100) : 0;
+  }
+
+  private async getTopTopics(dateFrom: Date, dateTo: Date, limit: number = 15): Promise<TopicCount[]> {
+    const classifiedReviewsData = await this.getClassifiedReviews(dateFrom, dateTo);
+    const topicCounts = new Map<string, number>();
+
+    for (const review of classifiedReviewsData) {
+      if (!review.classifications?.topics) continue;
+      for (const topic of review.classifications.topics) {
+        const normalized = topic.toLowerCase().trim();
+        if (normalized) {
+          topicCounts.set(normalized, (topicCounts.get(normalized) || 0) + 1);
+        }
+      }
+    }
+
+    return Array.from(topicCounts.entries())
+      .map(([topic, count]) => ({ topic, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, limit);
+  }
+
+  private async getPeriodDelta(dateFrom: Date, dateTo: Date): Promise<PeriodDelta> {
+    const periodMs = dateTo.getTime() - dateFrom.getTime();
+    const prevDateTo = new Date(dateFrom.getTime() - 1);
+    const prevDateFrom = new Date(prevDateTo.getTime() - periodMs);
+
+    const prevResult = await db
+      .select({
+        totalReviews: count(),
+        averageRating: avg(reviews.rating),
+        positiveCount: sql<number>`COUNT(*) FILTER (WHERE ${reviews.classifications}->>'sentiment' = 'positive')`,
+        negativeCount: sql<number>`COUNT(*) FILTER (WHERE ${reviews.classifications}->>'sentiment' = 'negative')`,
+        neutralCount: sql<number>`COUNT(*) FILTER (WHERE ${reviews.classifications}->>'sentiment' = 'neutral')`,
+      })
+      .from(reviews)
+      .where(
+        and(
+          eq(reviews.locationId, this.locationId),
+          gte(reviews.date, prevDateFrom),
+          lte(reviews.date, prevDateTo),
+          this.getAccessCondition()
+        )
+      );
+
+    const prev = prevResult[0];
+    const prevTotal = Number(prev?.totalReviews || 0);
+
+    if (prevTotal === 0) {
+      return { totalReviews: null, averageRating: null, positivePercent: null, negativePercent: null };
+    }
+
+    const prevPositive = Number(prev?.positiveCount || 0);
+    const prevNegative = Number(prev?.negativeCount || 0);
+    const prevNeutral = Number(prev?.neutralCount || 0);
+    const prevSentimentTotal = prevPositive + prevNeutral + prevNegative;
+
+    return {
+      totalReviews: prevTotal,
+      averageRating: Math.round(Number(prev?.averageRating || 0) * 10) / 10,
+      positivePercent: prevSentimentTotal > 0 ? Math.round((prevPositive / prevSentimentTotal) * 100) : 0,
+      negativePercent: prevSentimentTotal > 0 ? Math.round((prevNegative / prevSentimentTotal) * 100) : 0,
+    };
+  }
+
   async getClassificationStats(dateFrom: Date, dateTo: Date): Promise<ClassificationStats> {
     const statsResult = await db
       .select({
@@ -110,9 +196,12 @@ export class InsightsRepository {
         totalReviews: 0,
         classifiedReviews: 0,
         averageRating: 0,
+        responseRate: 0,
         sentimentBreakdown: { positive: 0, neutral: 0, negative: 0 },
         topPositives: [],
         topNegatives: [],
+        topTopics: [],
+        delta: { totalReviews: null, averageRating: null, positivePercent: null, negativePercent: null },
       };
     }
 
@@ -125,10 +214,17 @@ export class InsightsRepository {
     const topPositives = this.formatCategoryCountsToTop(positiveCounts, sampleSize, 10);
     const topNegatives = this.formatCategoryCountsToTop(negativeCounts, sampleSize, 10);
 
+    const [responseRate, topTopics, delta] = await Promise.all([
+      this.getResponseRate(dateFrom, dateTo),
+      this.getTopTopics(dateFrom, dateTo),
+      this.getPeriodDelta(dateFrom, dateTo),
+    ]);
+
     return {
       totalReviews,
       classifiedReviews,
       averageRating: Math.round(Number(stats?.averageRating || 0) * 10) / 10,
+      responseRate,
       sentimentBreakdown: {
         positive: Number(stats?.positiveCount || 0),
         neutral: Number(stats?.neutralCount || 0),
@@ -136,6 +232,8 @@ export class InsightsRepository {
       },
       topPositives,
       topNegatives,
+      topTopics,
+      delta,
     };
   }
 

@@ -42,6 +42,7 @@ Instructions:
 
 4. Extract 2-4 key topics (short phrases, 2-4 words each)
    - These are free-form and capture the main subjects discussed
+   - IMPORTANT: Write the topics in the SAME LANGUAGE as the review text
 
 5. If the review text is empty or very short, classify based primarily on the rating:
    - 5 stars with no text → sentiment: positive, no specific categories
