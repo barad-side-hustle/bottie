@@ -1,16 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { useLocale } from "next-intl";
 import type {
   ClassificationStats,
   ClassificationTrend,
   ClassificationCategory,
 } from "@/lib/types/classification.types";
-import { TrendsChart } from "./TrendsChart";
-import { CategoriesCard } from "./CategoriesCard";
+import { CustomerFeedbackCard } from "./CustomerFeedbackCard";
 import { CategoryReviewsModal } from "./CategoryReviewsModal";
-import { TopTopicsCard } from "./TopTopicsCard";
 
 interface InsightsChartsProps {
   stats: ClassificationStats;
@@ -20,8 +17,7 @@ interface InsightsChartsProps {
   dateTo: Date;
 }
 
-export function InsightsCharts({ stats, trends, locationId, dateFrom, dateTo }: InsightsChartsProps) {
-  const locale = useLocale();
+export function InsightsCharts({ stats, locationId, dateFrom, dateTo }: InsightsChartsProps) {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<ClassificationCategory | null>(null);
   const [selectedType, setSelectedType] = useState<"positive" | "negative" | null>(null);
@@ -33,10 +29,12 @@ export function InsightsCharts({ stats, trends, locationId, dateFrom, dateTo }: 
   };
 
   return (
-    <div className="space-y-6">
-      <CategoriesCard
+    <>
+      <CustomerFeedbackCard
         topPositives={stats.topPositives}
         topNegatives={stats.topNegatives}
+        topics={stats.topTopics}
+        sentimentBreakdown={stats.sentimentBreakdown}
         onCategoryClick={handleCategoryClick}
       />
       <CategoryReviewsModal
@@ -48,8 +46,6 @@ export function InsightsCharts({ stats, trends, locationId, dateFrom, dateTo }: 
         dateFrom={dateFrom}
         dateTo={dateTo}
       />
-      {stats.topTopics.length > 0 && <TopTopicsCard topics={stats.topTopics} />}
-      <TrendsChart trends={trends} locale={locale} />
-    </div>
+    </>
   );
 }

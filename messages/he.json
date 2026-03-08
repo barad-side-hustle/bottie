@@ -668,10 +668,20 @@
         "neutral": "ניטרלי"
       },
       "noCategories": "אין קטגוריות להצגה",
+      "showAll": "הצג את כל {count} הנושאים",
+      "showLess": "הצג פחות",
+      "scoreboard": {
+        "sentiment": "סנטימנט",
+        "customerActions": "פעולות לקוחות"
+      },
+      "discovery": {
+        "title": "חשיפת העסק"
+      },
       "sections": {
         "trends": "מגמות ביקורות",
         "categories": "קטגוריות",
-        "topics": "נושאים מובילים"
+        "topics": "נושאים מובילים",
+        "customerFeedback": "מה לקוחות אומרים"
       },
       "modal": {
         "title": "ביקורות: {category}",
