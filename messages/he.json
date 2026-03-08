@@ -706,7 +706,8 @@
         "mapsImpressions": "חשיפות במפות",
         "websiteClicks": "לחיצות לאתר",
         "phoneCalls": "שיחות טלפון",
-        "directionRequests": "בקשות ניווט"
+        "directionRequests": "בקשות ניווט",
+        "noData": "אין נתוני ביצועים זמינים עדיין. הנתונים יופיעו לאחר הפעלת סנכרון המדדים."
       }
     },
     "posts": {

@@ -41,6 +41,8 @@ nvm use 22.13.0
 - **`location_members`**: Team members linked to locations with roles
 - **`location_access_requests`**: Pending access requests to locations
 - **`location_invitations`**: Invitation tokens for team members
+- **`location_metrics`**: Daily Google Business Profile performance data per location
+- **`location_posts`**: Google Business Profile posts (standard, event, offer)
 
 ### Key Relationships
 
@@ -55,7 +57,9 @@ users (Better Auth user table)
                           ├── location_subscriptions
                           ├── location_members
                           ├── location_access_requests
-                          └── location_invitations
+                          ├── location_invitations
+                          ├── location_metrics
+                          └── location_posts
 ```
 
 ## Directory Structure
@@ -75,6 +79,8 @@ lib/
 ├── google/          # Google API integrations (MyBusiness, OAuth, Pub/Sub)
 ├── og/              # OpenGraph utilities
 ├── polar/           # Polar SDK config
+├── profile-health.ts # Profile health score calculation
+├── r2/              # Cloudflare R2 storage (client, upload, presign)
 ├── security/        # Token encryption utilities
 ├── seo/             # SEO utilities
 ├── store/           # Zustand stores
@@ -91,9 +97,11 @@ src/
 │   │   │   ├── home/   # Overview page
 │   │   │   ├── settings/ # Account settings
 │   │   │   ├── subscription/ # Billing
-│   │   │   └── accounts/[accountId]/locations/[locationId]/
+│   │   │   └── locations/[locationId]/
 │   │   │       ├── reviews/     # Review list + detail
-│   │   │       ├── insights/    # Analytics
+│   │   │       ├── insights/    # Analytics + performance metrics
+│   │   │       ├── posts/       # Google Posts management
+│   │   │       ├── profile-health/ # Profile health score
 │   │   │       └── settings/    # Location settings
 │   │   └── onboarding/
 │   └── api/
@@ -103,16 +111,19 @@ src/
 │       ├── webhooks/google-reviews/ # Pub/Sub webhook
 │       ├── internal/process-review/ # AI generation endpoint
 │       ├── import-reviews/          # Bulk review import
+│       ├── upload/post-image/       # Post image upload + proxy
 │       ├── user/settings/           # User settings
-│       └── cron/weekly-summaries/   # Scheduled weekly emails
+│       ├── cron/weekly-summaries/   # Scheduled weekly emails
+│       └── cron/fetch-metrics/      # GBP performance metrics sync
 ├── components/
 │   ├── auth/          # Login, sign-up, password reset forms
 │   ├── checkout/      # Checkout flow
 │   ├── dashboard/
 │   │   ├── overview/  # Stats, pending banner, location cards
 │   │   ├── reviews/   # ReviewCard, ReviewsList, ReplyEditor, filters
-│   │   ├── insights/  # Charts, trends, categories
-│   │   ├── locations/ # Location settings forms
+│   │   ├── insights/  # Charts, trends, categories, performance metrics
+│   │   ├── locations/ # Location settings forms, profile health
+│   │   ├── posts/     # PostComposer, PostsList
 │   │   └── subscription/ # Billing components
 │   ├── landing/       # Hero, HowItWorks, Pricing, FAQ, etc.
 │   ├── layout/        # AppSidebar, DashboardTopBar, Breadcrumbs, etc.
@@ -178,6 +189,11 @@ Required in `.env.local`:
 - `RESEND_API_KEY`
 - `RESEND_FROM_EMAIL`
 - `CONTACT_FORM_RECIPIENTS`
+- `R2_ACCOUNT_ID`
+- `R2_ACCESS_KEY_ID`
+- `R2_SECRET_ACCESS_KEY`
+- `R2_BUCKET_NAME`
+- `R2_PUBLIC_URL`
 
 ## Testing
 

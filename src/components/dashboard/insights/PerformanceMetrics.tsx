@@ -46,7 +46,20 @@ export function PerformanceMetrics({ locationId, dateFrom, dateTo }: Performance
       .catch(() => {});
   }, [locationId, dateFrom, dateTo]);
 
-  if (!data || data.totals.totalImpressions === 0) return null;
+  if (!data) return null;
+
+  if (data.totals.totalImpressions === 0) {
+    return (
+      <DashboardCard>
+        <DashboardCardHeader>
+          <DashboardCardTitle>{t("title")}</DashboardCardTitle>
+        </DashboardCardHeader>
+        <DashboardCardContent className="pt-0">
+          <p className="text-sm text-muted-foreground">{t("noData")}</p>
+        </DashboardCardContent>
+      </DashboardCard>
+    );
+  }
 
   const statCards = [
     { label: t("totalImpressions"), value: data.totals.totalImpressions, icon: Eye },

@@ -713,7 +713,8 @@
         "mapsImpressions": "Impresiones en mapas",
         "websiteClicks": "Clics al sitio web",
         "phoneCalls": "Llamadas telefonicas",
-        "directionRequests": "Solicitudes de direccion"
+        "directionRequests": "Solicitudes de direccion",
+        "noData": "Aún no hay datos de rendimiento disponibles. Los datos aparecerán una vez que se ejecute la sincronización de métricas."
       }
     },
     "posts": {

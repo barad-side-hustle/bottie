@@ -19,8 +19,8 @@ import {
   ResponsiveContainer,
   ReferenceLine,
   Legend,
-  type LegendProps,
 } from "recharts";
+import type { Props as LegendContentProps } from "recharts/types/component/DefaultLegendContent";
 import { format, parseISO, type Locale } from "date-fns";
 import { he, enUS } from "date-fns/locale";
 
@@ -72,7 +72,7 @@ export function TrendsChart({ trends, locale }: TrendsChartProps) {
     setVisibleSeries((prev) => ({ ...prev, [dataKey]: !prev[dataKey as SeriesKey] }));
   };
 
-  const renderLegend = (props: LegendProps) => {
+  const renderLegend = (props: LegendContentProps) => {
     const { payload } = props;
     if (!payload) return null;
 

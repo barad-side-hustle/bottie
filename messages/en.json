@@ -713,7 +713,8 @@
         "mapsImpressions": "Maps Impressions",
         "websiteClicks": "Website Clicks",
         "phoneCalls": "Phone Calls",
-        "directionRequests": "Directions"
+        "directionRequests": "Directions",
+        "noData": "No performance data available yet. Data will appear once the metrics sync runs."
       }
     },
     "posts": {

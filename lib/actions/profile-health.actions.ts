@@ -5,7 +5,8 @@ import { z } from "zod";
 import { calculateProfileHealth, type ProfileHealthResult } from "@/lib/profile-health";
 import { db } from "@/lib/db/client";
 import { reviews, locations } from "@/lib/db/schema";
-import { eq, count, sql } from "drizzle-orm";
+import { eq, and, count, sql } from "drizzle-orm";
+import { createLocationAccessCondition } from "@/lib/db/repositories/access-conditions";
 
 const GetProfileHealthSchema = z.object({
   locationId: z.string().uuid(),
@@ -13,9 +14,9 @@ const GetProfileHealthSchema = z.object({
 
 export const getProfileHealth = createSafeAction(
   GetProfileHealthSchema,
-  async ({ locationId }): Promise<ProfileHealthResult> => {
+  async ({ locationId }, { userId }): Promise<ProfileHealthResult> => {
     const location = await db.query.locations.findFirst({
-      where: eq(locations.id, locationId),
+      where: and(eq(locations.id, locationId), createLocationAccessCondition(userId, locationId)),
       columns: {
         description: true,
         phoneNumber: true,
