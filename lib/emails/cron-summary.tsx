@@ -1,15 +1,4 @@
-import {
-  Body,
-  Container,
-  Head,
-  Html,
-  Preview,
-  Section,
-  Text,
-  Tailwind,
-  Font,
-  Hr,
-} from "@react-email/components";
+import { Body, Container, Head, Html, Preview, Section, Text, Tailwind, Font, Hr } from "@react-email/components";
 
 interface CronSummaryEmailProps {
   cronName: string;
@@ -60,12 +49,12 @@ export function CronSummaryEmail({ cronName, status, lines }: CronSummaryEmailPr
         <Body className="bg-background my-auto mx-auto font-sans px-2 text-foreground">
           <Container className="border border-solid border-border rounded-lg my-[40px] mx-auto p-[20px] max-w-[500px] bg-card">
             <Section className="mb-4">
-              <Text className={`text-xs font-bold uppercase tracking-wider m-0 mb-1 ${isError ? "text-error" : "text-success"}`}>
+              <Text
+                className={`text-xs font-bold uppercase tracking-wider m-0 mb-1 ${isError ? "text-error" : "text-success"}`}
+              >
                 {isError ? "Failed" : "Completed"}
               </Text>
-              <Text className="text-foreground text-lg font-bold m-0">
-                {cronName}
-              </Text>
+              <Text className="text-foreground text-lg font-bold m-0">{cronName}</Text>
             </Section>
 
             <Hr className="border-border opacity-50 mx-0 w-full" />
@@ -81,9 +70,7 @@ export function CronSummaryEmail({ cronName, status, lines }: CronSummaryEmailPr
             <Hr className="border-border opacity-50 mx-0 w-full" />
 
             <Section className="mt-4">
-              <Text className="text-muted text-xs">
-                Bottie.ai Cron - {new Date().toISOString().split("T")[0]}
-              </Text>
+              <Text className="text-muted text-xs">Bottie.ai Cron - {new Date().toISOString().split("T")[0]}</Text>
             </Section>
           </Container>
         </Body>
