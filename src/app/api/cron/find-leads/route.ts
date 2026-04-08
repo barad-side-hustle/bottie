@@ -1,9 +1,7 @@
 import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
-import { inArray } from "drizzle-orm";
-import { db } from "@/lib/db/client";
-import { leads } from "@/lib/db/schema";
 import { env } from "@/lib/env";
+import { LeadsRepository } from "@/lib/db/repositories";
 import { getCitiesForToday, getQueriesForCities, searchPlaces, type Place } from "@/lib/leads/places";
 import { scrapeEmails, pickBestEmail, withConcurrency } from "@/lib/leads/scraper";
 import { sendEmail } from "@/lib/utils/email-service";
@@ -68,16 +66,9 @@ export async function GET(req: NextRequest) {
       elapsedMs: Date.now() - startTime,
     });
 
+    const leadsRepo = new LeadsRepository();
     const placeIds = allPlaces.map((p) => p.placeId);
-    const existingLeads =
-      placeIds.length > 0
-        ? await db
-            .select({ googlePlaceId: leads.googlePlaceId })
-            .from(leads)
-            .where(inArray(leads.googlePlaceId, placeIds))
-        : [];
-
-    const existingIds = new Set(existingLeads.map((l) => l.googlePlaceId));
+    const existingIds = await leadsRepo.findExistingPlaceIds(placeIds);
     const newPlaces = allPlaces.filter((p) => !existingIds.has(p.placeId));
 
     console.log("[find-leads] Dedup against DB complete", {
@@ -136,9 +127,7 @@ export async function GET(req: NextRequest) {
       })),
     ];
 
-    if (leadsToInsert.length > 0) {
-      await db.insert(leads).values(leadsToInsert).onConflictDoNothing();
-    }
+    await leadsRepo.insertMany(leadsToInsert);
 
     const emailsFound = scrapeResults.filter((r) => r.email).length;
     const elapsedMs = Date.now() - startTime;

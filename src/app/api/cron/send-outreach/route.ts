@@ -1,9 +1,7 @@
 import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
-import { and, eq, isNotNull, notInArray } from "drizzle-orm";
-import { db } from "@/lib/db/client";
-import { leads } from "@/lib/db/schema";
 import { env } from "@/lib/env";
+import { LeadsRepository } from "@/lib/db/repositories";
 import { sendEmail } from "@/lib/utils/email-service";
 import LeadOutreachEmail from "@/lib/emails/lead-outreach";
 import { CronSummaryEmail } from "@/lib/emails/cron-summary";
@@ -27,22 +25,11 @@ export async function GET(req: NextRequest) {
   const startTime = Date.now();
 
   try {
-    const sentEmails = await db.select({ email: leads.email }).from(leads).where(eq(leads.status, "sent"));
+    const leadsRepo = new LeadsRepository();
+    const sentEmailSet = await leadsRepo.findSentEmails();
 
-    const sentEmailSet = new Set(sentEmails.map((l) => l.email).filter(Boolean));
-
-    const sentEmailList = [...sentEmailSet].filter(Boolean) as string[];
-    const pendingLeads = await db
-      .select()
-      .from(leads)
-      .where(
-        and(
-          eq(leads.status, "pending"),
-          isNotNull(leads.email),
-          sentEmailList.length > 0 ? notInArray(leads.email, sentEmailList) : undefined
-        )
-      )
-      .limit(50);
+    const sentEmailList = [...sentEmailSet];
+    const pendingLeads = await leadsRepo.findPendingLeads(sentEmailList, 50);
 
     console.log("[send-outreach] Starting cron run", {
       pendingLeads: pendingLeads.length,
@@ -66,7 +53,7 @@ export async function GET(req: NextRequest) {
           email: lead.email,
           business: lead.businessName,
         });
-        await db.update(leads).set({ status: "skipped", error: "duplicate email" }).where(eq(leads.id, lead.id));
+        await leadsRepo.updateStatus(lead.id, "skipped", { error: "duplicate email" });
         continue;
       }
 
@@ -92,7 +79,7 @@ export async function GET(req: NextRequest) {
       );
 
       if (result.success) {
-        await db.update(leads).set({ status: "sent", sentAt: new Date() }).where(eq(leads.id, lead.id));
+        await leadsRepo.updateStatus(lead.id, "sent", { sentAt: new Date() });
         sentEmailSet.add(lead.email);
         emailsSent++;
         consecutiveFailures = 0;
@@ -102,10 +89,7 @@ export async function GET(req: NextRequest) {
           business: lead.businessName,
         });
       } else {
-        await db
-          .update(leads)
-          .set({ status: "failed", error: result.error || "Unknown error" })
-          .where(eq(leads.id, lead.id));
+        await leadsRepo.updateStatus(lead.id, "failed", { error: result.error || "Unknown error" });
         emailsFailed++;
         consecutiveFailures++;
         console.error("[send-outreach] Email send failed", {

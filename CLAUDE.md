@@ -77,6 +77,7 @@ lib/
 ├── emails/          # React Email templates
 ├── env.ts           # Zod-validated environment variables
 ├── google/          # Google API integrations (MyBusiness, OAuth, Pub/Sub)
+├── leads/           # Lead generation (Google Places search, email scraping)
 ├── og/              # OpenGraph utilities
 ├── polar/           # Polar SDK config
 ├── profile-health.ts # Profile health score calculation
@@ -183,6 +184,7 @@ Required in `.env.local`:
 - `TOKEN_ENCRYPTION_SECRET`
 - `INTERNAL_API_SECRET`
 - `CRON_SECRET`
+- `GOOGLE_PLACES_API_KEY`
 - `POLAR_ACCESS_TOKEN`
 - `POLAR_WEBHOOK_SECRET`
 - `POLAR_PRODUCT_ID`

@@ -12,3 +12,4 @@ export * from "./insights.repository";
 export * from "./location-members.repository";
 export * from "./location-access-requests.repository";
 export * from "./location-invitations.repository";
+export * from "./leads.repository";
