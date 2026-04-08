@@ -4,18 +4,81 @@ const CONTACT_PATHS = ["/contact", "/about", "/צור-קשר", "/contact-us"];
 
 const NOISE_DOMAINS = [
   "example.com",
+  "mysite.com",
+  "email.com",
   "sentry.io",
   "wixpress.com",
+  "wix.com",
   "wordpress.org",
+  "wordpress.com",
   "w3.org",
   "schema.org",
   "googleapis.com",
   "google.com",
   "facebook.com",
   "twitter.com",
+  "instagram.com",
+  "wolt.com",
+  "10bis.co.il",
+  "weizmann.ac.il",
+  "gov.il",
+  "masorti.org.il",
+  "melisron.co.il",
+  "media-maven.co.il",
+  "popway.co.il",
+  "r2m.co.il",
+  "o-s-yazamut.com",
 ];
 
+const VALID_TLDS = new Set([
+  "com",
+  "co.il",
+  "org.il",
+  "net.il",
+  "ac.il",
+  "gov.il",
+  "il",
+  "org",
+  "net",
+  "io",
+  "co",
+  "ai",
+  "me",
+  "info",
+  "biz",
+  "show",
+]);
+
 const GENERIC_PREFIXES = ["info@", "noreply@", "no-reply@", "support@", "hello@", "contact@", "office@", "admin@"];
+
+function cleanEmail(email: string): string {
+  let cleaned = decodeURIComponent(email).trim();
+  cleaned = cleaned.replace(/[^\x20-\x7E@.]/g, "");
+  return cleaned;
+}
+
+function isValidEmail(email: string): boolean {
+  const parts = email.split("@");
+  if (parts.length !== 2) return false;
+
+  const [local, domain] = parts;
+  if (!local || !domain) return false;
+
+  if (local.length > 64 || local.includes(" ")) return false;
+
+  const domainParts = domain.split(".");
+  if (domainParts.length < 2) return false;
+
+  const lastTwo = domainParts.slice(-2).join(".");
+  const lastOne = domainParts[domainParts.length - 1];
+  if (!VALID_TLDS.has(lastTwo) && !VALID_TLDS.has(lastOne)) {
+    if (lastOne.length < 2 || lastOne.length > 3) return false;
+  }
+
+  if (lastOne.length > 3 && !/[aeiou]/i.test(lastOne)) return false;
+
+  return true;
+}
 
 async function fetchPageEmails(url: string): Promise<string[]> {
   try {
@@ -36,11 +99,16 @@ async function fetchPageEmails(url: string): Promise<string[]> {
     const html = await res.text();
     const matches = html.match(EMAIL_REGEX) || [];
 
-    return matches.filter((email) => {
-      const lower = email.toLowerCase();
-      if (lower.endsWith(".png") || lower.endsWith(".jpg") || lower.endsWith(".svg")) return false;
-      return !NOISE_DOMAINS.some((d) => lower.includes(d));
-    });
+    return matches
+      .map((e) => cleanEmail(e))
+      .filter((email) => {
+        if (!email) return false;
+        const lower = email.toLowerCase();
+        if (lower.endsWith(".png") || lower.endsWith(".jpg") || lower.endsWith(".svg")) return false;
+        if (NOISE_DOMAINS.some((d) => lower.includes(d))) return false;
+        if (!isValidEmail(lower)) return false;
+        return true;
+      });
   } catch {
     return [];
   }

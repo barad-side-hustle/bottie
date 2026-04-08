@@ -30,15 +30,28 @@ export async function GET(req: NextRequest) {
     const cities = getCitiesForToday();
     const queries = getQueriesForCities(cities);
 
-    console.log(`find-leads: searching cities [${cities.join(", ")}]`);
+    console.log("[find-leads] Starting cron run", {
+      cities,
+      queries,
+      queriesCount: queries.length,
+    });
 
     const allPlaces: Array<Place & { searchQuery: string }> = [];
     const seenPlaceIds = new Set<string>();
 
     for (const query of queries) {
-      if (Date.now() - startTime > TIMEOUT_MS) break;
+      if (Date.now() - startTime > TIMEOUT_MS) {
+        console.warn("[find-leads] Timeout approaching, stopping search early", {
+          elapsedMs: Date.now() - startTime,
+          queriesCompleted: queries.indexOf(query),
+          queriesTotal: queries.length,
+        });
+        break;
+      }
 
       const places = await searchPlaces(query, env.GOOGLE_PLACES_API_KEY);
+      console.log(`[find-leads] Query "${query}" returned ${places.length} results`);
+
       for (const place of places) {
         if (place.placeId && !seenPlaceIds.has(place.placeId)) {
           seenPlaceIds.add(place.placeId);
@@ -47,7 +60,11 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    console.log(`find-leads: found ${allPlaces.length} unique places`);
+    console.log("[find-leads] Search phase complete", {
+      uniquePlaces: allPlaces.length,
+      totalFromApi: seenPlaceIds.size,
+      elapsedMs: Date.now() - startTime,
+    });
 
     const placeIds = allPlaces.map((p) => p.placeId);
     const existingLeads =
@@ -61,17 +78,35 @@ export async function GET(req: NextRequest) {
     const existingIds = new Set(existingLeads.map((l) => l.googlePlaceId));
     const newPlaces = allPlaces.filter((p) => !existingIds.has(p.placeId));
 
-    console.log(`find-leads: ${newPlaces.length} new places (${existingIds.size} already in DB)`);
+    console.log("[find-leads] Dedup against DB complete", {
+      newPlaces: newPlaces.length,
+      alreadyInDb: existingIds.size,
+    });
 
     const placesWithWebsite = newPlaces.filter((p) => p.websiteUri);
     const placesWithoutWebsite = newPlaces.filter((p) => !p.websiteUri);
 
+    console.log("[find-leads] Starting email scraping", {
+      withWebsite: placesWithWebsite.length,
+      withoutWebsite: placesWithoutWebsite.length,
+    });
+
+    let scrapeCount = 0;
     const scrapeResults = await withConcurrency(placesWithWebsite, 5, async (place) => {
       if (Date.now() - startTime > TIMEOUT_MS) {
+        console.warn("[find-leads] Timeout approaching, skipping remaining scrapes", {
+          scraped: scrapeCount,
+          total: placesWithWebsite.length,
+        });
         return { place, email: "" };
       }
       const emails = await scrapeEmails(place.websiteUri!);
-      return { place, email: pickBestEmail(emails) };
+      const best = pickBestEmail(emails);
+      scrapeCount++;
+      if (best) {
+        console.log(`[find-leads] Found email for "${place.displayName}": ${best}`);
+      }
+      return { place, email: best };
     });
 
     const leadsToInsert = [
@@ -104,18 +139,27 @@ export async function GET(req: NextRequest) {
     }
 
     const emailsFound = scrapeResults.filter((r) => r.email).length;
+    const elapsedMs = Date.now() - startTime;
 
-    console.log(`find-leads: inserted ${leadsToInsert.length} leads, ${emailsFound} with emails`);
-
-    return NextResponse.json({
-      message: "Find-leads cron completed",
+    const summary = {
       citiesSearched: cities,
       placesFound: allPlaces.length,
       newLeads: leadsToInsert.length,
       emailsFound,
-    });
+      skipped: placesWithoutWebsite.length + scrapeResults.filter((r) => !r.email).length,
+      elapsedMs,
+    };
+
+    console.log("[find-leads] Cron run completed successfully", summary);
+
+    return NextResponse.json({ message: "Find-leads cron completed", ...summary });
   } catch (error) {
-    console.error("Find-leads cron failed:", error);
+    const elapsedMs = Date.now() - startTime;
+    console.error("[find-leads] Cron run failed", {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      elapsedMs,
+    });
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }

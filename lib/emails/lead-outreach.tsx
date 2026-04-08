@@ -2,8 +2,8 @@ import {
   Body,
   Container,
   Head,
-  Heading,
   Html,
+  Img,
   Preview,
   Section,
   Text,
@@ -19,7 +19,7 @@ interface LeadOutreachEmailProps {
 }
 
 export default function LeadOutreachEmail({ businessName, city }: LeadOutreachEmailProps) {
-  const previewText = `${businessName} - ניהול ביקורות גוגל אוטומטי`;
+  const previewText = `${businessName}, מגיבים לביקורות גוגל בשבילכם`;
 
   return (
     <Html dir="rtl" lang="he">
@@ -69,87 +69,84 @@ export default function LeadOutreachEmail({ businessName, city }: LeadOutreachEm
         <Body className="bg-background my-auto mx-auto font-sans px-2 text-foreground">
           <Container className="border border-solid border-border rounded-lg my-[40px] mx-auto p-[20px] max-w-[600px] bg-card">
             <Section className="mt-4 mb-6 text-center">
-              <Heading className="text-foreground text-2xl font-bold p-0 m-0">שלום {businessName} 👋</Heading>
+              <Img
+                src="https://bottie.ai/images/logo-full.svg"
+                alt="Bottie.ai"
+                width="120"
+                height="auto"
+                className="mx-auto"
+              />
+            </Section>
+
+            <Section className="mb-6">
+              <Text className="text-foreground text-base font-bold m-0 mb-4">שלום {businessName},</Text>
+
+              <Text className="text-muted text-sm leading-relaxed m-0 mb-4">
+                שמי אלון. הקמתי את Bottie.ai כי ראיתי כמה זמן עסקים ב{city} מבזבזים על מענה לביקורות בגוגל.
+              </Text>
+
+              <Text className="text-muted text-sm leading-relaxed m-0 mb-4">
+                שמתי לב שיש לכם פרופיל עסקי בגוגל, ורציתי לשתף איך אפשר לטפל בביקורות בלי להשקיע בזה שעות כל שבוע.
+              </Text>
+            </Section>
+
+            <Hr className="border-border opacity-50 mx-0 w-full" />
+
+            <Section className="my-6">
+              <Text className="text-foreground font-bold text-sm mb-4 m-0">איך זה עובד:</Text>
+
+              <Text className="text-muted text-sm leading-relaxed m-0 mb-3">
+                <span className="text-primary font-bold">1. מחברים את הפרופיל העסקי</span> - תוך דקה, בלי הגדרות
+                מסובכות.
+              </Text>
+
+              <Text className="text-muted text-sm leading-relaxed m-0 mb-3">
+                <span className="text-primary font-bold">2. ביקורת חדשה נכנסת</span> - המערכת מזהה אותה מיד ומייצרת
+                תגובה בעברית, בטון שמתאים לעסק שלכם.
+              </Text>
+
+              <Text className="text-muted text-sm leading-relaxed m-0 mb-3">
+                <span className="text-primary font-bold">3. אתם מאשרים ומפרסמים</span> - או נותנים למערכת לפרסם
+                אוטומטית. הבחירה שלכם.
+              </Text>
             </Section>
 
             <Hr className="border-border opacity-50 mx-0 w-full" />
 
             <Section className="my-6">
               <Text className="text-muted text-sm leading-relaxed m-0 mb-4">
-                שמי אלון, והקמתי את Bottie.ai — מערכת שעוזרת לעסקים כמו שלכם ב{city} לנהל ביקורות גוגל בצורה אוטומטית
-                וחכמה.
+                עסקים שמגיבים לביקורות מקבלים יותר לקוחות חדשים. גוגל מעדיף עסקים פעילים בתוצאות החיפוש. הבעיה היא
+                שלבעלי מסעדות אין זמן לשבת ולכתוב תגובות כל יום.
               </Text>
 
               <Text className="text-muted text-sm leading-relaxed m-0 mb-4">
-                אני פונה אליכם כי שמתי לב שיש לכם פרופיל עסקי בגוגל, ואני מאמין שנוכל לעזור לכם לחסוך זמן ולשפר את
-                הנוכחות הדיגיטלית שלכם.
+                Bottie פותר את זה. 5 תגובות בחודש בחינם, בלי כרטיס אשראי.
               </Text>
-
-              <Section className="mb-8">
-                <Text className="text-foreground font-bold text-base mb-4 m-0">מה Bottie.ai עושה בשבילכם:</Text>
-
-                <div className="bg-background border border-solid border-border rounded-xl p-6 mb-4">
-                  <Heading as="h3" className="text-primary font-bold m-0 mb-2 text-base">
-                    🤖 תגובות אוטומטיות לביקורות
-                  </Heading>
-                  <Text className="text-muted text-sm leading-relaxed m-0">
-                    המערכת מזהה ביקורות חדשות ומייצרת תגובה מותאמת אישית בעברית — מקצועית, אישית, ובטון שמתאים לעסק
-                    שלכם.
-                  </Text>
-                </div>
-
-                <div className="bg-background border border-solid border-border rounded-xl p-6 mb-4">
-                  <Heading as="h3" className="text-primary font-bold m-0 mb-2 text-base">
-                    📊 תובנות חכמות
-                  </Heading>
-                  <Text className="text-muted text-sm leading-relaxed m-0">
-                    קבלו ניתוח מיידי של הביקורות שלכם — מה עובד, מה דורש שיפור, ואיפה ההזדמנויות.
-                  </Text>
-                </div>
-
-                <div className="bg-background border border-solid border-border rounded-xl p-6 mb-6">
-                  <Heading as="h3" className="text-primary font-bold m-0 mb-2 text-base">
-                    ⏰ חיסכון בזמן
-                  </Heading>
-                  <Text className="text-muted text-sm leading-relaxed m-0">
-                    במקום לבזבז שעות על מענה לביקורות — הכל קורה אוטומטית תוך דקות.
-                  </Text>
-                </div>
-              </Section>
-
-              <div className="bg-primary/10 border border-primary/20 rounded-xl p-6 text-center mb-6">
-                <Heading as="h3" className="text-foreground font-bold m-0 mb-2 text-lg">
-                  נסו בחינם — בלי התחייבות
-                </Heading>
-                <Text className="text-muted text-sm leading-relaxed m-0 mb-6 max-w-[400px] mx-auto">
-                  5 תגובות חינם בחודש. חיבור פשוט לפרופיל הגוגל שלכם תוך דקה.
-                </Text>
-                <Button
-                  href="https://bottie.ai"
-                  className="bg-primary text-white rounded-md px-6 py-3 text-sm font-bold no-underline shadow-lg"
-                >
-                  התחילו עכשיו בחינם
-                </Button>
-              </div>
-
-              <Text className="text-muted text-sm leading-relaxed m-0 mt-6">
-                אשמח לשמוע מכם אם יש שאלות — פשוט השיבו למייל הזה.
-              </Text>
-
-              <Text className="text-muted text-sm leading-relaxed m-0 mt-6">בברכה,</Text>
-
-              <div className="mt-2">
-                <Text className="text-foreground text-sm font-bold m-0">אלון</Text>
-                <Text className="text-muted text-xs m-0">מייסד, Bottie.ai</Text>
-              </div>
             </Section>
 
-            <Hr className="border-border opacity-50 mx-0 w-full mt-6" />
+            <Section className="text-center mb-6">
+              <Button
+                href="https://bottie.ai"
+                className="bg-primary text-white rounded-md px-6 py-3 text-sm font-bold no-underline shadow-lg"
+              >
+                לנסות בחינם
+              </Button>
+            </Section>
 
-            <Section className="mt-6">
+            <Section className="mb-4">
+              <Text className="text-muted text-sm leading-relaxed m-0">
+                יש שאלות? פשוט השיבו למייל הזה. אני קורא הכל.
+              </Text>
+
+              <Text className="text-muted text-sm leading-relaxed m-0 mt-4">אלון</Text>
+              <Text className="text-muted text-xs m-0">מייסד, Bottie.ai</Text>
+            </Section>
+
+            <Hr className="border-border opacity-50 mx-0 w-full mt-4" />
+
+            <Section className="mt-4">
               <Text className="text-muted text-xs text-center">
-                קיבלתם את המייל הזה כי לעסק שלכם יש פרופיל עסקי בגוגל. אם אינכם מעוניינים לקבל הודעות נוספות, השיבו
-                למייל זה עם המילה &quot;הסר&quot;.
+                קיבלתם את המייל הזה כי לעסק שלכם יש פרופיל עסקי בגוגל. לא מעוניינים? השיבו עם המילה &quot;הסר&quot;.
               </Text>
             </Section>
           </Container>

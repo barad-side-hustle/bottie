@@ -23,6 +23,8 @@ export async function GET(req: NextRequest) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
 
+  const startTime = Date.now();
+
   try {
     const sentEmails = await db.select({ email: leads.email }).from(leads).where(eq(leads.status, "sent"));
 
@@ -41,15 +43,28 @@ export async function GET(req: NextRequest) {
       )
       .limit(50);
 
-    console.log(`send-outreach: ${pendingLeads.length} leads to email`);
+    console.log("[send-outreach] Starting cron run", {
+      pendingLeads: pendingLeads.length,
+      alreadySentEmails: sentEmailSet.size,
+    });
 
     let emailsSent = 0;
     let emailsFailed = 0;
+    let consecutiveFailures = 0;
 
     for (const lead of pendingLeads) {
+      if (consecutiveFailures >= 3) {
+        console.error("[send-outreach] Aborting: 3 consecutive failures, likely a config issue");
+        break;
+      }
       if (!lead.email) continue;
 
       if (sentEmailSet.has(lead.email)) {
+        console.log("[send-outreach] Skipping duplicate email", {
+          leadId: lead.id,
+          email: lead.email,
+          business: lead.businessName,
+        });
         await db.update(leads).set({ status: "skipped", error: "duplicate email" }).where(eq(leads.id, lead.id));
         continue;
       }
@@ -58,6 +73,13 @@ export async function GET(req: NextRequest) {
       const emailComponent = LeadOutreachEmail({
         businessName: lead.businessName,
         city: lead.city || "",
+      });
+
+      console.log("[send-outreach] Sending email", {
+        leadId: lead.id,
+        email: lead.email,
+        business: lead.businessName,
+        city: lead.city,
       });
 
       const result = await sendEmail(
@@ -72,27 +94,48 @@ export async function GET(req: NextRequest) {
         await db.update(leads).set({ status: "sent", sentAt: new Date() }).where(eq(leads.id, lead.id));
         sentEmailSet.add(lead.email);
         emailsSent++;
+        consecutiveFailures = 0;
+        console.log("[send-outreach] Email sent successfully", {
+          leadId: lead.id,
+          email: lead.email,
+          business: lead.businessName,
+        });
       } else {
         await db
           .update(leads)
           .set({ status: "failed", error: result.error || "Unknown error" })
           .where(eq(leads.id, lead.id));
         emailsFailed++;
+        consecutiveFailures++;
+        console.error("[send-outreach] Email send failed", {
+          leadId: lead.id,
+          email: lead.email,
+          business: lead.businessName,
+          error: result.error,
+        });
       }
 
       await new Promise((r) => setTimeout(r, 200));
     }
 
-    console.log(`send-outreach: sent ${emailsSent}, failed ${emailsFailed}`);
-
-    return NextResponse.json({
-      message: "Send-outreach cron completed",
+    const elapsedMs = Date.now() - startTime;
+    const summary = {
       emailsSent,
       emailsFailed,
       totalPending: pendingLeads.length,
-    });
+      elapsedMs,
+    };
+
+    console.log("[send-outreach] Cron run completed successfully", summary);
+
+    return NextResponse.json({ message: "Send-outreach cron completed", ...summary });
   } catch (error) {
-    console.error("Send-outreach cron failed:", error);
+    const elapsedMs = Date.now() - startTime;
+    console.error("[send-outreach] Cron run failed", {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      elapsedMs,
+    });
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }
