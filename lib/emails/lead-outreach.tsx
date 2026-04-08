@@ -126,7 +126,7 @@ export default function LeadOutreachEmail({ businessName, city }: LeadOutreachEm
 
             <Section className="text-center mb-6">
               <Button
-                href="https://bottie.ai"
+                href="https://bottie.ai/he"
                 className="bg-primary text-white rounded-md px-6 py-3 text-sm font-bold no-underline shadow-lg"
               >
                 לנסות בחינם
