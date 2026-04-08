@@ -25,6 +25,8 @@
     "cron:generate-replies": "dotenv -e .env -- bash -c 'curl -s -H \"Authorization: Bearer $CRON_SECRET\" http://localhost:3000/api/cron/generate-replies'",
     "cron:post-replies": "dotenv -e .env -- bash -c 'curl -s -H \"Authorization: Bearer $CRON_SECRET\" http://localhost:3000/api/cron/post-replies'",
     "cron:send-notifications": "dotenv -e .env -- bash -c 'curl -s -H \"Authorization: Bearer $CRON_SECRET\" http://localhost:3000/api/cron/send-notifications'",
+    "cron:find-leads": "dotenv -e .env -- bash -c 'curl -s -H \"Authorization: Bearer $CRON_SECRET\" http://localhost:3000/api/cron/find-leads'",
+    "cron:send-outreach": "dotenv -e .env -- bash -c 'curl -s -H \"Authorization: Bearer $CRON_SECRET\" http://localhost:3000/api/cron/send-outreach'",
     "comments:remove": "tsx scripts/remove-comments.ts",
     "pubsub:update": "bash scripts/update-pubsub-subscription.sh",
     "email:dev": "npx react-email dev --dir lib/emails",

@@ -13,3 +13,4 @@ export * from "./location-access-requests.schema";
 export * from "./location-invitations.schema";
 export * from "./location-metrics.schema";
 export * from "./location-posts.schema";
+export * from "./leads.schema";
