@@ -6,6 +6,8 @@ import { leads } from "@/lib/db/schema";
 import { env } from "@/lib/env";
 import { getCitiesForToday, getQueriesForCities, searchPlaces, type Place } from "@/lib/leads/places";
 import { scrapeEmails, pickBestEmail, withConcurrency } from "@/lib/leads/scraper";
+import { sendEmail } from "@/lib/utils/email-service";
+import { CronSummaryEmail } from "@/lib/emails/cron-summary";
 
 export const maxDuration = 300;
 
@@ -152,6 +154,23 @@ export async function GET(req: NextRequest) {
 
     console.log("[find-leads] Cron run completed successfully", summary);
 
+    await sendEmail(
+      "alon710@gmail.com",
+      `Find Leads: ${emailsFound} emails from ${cities.join(", ")}`,
+      CronSummaryEmail({
+        cronName: "Find Leads",
+        status: "success",
+        lines: [
+          `Cities: ${cities.join(", ")}`,
+          `Places found: ${allPlaces.length}`,
+          `New leads: ${leadsToInsert.length}`,
+          `Emails found: ${emailsFound}`,
+          `Skipped (no email): ${placesWithoutWebsite.length + scrapeResults.filter((r) => !r.email).length}`,
+          `Duration: ${(elapsedMs / 1000).toFixed(1)}s`,
+        ],
+      })
+    );
+
     return NextResponse.json({ message: "Find-leads cron completed", ...summary });
   } catch (error) {
     const elapsedMs = Date.now() - startTime;
@@ -160,6 +179,20 @@ export async function GET(req: NextRequest) {
       stack: error instanceof Error ? error.stack : undefined,
       elapsedMs,
     });
+
+    await sendEmail(
+      "alon710@gmail.com",
+      "Find Leads: FAILED",
+      CronSummaryEmail({
+        cronName: "Find Leads",
+        status: "error",
+        lines: [
+          `Error: ${error instanceof Error ? error.message : String(error)}`,
+          `Duration: ${(elapsedMs / 1000).toFixed(1)}s`,
+        ],
+      })
+    ).catch(() => {});
+
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }

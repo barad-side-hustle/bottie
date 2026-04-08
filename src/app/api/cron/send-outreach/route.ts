@@ -6,6 +6,7 @@ import { leads } from "@/lib/db/schema";
 import { env } from "@/lib/env";
 import { sendEmail } from "@/lib/utils/email-service";
 import LeadOutreachEmail from "@/lib/emails/lead-outreach";
+import { CronSummaryEmail } from "@/lib/emails/cron-summary";
 
 export const maxDuration = 300;
 
@@ -128,6 +129,22 @@ export async function GET(req: NextRequest) {
 
     console.log("[send-outreach] Cron run completed successfully", summary);
 
+    await sendEmail(
+      "alon710@gmail.com",
+      `Outreach: ${emailsSent} sent, ${emailsFailed} failed`,
+      CronSummaryEmail({
+        cronName: "Send Outreach",
+        status: emailsFailed > 0 && emailsSent === 0 ? "error" : "success",
+        lines: [
+          `Emails sent: ${emailsSent}`,
+          `Emails failed: ${emailsFailed}`,
+          `Total pending: ${pendingLeads.length}`,
+          `Duration: ${(elapsedMs / 1000).toFixed(1)}s`,
+          ...(consecutiveFailures >= 3 ? ["Aborted early: 3 consecutive failures"] : []),
+        ],
+      })
+    );
+
     return NextResponse.json({ message: "Send-outreach cron completed", ...summary });
   } catch (error) {
     const elapsedMs = Date.now() - startTime;
@@ -136,6 +153,20 @@ export async function GET(req: NextRequest) {
       stack: error instanceof Error ? error.stack : undefined,
       elapsedMs,
     });
+
+    await sendEmail(
+      "alon710@gmail.com",
+      "Outreach: FAILED",
+      CronSummaryEmail({
+        cronName: "Send Outreach",
+        status: "error",
+        lines: [
+          `Error: ${error instanceof Error ? error.message : String(error)}`,
+          `Duration: ${(elapsedMs / 1000).toFixed(1)}s`,
+        ],
+      })
+    ).catch(() => {});
+
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }
