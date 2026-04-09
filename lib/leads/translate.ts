@@ -55,7 +55,7 @@ export async function translateAndPersonalizeLeads(leads: LeadInput[]): Promise<
 
   try {
     const prompt = buildPrompt(leads);
-    const raw = await generateWithGemini(env.GEMINI_API_KEY, prompt, "gemini-3-flash-preview", 4096, responseSchema);
+    const raw = await generateWithGemini(env.GEMINI_API_KEY, prompt, "gemini-3-flash-preview", 16384, responseSchema);
 
     const parsed: TranslationResult[] = JSON.parse(raw);
 
@@ -66,10 +66,11 @@ export async function translateAndPersonalizeLeads(leads: LeadInput[]): Promise<
       }
     }
   } catch (error) {
-    console.error("[translate] Gemini translation failed, falling back to original names", {
+    console.error("[translate] Gemini translation failed", {
       error: error instanceof Error ? error.message : String(error),
       leadCount: leads.length,
     });
+    throw error;
   }
 
   return results;
