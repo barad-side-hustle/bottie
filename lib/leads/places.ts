@@ -76,22 +76,11 @@ export interface Place {
   formattedAddress?: string;
 }
 
-function getDayOfYear(): number {
-  const now = new Date();
-  const start = new Date(now.getFullYear(), 0, 0);
-  const diff = now.getTime() - start.getTime();
-  return Math.floor(diff / (1000 * 60 * 60 * 24));
-}
-
 const CITIES_PER_RUN = 4;
 
-export function getCitiesForToday(runIndex: number = 0): string[] {
-  const day = getDayOfYear();
-  const slot = day * 2 + runIndex;
-  const totalRotations = Math.ceil(CITIES.length / CITIES_PER_RUN);
-  const rotationIndex = slot % totalRotations;
-  const start = rotationIndex * CITIES_PER_RUN;
-  return CITIES.slice(start, start + CITIES_PER_RUN);
+export function getRandomCities(): string[] {
+  const shuffled = [...CITIES].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, CITIES_PER_RUN);
 }
 
 export function getQueriesForCities(cities: string[]): string[] {
