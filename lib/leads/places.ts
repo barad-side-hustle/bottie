@@ -15,9 +15,58 @@ const CITIES = [
   "Rehovot",
   "Kfar Saba",
   "Ra'anana",
+  "Holon",
+  "Bnei Brak",
+  "Bat Yam",
+  "Ashkelon",
+  "Modiin",
+  "Nahariya",
+  "Acre",
+  "Tiberias",
+  "Nazareth",
+  "Lod",
+  "Ramla",
+  "Kiryat Ata",
+  "Kiryat Gat",
+  "Kiryat Motzkin",
+  "Kiryat Yam",
+  "Kiryat Bialik",
+  "Kiryat Shmona",
+  "Or Yehuda",
+  "Rosh HaAyin",
+  "Hod HaSharon",
+  "Givatayim",
+  "Yokneam",
+  "Afula",
+  "Beit Shemesh",
+  "Dimona",
+  "Arad",
+  "Sderot",
+  "Ofakim",
+  "Yavne",
+  "Nesher",
+  "Tirat Carmel",
+  "Hadera",
+  "Zichron Yaakov",
+  "Caesarea",
+  "Migdal HaEmek",
+  "Carmiel",
 ];
 
-const QUERY_TEMPLATES = ["restaurants in {city}, Israel", "event venues in {city}, Israel", "cafes in {city}, Israel"];
+const QUERY_TEMPLATES = [
+  "restaurants in {city}, Israel",
+  "cafes in {city}, Israel",
+  "event venues in {city}, Israel",
+  "hair salons in {city}, Israel",
+  "beauty salons in {city}, Israel",
+  "gyms in {city}, Israel",
+  "fitness studios in {city}, Israel",
+  "hotels in {city}, Israel",
+  "medical clinics in {city}, Israel",
+  "dental clinics in {city}, Israel",
+  "auto repair shops in {city}, Israel",
+  "spas in {city}, Israel",
+];
 
 export interface Place {
   placeId: string;
@@ -27,21 +76,11 @@ export interface Place {
   formattedAddress?: string;
 }
 
-function getDayOfYear(): number {
-  const now = new Date();
-  const start = new Date(now.getFullYear(), 0, 0);
-  const diff = now.getTime() - start.getTime();
-  return Math.floor(diff / (1000 * 60 * 60 * 24));
-}
+const CITIES_PER_RUN = 4;
 
-const CITIES_PER_RUN = 3;
-
-export function getCitiesForToday(): string[] {
-  const day = getDayOfYear();
-  const totalRotations = Math.ceil(CITIES.length / CITIES_PER_RUN);
-  const rotationIndex = day % totalRotations;
-  const start = rotationIndex * CITIES_PER_RUN;
-  return CITIES.slice(start, start + CITIES_PER_RUN);
+export function getRandomCities(): string[] {
+  const shuffled = [...CITIES].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, CITIES_PER_RUN);
 }
 
 export function getQueriesForCities(cities: string[]): string[] {

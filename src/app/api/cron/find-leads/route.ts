@@ -2,7 +2,7 @@ import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { env } from "@/lib/env";
 import { LeadsRepository } from "@/lib/db/repositories";
-import { getCitiesForToday, getQueriesForCities, searchPlaces, type Place } from "@/lib/leads/places";
+import { getRandomCities, getQueriesForCities, searchPlaces, type Place } from "@/lib/leads/places";
 import { scrapeEmails, pickBestEmail, withConcurrency } from "@/lib/leads/scraper";
 import { sendEmail } from "@/lib/utils/email-service";
 import { CronSummaryEmail } from "@/lib/emails/cron-summary";
@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
   const TIMEOUT_MS = 240_000;
 
   try {
-    const cities = getCitiesForToday();
+    const cities = getRandomCities();
     const queries = getQueriesForCities(cities);
 
     console.log("[find-leads] Starting cron run", {
@@ -144,7 +144,7 @@ export async function GET(req: NextRequest) {
     console.log("[find-leads] Cron run completed successfully", summary);
 
     await sendEmail(
-      "alon710@gmail.com",
+      "alon@bottie.ai",
       `Find Leads: ${emailsFound} emails from ${cities.join(", ")}`,
       CronSummaryEmail({
         cronName: "Find Leads",
@@ -170,7 +170,7 @@ export async function GET(req: NextRequest) {
     });
 
     await sendEmail(
-      "alon710@gmail.com",
+      "alon@bottie.ai",
       "Find Leads: FAILED",
       CronSummaryEmail({
         cronName: "Find Leads",

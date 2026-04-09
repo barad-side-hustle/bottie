@@ -5,6 +5,7 @@ import { LeadsRepository } from "@/lib/db/repositories";
 import { sendEmail } from "@/lib/utils/email-service";
 import LeadOutreachEmail from "@/lib/emails/lead-outreach";
 import { CronSummaryEmail } from "@/lib/emails/cron-summary";
+import { translateLeadNames } from "@/lib/leads/translate";
 
 export const maxDuration = 300;
 
@@ -36,11 +37,18 @@ export async function GET(req: NextRequest) {
       alreadySentEmails: sentEmailSet.size,
     });
 
+    const translationInputs = pendingLeads.map((lead) => ({
+      businessName: lead.businessName,
+      city: lead.city || "",
+    }));
+    const translationMap = await translateLeadNames(translationInputs);
+
     let emailsSent = 0;
     let emailsFailed = 0;
     let consecutiveFailures = 0;
 
-    for (const lead of pendingLeads) {
+    for (let idx = 0; idx < pendingLeads.length; idx++) {
+      const lead = pendingLeads[idx];
       if (consecutiveFailures >= 3) {
         console.error("[send-outreach] Aborting: 3 consecutive failures, likely a config issue");
         break;
@@ -57,10 +65,14 @@ export async function GET(req: NextRequest) {
         continue;
       }
 
-      const subject = `ניהול ביקורות גוגל אוטומטי ל${lead.businessName}`;
+      const translation = translationMap.get(idx);
+      const hebrewName = translation?.hebrewBusinessName || lead.businessName;
+      const hebrewCity = translation?.hebrewCity || lead.city || "";
+
+      const subject = `ניהול ביקורות גוגל אוטומטי ל${hebrewName}`;
       const emailComponent = LeadOutreachEmail({
-        businessName: lead.businessName,
-        city: lead.city || "",
+        businessName: hebrewName,
+        city: hebrewCity,
       });
 
       console.log("[send-outreach] Sending email", {
@@ -114,7 +126,7 @@ export async function GET(req: NextRequest) {
     console.log("[send-outreach] Cron run completed successfully", summary);
 
     await sendEmail(
-      "alon710@gmail.com",
+      "alon@bottie.ai",
       `Outreach: ${emailsSent} sent, ${emailsFailed} failed`,
       CronSummaryEmail({
         cronName: "Send Outreach",
@@ -139,7 +151,7 @@ export async function GET(req: NextRequest) {
     });
 
     await sendEmail(
-      "alon710@gmail.com",
+      "alon@bottie.ai",
       "Outreach: FAILED",
       CronSummaryEmail({
         cronName: "Send Outreach",

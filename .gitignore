@@ -60,3 +60,4 @@ firebase-debug.log
 
 # Claude MCP
 .mcp.json
+.env*.local
