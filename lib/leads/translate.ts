@@ -55,13 +55,7 @@ export async function translateAndPersonalizeLeads(leads: LeadInput[]): Promise<
 
   try {
     const prompt = buildPrompt(leads);
-    const raw = await generateWithGemini(
-      env.GEMINI_API_KEY,
-      prompt,
-      "gemini-2.5-flash-preview-05-20",
-      4096,
-      responseSchema
-    );
+    const raw = await generateWithGemini(env.GEMINI_API_KEY, prompt, "gemini-3-flash-preview", 4096, responseSchema);
 
     const parsed: TranslationResult[] = JSON.parse(raw);
 
