@@ -5,13 +5,11 @@ import { SchemaType, type ResponseSchema } from "@google/generative-ai";
 interface LeadInput {
   businessName: string;
   city: string;
-  searchQuery: string;
 }
 
 interface TranslationResult {
   hebrewBusinessName: string;
   hebrewCity: string;
-  personalizedOpening: string;
 }
 
 const responseSchema: ResponseSchema = {
@@ -21,34 +19,27 @@ const responseSchema: ResponseSchema = {
     properties: {
       hebrewBusinessName: { type: SchemaType.STRING },
       hebrewCity: { type: SchemaType.STRING },
-      personalizedOpening: { type: SchemaType.STRING },
     },
-    required: ["hebrewBusinessName", "hebrewCity", "personalizedOpening"],
+    required: ["hebrewBusinessName", "hebrewCity"],
   },
 };
 
 function buildPrompt(leads: LeadInput[]): string {
-  const entries = leads
-    .map((l, i) => {
-      const type = l.searchQuery.split(" in ")[0] || "business";
-      return `${i + 1}. "${l.businessName}" in "${l.city}" (${type})`;
-    })
-    .join("\n");
+  const entries = leads.map((l, i) => `${i + 1}. "${l.businessName}" in "${l.city}"`).join("\n");
 
-  return `You are helping write personalized cold outreach emails in Hebrew for a Google review management tool called Bottie.ai.
+  return `Translate the following business names and city names to Hebrew.
 
-For each business below, provide:
+For each entry, provide:
 1. hebrewBusinessName — Transliterate the business name into Hebrew. If it's already Hebrew, keep it as-is. For English brand names, transliterate phonetically (e.g., "Augustine" → "אוגוסטין", "The Coffee Shop" → "דה קופי שופ"). If the name contains a Hebrew word, use the Hebrew version.
 2. hebrewCity — The Hebrew name of the city (e.g., "Ra'anana" → "רעננה", "Tel Aviv" → "תל אביב").
-3. personalizedOpening — 1-2 natural Hebrew sentences for a cold email opening. Mention something relevant to their business type and city. The tone should be friendly and professional, as if written by a real person (not a bot). Do NOT include a greeting — just the personalized content. Do NOT mention Bottie.ai in this text.
 
-Return a JSON array with one object per business, in the same order.
+Return a JSON array with one object per entry, in the same order.
 
-Businesses:
+Entries:
 ${entries}`;
 }
 
-export async function translateAndPersonalizeLeads(leads: LeadInput[]): Promise<Map<number, TranslationResult>> {
+export async function translateLeadNames(leads: LeadInput[]): Promise<Map<number, TranslationResult>> {
   const results = new Map<number, TranslationResult>();
 
   if (leads.length === 0) return results;
