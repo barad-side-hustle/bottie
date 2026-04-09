@@ -126,7 +126,7 @@ export async function GET(req: NextRequest) {
     console.log("[send-outreach] Cron run completed successfully", summary);
 
     await sendEmail(
-      "alon710@gmail.com",
+      "alon@bottie.ai",
       `Outreach: ${emailsSent} sent, ${emailsFailed} failed`,
       CronSummaryEmail({
         cronName: "Send Outreach",
@@ -151,7 +151,7 @@ export async function GET(req: NextRequest) {
     });
 
     await sendEmail(
-      "alon710@gmail.com",
+      "alon@bottie.ai",
       "Outreach: FAILED",
       CronSummaryEmail({
         cronName: "Send Outreach",
