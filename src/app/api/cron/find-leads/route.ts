@@ -27,7 +27,9 @@ export async function GET(req: NextRequest) {
   const TIMEOUT_MS = 240_000;
 
   try {
-    const cities = getCitiesForToday();
+    const runParam = req.nextUrl.searchParams.get("run");
+    const runIndex = runParam !== null ? parseInt(runParam, 10) : new Date().getUTCHours() < 12 ? 0 : 1;
+    const cities = getCitiesForToday(runIndex);
     const queries = getQueriesForCities(cities);
 
     console.log("[find-leads] Starting cron run", {

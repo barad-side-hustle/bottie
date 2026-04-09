@@ -16,9 +16,10 @@ import {
 interface LeadOutreachEmailProps {
   businessName: string;
   city: string;
+  personalizedOpening?: string;
 }
 
-export default function LeadOutreachEmail({ businessName, city }: LeadOutreachEmailProps) {
+export default function LeadOutreachEmail({ businessName, city, personalizedOpening }: LeadOutreachEmailProps) {
   const previewText = `${businessName}, מגיבים לביקורות גוגל בשבילכם`;
 
   return (
@@ -81,9 +82,13 @@ export default function LeadOutreachEmail({ businessName, city }: LeadOutreachEm
             <Section className="mb-6">
               <Text className="text-foreground text-base font-bold m-0 mb-4">שלום {businessName},</Text>
 
-              <Text className="text-muted text-sm leading-relaxed m-0 mb-4">
-                שמי אלון. הקמתי את Bottie.ai כי ראיתי כמה זמן עסקים ב{city} מבזבזים על מענה לביקורות בגוגל.
-              </Text>
+              {personalizedOpening ? (
+                <Text className="text-muted text-sm leading-relaxed m-0 mb-4">{personalizedOpening}</Text>
+              ) : (
+                <Text className="text-muted text-sm leading-relaxed m-0 mb-4">
+                  שמי אלון. הקמתי את Bottie.ai כי ראיתי כמה זמן עסקים ב{city} מבזבזים על מענה לביקורות בגוגל.
+                </Text>
+              )}
 
               <Text className="text-muted text-sm leading-relaxed m-0 mb-4">
                 שמתי לב שיש לכם פרופיל עסקי בגוגל, ורציתי לשתף איך אפשר לטפל בביקורות בלי להשקיע בזה שעות כל שבוע.

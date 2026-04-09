@@ -24,12 +24,20 @@
       "schedule": "0 6 * * *"
     },
     {
-      "path": "/api/cron/find-leads",
+      "path": "/api/cron/find-leads?run=0",
       "schedule": "0 7 * * *"
     },
     {
-      "path": "/api/cron/send-outreach",
+      "path": "/api/cron/find-leads?run=1",
+      "schedule": "0 14 * * *"
+    },
+    {
+      "path": "/api/cron/send-outreach?run=0",
       "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/cron/send-outreach?run=1",
+      "schedule": "0 15 * * *"
     }
   ]
 }

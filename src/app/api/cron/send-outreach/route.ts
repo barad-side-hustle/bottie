@@ -5,6 +5,7 @@ import { LeadsRepository } from "@/lib/db/repositories";
 import { sendEmail } from "@/lib/utils/email-service";
 import LeadOutreachEmail from "@/lib/emails/lead-outreach";
 import { CronSummaryEmail } from "@/lib/emails/cron-summary";
+import { translateAndPersonalizeLeads } from "@/lib/leads/translate";
 
 export const maxDuration = 300;
 
@@ -36,11 +37,19 @@ export async function GET(req: NextRequest) {
       alreadySentEmails: sentEmailSet.size,
     });
 
+    const translationInputs = pendingLeads.map((lead) => ({
+      businessName: lead.businessName,
+      city: lead.city || "",
+      searchQuery: lead.searchQuery || "",
+    }));
+    const translationMap = await translateAndPersonalizeLeads(translationInputs);
+
     let emailsSent = 0;
     let emailsFailed = 0;
     let consecutiveFailures = 0;
 
-    for (const lead of pendingLeads) {
+    for (let idx = 0; idx < pendingLeads.length; idx++) {
+      const lead = pendingLeads[idx];
       if (consecutiveFailures >= 3) {
         console.error("[send-outreach] Aborting: 3 consecutive failures, likely a config issue");
         break;
@@ -57,10 +66,16 @@ export async function GET(req: NextRequest) {
         continue;
       }
 
-      const subject = `ניהול ביקורות גוגל אוטומטי ל${lead.businessName}`;
+      const translation = translationMap.get(idx);
+      const hebrewName = translation?.hebrewBusinessName || lead.businessName;
+      const hebrewCity = translation?.hebrewCity || lead.city || "";
+      const personalizedOpening = translation?.personalizedOpening;
+
+      const subject = `ניהול ביקורות גוגל אוטומטי ל${hebrewName}`;
       const emailComponent = LeadOutreachEmail({
-        businessName: lead.businessName,
-        city: lead.city || "",
+        businessName: hebrewName,
+        city: hebrewCity,
+        personalizedOpening,
       });
 
       console.log("[send-outreach] Sending email", {
