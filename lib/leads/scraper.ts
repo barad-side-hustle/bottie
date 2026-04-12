@@ -1,3 +1,7 @@
+import { generateWithGemini } from "@/lib/ai/core/gemini-client";
+import { env } from "@/lib/env";
+import { SchemaType, type ResponseSchema } from "@google/generative-ai";
+
 const EMAIL_REGEX = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g;
 
 const CONTACT_PATHS = ["/contact", "/about", "/צור-קשר", "/contact-us"];
@@ -140,6 +144,51 @@ export function pickBestEmail(emails: string[]): string {
   const personal = emails.filter((e) => !GENERIC_PREFIXES.some((g) => e.toLowerCase().startsWith(g)));
 
   return personal.length > 0 ? personal[0] : emails[0];
+}
+
+const emailPickerSchema: ResponseSchema = {
+  type: SchemaType.OBJECT,
+  properties: {
+    email: { type: SchemaType.STRING },
+  },
+  required: ["email"],
+};
+
+export async function pickBestEmailWithAI(emails: string[], businessName: string): Promise<string> {
+  if (emails.length === 0) return "";
+  if (emails.length === 1) return emails[0];
+
+  try {
+    const prompt = `You are selecting the most relevant contact email for a business.
+
+Business name: "${businessName}"
+
+Candidate emails found on their website:
+${emails.map((e, i) => `${i + 1}. ${e}`).join("\n")}
+
+Pick the single best email to reach this business. Prefer:
+- Emails with a domain matching the business name or brand
+- Personal emails (owner/manager) over generic ones (info@, office@, noreply@)
+- Business-specific emails over shared/platform emails
+
+Return the chosen email exactly as listed.`;
+
+    const raw = await generateWithGemini(env.GEMINI_API_KEY, prompt, "gemini-2.0-flash-lite", 256, emailPickerSchema);
+    const parsed: { email: string } = JSON.parse(raw);
+
+    if (parsed.email && emails.includes(parsed.email.toLowerCase())) {
+      return parsed.email.toLowerCase();
+    }
+
+    return pickBestEmail(emails);
+  } catch (error) {
+    console.warn("[scraper] AI email picker failed, falling back to heuristic", {
+      error: error instanceof Error ? error.message : String(error),
+      businessName,
+      emailCount: emails.length,
+    });
+    return pickBestEmail(emails);
+  }
 }
 
 export async function withConcurrency<T, R>(items: T[], limit: number, fn: (item: T) => Promise<R>): Promise<R[]> {
