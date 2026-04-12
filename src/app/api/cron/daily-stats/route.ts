@@ -5,7 +5,7 @@ import { env } from "@/lib/env";
 import { db } from "@/lib/db/client";
 import { user, googleAccounts, reviews } from "@/lib/db/schema";
 import { sendEmail } from "@/lib/utils/email-service";
-import { DailyStatsEmail } from "@/lib/emails/daily-stats";
+import DailyStatsEmail from "@/lib/emails/daily-stats";
 
 export const maxDuration = 300;
 
