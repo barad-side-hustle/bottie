@@ -114,9 +114,7 @@ export default function DailyStatsEmail({ newUsers, newGoogleAccounts, reviewCou
             <Hr className="border-border opacity-50 mx-0 w-full" />
 
             <Section className="my-6">
-              <Text className="text-xs font-bold uppercase tracking-wider text-primary m-0 mb-3">
-                Reviews Received
-              </Text>
+              <Text className="text-xs font-bold uppercase tracking-wider text-primary m-0 mb-3">Reviews Received</Text>
               <Text className="text-success text-3xl font-bold m-0">{reviewCount}</Text>
             </Section>
 
