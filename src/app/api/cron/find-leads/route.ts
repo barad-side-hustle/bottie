@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { env } from "@/lib/env";
 import { LeadsRepository } from "@/lib/db/repositories";
 import { getRandomCities, getQueriesForCities, searchPlaces, type Place } from "@/lib/leads/places";
-import { scrapeEmails, pickBestEmail, withConcurrency } from "@/lib/leads/scraper";
+import { scrapeEmails, pickBestEmailWithAI, withConcurrency } from "@/lib/leads/scraper";
 import { sendEmail } from "@/lib/utils/email-service";
 import { CronSummaryEmail } from "@/lib/emails/cron-summary";
 
@@ -94,7 +94,7 @@ export async function GET(req: NextRequest) {
         return { place, email: "" };
       }
       const emails = await scrapeEmails(place.websiteUri!);
-      const best = pickBestEmail(emails);
+      const best = await pickBestEmailWithAI(emails, place.displayName);
       scrapeCount++;
       if (best) {
         console.log(`[find-leads] Found email for "${place.displayName}": ${best}`);
