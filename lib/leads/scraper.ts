@@ -138,7 +138,7 @@ export async function scrapeEmails(websiteUrl: string): Promise<string[]> {
   return [...emails];
 }
 
-export function pickBestEmail(emails: string[]): string {
+function pickBestEmail(emails: string[]): string {
   if (emails.length === 0) return "";
 
   const personal = emails.filter((e) => !GENERIC_PREFIXES.some((g) => e.toLowerCase().startsWith(g)));
