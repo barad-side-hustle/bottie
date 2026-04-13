@@ -174,7 +174,12 @@ export async function scrapeEmails(websiteUrl: string): Promise<string[]> {
   homeEmails.forEach((e) => emails.add(e.toLowerCase()));
 
   const base = websiteUrl.replace(/\/$/, "");
-  const origin = new URL(websiteUrl).origin;
+  let origin: string;
+  try {
+    origin = new URL(websiteUrl).origin;
+  } catch {
+    origin = base;
+  }
   const candidateBases = base === origin ? [base] : [base, origin];
 
   for (const path of CONTACT_PATHS) {
