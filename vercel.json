@@ -41,7 +41,11 @@
     },
     {
       "path": "/api/cron/daily-stats",
-      "schedule": "30 7 * * *"
+      "schedule": "30 15 * * *"
+    },
+    {
+      "path": "/api/cron/rescrape-leads",
+      "schedule": "0 10 * * *"
     }
   ]
 }

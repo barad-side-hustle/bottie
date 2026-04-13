@@ -43,6 +43,7 @@ nvm use 22.13.0
 - **`location_invitations`**: Invitation tokens for team members
 - **`location_metrics`**: Daily Google Business Profile performance data per location
 - **`location_posts`**: Google Business Profile posts (standard, event, offer)
+- **`leads`**: Scraped business leads with email, country, and outreach status
 
 ### Key Relationships
 
@@ -115,7 +116,11 @@ src/
 │       ├── upload/post-image/       # Post image upload + proxy
 │       ├── user/settings/           # User settings
 │       ├── cron/weekly-summaries/   # Scheduled weekly emails
-│       └── cron/fetch-metrics/      # GBP performance metrics sync
+│       ├── cron/fetch-metrics/      # GBP performance metrics sync
+│       ├── cron/find-leads/         # Lead discovery via Google Places
+│       ├── cron/send-outreach/      # Outreach emails to leads (per-country)
+│       ├── cron/daily-stats/        # Daily stats summary email
+│       └── cron/rescrape-leads/     # Retry email scraping for skipped leads
 ├── components/
 │   ├── auth/          # Login, sign-up, password reset forms
 │   ├── checkout/      # Checkout flow

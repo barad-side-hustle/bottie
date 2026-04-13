@@ -196,18 +196,33 @@ export default function LeadOutreachEmail({ businessName, city, locale, ctaUrl }
               <Text className="text-foreground font-bold text-sm mb-4 m-0">{c.howItWorksTitle}</Text>
 
               <Text className="text-muted text-sm leading-relaxed m-0 mb-3">
-                <span className="text-primary font-bold">{c.step1.split(" - ")[0]}</span>
-                {c.step1.includes(" - ") ? ` - ${c.step1.split(" - ").slice(1).join(" - ")}` : ""}
+                <span className="text-primary font-bold">{c.step1.split(/\s[-—]\s/)[0]}</span>
+                {c.step1.match(/\s[-—]\s/)
+                  ? ` — ${c.step1
+                      .split(/\s[-—]\s/)
+                      .slice(1)
+                      .join(" — ")}`
+                  : ""}
               </Text>
 
               <Text className="text-muted text-sm leading-relaxed m-0 mb-3">
-                <span className="text-primary font-bold">{c.step2.split(" - ")[0]}</span>
-                {c.step2.includes(" - ") ? ` - ${c.step2.split(" - ").slice(1).join(" - ")}` : ""}
+                <span className="text-primary font-bold">{c.step2.split(/\s[-—]\s/)[0]}</span>
+                {c.step2.match(/\s[-—]\s/)
+                  ? ` — ${c.step2
+                      .split(/\s[-—]\s/)
+                      .slice(1)
+                      .join(" — ")}`
+                  : ""}
               </Text>
 
               <Text className="text-muted text-sm leading-relaxed m-0 mb-3">
-                <span className="text-primary font-bold">{c.step3.split(" - ")[0]}</span>
-                {c.step3.includes(" - ") ? ` - ${c.step3.split(" - ").slice(1).join(" - ")}` : ""}
+                <span className="text-primary font-bold">{c.step3.split(/\s[-—]\s/)[0]}</span>
+                {c.step3.match(/\s[-—]\s/)
+                  ? ` — ${c.step3
+                      .split(/\s[-—]\s/)
+                      .slice(1)
+                      .join(" — ")}`
+                  : ""}
               </Text>
             </Section>
 

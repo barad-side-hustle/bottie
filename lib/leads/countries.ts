@@ -140,7 +140,3 @@ export const COUNTRY_CONFIGS: Record<string, CountryConfig> = {
 export function getCountryConfig(code: string): CountryConfig | undefined {
   return COUNTRY_CONFIGS[code.toUpperCase()];
 }
-
-export function getAllCountryCodes(): string[] {
-  return Object.keys(COUNTRY_CONFIGS);
-}
