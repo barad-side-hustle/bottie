@@ -30,9 +30,10 @@
     "cron:daily-stats": "dotenv -e .env -- bash -c 'curl -s -H \"Authorization: Bearer $CRON_SECRET\" http://localhost:3000/api/cron/daily-stats'",
     "comments:remove": "tsx scripts/remove-comments.ts",
     "pubsub:update": "bash scripts/update-pubsub-subscription.sh",
-    "email:dev": "npx react-email dev --dir lib/emails",
-    "email:export": "npx react-email export --dir lib/emails",
-    "i18n:check": "tsx scripts/check-translations.ts"
+    "email:dev": "bunx react-email dev --dir lib/emails",
+    "email:export": "bunx react-email export --dir lib/emails",
+    "i18n:check": "tsx scripts/check-translations.ts",
+    "ci": "bun run lint:check && bun run format:check && bun run comments:remove && bun run build && bun run test"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "3.1004.0",
@@ -124,5 +125,5 @@
     "typescript-eslint": "^8.46.3",
     "vitest": "^4.0.13"
   },
-  "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
+  "packageManager": "bun@1.2.16"
 }

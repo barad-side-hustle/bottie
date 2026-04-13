@@ -29,3 +29,6 @@ next-env.d.ts
 # Testing
 coverage/
 .nyc_output/
+
+# Conductor
+.context/

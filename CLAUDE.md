@@ -18,7 +18,7 @@ Bottie is a Next.js 16 application that helps businesses manage Google reviews w
 ## Requirements
 
 - **Node.js**: 22.13.0 or higher (LTS recommended)
-- **Package Manager**: Yarn 1.22.22
+- **Package Manager**: Bun 1.2.16
 
 Use `nvm` to manage Node.js versions:
 
@@ -156,18 +156,19 @@ src/
 ## Common Commands
 
 ```bash
-yarn dev              # Start dev server (Turbopack)
-yarn build            # Production build
-yarn test             # Run Vitest tests
-yarn db:generate      # Generate Drizzle migrations
-yarn db:push          # Push schema to database
-yarn db:migrate       # Run Drizzle migrations
-yarn db:studio        # Open Drizzle Studio
-yarn db:triggers      # Setup database triggers
-yarn lint:check       # ESLint check
-yarn format:write     # Prettier format
-yarn knip             # Find unused exports/dependencies
-yarn email:dev        # Preview React Email templates
+bun run dev           # Start dev server (Turbopack)
+bun run build         # Production build
+bun run test          # Run Vitest tests
+bun run db:generate   # Generate Drizzle migrations
+bun run db:push       # Push schema to database
+bun run db:migrate    # Run Drizzle migrations
+bun run db:studio     # Open Drizzle Studio
+bun run db:triggers   # Setup database triggers
+bun run lint:check    # ESLint check
+bun run format:write  # Prettier format
+bun run knip          # Find unused exports/dependencies
+bun run email:dev     # Preview React Email templates
+bun run ci            # Run full CI (lint, format, comments:remove, build, test)
 ```
 
 ## Environment Variables
@@ -202,7 +203,7 @@ Required in `.env.local`:
 - Unit tests with Vitest
 - Test files co-located: `*.test.ts`
 - Mocking: `vi.mock()` for external dependencies
-- Run: `yarn test` or `yarn test:watch`
+- Run: `bun run test` or `bun run test:watch`
 
 ## Important Notes
 

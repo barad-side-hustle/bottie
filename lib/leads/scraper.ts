@@ -4,7 +4,31 @@ import { SchemaType, type ResponseSchema } from "@google/generative-ai";
 
 const EMAIL_REGEX = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g;
 
-const CONTACT_PATHS = ["/contact", "/about", "/צור-קשר", "/contact-us"];
+const CONTACT_PATHS = ["/contact", "/about", "/צור-קשר", "/contact-us", "/contactus", "/צרו-קשר", "/about-us"];
+
+const SOCIAL_MEDIA_DOMAINS = [
+  "instagram.com",
+  "facebook.com",
+  "fb.com",
+  "fb.me",
+  "tiktok.com",
+  "twitter.com",
+  "x.com",
+  "linkedin.com",
+  "youtube.com",
+  "youtu.be",
+  "linktr.ee",
+  "waze.com",
+];
+
+export function isSocialMediaUrl(url: string): boolean {
+  try {
+    const hostname = new URL(url).hostname.toLowerCase();
+    return SOCIAL_MEDIA_DOMAINS.some((domain) => hostname === domain || hostname.endsWith("." + domain));
+  } catch {
+    return false;
+  }
+}
 
 const NOISE_DOMAINS = [
   "example.com",
@@ -87,7 +111,7 @@ function isValidEmail(email: string): boolean {
 async function fetchPageEmails(url: string): Promise<string[]> {
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
+    const timeout = setTimeout(() => controller.abort(), 10000);
 
     const res = await fetch(url, {
       signal: controller.signal,
@@ -121,18 +145,19 @@ async function fetchPageEmails(url: string): Promise<string[]> {
 export async function scrapeEmails(websiteUrl: string): Promise<string[]> {
   const emails = new Set<string>();
 
-  const homeEmails = await fetchPageEmails(websiteUrl);
+  let homeEmails = await fetchPageEmails(websiteUrl);
+  if (homeEmails.length === 0) {
+    homeEmails = await fetchPageEmails(websiteUrl);
+  }
   homeEmails.forEach((e) => emails.add(e.toLowerCase()));
 
-  if (emails.size === 0) {
-    const base = websiteUrl.replace(/\/$/, "");
-    for (const path of CONTACT_PATHS) {
-      try {
-        const pageEmails = await fetchPageEmails(base + path);
-        pageEmails.forEach((e) => emails.add(e.toLowerCase()));
-        if (emails.size > 0) break;
-      } catch {}
-    }
+  const base = websiteUrl.replace(/\/$/, "");
+  for (const path of CONTACT_PATHS) {
+    try {
+      const pageEmails = await fetchPageEmails(base + path);
+      pageEmails.forEach((e) => emails.add(e.toLowerCase()));
+      if (emails.size >= 3) break;
+    } catch {}
   }
 
   return [...emails];

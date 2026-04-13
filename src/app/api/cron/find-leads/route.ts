@@ -3,7 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { env } from "@/lib/env";
 import { LeadsRepository } from "@/lib/db/repositories";
 import { getRandomCities, getQueriesForCities, searchPlaces, type Place } from "@/lib/leads/places";
-import { scrapeEmails, pickBestEmailWithAI, withConcurrency } from "@/lib/leads/scraper";
+import { COUNTRY_CONFIGS, getCountryConfig } from "@/lib/leads/countries";
+import { scrapeEmails, pickBestEmailWithAI, withConcurrency, isSocialMediaUrl } from "@/lib/leads/scraper";
 import { sendEmail } from "@/lib/utils/email-service";
 import { CronSummaryEmail } from "@/lib/emails/cron-summary";
 
@@ -27,10 +28,18 @@ export async function GET(req: NextRequest) {
   const TIMEOUT_MS = 240_000;
 
   try {
-    const cities = getRandomCities();
-    const queries = getQueriesForCities(cities);
+    const countryParam = req.nextUrl.searchParams.get("country")?.toUpperCase();
+    const countryConfig = countryParam ? getCountryConfig(countryParam) : COUNTRY_CONFIGS.IL;
+
+    if (!countryConfig) {
+      return NextResponse.json({ error: `Unknown country: ${countryParam}` }, { status: 400 });
+    }
+
+    const cities = getRandomCities(countryConfig);
+    const queries = getQueriesForCities(cities, countryConfig);
 
     console.log("[find-leads] Starting cron run", {
+      country: countryConfig.code,
       cities,
       queries,
       queriesCount: queries.length,
@@ -76,11 +85,13 @@ export async function GET(req: NextRequest) {
       alreadyInDb: existingIds.size,
     });
 
-    const placesWithWebsite = newPlaces.filter((p) => p.websiteUri);
+    const placesWithWebsite = newPlaces.filter((p) => p.websiteUri && !isSocialMediaUrl(p.websiteUri));
+    const socialMediaPlaces = newPlaces.filter((p) => p.websiteUri && isSocialMediaUrl(p.websiteUri));
     const placesWithoutWebsite = newPlaces.filter((p) => !p.websiteUri);
 
     console.log("[find-leads] Starting email scraping", {
       withWebsite: placesWithWebsite.length,
+      socialMedia: socialMediaPlaces.length,
       withoutWebsite: placesWithoutWebsite.length,
     });
 
@@ -111,7 +122,20 @@ export async function GET(req: NextRequest) {
         googleMapsUrl: place.googleMapsUri || null,
         address: place.formattedAddress || null,
         city: extractCityFromQuery(place.searchQuery),
+        country: countryConfig.code,
         status: email ? ("pending" as const) : ("skipped" as const),
+        searchQuery: place.searchQuery,
+      })),
+      ...socialMediaPlaces.map((place) => ({
+        googlePlaceId: place.placeId,
+        businessName: place.displayName,
+        email: null,
+        websiteUrl: place.websiteUri || null,
+        googleMapsUrl: place.googleMapsUri || null,
+        address: place.formattedAddress || null,
+        city: extractCityFromQuery(place.searchQuery),
+        country: countryConfig.code,
+        status: "skipped" as const,
         searchQuery: place.searchQuery,
       })),
       ...placesWithoutWebsite.map((place) => ({
@@ -122,6 +146,7 @@ export async function GET(req: NextRequest) {
         googleMapsUrl: place.googleMapsUri || null,
         address: place.formattedAddress || null,
         city: extractCityFromQuery(place.searchQuery),
+        country: countryConfig.code,
         status: "skipped" as const,
         searchQuery: place.searchQuery,
       })),
@@ -133,10 +158,12 @@ export async function GET(req: NextRequest) {
     const elapsedMs = Date.now() - startTime;
 
     const summary = {
+      country: countryConfig.code,
       citiesSearched: cities,
       placesFound: allPlaces.length,
       newLeads: leadsToInsert.length,
       emailsFound,
+      socialMediaSkipped: socialMediaPlaces.length,
       skipped: placesWithoutWebsite.length + scrapeResults.filter((r) => !r.email).length,
       elapsedMs,
     };
@@ -145,15 +172,17 @@ export async function GET(req: NextRequest) {
 
     await sendEmail(
       "alon@bottie.ai",
-      `Find Leads: ${emailsFound} emails from ${cities.join(", ")}`,
+      `Find Leads (${countryConfig.code}): ${emailsFound} emails from ${cities.join(", ")}`,
       CronSummaryEmail({
-        cronName: "Find Leads",
+        cronName: `Find Leads (${countryConfig.code})`,
         status: "success",
         lines: [
+          `Country: ${countryConfig.code}`,
           `Cities: ${cities.join(", ")}`,
           `Places found: ${allPlaces.length}`,
           `New leads: ${leadsToInsert.length}`,
           `Emails found: ${emailsFound}`,
+          `Social media (skipped): ${socialMediaPlaces.length}`,
           `Skipped (no email): ${placesWithoutWebsite.length + scrapeResults.filter((r) => !r.email).length}`,
           `Duration: ${(elapsedMs / 1000).toFixed(1)}s`,
         ],

@@ -14,6 +14,8 @@ export const leads = pgTable(
     address: text("address"),
     city: text("city"),
 
+    country: text("country").notNull().default("IL"),
+
     status: text("status").$type<"pending" | "sent" | "failed" | "skipped">().notNull().default("pending"),
     searchQuery: text("search_query"),
     error: text("error"),
@@ -26,6 +28,7 @@ export const leads = pgTable(
     index("leads_status_idx").on(table.status),
     index("leads_email_idx").on(table.email),
     index("leads_created_at_idx").on(table.createdAt),
+    index("leads_country_idx").on(table.country),
 
     check("leads_status_check", sql`${table.status} IN ('pending', 'sent', 'failed', 'skipped')`),
 
