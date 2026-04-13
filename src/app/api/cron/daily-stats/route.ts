@@ -28,7 +28,16 @@ export async function GET(req: NextRequest) {
     const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
     const leadsRepo = new LeadsRepository();
 
-    const [newUsers, newGoogleAccounts, reviewCountResult, sentByCountry, pendingByCountry] = await Promise.all([
+    const [
+      newUsers,
+      newGoogleAccounts,
+      reviewCountResult,
+      sentByCountry,
+      pendingByCountry,
+      leadsFound,
+      emailsScraped,
+      leadsSkipped,
+    ] = await Promise.all([
       db.select({ name: user.name, email: user.email }).from(user).where(gte(user.createdAt, since)),
       db
         .select({ email: googleAccounts.email, accountName: googleAccounts.accountName })
@@ -40,6 +49,9 @@ export async function GET(req: NextRequest) {
         .where(gte(reviews.receivedAt, since)),
       leadsRepo.countSentByCountry(since),
       leadsRepo.countPendingByCountry(),
+      leadsRepo.countFoundSince(since),
+      leadsRepo.countEmailsScrapedSince(since),
+      leadsRepo.countSkippedSince(since),
     ]);
 
     const reviewCount = reviewCountResult[0]?.count ?? 0;
@@ -55,6 +67,7 @@ export async function GET(req: NextRequest) {
         newGoogleAccounts,
         reviewCount,
         outreachStats: { sentByCountry, pendingByCountry },
+        leadPipelineStats: { found: leadsFound, emailsScraped, skipped: leadsSkipped },
       })
     );
 

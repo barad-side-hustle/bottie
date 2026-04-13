@@ -5,8 +5,6 @@ import { LeadsRepository } from "@/lib/db/repositories";
 import { getRandomCities, getQueriesForCities, searchPlaces, type Place } from "@/lib/leads/places";
 import { COUNTRY_CONFIGS, getCountryConfig, type CountryConfig } from "@/lib/leads/countries";
 import { isSocialMediaUrl } from "@/lib/leads/scraper";
-import { sendEmail } from "@/lib/utils/email-service";
-import { CronSummaryEmail } from "@/lib/emails/cron-summary";
 
 export const maxDuration = 300;
 
@@ -112,23 +110,8 @@ export async function GET(req: NextRequest) {
     }
 
     const elapsedMs = Date.now() - startTime;
-    const totalLeads = Object.values(results).reduce((sum, r) => sum + r.newLeads, 0);
-
-    const summaryLines = Object.entries(results).flatMap(([code, r]) => [
-      `${code}: ${r.newLeads} leads from ${r.cities.join(", ")} (${r.withWebsite} with website, ${r.skipped} skipped)`,
-    ]);
 
     console.log("[find-leads] Cron run completed", { results, elapsedMs });
-
-    await sendEmail(
-      "alon@bottie.ai",
-      `Find Leads: ${totalLeads} new leads`,
-      CronSummaryEmail({
-        cronName: "Find Leads",
-        status: "success",
-        lines: [...summaryLines, `Duration: ${(elapsedMs / 1000).toFixed(1)}s`],
-      })
-    );
 
     return NextResponse.json({ message: "Find-leads cron completed", results, elapsedMs });
   } catch (error) {
@@ -138,19 +121,6 @@ export async function GET(req: NextRequest) {
       stack: error instanceof Error ? error.stack : undefined,
       elapsedMs,
     });
-
-    await sendEmail(
-      "alon@bottie.ai",
-      "Find Leads: FAILED",
-      CronSummaryEmail({
-        cronName: "Find Leads",
-        status: "error",
-        lines: [
-          `Error: ${error instanceof Error ? error.message : String(error)}`,
-          `Duration: ${(elapsedMs / 1000).toFixed(1)}s`,
-        ],
-      })
-    ).catch(() => {});
 
     return new NextResponse("Internal Server Error", { status: 500 });
   }

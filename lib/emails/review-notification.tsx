@@ -94,7 +94,7 @@ export default function ReviewNotificationEmail({
             fontFamily="Tomorrow"
             fallbackFontFamily="sans-serif"
             webFont={{
-              url: "https://fonts.gstatic.com/s/tomorrow/v19/WBLmrETPbHuZ_Zmsng56.woff2",
+              url: "https://bottie.ai/fonts/tomorrow-400.woff2",
               format: "woff2",
             }}
             fontWeight={400}
@@ -104,7 +104,7 @@ export default function ReviewNotificationEmail({
             fontFamily="Tomorrow"
             fallbackFontFamily="sans-serif"
             webFont={{
-              url: "https://fonts.gstatic.com/s/tomorrow/v19/WBLmrETPbHuZ_Zmsng56.woff2",
+              url: "https://bottie.ai/fonts/tomorrow-400.woff2",
               format: "woff2",
             }}
             fontWeight={600}

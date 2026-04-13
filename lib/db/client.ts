@@ -18,7 +18,7 @@ function getDb() {
 
     client = postgres(env.DATABASE_URL, {
       max: poolMax,
-      idle_timeout: 20,
+      idle_timeout: 60,
       connect_timeout: 10,
       max_lifetime: 60 * 30,
     });
