@@ -109,6 +109,27 @@ function isValidEmail(email: string): boolean {
   return true;
 }
 
+async function headExists(url: string): Promise<boolean> {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+
+    const res = await fetch(url, {
+      method: "HEAD",
+      signal: controller.signal,
+      headers: {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
+      },
+      redirect: "follow",
+    });
+
+    clearTimeout(timeout);
+    return res.ok;
+  } catch {
+    return false;
+  }
+}
+
 async function fetchPageEmails(url: string): Promise<string[]> {
   try {
     const controller = new AbortController();
@@ -153,12 +174,25 @@ export async function scrapeEmails(websiteUrl: string): Promise<string[]> {
   homeEmails.forEach((e) => emails.add(e.toLowerCase()));
 
   const base = websiteUrl.replace(/\/$/, "");
+  let origin: string;
+  try {
+    origin = new URL(websiteUrl).origin;
+  } catch {
+    origin = base;
+  }
+  const candidateBases = base === origin ? [base] : [base, origin];
+
   for (const path of CONTACT_PATHS) {
-    try {
-      const pageEmails = await fetchPageEmails(base + path);
-      pageEmails.forEach((e) => emails.add(e.toLowerCase()));
-      if (emails.size >= 3) break;
-    } catch {}
+    for (const candidateBase of candidateBases) {
+      try {
+        const url = candidateBase + path;
+        const exists = await headExists(url);
+        if (!exists) continue;
+        const pageEmails = await fetchPageEmails(url);
+        pageEmails.forEach((e) => emails.add(e.toLowerCase()));
+      } catch {}
+    }
+    if (emails.size >= 3) break;
   }
 
   return [...emails];

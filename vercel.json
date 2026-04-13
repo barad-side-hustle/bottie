@@ -33,7 +33,7 @@
     },
     {
       "path": "/api/cron/send-outreach",
-      "schedule": "*/10 * * * *"
+      "schedule": "*/5 * * * *"
     },
     {
       "path": "/api/cron/daily-stats",

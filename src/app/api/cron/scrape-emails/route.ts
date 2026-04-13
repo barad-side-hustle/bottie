@@ -32,7 +32,10 @@ export async function GET(req: NextRequest) {
 
   try {
     const leadsRepo = new LeadsRepository();
-    console.log("[scrape-emails] Querying leads needing email", { batchSize: BATCH_SIZE, excludeDomains: SOCIAL_MEDIA_DOMAINS.length });
+    console.log("[scrape-emails] Querying leads needing email", {
+      batchSize: BATCH_SIZE,
+      excludeDomains: SOCIAL_MEDIA_DOMAINS.length,
+    });
     const leadsToScrape = await leadsRepo.findLeadsNeedingEmail(SOCIAL_MEDIA_DOMAINS, BATCH_SIZE);
     console.log("[scrape-emails] Starting", { leadsToProcess: leadsToScrape.length });
 
