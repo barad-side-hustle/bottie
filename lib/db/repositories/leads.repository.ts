@@ -1,4 +1,4 @@
-import { eq, and, gte, inArray, isNotNull, isNull, notInArray, sql } from "drizzle-orm";
+import { eq, and, gte, inArray, isNotNull, isNull, sql } from "drizzle-orm";
 import { db } from "@/lib/db/client";
 import { leads, type Lead, type LeadInsert } from "@/lib/db/schema";
 
@@ -14,15 +14,14 @@ export class LeadsRepository {
 
   async insertMany(values: LeadInsert[]): Promise<void> {
     if (values.length === 0) return;
-    await db.insert(leads).values(values).onConflictDoNothing();
+    const BATCH_SIZE = 100;
+    for (let i = 0; i < values.length; i += BATCH_SIZE) {
+      const batch = values.slice(i, i + BATCH_SIZE);
+      await db.insert(leads).values(batch).onConflictDoNothing();
+    }
   }
 
-  async findSentEmails(): Promise<Set<string>> {
-    const sentEmails = await db.select({ email: leads.email }).from(leads).where(eq(leads.status, "sent"));
-    return new Set(sentEmails.map((l) => l.email).filter(Boolean) as string[]);
-  }
-
-  async findPendingLeads(excludeEmails: string[], limit: number, country?: string): Promise<Lead[]> {
+  async findPendingLeads(limit: number, country?: string): Promise<Lead[]> {
     return db
       .select()
       .from(leads)
@@ -30,7 +29,7 @@ export class LeadsRepository {
         and(
           eq(leads.status, "pending"),
           isNotNull(leads.email),
-          excludeEmails.length > 0 ? notInArray(leads.email, excludeEmails) : undefined,
+          sql`${leads.email} NOT IN (SELECT ${leads.email} FROM ${leads} WHERE ${leads.status} = 'sent')`,
           country ? eq(leads.country, country) : undefined
         )
       )
