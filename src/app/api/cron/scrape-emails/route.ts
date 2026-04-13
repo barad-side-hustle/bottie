@@ -28,12 +28,12 @@ export async function GET(req: NextRequest) {
 
   const startTime = Date.now();
   const TIMEOUT_MS = 240_000;
-  const BATCH_SIZE = 100;
+  const BATCH_SIZE = 10;
 
   try {
     const leadsRepo = new LeadsRepository();
+    console.log("[scrape-emails] Querying leads needing email", { batchSize: BATCH_SIZE, excludeDomains: SOCIAL_MEDIA_DOMAINS.length });
     const leadsToScrape = await leadsRepo.findLeadsNeedingEmail(SOCIAL_MEDIA_DOMAINS, BATCH_SIZE);
-
     console.log("[scrape-emails] Starting", { leadsToProcess: leadsToScrape.length });
 
     let emailsFound = 0;
@@ -51,6 +51,13 @@ export async function GET(req: NextRequest) {
       const emails = await scrapeEmails(lead.websiteUrl);
       const best = await pickBestEmailWithAI(emails, lead.businessName);
       processed++;
+
+      console.log("[scrape-emails] Processed", {
+        business: lead.businessName,
+        website: lead.websiteUrl,
+        emailsFound: emails.length,
+        bestEmail: best || null,
+      });
 
       if (best) {
         emailsFound++;

@@ -29,8 +29,7 @@ async function sendForCountry(
   limit: number,
   startTime: number
 ): Promise<{ sent: number; failed: number; total: number; aborted: boolean }> {
-  const sentEmailList = [...sentEmailSet];
-  const pendingLeads = await leadsRepo.findPendingLeads(sentEmailList, limit, config.code);
+  const pendingLeads = await leadsRepo.findPendingLeads(limit, config.code);
 
   if (pendingLeads.length === 0) {
     return { sent: 0, failed: 0, total: 0, aborted: false };
@@ -146,7 +145,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const leadsRepo = new LeadsRepository();
-    const sentEmailSet = await leadsRepo.findSentEmails();
+    const sentEmailSet = new Set<string>();
 
     const countryParam = req.nextUrl.searchParams.get("country")?.toUpperCase();
     const configs = countryParam
