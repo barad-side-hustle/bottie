@@ -67,7 +67,6 @@ export async function GET(req: NextRequest) {
       } else if (scraped) {
         await leadsRepo.updateStatus(lead.id, "skipped");
       }
-      // !scraped means timed out — leave as pending for next run
     }
 
     const elapsedMs = Date.now() - startTime;

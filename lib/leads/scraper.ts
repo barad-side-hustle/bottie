@@ -198,7 +198,7 @@ Prefer: domain matching the business > personal (owner/manager) > generic (info@
       env.GEMINI_API_KEY,
       prompt,
       "gemini-2.5-flash",
-      512,
+      1024,
       emailPickerGeminiSchema
     );
     const parsed = emailPickerResponseSchema.parse(JSON.parse(raw));
