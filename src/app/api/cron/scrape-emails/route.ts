@@ -54,9 +54,7 @@ export async function GET(req: NextRequest) {
       try {
         const emails = await Promise.race([
           scrapeEmails(lead.websiteUrl),
-          new Promise<string[]>((_, reject) =>
-            setTimeout(() => reject(new Error("scrape timeout")), 30_000),
-          ),
+          new Promise<string[]>((_, reject) => setTimeout(() => reject(new Error("scrape timeout")), 30_000)),
         ]);
         const best = await pickBestEmailWithAI(emails, lead.businessName);
         processed++;

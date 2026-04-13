@@ -19,7 +19,7 @@ async function queryWithRetry<T>(fn: () => Promise<T>, maxRetries = 3): Promise<
         error instanceof Error &&
         "code" in error &&
         ["CONNECT_TIMEOUT", "CONNECTION_REFUSED", "CONNECTION_ENDED"].includes(
-          (error as NodeJS.ErrnoException).code ?? "",
+          (error as NodeJS.ErrnoException).code ?? ""
         );
       if (!isTransient || attempt === maxRetries - 1) throw error;
       const delay = 1000 * Math.pow(2, attempt);
@@ -51,7 +51,7 @@ export async function GET(req: NextRequest) {
         .from(reviews)
         .where(and(isNull(reviews.classifications)))
         .orderBy(reviews.receivedAt)
-        .limit(50),
+        .limit(50)
     );
 
     if (reviewsToClassify.length === 0) {
