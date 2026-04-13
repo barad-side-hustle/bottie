@@ -1,72 +1,6 @@
+import type { CountryConfig } from "./countries";
+
 const PLACES_API_URL = "https://places.googleapis.com/v1/places:searchText";
-
-const CITIES = [
-  "Tel Aviv",
-  "Jerusalem",
-  "Haifa",
-  "Beer Sheva",
-  "Netanya",
-  "Herzliya",
-  "Ramat Gan",
-  "Eilat",
-  "Rishon LeZion",
-  "Petah Tikva",
-  "Ashdod",
-  "Rehovot",
-  "Kfar Saba",
-  "Ra'anana",
-  "Holon",
-  "Bnei Brak",
-  "Bat Yam",
-  "Ashkelon",
-  "Modiin",
-  "Nahariya",
-  "Acre",
-  "Tiberias",
-  "Nazareth",
-  "Lod",
-  "Ramla",
-  "Kiryat Ata",
-  "Kiryat Gat",
-  "Kiryat Motzkin",
-  "Kiryat Yam",
-  "Kiryat Bialik",
-  "Kiryat Shmona",
-  "Or Yehuda",
-  "Rosh HaAyin",
-  "Hod HaSharon",
-  "Givatayim",
-  "Yokneam",
-  "Afula",
-  "Beit Shemesh",
-  "Dimona",
-  "Arad",
-  "Sderot",
-  "Ofakim",
-  "Yavne",
-  "Nesher",
-  "Tirat Carmel",
-  "Hadera",
-  "Zichron Yaakov",
-  "Caesarea",
-  "Migdal HaEmek",
-  "Carmiel",
-];
-
-const QUERY_TEMPLATES = [
-  "restaurants in {city}, Israel",
-  "cafes in {city}, Israel",
-  "event venues in {city}, Israel",
-  "hair salons in {city}, Israel",
-  "beauty salons in {city}, Israel",
-  "gyms in {city}, Israel",
-  "fitness studios in {city}, Israel",
-  "hotels in {city}, Israel",
-  "medical clinics in {city}, Israel",
-  "dental clinics in {city}, Israel",
-  "auto repair shops in {city}, Israel",
-  "spas in {city}, Israel",
-];
 
 export interface Place {
   placeId: string;
@@ -76,18 +10,16 @@ export interface Place {
   formattedAddress?: string;
 }
 
-const CITIES_PER_RUN = 4;
-
-export function getRandomCities(): string[] {
-  const shuffled = [...CITIES].sort(() => Math.random() - 0.5);
-  return shuffled.slice(0, CITIES_PER_RUN);
+export function getRandomCities(config: CountryConfig): string[] {
+  const shuffled = [...config.cities].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, config.citiesPerRun);
 }
 
-export function getQueriesForCities(cities: string[]): string[] {
+export function getQueriesForCities(cities: string[], config: CountryConfig): string[] {
   const queries: string[] = [];
   for (const city of cities) {
-    for (const template of QUERY_TEMPLATES) {
-      queries.push(template.replace("{city}", city));
+    for (const template of config.queryTemplates) {
+      queries.push(template.replace("{city}", city).replace("{suffix}", config.countrySuffix));
     }
   }
   return queries;

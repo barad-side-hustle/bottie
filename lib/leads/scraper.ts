@@ -1,10 +1,35 @@
 import { generateWithGemini } from "@/lib/ai/core/gemini-client";
 import { env } from "@/lib/env";
+import { z } from "zod";
 import { SchemaType, type ResponseSchema } from "@google/generative-ai";
 
 const EMAIL_REGEX = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g;
 
-const CONTACT_PATHS = ["/contact", "/about", "/צור-קשר", "/contact-us"];
+const CONTACT_PATHS = ["/contact", "/about", "/צור-קשר", "/contact-us", "/contactus", "/צרו-קשר", "/about-us"];
+
+export const SOCIAL_MEDIA_DOMAINS = [
+  "instagram.com",
+  "facebook.com",
+  "fb.com",
+  "fb.me",
+  "tiktok.com",
+  "twitter.com",
+  "x.com",
+  "linkedin.com",
+  "youtube.com",
+  "youtu.be",
+  "linktr.ee",
+  "waze.com",
+];
+
+export function isSocialMediaUrl(url: string): boolean {
+  try {
+    const hostname = new URL(url).hostname.toLowerCase();
+    return SOCIAL_MEDIA_DOMAINS.some((domain) => hostname === domain || hostname.endsWith("." + domain));
+  } catch {
+    return false;
+  }
+}
 
 const NOISE_DOMAINS = [
   "example.com",
@@ -87,7 +112,7 @@ function isValidEmail(email: string): boolean {
 async function fetchPageEmails(url: string): Promise<string[]> {
   try {
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
+    const timeout = setTimeout(() => controller.abort(), 10000);
 
     const res = await fetch(url, {
       signal: controller.signal,
@@ -121,18 +146,19 @@ async function fetchPageEmails(url: string): Promise<string[]> {
 export async function scrapeEmails(websiteUrl: string): Promise<string[]> {
   const emails = new Set<string>();
 
-  const homeEmails = await fetchPageEmails(websiteUrl);
+  let homeEmails = await fetchPageEmails(websiteUrl);
+  if (homeEmails.length === 0) {
+    homeEmails = await fetchPageEmails(websiteUrl);
+  }
   homeEmails.forEach((e) => emails.add(e.toLowerCase()));
 
-  if (emails.size === 0) {
-    const base = websiteUrl.replace(/\/$/, "");
-    for (const path of CONTACT_PATHS) {
-      try {
-        const pageEmails = await fetchPageEmails(base + path);
-        pageEmails.forEach((e) => emails.add(e.toLowerCase()));
-        if (emails.size > 0) break;
-      } catch {}
-    }
+  const base = websiteUrl.replace(/\/$/, "");
+  for (const path of CONTACT_PATHS) {
+    try {
+      const pageEmails = await fetchPageEmails(base + path);
+      pageEmails.forEach((e) => emails.add(e.toLowerCase()));
+      if (emails.size >= 3) break;
+    } catch {}
   }
 
   return [...emails];
@@ -146,7 +172,7 @@ function pickBestEmail(emails: string[]): string {
   return personal.length > 0 ? personal[0] : emails[0];
 }
 
-const emailPickerSchema: ResponseSchema = {
+const emailPickerGeminiSchema: ResponseSchema = {
   type: SchemaType.OBJECT,
   properties: {
     email: { type: SchemaType.STRING },
@@ -154,29 +180,30 @@ const emailPickerSchema: ResponseSchema = {
   required: ["email"],
 };
 
+const emailPickerResponseSchema = z.object({
+  email: z.string().email(),
+});
+
 export async function pickBestEmailWithAI(emails: string[], businessName: string): Promise<string> {
   if (emails.length === 0) return "";
   if (emails.length === 1) return emails[0];
 
   try {
-    const prompt = `You are selecting the most relevant contact email for a business.
-
-Business name: "${businessName}"
-
-Candidate emails found on their website:
+    const prompt = `Select the best contact email for "${businessName}" from this list:
 ${emails.map((e, i) => `${i + 1}. ${e}`).join("\n")}
 
-Pick the single best email to reach this business. Prefer:
-- Emails with a domain matching the business name or brand
-- Personal emails (owner/manager) over generic ones (info@, office@, noreply@)
-- Business-specific emails over shared/platform emails
+Prefer: domain matching the business > personal (owner/manager) > generic (info@, office@).`;
 
-Return the chosen email exactly as listed.`;
+    const raw = await generateWithGemini(
+      env.GEMINI_API_KEY,
+      prompt,
+      "gemini-2.5-flash",
+      1024,
+      emailPickerGeminiSchema
+    );
+    const parsed = emailPickerResponseSchema.parse(JSON.parse(raw));
 
-    const raw = await generateWithGemini(env.GEMINI_API_KEY, prompt, "gemini-2.0-flash-lite", 256, emailPickerSchema);
-    const parsed: { email: string } = JSON.parse(raw);
-
-    if (parsed.email && emails.includes(parsed.email.toLowerCase())) {
+    if (emails.includes(parsed.email.toLowerCase())) {
       return parsed.email.toLowerCase();
     }
 

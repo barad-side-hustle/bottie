@@ -3,7 +3,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { env } from "@/lib/env";
 import { LeadsRepository } from "@/lib/db/repositories";
 import { getRandomCities, getQueriesForCities, searchPlaces, type Place } from "@/lib/leads/places";
-import { scrapeEmails, pickBestEmailWithAI, withConcurrency } from "@/lib/leads/scraper";
+import { COUNTRY_CONFIGS, getCountryConfig, type CountryConfig } from "@/lib/leads/countries";
+import { isSocialMediaUrl } from "@/lib/leads/scraper";
 import { sendEmail } from "@/lib/utils/email-service";
 import { CronSummaryEmail } from "@/lib/emails/cron-summary";
 
@@ -27,140 +28,109 @@ export async function GET(req: NextRequest) {
   const TIMEOUT_MS = 240_000;
 
   try {
-    const cities = getRandomCities();
-    const queries = getQueriesForCities(cities);
+    const countryParam = req.nextUrl.searchParams.get("country")?.toUpperCase();
+    const configs: CountryConfig[] = countryParam
+      ? ([getCountryConfig(countryParam)].filter(Boolean) as CountryConfig[])
+      : Object.values(COUNTRY_CONFIGS);
 
-    console.log("[find-leads] Starting cron run", {
-      cities,
-      queries,
-      queriesCount: queries.length,
-    });
+    if (configs.length === 0) {
+      return NextResponse.json({ error: `Unknown country: ${countryParam}` }, { status: 400 });
+    }
 
-    const allPlaces: Array<Place & { searchQuery: string }> = [];
-    const seenPlaceIds = new Set<string>();
+    const leadsRepo = new LeadsRepository();
+    const results: Record<
+      string,
+      { cities: string[]; placesFound: number; newLeads: number; withWebsite: number; skipped: number }
+    > = {};
 
-    for (const query of queries) {
+    for (const countryConfig of configs) {
       if (Date.now() - startTime > TIMEOUT_MS) {
-        console.warn("[find-leads] Timeout approaching, stopping search early", {
-          elapsedMs: Date.now() - startTime,
-          queriesCompleted: queries.indexOf(query),
-          queriesTotal: queries.length,
-        });
+        console.warn("[find-leads] Timeout approaching, stopping before next country");
         break;
       }
 
-      const places = await searchPlaces(query, env.GOOGLE_PLACES_API_KEY);
-      console.log(`[find-leads] Query "${query}" returned ${places.length} results`);
+      const cities = getRandomCities(countryConfig);
+      const queries = getQueriesForCities(cities, countryConfig);
 
-      for (const place of places) {
-        if (place.placeId && !seenPlaceIds.has(place.placeId)) {
-          seenPlaceIds.add(place.placeId);
-          allPlaces.push({ ...place, searchQuery: query });
+      console.log("[find-leads] Starting search", {
+        country: countryConfig.code,
+        cities,
+        queriesCount: queries.length,
+      });
+
+      const allPlaces: Array<Place & { searchQuery: string }> = [];
+      const seenPlaceIds = new Set<string>();
+
+      for (const query of queries) {
+        if (Date.now() - startTime > TIMEOUT_MS) {
+          console.warn("[find-leads] Timeout approaching, stopping search early");
+          break;
+        }
+
+        const places = await searchPlaces(query, env.GOOGLE_PLACES_API_KEY);
+        console.log(`[find-leads] Query "${query}" returned ${places.length} results`);
+
+        for (const place of places) {
+          if (place.placeId && !seenPlaceIds.has(place.placeId)) {
+            seenPlaceIds.add(place.placeId);
+            allPlaces.push({ ...place, searchQuery: query });
+          }
         }
       }
+
+      const placeIds = allPlaces.map((p) => p.placeId);
+      const existingIds = await leadsRepo.findExistingPlaceIds(placeIds);
+      const newPlaces = allPlaces.filter((p) => !existingIds.has(p.placeId));
+
+      const leadsToInsert = newPlaces.map((place) => {
+        const hasSocialMedia = place.websiteUri && isSocialMediaUrl(place.websiteUri);
+        const hasWebsite = place.websiteUri && !hasSocialMedia;
+
+        return {
+          googlePlaceId: place.placeId,
+          businessName: place.displayName,
+          email: null,
+          websiteUrl: place.websiteUri || null,
+          googleMapsUrl: place.googleMapsUri || null,
+          address: place.formattedAddress || null,
+          city: extractCityFromQuery(place.searchQuery),
+          country: countryConfig.code,
+          status: hasWebsite ? ("pending" as const) : ("skipped" as const),
+          searchQuery: place.searchQuery,
+        };
+      });
+
+      await leadsRepo.insertMany(leadsToInsert);
+
+      results[countryConfig.code] = {
+        cities,
+        placesFound: allPlaces.length,
+        newLeads: leadsToInsert.length,
+        withWebsite: leadsToInsert.filter((l) => l.status === "pending").length,
+        skipped: leadsToInsert.filter((l) => l.status === "skipped").length,
+      };
     }
 
-    console.log("[find-leads] Search phase complete", {
-      uniquePlaces: allPlaces.length,
-      totalFromApi: seenPlaceIds.size,
-      elapsedMs: Date.now() - startTime,
-    });
-
-    const leadsRepo = new LeadsRepository();
-    const placeIds = allPlaces.map((p) => p.placeId);
-    const existingIds = await leadsRepo.findExistingPlaceIds(placeIds);
-    const newPlaces = allPlaces.filter((p) => !existingIds.has(p.placeId));
-
-    console.log("[find-leads] Dedup against DB complete", {
-      newPlaces: newPlaces.length,
-      alreadyInDb: existingIds.size,
-    });
-
-    const placesWithWebsite = newPlaces.filter((p) => p.websiteUri);
-    const placesWithoutWebsite = newPlaces.filter((p) => !p.websiteUri);
-
-    console.log("[find-leads] Starting email scraping", {
-      withWebsite: placesWithWebsite.length,
-      withoutWebsite: placesWithoutWebsite.length,
-    });
-
-    let scrapeCount = 0;
-    const scrapeResults = await withConcurrency(placesWithWebsite, 5, async (place) => {
-      if (Date.now() - startTime > TIMEOUT_MS) {
-        console.warn("[find-leads] Timeout approaching, skipping remaining scrapes", {
-          scraped: scrapeCount,
-          total: placesWithWebsite.length,
-        });
-        return { place, email: "" };
-      }
-      const emails = await scrapeEmails(place.websiteUri!);
-      const best = await pickBestEmailWithAI(emails, place.displayName);
-      scrapeCount++;
-      if (best) {
-        console.log(`[find-leads] Found email for "${place.displayName}": ${best}`);
-      }
-      return { place, email: best };
-    });
-
-    const leadsToInsert = [
-      ...scrapeResults.map(({ place, email }) => ({
-        googlePlaceId: place.placeId,
-        businessName: place.displayName,
-        email: email || null,
-        websiteUrl: place.websiteUri || null,
-        googleMapsUrl: place.googleMapsUri || null,
-        address: place.formattedAddress || null,
-        city: extractCityFromQuery(place.searchQuery),
-        status: email ? ("pending" as const) : ("skipped" as const),
-        searchQuery: place.searchQuery,
-      })),
-      ...placesWithoutWebsite.map((place) => ({
-        googlePlaceId: place.placeId,
-        businessName: place.displayName,
-        email: null,
-        websiteUrl: null,
-        googleMapsUrl: place.googleMapsUri || null,
-        address: place.formattedAddress || null,
-        city: extractCityFromQuery(place.searchQuery),
-        status: "skipped" as const,
-        searchQuery: place.searchQuery,
-      })),
-    ];
-
-    await leadsRepo.insertMany(leadsToInsert);
-
-    const emailsFound = scrapeResults.filter((r) => r.email).length;
     const elapsedMs = Date.now() - startTime;
+    const totalLeads = Object.values(results).reduce((sum, r) => sum + r.newLeads, 0);
 
-    const summary = {
-      citiesSearched: cities,
-      placesFound: allPlaces.length,
-      newLeads: leadsToInsert.length,
-      emailsFound,
-      skipped: placesWithoutWebsite.length + scrapeResults.filter((r) => !r.email).length,
-      elapsedMs,
-    };
+    const summaryLines = Object.entries(results).flatMap(([code, r]) => [
+      `${code}: ${r.newLeads} leads from ${r.cities.join(", ")} (${r.withWebsite} with website, ${r.skipped} skipped)`,
+    ]);
 
-    console.log("[find-leads] Cron run completed successfully", summary);
+    console.log("[find-leads] Cron run completed", { results, elapsedMs });
 
     await sendEmail(
       "alon@bottie.ai",
-      `Find Leads: ${emailsFound} emails from ${cities.join(", ")}`,
+      `Find Leads: ${totalLeads} new leads`,
       CronSummaryEmail({
         cronName: "Find Leads",
         status: "success",
-        lines: [
-          `Cities: ${cities.join(", ")}`,
-          `Places found: ${allPlaces.length}`,
-          `New leads: ${leadsToInsert.length}`,
-          `Emails found: ${emailsFound}`,
-          `Skipped (no email): ${placesWithoutWebsite.length + scrapeResults.filter((r) => !r.email).length}`,
-          `Duration: ${(elapsedMs / 1000).toFixed(1)}s`,
-        ],
+        lines: [...summaryLines, `Duration: ${(elapsedMs / 1000).toFixed(1)}s`],
       })
     );
 
-    return NextResponse.json({ message: "Find-leads cron completed", ...summary });
+    return NextResponse.json({ message: "Find-leads cron completed", results, elapsedMs });
   } catch (error) {
     const elapsedMs = Date.now() - startTime;
     console.error("[find-leads] Cron run failed", {

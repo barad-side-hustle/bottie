@@ -16,10 +16,21 @@ interface DailyStatsEmailProps {
   newUsers: Array<{ name: string; email: string }>;
   newGoogleAccounts: Array<{ email: string; accountName: string }>;
   reviewCount: number;
+  outreachStats?: {
+    sentByCountry: Array<{ country: string; count: number }>;
+    pendingByCountry: Array<{ country: string; count: number }>;
+  };
 }
 
-export default function DailyStatsEmail({ newUsers, newGoogleAccounts, reviewCount }: DailyStatsEmailProps) {
-  const previewText = `Daily Stats: ${newUsers.length} users, ${newGoogleAccounts.length} accounts, ${reviewCount} reviews`;
+export default function DailyStatsEmail({
+  newUsers,
+  newGoogleAccounts,
+  reviewCount,
+  outreachStats,
+}: DailyStatsEmailProps) {
+  const totalSent = outreachStats?.sentByCountry.reduce((sum, s) => sum + s.count, 0) ?? 0;
+
+  const previewText = `Daily Stats: ${newUsers.length} users, ${newGoogleAccounts.length} accounts, ${reviewCount} reviews, ${totalSent} outreach sent`;
 
   return (
     <Html>
@@ -35,6 +46,7 @@ export default function DailyStatsEmail({ newUsers, newGoogleAccounts, reviewCou
                 border: "#2e1065",
                 muted: "#cbd5e1",
                 success: "#22c55e",
+                warning: "#eab308",
               },
               fontFamily: {
                 sans: ["Tomorrow", "sans-serif"],
@@ -118,6 +130,37 @@ export default function DailyStatsEmail({ newUsers, newGoogleAccounts, reviewCou
               <Text className="text-success text-3xl font-bold m-0">{reviewCount}</Text>
             </Section>
 
+            {outreachStats && (outreachStats.sentByCountry.length > 0 || outreachStats.pendingByCountry.length > 0) && (
+              <>
+                <Hr className="border-border opacity-50 mx-0 w-full" />
+
+                <Section className="my-6">
+                  <Text className="text-xs font-bold uppercase tracking-wider text-primary m-0 mb-3">
+                    Outreach (24h)
+                  </Text>
+                  <div className="bg-background border border-solid border-border rounded-xl p-4">
+                    {outreachStats.sentByCountry.map((s, i) => (
+                      <Text key={`sent-${i}`} className="text-muted text-sm leading-relaxed m-0 mb-1">
+                        <span className="text-success font-bold">{s.count} sent</span> — {s.country}
+                      </Text>
+                    ))}
+                    {outreachStats.sentByCountry.length === 0 && (
+                      <Text className="text-muted text-sm m-0 mb-1">No emails sent</Text>
+                    )}
+                    <Hr className="border-border opacity-30 mx-0 w-full my-2" />
+                    {outreachStats.pendingByCountry.map((s, i) => (
+                      <Text key={`pending-${i}`} className="text-muted text-sm leading-relaxed m-0 mb-1">
+                        <span className="text-warning font-bold">{s.count} pending</span> — {s.country}
+                      </Text>
+                    ))}
+                    {outreachStats.pendingByCountry.length === 0 && (
+                      <Text className="text-muted text-sm m-0">No pending leads</Text>
+                    )}
+                  </div>
+                </Section>
+              </>
+            )}
+
             <Hr className="border-border opacity-50 mx-0 w-full" />
 
             <Section className="mt-6">
@@ -137,4 +180,14 @@ DailyStatsEmail.PreviewProps = {
   ],
   newGoogleAccounts: [{ email: "biz@example.com", accountName: "Example Business" }],
   reviewCount: 42,
+  outreachStats: {
+    sentByCountry: [
+      { country: "IL", count: 30 },
+      { country: "US", count: 15 },
+    ],
+    pendingByCountry: [
+      { country: "IL", count: 120 },
+      { country: "US", count: 85 },
+    ],
+  },
 } as DailyStatsEmailProps;

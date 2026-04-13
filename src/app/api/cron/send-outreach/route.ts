@@ -3,10 +3,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { env } from "@/lib/env";
 import { LeadsRepository } from "@/lib/db/repositories";
 import { sendEmail } from "@/lib/utils/email-service";
-import LeadOutreachEmail from "@/lib/emails/lead-outreach";
+import LeadOutreachEmail, { getOutreachSubject } from "@/lib/emails/lead-outreach";
 import { CronSummaryEmail } from "@/lib/emails/cron-summary";
 import { translateLeadNames } from "@/lib/leads/translate";
-
+import { COUNTRY_CONFIGS, getCountryConfig, type CountryConfig } from "@/lib/leads/countries";
 export const maxDuration = 300;
 
 function secureCompare(a: string, b: string): boolean {
@@ -14,6 +14,111 @@ function secureCompare(a: string, b: string): boolean {
   const bufB = Buffer.from(b);
   if (bufA.length !== bufB.length) return false;
   return crypto.timingSafeEqual(bufA, bufB);
+}
+
+async function sendForCountry(
+  leadsRepo: LeadsRepository,
+  config: CountryConfig,
+  sentEmailSet: Set<string>,
+  limit: number
+): Promise<{ sent: number; failed: number; total: number; aborted: boolean }> {
+  const sentEmailList = [...sentEmailSet];
+  const pendingLeads = await leadsRepo.findPendingLeads(sentEmailList, limit, config.code);
+
+  if (pendingLeads.length === 0) {
+    return { sent: 0, failed: 0, total: 0, aborted: false };
+  }
+
+  console.log(`[send-outreach] Processing ${pendingLeads.length} leads for ${config.code}`);
+
+  let displayNames: Map<number, { businessName: string; city: string }>;
+
+  if (config.needsTranslation) {
+    const translationInputs = pendingLeads.map((lead) => ({
+      businessName: lead.businessName,
+      city: lead.city || "",
+    }));
+    const translationMap = await translateLeadNames(translationInputs);
+    displayNames = new Map(
+      pendingLeads.map((lead, idx) => {
+        const translation = translationMap.get(idx);
+        return [
+          idx,
+          {
+            businessName: translation?.hebrewBusinessName || lead.businessName,
+            city: translation?.hebrewCity || lead.city || "",
+          },
+        ];
+      })
+    );
+  } else {
+    displayNames = new Map(
+      pendingLeads.map((lead, idx) => [idx, { businessName: lead.businessName, city: lead.city || "" }])
+    );
+  }
+
+  let emailsSent = 0;
+  let emailsFailed = 0;
+  let consecutiveFailures = 0;
+
+  for (let idx = 0; idx < pendingLeads.length; idx++) {
+    const lead = pendingLeads[idx];
+    if (consecutiveFailures >= 3) {
+      console.error(`[send-outreach] Aborting ${config.code}: 3 consecutive failures`);
+      break;
+    }
+    if (!lead.email) continue;
+
+    if (sentEmailSet.has(lead.email)) {
+      await leadsRepo.updateStatus(lead.id, "skipped", { error: "duplicate email" });
+      continue;
+    }
+
+    const display = displayNames.get(idx)!;
+    const ctaUrl = `https://bottie.ai/${config.locale}`;
+    const subject = getOutreachSubject(config.locale, display.businessName);
+
+    const emailComponent = LeadOutreachEmail({
+      businessName: display.businessName,
+      city: display.city,
+      locale: config.locale,
+      ctaUrl,
+    });
+
+    console.log("[send-outreach] Sending email", {
+      leadId: lead.id,
+      email: lead.email,
+      business: lead.businessName,
+      country: config.code,
+    });
+
+    const result = await sendEmail(lead.email, subject, emailComponent, config.emailSender, config.emailReplyTo);
+
+    if (result.success) {
+      await leadsRepo.updateStatus(lead.id, "sent", { sentAt: new Date() });
+      sentEmailSet.add(lead.email);
+      emailsSent++;
+      consecutiveFailures = 0;
+    } else {
+      await leadsRepo.updateStatus(lead.id, "failed", { error: result.error || "Unknown error" });
+      emailsFailed++;
+      consecutiveFailures++;
+      console.error("[send-outreach] Email send failed", {
+        leadId: lead.id,
+        email: lead.email,
+        error: result.error,
+      });
+    }
+
+    await new Promise((r) => setTimeout(r, 200));
+  }
+
+  return {
+    sent: emailsSent,
+    failed: emailsFailed,
+    total: pendingLeads.length,
+    aborted: consecutiveFailures >= 3,
+  };
 }
 
 export async function GET(req: NextRequest) {
@@ -29,119 +134,48 @@ export async function GET(req: NextRequest) {
     const leadsRepo = new LeadsRepository();
     const sentEmailSet = await leadsRepo.findSentEmails();
 
-    const sentEmailList = [...sentEmailSet];
-    const pendingLeads = await leadsRepo.findPendingLeads(sentEmailList, 50);
+    const countryParam = req.nextUrl.searchParams.get("country")?.toUpperCase();
+    const configs = countryParam
+      ? ([getCountryConfig(countryParam)].filter(Boolean) as CountryConfig[])
+      : Object.values(COUNTRY_CONFIGS);
+
+    if (configs.length === 0) {
+      return NextResponse.json({ error: `Unknown country: ${countryParam}` }, { status: 400 });
+    }
 
     console.log("[send-outreach] Starting cron run", {
-      pendingLeads: pendingLeads.length,
+      countries: configs.map((c) => c.code),
       alreadySentEmails: sentEmailSet.size,
     });
 
-    const translationInputs = pendingLeads.map((lead) => ({
-      businessName: lead.businessName,
-      city: lead.city || "",
-    }));
-    const translationMap = await translateLeadNames(translationInputs);
+    const LIMIT_PER_COUNTRY = 50;
+    const results: Record<string, { sent: number; failed: number; total: number; aborted: boolean }> = {};
 
-    let emailsSent = 0;
-    let emailsFailed = 0;
-    let consecutiveFailures = 0;
-
-    for (let idx = 0; idx < pendingLeads.length; idx++) {
-      const lead = pendingLeads[idx];
-      if (consecutiveFailures >= 3) {
-        console.error("[send-outreach] Aborting: 3 consecutive failures, likely a config issue");
-        break;
-      }
-      if (!lead.email) continue;
-
-      if (sentEmailSet.has(lead.email)) {
-        console.log("[send-outreach] Skipping duplicate email", {
-          leadId: lead.id,
-          email: lead.email,
-          business: lead.businessName,
-        });
-        await leadsRepo.updateStatus(lead.id, "skipped", { error: "duplicate email" });
-        continue;
-      }
-
-      const translation = translationMap.get(idx);
-      const hebrewName = translation?.hebrewBusinessName || lead.businessName;
-      const hebrewCity = translation?.hebrewCity || lead.city || "";
-
-      const subject = `ניהול ביקורות גוגל אוטומטי ל${hebrewName}`;
-      const emailComponent = LeadOutreachEmail({
-        businessName: hebrewName,
-        city: hebrewCity,
-      });
-
-      console.log("[send-outreach] Sending email", {
-        leadId: lead.id,
-        email: lead.email,
-        business: lead.businessName,
-        city: lead.city,
-      });
-
-      const result = await sendEmail(
-        lead.email,
-        subject,
-        emailComponent,
-        "Alon from Bottie <alon@bottie.ai>",
-        "alon@bottie.ai"
-      );
-
-      if (result.success) {
-        await leadsRepo.updateStatus(lead.id, "sent", { sentAt: new Date() });
-        sentEmailSet.add(lead.email);
-        emailsSent++;
-        consecutiveFailures = 0;
-        console.log("[send-outreach] Email sent successfully", {
-          leadId: lead.id,
-          email: lead.email,
-          business: lead.businessName,
-        });
-      } else {
-        await leadsRepo.updateStatus(lead.id, "failed", { error: result.error || "Unknown error" });
-        emailsFailed++;
-        consecutiveFailures++;
-        console.error("[send-outreach] Email send failed", {
-          leadId: lead.id,
-          email: lead.email,
-          business: lead.businessName,
-          error: result.error,
-        });
-      }
-
-      await new Promise((r) => setTimeout(r, 200));
+    for (const config of configs) {
+      results[config.code] = await sendForCountry(leadsRepo, config, sentEmailSet, LIMIT_PER_COUNTRY);
     }
 
+    const totalSent = Object.values(results).reduce((sum, r) => sum + r.sent, 0);
+    const totalFailed = Object.values(results).reduce((sum, r) => sum + r.failed, 0);
     const elapsedMs = Date.now() - startTime;
-    const summary = {
-      emailsSent,
-      emailsFailed,
-      totalPending: pendingLeads.length,
-      elapsedMs,
-    };
 
-    console.log("[send-outreach] Cron run completed successfully", summary);
+    const summaryLines = Object.entries(results).flatMap(([code, r]) => [
+      `${code}: ${r.sent} sent, ${r.failed} failed (${r.total} pending)${r.aborted ? " [ABORTED]" : ""}`,
+    ]);
+
+    console.log("[send-outreach] Cron run completed", { results, elapsedMs });
 
     await sendEmail(
       "alon@bottie.ai",
-      `Outreach: ${emailsSent} sent, ${emailsFailed} failed`,
+      `Outreach: ${totalSent} sent, ${totalFailed} failed`,
       CronSummaryEmail({
         cronName: "Send Outreach",
-        status: emailsFailed > 0 && emailsSent === 0 ? "error" : "success",
-        lines: [
-          `Emails sent: ${emailsSent}`,
-          `Emails failed: ${emailsFailed}`,
-          `Total pending: ${pendingLeads.length}`,
-          `Duration: ${(elapsedMs / 1000).toFixed(1)}s`,
-          ...(consecutiveFailures >= 3 ? ["Aborted early: 3 consecutive failures"] : []),
-        ],
+        status: totalFailed > 0 && totalSent === 0 ? "error" : "success",
+        lines: [...summaryLines, `Duration: ${(elapsedMs / 1000).toFixed(1)}s`],
       })
     );
 
-    return NextResponse.json({ message: "Send-outreach cron completed", ...summary });
+    return NextResponse.json({ message: "Send-outreach cron completed", results, elapsedMs });
   } catch (error) {
     const elapsedMs = Date.now() - startTime;
     console.error("[send-outreach] Cron run failed", {

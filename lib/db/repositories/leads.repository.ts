@@ -1,4 +1,4 @@
-import { eq, and, inArray, isNotNull, notInArray } from "drizzle-orm";
+import { eq, and, gte, inArray, isNotNull, isNull, notInArray, sql } from "drizzle-orm";
 import { db } from "@/lib/db/client";
 import { leads, type Lead, type LeadInsert } from "@/lib/db/schema";
 
@@ -22,7 +22,7 @@ export class LeadsRepository {
     return new Set(sentEmails.map((l) => l.email).filter(Boolean) as string[]);
   }
 
-  async findPendingLeads(excludeEmails: string[], limit: number): Promise<Lead[]> {
+  async findPendingLeads(excludeEmails: string[], limit: number, country?: string): Promise<Lead[]> {
     return db
       .select()
       .from(leads)
@@ -30,7 +30,8 @@ export class LeadsRepository {
         and(
           eq(leads.status, "pending"),
           isNotNull(leads.email),
-          excludeEmails.length > 0 ? notInArray(leads.email, excludeEmails) : undefined
+          excludeEmails.length > 0 ? notInArray(leads.email, excludeEmails) : undefined,
+          country ? eq(leads.country, country) : undefined
         )
       )
       .limit(limit);
@@ -41,5 +42,40 @@ export class LeadsRepository {
       .update(leads)
       .set({ status, ...extra })
       .where(eq(leads.id, id));
+  }
+
+  async findLeadsNeedingEmail(excludeDomains: string[], limit: number): Promise<Lead[]> {
+    const domainConditions = excludeDomains.map((domain) => sql`${leads.websiteUrl} NOT ILIKE ${"%" + domain + "%"}`);
+
+    return db
+      .select()
+      .from(leads)
+      .where(and(eq(leads.status, "pending"), isNotNull(leads.websiteUrl), isNull(leads.email), ...domainConditions))
+      .limit(limit);
+  }
+
+  async updateEmail(id: string, email: string): Promise<void> {
+    await db
+      .update(leads)
+      .set({ email, status: "pending" as const })
+      .where(eq(leads.id, id));
+  }
+
+  async countSentByCountry(since: Date): Promise<Array<{ country: string; count: number }>> {
+    const rows = await db
+      .select({ country: leads.country, count: sql<number>`count(*)::int` })
+      .from(leads)
+      .where(and(eq(leads.status, "sent"), gte(leads.sentAt, since)))
+      .groupBy(leads.country);
+    return rows;
+  }
+
+  async countPendingByCountry(): Promise<Array<{ country: string; count: number }>> {
+    const rows = await db
+      .select({ country: leads.country, count: sql<number>`count(*)::int` })
+      .from(leads)
+      .where(and(eq(leads.status, "pending"), isNotNull(leads.email)))
+      .groupBy(leads.country);
+    return rows;
   }
 }

@@ -1,0 +1,115 @@
+import crypto from "crypto";
+import { NextRequest, NextResponse } from "next/server";
+import { env } from "@/lib/env";
+import { LeadsRepository } from "@/lib/db/repositories";
+import {
+  scrapeEmails,
+  pickBestEmailWithAI,
+  withConcurrency,
+  isSocialMediaUrl,
+  SOCIAL_MEDIA_DOMAINS,
+} from "@/lib/leads/scraper";
+import { sendEmail } from "@/lib/utils/email-service";
+import { CronSummaryEmail } from "@/lib/emails/cron-summary";
+
+export const maxDuration = 300;
+
+function secureCompare(a: string, b: string): boolean {
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  if (bufA.length !== bufB.length) return false;
+  return crypto.timingSafeEqual(bufA, bufB);
+}
+
+export async function GET(req: NextRequest) {
+  const authHeader = req.headers.get("authorization");
+  const expected = `Bearer ${env.CRON_SECRET}`;
+  if (!authHeader || !secureCompare(authHeader, expected)) {
+    return new NextResponse("Unauthorized", { status: 401 });
+  }
+
+  const startTime = Date.now();
+  const TIMEOUT_MS = 240_000;
+  const BATCH_SIZE = 100;
+
+  try {
+    const leadsRepo = new LeadsRepository();
+    const leadsToScrape = await leadsRepo.findLeadsNeedingEmail(SOCIAL_MEDIA_DOMAINS, BATCH_SIZE);
+
+    console.log("[scrape-emails] Starting", { leadsToProcess: leadsToScrape.length });
+
+    let emailsFound = 0;
+    let processed = 0;
+
+    const results = await withConcurrency(leadsToScrape, 5, async (lead) => {
+      if (Date.now() - startTime > TIMEOUT_MS) {
+        return { lead, email: "", scraped: false };
+      }
+
+      if (!lead.websiteUrl || isSocialMediaUrl(lead.websiteUrl)) {
+        return { lead, email: "", scraped: true };
+      }
+
+      const emails = await scrapeEmails(lead.websiteUrl);
+      const best = await pickBestEmailWithAI(emails, lead.businessName);
+      processed++;
+
+      if (best) {
+        emailsFound++;
+      }
+
+      return { lead, email: best, scraped: true };
+    });
+
+    for (const { lead, email, scraped } of results) {
+      if (email) {
+        await leadsRepo.updateEmail(lead.id, email);
+      } else if (scraped) {
+        await leadsRepo.updateStatus(lead.id, "skipped");
+      }
+    }
+
+    const elapsedMs = Date.now() - startTime;
+    const summary = { processed, emailsFound, elapsedMs };
+
+    console.log("[scrape-emails] Completed", summary);
+
+    await sendEmail(
+      "alon@bottie.ai",
+      `Scrape Emails: ${emailsFound} emails from ${processed} leads`,
+      CronSummaryEmail({
+        cronName: "Scrape Emails",
+        status: "success",
+        lines: [
+          `Processed: ${processed}`,
+          `Emails found: ${emailsFound}`,
+          `Duration: ${(elapsedMs / 1000).toFixed(1)}s`,
+        ],
+      })
+    );
+
+    return NextResponse.json({ message: "Scrape-emails cron completed", ...summary });
+  } catch (error) {
+    const elapsedMs = Date.now() - startTime;
+    console.error("[scrape-emails] Failed", {
+      error: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+      elapsedMs,
+    });
+
+    await sendEmail(
+      "alon@bottie.ai",
+      "Scrape Emails: FAILED",
+      CronSummaryEmail({
+        cronName: "Scrape Emails",
+        status: "error",
+        lines: [
+          `Error: ${error instanceof Error ? error.message : String(error)}`,
+          `Duration: ${(elapsedMs / 1000).toFixed(1)}s`,
+        ],
+      })
+    ).catch(() => {});
+
+    return new NextResponse("Internal Server Error", { status: 500 });
+  }
+}
