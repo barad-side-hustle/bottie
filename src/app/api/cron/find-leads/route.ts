@@ -4,7 +4,7 @@ import { env } from "@/lib/env";
 import { LeadsRepository } from "@/lib/db/repositories";
 import { getRandomCities, getQueriesForCities, searchPlaces, type Place } from "@/lib/leads/places";
 import { COUNTRY_CONFIGS, getCountryConfig } from "@/lib/leads/countries";
-import { scrapeEmails, pickBestEmailWithAI, withConcurrency, isSocialMediaUrl } from "@/lib/leads/scraper";
+import { isSocialMediaUrl } from "@/lib/leads/scraper";
 import { sendEmail } from "@/lib/utils/email-service";
 import { CronSummaryEmail } from "@/lib/emails/cron-summary";
 
@@ -41,7 +41,6 @@ export async function GET(req: NextRequest) {
     console.log("[find-leads] Starting cron run", {
       country: countryConfig.code,
       cities,
-      queries,
       queriesCount: queries.length,
     });
 
@@ -71,7 +70,6 @@ export async function GET(req: NextRequest) {
 
     console.log("[find-leads] Search phase complete", {
       uniquePlaces: allPlaces.length,
-      totalFromApi: seenPlaceIds.size,
       elapsedMs: Date.now() - startTime,
     });
 
@@ -85,48 +83,11 @@ export async function GET(req: NextRequest) {
       alreadyInDb: existingIds.size,
     });
 
-    const placesWithWebsite = newPlaces.filter((p) => p.websiteUri && !isSocialMediaUrl(p.websiteUri));
-    const socialMediaPlaces = newPlaces.filter((p) => p.websiteUri && isSocialMediaUrl(p.websiteUri));
-    const placesWithoutWebsite = newPlaces.filter((p) => !p.websiteUri);
+    const leadsToInsert = newPlaces.map((place) => {
+      const hasSocialMedia = place.websiteUri && isSocialMediaUrl(place.websiteUri);
+      const hasWebsite = place.websiteUri && !hasSocialMedia;
 
-    console.log("[find-leads] Starting email scraping", {
-      withWebsite: placesWithWebsite.length,
-      socialMedia: socialMediaPlaces.length,
-      withoutWebsite: placesWithoutWebsite.length,
-    });
-
-    let scrapeCount = 0;
-    const scrapeResults = await withConcurrency(placesWithWebsite, 5, async (place) => {
-      if (Date.now() - startTime > TIMEOUT_MS) {
-        console.warn("[find-leads] Timeout approaching, skipping remaining scrapes", {
-          scraped: scrapeCount,
-          total: placesWithWebsite.length,
-        });
-        return { place, email: "" };
-      }
-      const emails = await scrapeEmails(place.websiteUri!);
-      const best = await pickBestEmailWithAI(emails, place.displayName);
-      scrapeCount++;
-      if (best) {
-        console.log(`[find-leads] Found email for "${place.displayName}": ${best}`);
-      }
-      return { place, email: best };
-    });
-
-    const leadsToInsert = [
-      ...scrapeResults.map(({ place, email }) => ({
-        googlePlaceId: place.placeId,
-        businessName: place.displayName,
-        email: email || null,
-        websiteUrl: place.websiteUri || null,
-        googleMapsUrl: place.googleMapsUri || null,
-        address: place.formattedAddress || null,
-        city: extractCityFromQuery(place.searchQuery),
-        country: countryConfig.code,
-        status: email ? ("pending" as const) : ("skipped" as const),
-        searchQuery: place.searchQuery,
-      })),
-      ...socialMediaPlaces.map((place) => ({
+      return {
         googlePlaceId: place.placeId,
         businessName: place.displayName,
         email: null,
@@ -135,26 +96,15 @@ export async function GET(req: NextRequest) {
         address: place.formattedAddress || null,
         city: extractCityFromQuery(place.searchQuery),
         country: countryConfig.code,
-        status: "skipped" as const,
+        status: hasWebsite ? ("pending" as const) : ("skipped" as const),
         searchQuery: place.searchQuery,
-      })),
-      ...placesWithoutWebsite.map((place) => ({
-        googlePlaceId: place.placeId,
-        businessName: place.displayName,
-        email: null,
-        websiteUrl: null,
-        googleMapsUrl: place.googleMapsUri || null,
-        address: place.formattedAddress || null,
-        city: extractCityFromQuery(place.searchQuery),
-        country: countryConfig.code,
-        status: "skipped" as const,
-        searchQuery: place.searchQuery,
-      })),
-    ];
+      };
+    });
 
     await leadsRepo.insertMany(leadsToInsert);
 
-    const emailsFound = scrapeResults.filter((r) => r.email).length;
+    const withWebsite = leadsToInsert.filter((l) => l.status === "pending").length;
+    const skipped = leadsToInsert.filter((l) => l.status === "skipped").length;
     const elapsedMs = Date.now() - startTime;
 
     const summary = {
@@ -162,17 +112,16 @@ export async function GET(req: NextRequest) {
       citiesSearched: cities,
       placesFound: allPlaces.length,
       newLeads: leadsToInsert.length,
-      emailsFound,
-      socialMediaSkipped: socialMediaPlaces.length,
-      skipped: placesWithoutWebsite.length + scrapeResults.filter((r) => !r.email).length,
+      withWebsite,
+      skipped,
       elapsedMs,
     };
 
-    console.log("[find-leads] Cron run completed successfully", summary);
+    console.log("[find-leads] Cron run completed", summary);
 
     await sendEmail(
       "alon@bottie.ai",
-      `Find Leads (${countryConfig.code}): ${emailsFound} emails from ${cities.join(", ")}`,
+      `Find Leads (${countryConfig.code}): ${leadsToInsert.length} leads from ${cities.join(", ")}`,
       CronSummaryEmail({
         cronName: `Find Leads (${countryConfig.code})`,
         status: "success",
@@ -181,9 +130,8 @@ export async function GET(req: NextRequest) {
           `Cities: ${cities.join(", ")}`,
           `Places found: ${allPlaces.length}`,
           `New leads: ${leadsToInsert.length}`,
-          `Emails found: ${emailsFound}`,
-          `Social media (skipped): ${socialMediaPlaces.length}`,
-          `Skipped (no email): ${placesWithoutWebsite.length + scrapeResults.filter((r) => !r.email).length}`,
+          `With website (pending scrape): ${withWebsite}`,
+          `Skipped (no website / social media): ${skipped}`,
           `Duration: ${(elapsedMs / 1000).toFixed(1)}s`,
         ],
       })

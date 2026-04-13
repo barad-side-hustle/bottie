@@ -120,7 +120,7 @@ src/
 │       ├── cron/find-leads/         # Lead discovery via Google Places
 │       ├── cron/send-outreach/      # Outreach emails to leads (per-country)
 │       ├── cron/daily-stats/        # Daily stats summary email
-│       └── cron/rescrape-leads/     # Retry email scraping for skipped leads
+│       └── cron/scrape-emails/      # Scrape emails for leads with websites
 ├── components/
 │   ├── auth/          # Login, sign-up, password reset forms
 │   ├── checkout/      # Checkout flow

@@ -2,26 +2,17 @@ import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { env } from "@/lib/env";
 import { LeadsRepository } from "@/lib/db/repositories";
-import { scrapeEmails, pickBestEmailWithAI, withConcurrency, isSocialMediaUrl } from "@/lib/leads/scraper";
+import {
+  scrapeEmails,
+  pickBestEmailWithAI,
+  withConcurrency,
+  isSocialMediaUrl,
+  SOCIAL_MEDIA_DOMAINS,
+} from "@/lib/leads/scraper";
 import { sendEmail } from "@/lib/utils/email-service";
 import { CronSummaryEmail } from "@/lib/emails/cron-summary";
 
 export const maxDuration = 300;
-
-const SOCIAL_MEDIA_DOMAINS = [
-  "instagram.com",
-  "facebook.com",
-  "fb.com",
-  "fb.me",
-  "tiktok.com",
-  "twitter.com",
-  "x.com",
-  "linkedin.com",
-  "youtube.com",
-  "youtu.be",
-  "linktr.ee",
-  "waze.com",
-];
 
 function secureCompare(a: string, b: string): boolean {
   const bufA = Buffer.from(a);
@@ -39,20 +30,18 @@ export async function GET(req: NextRequest) {
 
   const startTime = Date.now();
   const TIMEOUT_MS = 240_000;
-  const BATCH_SIZE = 50;
+  const BATCH_SIZE = 100;
 
   try {
     const leadsRepo = new LeadsRepository();
-    const skippedLeads = await leadsRepo.findSkippedWithWebsite(SOCIAL_MEDIA_DOMAINS, BATCH_SIZE);
+    const leadsToScrape = await leadsRepo.findLeadsNeedingEmail(SOCIAL_MEDIA_DOMAINS, BATCH_SIZE);
 
-    console.log("[rescrape-leads] Starting rescrape", {
-      leadsToProcess: skippedLeads.length,
-    });
+    console.log("[scrape-emails] Starting", { leadsToProcess: leadsToScrape.length });
 
     let emailsFound = 0;
     let processed = 0;
 
-    const results = await withConcurrency(skippedLeads, 5, async (lead) => {
+    const results = await withConcurrency(leadsToScrape, 5, async (lead) => {
       if (Date.now() - startTime > TIMEOUT_MS) {
         return { lead, email: "" };
       }
@@ -67,7 +56,6 @@ export async function GET(req: NextRequest) {
 
       if (best) {
         emailsFound++;
-        console.log(`[rescrape-leads] Found email for "${lead.businessName}": ${best}`);
       }
 
       return { lead, email: best };
@@ -76,23 +64,21 @@ export async function GET(req: NextRequest) {
     for (const { lead, email } of results) {
       if (email) {
         await leadsRepo.updateEmail(lead.id, email);
+      } else if (processed > 0) {
+        await leadsRepo.updateStatus(lead.id, "skipped");
       }
     }
 
     const elapsedMs = Date.now() - startTime;
-    const summary = {
-      processed,
-      emailsFound,
-      elapsedMs,
-    };
+    const summary = { processed, emailsFound, elapsedMs };
 
-    console.log("[rescrape-leads] Completed", summary);
+    console.log("[scrape-emails] Completed", summary);
 
     await sendEmail(
       "alon@bottie.ai",
-      `Rescrape Leads: ${emailsFound} new emails from ${processed} leads`,
+      `Scrape Emails: ${emailsFound} emails from ${processed} leads`,
       CronSummaryEmail({
-        cronName: "Rescrape Leads",
+        cronName: "Scrape Emails",
         status: "success",
         lines: [
           `Processed: ${processed}`,
@@ -102,10 +88,10 @@ export async function GET(req: NextRequest) {
       })
     );
 
-    return NextResponse.json({ message: "Rescrape-leads cron completed", ...summary });
+    return NextResponse.json({ message: "Scrape-emails cron completed", ...summary });
   } catch (error) {
     const elapsedMs = Date.now() - startTime;
-    console.error("[rescrape-leads] Failed", {
+    console.error("[scrape-emails] Failed", {
       error: error instanceof Error ? error.message : String(error),
       stack: error instanceof Error ? error.stack : undefined,
       elapsedMs,
@@ -113,9 +99,9 @@ export async function GET(req: NextRequest) {
 
     await sendEmail(
       "alon@bottie.ai",
-      "Rescrape Leads: FAILED",
+      "Scrape Emails: FAILED",
       CronSummaryEmail({
-        cronName: "Rescrape Leads",
+        cronName: "Scrape Emails",
         status: "error",
         lines: [
           `Error: ${error instanceof Error ? error.message : String(error)}`,

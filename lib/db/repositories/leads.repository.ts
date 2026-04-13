@@ -44,13 +44,13 @@ export class LeadsRepository {
       .where(eq(leads.id, id));
   }
 
-  async findSkippedWithWebsite(excludeDomains: string[], limit: number): Promise<Lead[]> {
+  async findLeadsNeedingEmail(excludeDomains: string[], limit: number): Promise<Lead[]> {
     const domainConditions = excludeDomains.map((domain) => sql`${leads.websiteUrl} NOT ILIKE ${"%" + domain + "%"}`);
 
     return db
       .select()
       .from(leads)
-      .where(and(eq(leads.status, "skipped"), isNotNull(leads.websiteUrl), isNull(leads.email), ...domainConditions))
+      .where(and(eq(leads.status, "pending"), isNotNull(leads.websiteUrl), isNull(leads.email), ...domainConditions))
       .limit(limit);
   }
 

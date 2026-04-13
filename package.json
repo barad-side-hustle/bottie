@@ -31,7 +31,7 @@
     "cron:send-outreach": "dotenv -e .env -- bash -c 'curl -s -H \"Authorization: Bearer $CRON_SECRET\" http://localhost:3000/api/cron/send-outreach'",
     "cron:send-outreach:il": "dotenv -e .env -- bash -c 'curl -s -H \"Authorization: Bearer $CRON_SECRET\" \"http://localhost:3000/api/cron/send-outreach?country=IL\"'",
     "cron:send-outreach:us": "dotenv -e .env -- bash -c 'curl -s -H \"Authorization: Bearer $CRON_SECRET\" \"http://localhost:3000/api/cron/send-outreach?country=US\"'",
-    "cron:rescrape-leads": "dotenv -e .env -- bash -c 'curl -s -H \"Authorization: Bearer $CRON_SECRET\" http://localhost:3000/api/cron/rescrape-leads'",
+    "cron:scrape-emails": "dotenv -e .env -- bash -c 'curl -s -H \"Authorization: Bearer $CRON_SECRET\" http://localhost:3000/api/cron/scrape-emails'",
     "cron:daily-stats": "dotenv -e .env -- bash -c 'curl -s -H \"Authorization: Bearer $CRON_SECRET\" http://localhost:3000/api/cron/daily-stats'",
     "comments:remove": "tsx scripts/remove-comments.ts",
     "pubsub:update": "bash scripts/update-pubsub-subscription.sh",

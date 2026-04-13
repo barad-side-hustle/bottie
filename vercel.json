@@ -44,8 +44,12 @@
       "schedule": "30 15 * * *"
     },
     {
-      "path": "/api/cron/rescrape-leads",
-      "schedule": "0 10 * * *"
+      "path": "/api/cron/scrape-emails",
+      "schedule": "30 7 * * *"
+    },
+    {
+      "path": "/api/cron/scrape-emails",
+      "schedule": "30 14 * * *"
     }
   ]
 }

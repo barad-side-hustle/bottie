@@ -6,7 +6,7 @@ const EMAIL_REGEX = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g;
 
 const CONTACT_PATHS = ["/contact", "/about", "/צור-קשר", "/contact-us", "/contactus", "/צרו-קשר", "/about-us"];
 
-const SOCIAL_MEDIA_DOMAINS = [
+export const SOCIAL_MEDIA_DOMAINS = [
   "instagram.com",
   "facebook.com",
   "fb.com",
