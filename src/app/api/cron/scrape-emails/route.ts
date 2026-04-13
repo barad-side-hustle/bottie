@@ -51,22 +51,35 @@ export async function GET(req: NextRequest) {
         return { lead, email: "", scraped: true };
       }
 
-      const emails = await scrapeEmails(lead.websiteUrl);
-      const best = await pickBestEmailWithAI(emails, lead.businessName);
-      processed++;
+      try {
+        const emails = await Promise.race([
+          scrapeEmails(lead.websiteUrl),
+          new Promise<string[]>((_, reject) => setTimeout(() => reject(new Error("scrape timeout")), 30_000)),
+        ]);
+        const best = await pickBestEmailWithAI(emails, lead.businessName);
+        processed++;
 
-      console.log("[scrape-emails] Processed", {
-        business: lead.businessName,
-        website: lead.websiteUrl,
-        emailsFound: emails.length,
-        bestEmail: best || null,
-      });
+        console.log("[scrape-emails] Processed", {
+          business: lead.businessName,
+          website: lead.websiteUrl,
+          emailsFound: emails.length,
+          bestEmail: best || null,
+        });
 
-      if (best) {
-        emailsFound++;
+        if (best) {
+          emailsFound++;
+        }
+
+        return { lead, email: best, scraped: true };
+      } catch (error) {
+        console.warn("[scrape-emails] Lead failed", {
+          business: lead.businessName,
+          website: lead.websiteUrl,
+          error: error instanceof Error ? error.message : String(error),
+        });
+        processed++;
+        return { lead, email: "", scraped: true };
       }
-
-      return { lead, email: best, scraped: true };
     });
 
     for (const { lead, email, scraped } of results) {
