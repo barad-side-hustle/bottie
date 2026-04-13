@@ -21,6 +21,7 @@ function getDb() {
       idle_timeout: 60,
       connect_timeout: 10,
       max_lifetime: 60 * 30,
+      prepare: false,
     });
     dbInstance = drizzle(client, { schema });
   }
