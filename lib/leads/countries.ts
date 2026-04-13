@@ -22,10 +22,6 @@ const SHARED_QUERY_TEMPLATES = [
   "gyms in {city}{suffix}",
   "fitness studios in {city}{suffix}",
   "hotels in {city}{suffix}",
-  "medical clinics in {city}{suffix}",
-  "dental clinics in {city}{suffix}",
-  "auto repair shops in {city}{suffix}",
-  "spas in {city}{suffix}",
 ];
 
 export const COUNTRY_CONFIGS: Record<string, CountryConfig> = {
