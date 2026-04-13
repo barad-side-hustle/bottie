@@ -1,6 +1,6 @@
 import { generateWithGemini } from "@/lib/ai/core/gemini-client";
 import { env } from "@/lib/env";
-import { SchemaType, type ResponseSchema } from "@google/generative-ai";
+import { z } from "zod";
 
 const EMAIL_REGEX = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g;
 
@@ -171,13 +171,9 @@ function pickBestEmail(emails: string[]): string {
   return personal.length > 0 ? personal[0] : emails[0];
 }
 
-const emailPickerSchema: ResponseSchema = {
-  type: SchemaType.OBJECT,
-  properties: {
-    email: { type: SchemaType.STRING },
-  },
-  required: ["email"],
-};
+const emailPickerResponseSchema = z.object({
+  email: z.string().email(),
+});
 
 export async function pickBestEmailWithAI(emails: string[], businessName: string): Promise<string> {
   if (emails.length === 0) return "";
@@ -187,13 +183,12 @@ export async function pickBestEmailWithAI(emails: string[], businessName: string
     const prompt = `Select the best contact email for "${businessName}" from this list:
 ${emails.map((e, i) => `${i + 1}. ${e}`).join("\n")}
 
-Prefer: domain matching the business > personal (owner/manager) > generic (info@, office@).
-Respond with JSON only: {"email": "chosen@example.com"}`;
+Prefer: domain matching the business > personal (owner/manager) > generic (info@, office@).`;
 
-    const raw = await generateWithGemini(env.GEMINI_API_KEY, prompt, "gemini-3-flash-preview", 256, emailPickerSchema);
-    const parsed: { email: string } = JSON.parse(raw);
+    const raw = await generateWithGemini(env.GEMINI_API_KEY, prompt, "gemini-3-flash-preview", 256, undefined, "application/json");
+    const parsed = emailPickerResponseSchema.parse(JSON.parse(raw));
 
-    if (parsed.email && emails.includes(parsed.email.toLowerCase())) {
+    if (emails.includes(parsed.email.toLowerCase())) {
       return parsed.email.toLowerCase();
     }
 
