@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { env } from "@/lib/env";
 import { LeadsRepository } from "@/lib/db/repositories";
 import { getRandomCities, getQueriesForCities, searchPlaces, type Place } from "@/lib/leads/places";
-import { COUNTRY_CONFIGS, getCountryConfig } from "@/lib/leads/countries";
+import { COUNTRY_CONFIGS, getCountryConfig, type CountryConfig } from "@/lib/leads/countries";
 import { isSocialMediaUrl } from "@/lib/leads/scraper";
 import { sendEmail } from "@/lib/utils/email-service";
 import { CronSummaryEmail } from "@/lib/emails/cron-summary";
@@ -29,115 +29,108 @@ export async function GET(req: NextRequest) {
 
   try {
     const countryParam = req.nextUrl.searchParams.get("country")?.toUpperCase();
-    const countryConfig = countryParam ? getCountryConfig(countryParam) : COUNTRY_CONFIGS.IL;
+    const configs: CountryConfig[] = countryParam
+      ? ([getCountryConfig(countryParam)].filter(Boolean) as CountryConfig[])
+      : Object.values(COUNTRY_CONFIGS);
 
-    if (!countryConfig) {
+    if (configs.length === 0) {
       return NextResponse.json({ error: `Unknown country: ${countryParam}` }, { status: 400 });
     }
 
-    const cities = getRandomCities(countryConfig);
-    const queries = getQueriesForCities(cities, countryConfig);
+    const leadsRepo = new LeadsRepository();
+    const results: Record<
+      string,
+      { cities: string[]; placesFound: number; newLeads: number; withWebsite: number; skipped: number }
+    > = {};
 
-    console.log("[find-leads] Starting cron run", {
-      country: countryConfig.code,
-      cities,
-      queriesCount: queries.length,
-    });
-
-    const allPlaces: Array<Place & { searchQuery: string }> = [];
-    const seenPlaceIds = new Set<string>();
-
-    for (const query of queries) {
+    for (const countryConfig of configs) {
       if (Date.now() - startTime > TIMEOUT_MS) {
-        console.warn("[find-leads] Timeout approaching, stopping search early", {
-          elapsedMs: Date.now() - startTime,
-          queriesCompleted: queries.indexOf(query),
-          queriesTotal: queries.length,
-        });
+        console.warn("[find-leads] Timeout approaching, stopping before next country");
         break;
       }
 
-      const places = await searchPlaces(query, env.GOOGLE_PLACES_API_KEY);
-      console.log(`[find-leads] Query "${query}" returned ${places.length} results`);
+      const cities = getRandomCities(countryConfig);
+      const queries = getQueriesForCities(cities, countryConfig);
 
-      for (const place of places) {
-        if (place.placeId && !seenPlaceIds.has(place.placeId)) {
-          seenPlaceIds.add(place.placeId);
-          allPlaces.push({ ...place, searchQuery: query });
+      console.log("[find-leads] Starting search", {
+        country: countryConfig.code,
+        cities,
+        queriesCount: queries.length,
+      });
+
+      const allPlaces: Array<Place & { searchQuery: string }> = [];
+      const seenPlaceIds = new Set<string>();
+
+      for (const query of queries) {
+        if (Date.now() - startTime > TIMEOUT_MS) {
+          console.warn("[find-leads] Timeout approaching, stopping search early");
+          break;
+        }
+
+        const places = await searchPlaces(query, env.GOOGLE_PLACES_API_KEY);
+        console.log(`[find-leads] Query "${query}" returned ${places.length} results`);
+
+        for (const place of places) {
+          if (place.placeId && !seenPlaceIds.has(place.placeId)) {
+            seenPlaceIds.add(place.placeId);
+            allPlaces.push({ ...place, searchQuery: query });
+          }
         }
       }
+
+      const placeIds = allPlaces.map((p) => p.placeId);
+      const existingIds = await leadsRepo.findExistingPlaceIds(placeIds);
+      const newPlaces = allPlaces.filter((p) => !existingIds.has(p.placeId));
+
+      const leadsToInsert = newPlaces.map((place) => {
+        const hasSocialMedia = place.websiteUri && isSocialMediaUrl(place.websiteUri);
+        const hasWebsite = place.websiteUri && !hasSocialMedia;
+
+        return {
+          googlePlaceId: place.placeId,
+          businessName: place.displayName,
+          email: null,
+          websiteUrl: place.websiteUri || null,
+          googleMapsUrl: place.googleMapsUri || null,
+          address: place.formattedAddress || null,
+          city: extractCityFromQuery(place.searchQuery),
+          country: countryConfig.code,
+          status: hasWebsite ? ("pending" as const) : ("skipped" as const),
+          searchQuery: place.searchQuery,
+        };
+      });
+
+      await leadsRepo.insertMany(leadsToInsert);
+
+      results[countryConfig.code] = {
+        cities,
+        placesFound: allPlaces.length,
+        newLeads: leadsToInsert.length,
+        withWebsite: leadsToInsert.filter((l) => l.status === "pending").length,
+        skipped: leadsToInsert.filter((l) => l.status === "skipped").length,
+      };
     }
 
-    console.log("[find-leads] Search phase complete", {
-      uniquePlaces: allPlaces.length,
-      elapsedMs: Date.now() - startTime,
-    });
-
-    const leadsRepo = new LeadsRepository();
-    const placeIds = allPlaces.map((p) => p.placeId);
-    const existingIds = await leadsRepo.findExistingPlaceIds(placeIds);
-    const newPlaces = allPlaces.filter((p) => !existingIds.has(p.placeId));
-
-    console.log("[find-leads] Dedup against DB complete", {
-      newPlaces: newPlaces.length,
-      alreadyInDb: existingIds.size,
-    });
-
-    const leadsToInsert = newPlaces.map((place) => {
-      const hasSocialMedia = place.websiteUri && isSocialMediaUrl(place.websiteUri);
-      const hasWebsite = place.websiteUri && !hasSocialMedia;
-
-      return {
-        googlePlaceId: place.placeId,
-        businessName: place.displayName,
-        email: null,
-        websiteUrl: place.websiteUri || null,
-        googleMapsUrl: place.googleMapsUri || null,
-        address: place.formattedAddress || null,
-        city: extractCityFromQuery(place.searchQuery),
-        country: countryConfig.code,
-        status: hasWebsite ? ("pending" as const) : ("skipped" as const),
-        searchQuery: place.searchQuery,
-      };
-    });
-
-    await leadsRepo.insertMany(leadsToInsert);
-
-    const withWebsite = leadsToInsert.filter((l) => l.status === "pending").length;
-    const skipped = leadsToInsert.filter((l) => l.status === "skipped").length;
     const elapsedMs = Date.now() - startTime;
+    const totalLeads = Object.values(results).reduce((sum, r) => sum + r.newLeads, 0);
 
-    const summary = {
-      country: countryConfig.code,
-      citiesSearched: cities,
-      placesFound: allPlaces.length,
-      newLeads: leadsToInsert.length,
-      withWebsite,
-      skipped,
-      elapsedMs,
-    };
+    const summaryLines = Object.entries(results).flatMap(([code, r]) => [
+      `${code}: ${r.newLeads} leads from ${r.cities.join(", ")} (${r.withWebsite} with website, ${r.skipped} skipped)`,
+    ]);
 
-    console.log("[find-leads] Cron run completed", summary);
+    console.log("[find-leads] Cron run completed", { results, elapsedMs });
 
     await sendEmail(
       "alon@bottie.ai",
-      `Find Leads (${countryConfig.code}): ${leadsToInsert.length} leads from ${cities.join(", ")}`,
+      `Find Leads: ${totalLeads} new leads`,
       CronSummaryEmail({
-        cronName: `Find Leads (${countryConfig.code})`,
+        cronName: "Find Leads",
         status: "success",
-        lines: [
-          `Country: ${countryConfig.code}`,
-          `Cities: ${cities.join(", ")}`,
-          `Places found: ${allPlaces.length}`,
-          `New leads: ${leadsToInsert.length}`,
-          `With website (pending scrape): ${withWebsite}`,
-          `Skipped (no website / social media): ${skipped}`,
-          `Duration: ${(elapsedMs / 1000).toFixed(1)}s`,
-        ],
+        lines: [...summaryLines, `Duration: ${(elapsedMs / 1000).toFixed(1)}s`],
       })
     );
 
-    return NextResponse.json({ message: "Find-leads cron completed", ...summary });
+    return NextResponse.json({ message: "Find-leads cron completed", results, elapsedMs });
   } catch (error) {
     const elapsedMs = Date.now() - startTime;
     console.error("[find-leads] Cron run failed", {

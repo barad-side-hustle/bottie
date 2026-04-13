@@ -24,32 +24,20 @@
       "schedule": "0 6 * * *"
     },
     {
-      "path": "/api/cron/find-leads?country=IL",
+      "path": "/api/cron/find-leads",
       "schedule": "0 7 * * *"
     },
     {
-      "path": "/api/cron/find-leads?country=US",
-      "schedule": "0 14 * * *"
+      "path": "/api/cron/scrape-emails",
+      "schedule": "*/5 * * * *"
     },
     {
-      "path": "/api/cron/send-outreach?country=IL",
-      "schedule": "0 8 * * *"
-    },
-    {
-      "path": "/api/cron/send-outreach?country=US",
-      "schedule": "0 15 * * *"
+      "path": "/api/cron/send-outreach",
+      "schedule": "*/30 * * * *"
     },
     {
       "path": "/api/cron/daily-stats",
-      "schedule": "30 15 * * *"
-    },
-    {
-      "path": "/api/cron/scrape-emails",
-      "schedule": "30 7 * * *"
-    },
-    {
-      "path": "/api/cron/scrape-emails",
-      "schedule": "30 14 * * *"
+      "schedule": "30 18 * * *"
     }
   ]
 }
