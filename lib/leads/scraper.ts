@@ -198,7 +198,7 @@ Pick the single best email to reach this business. Prefer:
 
 Return the chosen email exactly as listed.`;
 
-    const raw = await generateWithGemini(env.GEMINI_API_KEY, prompt, "gemini-2.0-flash-lite", 256, emailPickerSchema);
+    const raw = await generateWithGemini(env.GEMINI_API_KEY, prompt, "gemini-3-flash-preview", 256, emailPickerSchema);
     const parsed: { email: string } = JSON.parse(raw);
 
     if (parsed.email && emails.includes(parsed.email.toLowerCase())) {
