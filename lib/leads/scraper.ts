@@ -184,19 +184,11 @@ export async function pickBestEmailWithAI(emails: string[], businessName: string
   if (emails.length === 1) return emails[0];
 
   try {
-    const prompt = `You are selecting the most relevant contact email for a business.
-
-Business name: "${businessName}"
-
-Candidate emails found on their website:
+    const prompt = `Select the best contact email for "${businessName}" from this list:
 ${emails.map((e, i) => `${i + 1}. ${e}`).join("\n")}
 
-Pick the single best email to reach this business. Prefer:
-- Emails with a domain matching the business name or brand
-- Personal emails (owner/manager) over generic ones (info@, office@, noreply@)
-- Business-specific emails over shared/platform emails
-
-Return the chosen email exactly as listed.`;
+Prefer: domain matching the business > personal (owner/manager) > generic (info@, office@).
+Respond with JSON only: {"email": "chosen@example.com"}`;
 
     const raw = await generateWithGemini(env.GEMINI_API_KEY, prompt, "gemini-3-flash-preview", 256, emailPickerSchema);
     const parsed: { email: string } = JSON.parse(raw);
