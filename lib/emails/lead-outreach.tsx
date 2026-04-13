@@ -44,8 +44,7 @@ const content: Record<
   he: {
     preview: (name) => `${name}, מגיבים לביקורות גוגל בשבילכם`,
     greeting: (name) => `שלום ${name},`,
-    intro: (city) =>
-      `שמי אלון. הקמתי את Bottie.ai כי ראיתי כמה זמן עסקים ב${city} מבזבזים על מענה לביקורות בגוגל.`,
+    intro: (city) => `שמי אלון. הקמתי את Bottie.ai כי ראיתי כמה זמן עסקים ב${city} מבזבזים על מענה לביקורות בגוגל.`,
     noticed: "שמתי לב שיש לכם פרופיל עסקי בגוגל, ורציתי לשתף איך אפשר לטפל בביקורות בלי להשקיע בזה שעות כל שבוע.",
     howItWorksTitle: "איך זה עובד:",
     step1: "1. מחברים את הפרופיל העסקי - תוך דקה, בלי הגדרות מסובכות.",
@@ -90,7 +89,8 @@ const content: Record<
       "Vi que tienes un Perfil de Negocio en Google y quería compartir cómo puedes gestionar las reseñas sin dedicar horas cada semana.",
     howItWorksTitle: "Cómo funciona:",
     step1: "1. Conecta tu Perfil de Negocio — toma un minuto, sin configuración complicada.",
-    step2: "2. Llega una nueva reseña — nuestro sistema la detecta al instante y redacta una respuesta con tu tono de voz.",
+    step2:
+      "2. Llega una nueva reseña — nuestro sistema la detecta al instante y redacta una respuesta con tu tono de voz.",
     step3: "3. Apruebas y publicas — o dejas que el sistema publique automáticamente. Tú decides.",
     valueProposition:
       "Los negocios que responden a las reseñas consiguen más clientes nuevos. Google favorece a los negocios activos en los resultados de búsqueda. El problema es que los dueños de negocios no tienen tiempo para escribir respuestas todos los días.",

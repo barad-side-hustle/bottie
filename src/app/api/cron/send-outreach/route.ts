@@ -53,10 +53,7 @@ async function sendForCountry(
     );
   } else {
     displayNames = new Map(
-      pendingLeads.map((lead, idx) => [
-        idx,
-        { businessName: lead.businessName, city: lead.city || "" },
-      ])
+      pendingLeads.map((lead, idx) => [idx, { businessName: lead.businessName, city: lead.city || "" }])
     );
   }
 
@@ -139,7 +136,7 @@ export async function GET(req: NextRequest) {
 
     const countryParam = req.nextUrl.searchParams.get("country")?.toUpperCase();
     const configs = countryParam
-      ? [getCountryConfig(countryParam)].filter(Boolean) as CountryConfig[]
+      ? ([getCountryConfig(countryParam)].filter(Boolean) as CountryConfig[])
       : Object.values(COUNTRY_CONFIGS);
 
     if (configs.length === 0) {
