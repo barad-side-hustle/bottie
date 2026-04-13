@@ -43,11 +43,11 @@ export async function GET(req: NextRequest) {
 
     const results = await withConcurrency(leadsToScrape, 5, async (lead) => {
       if (Date.now() - startTime > TIMEOUT_MS) {
-        return { lead, email: "" };
+        return { lead, email: "", scraped: false };
       }
 
       if (!lead.websiteUrl || isSocialMediaUrl(lead.websiteUrl)) {
-        return { lead, email: "" };
+        return { lead, email: "", scraped: true };
       }
 
       const emails = await scrapeEmails(lead.websiteUrl);
@@ -58,15 +58,16 @@ export async function GET(req: NextRequest) {
         emailsFound++;
       }
 
-      return { lead, email: best };
+      return { lead, email: best, scraped: true };
     });
 
-    for (const { lead, email } of results) {
+    for (const { lead, email, scraped } of results) {
       if (email) {
         await leadsRepo.updateEmail(lead.id, email);
-      } else if (processed > 0) {
+      } else if (scraped) {
         await leadsRepo.updateStatus(lead.id, "skipped");
       }
+      // !scraped means timed out — leave as pending for next run
     }
 
     const elapsedMs = Date.now() - startTime;
