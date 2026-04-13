@@ -1,6 +1,7 @@
 import { generateWithGemini } from "@/lib/ai/core/gemini-client";
 import { env } from "@/lib/env";
 import { z } from "zod";
+import { SchemaType, type ResponseSchema } from "@google/generative-ai";
 
 const EMAIL_REGEX = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g;
 
@@ -171,6 +172,14 @@ function pickBestEmail(emails: string[]): string {
   return personal.length > 0 ? personal[0] : emails[0];
 }
 
+const emailPickerGeminiSchema: ResponseSchema = {
+  type: SchemaType.OBJECT,
+  properties: {
+    email: { type: SchemaType.STRING },
+  },
+  required: ["email"],
+};
+
 const emailPickerResponseSchema = z.object({
   email: z.string().email(),
 });
@@ -185,7 +194,7 @@ ${emails.map((e, i) => `${i + 1}. ${e}`).join("\n")}
 
 Prefer: domain matching the business > personal (owner/manager) > generic (info@, office@).`;
 
-    const raw = await generateWithGemini(env.GEMINI_API_KEY, prompt, "gemini-3-flash-preview", 256, undefined, "application/json");
+    const raw = await generateWithGemini(env.GEMINI_API_KEY, prompt, "gemini-3-flash-preview", 256, emailPickerGeminiSchema);
     const parsed = emailPickerResponseSchema.parse(JSON.parse(raw));
 
     if (emails.includes(parsed.email.toLowerCase())) {
