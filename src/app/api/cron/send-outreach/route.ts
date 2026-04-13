@@ -20,11 +20,14 @@ function secureCompare(a: string, b: string): boolean {
   return crypto.timingSafeEqual(bufA, bufB);
 }
 
+const TIME_BUDGET_MS = 250_000;
+
 async function sendForCountry(
   leadsRepo: LeadsRepository,
   config: CountryConfig,
   sentEmailSet: Set<string>,
-  limit: number
+  limit: number,
+  startTime: number
 ): Promise<{ sent: number; failed: number; total: number; aborted: boolean }> {
   const sentEmailList = [...sentEmailSet];
   const pendingLeads = await leadsRepo.findPendingLeads(sentEmailList, limit, config.code);
@@ -70,6 +73,10 @@ async function sendForCountry(
 
   for (let idx = 0; idx < pendingLeads.length; idx++) {
     const lead = pendingLeads[idx];
+    if (Date.now() - startTime > TIME_BUDGET_MS) {
+      console.warn(`[send-outreach] Time budget exhausted for ${config.code}, stopping early`);
+      return { sent: emailsSent, failed: emailsFailed, total: pendingLeads.length, aborted: true };
+    }
     if (consecutiveFailures >= 3) {
       console.error(`[send-outreach] Aborting ${config.code}: 3 consecutive failures`);
       break;
@@ -159,7 +166,11 @@ export async function GET(req: NextRequest) {
     const results: Record<string, { sent: number; failed: number; total: number; aborted: boolean }> = {};
 
     for (const config of configs) {
-      results[config.code] = await sendForCountry(leadsRepo, config, sentEmailSet, LIMIT_PER_COUNTRY);
+      if (Date.now() - startTime > TIME_BUDGET_MS) {
+        console.warn(`[send-outreach] Time budget exhausted, skipping ${config.code}`);
+        break;
+      }
+      results[config.code] = await sendForCountry(leadsRepo, config, sentEmailSet, LIMIT_PER_COUNTRY, startTime);
     }
 
     const elapsedMs = Date.now() - startTime;

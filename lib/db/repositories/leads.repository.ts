@@ -40,7 +40,7 @@ export class LeadsRepository {
   async updateStatus(id: string, status: Lead["status"], extra?: { sentAt?: Date; error?: string }): Promise<void> {
     await db
       .update(leads)
-      .set({ status, ...extra })
+      .set({ status, updatedAt: new Date(), ...extra })
       .where(eq(leads.id, id));
   }
 
@@ -57,7 +57,7 @@ export class LeadsRepository {
   async updateEmail(id: string, email: string): Promise<void> {
     await db
       .update(leads)
-      .set({ email, status: "pending" as const })
+      .set({ email, status: "pending" as const, updatedAt: new Date() })
       .where(eq(leads.id, id));
   }
 
@@ -91,7 +91,7 @@ export class LeadsRepository {
     const rows = await db
       .select({ count: sql<number>`count(*)::int` })
       .from(leads)
-      .where(and(isNotNull(leads.email), gte(leads.createdAt, since)));
+      .where(and(isNotNull(leads.email), gte(leads.updatedAt, since)));
     return rows[0]?.count ?? 0;
   }
 
@@ -99,7 +99,7 @@ export class LeadsRepository {
     const rows = await db
       .select({ count: sql<number>`count(*)::int` })
       .from(leads)
-      .where(and(eq(leads.status, "skipped"), gte(leads.createdAt, since)));
+      .where(and(eq(leads.status, "skipped"), gte(leads.updatedAt, since)));
     return rows[0]?.count ?? 0;
   }
 }
