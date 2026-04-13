@@ -194,7 +194,13 @@ ${emails.map((e, i) => `${i + 1}. ${e}`).join("\n")}
 
 Prefer: domain matching the business > personal (owner/manager) > generic (info@, office@).`;
 
-    const raw = await generateWithGemini(env.GEMINI_API_KEY, prompt, "gemini-3-flash-preview", 256, emailPickerGeminiSchema);
+    const raw = await generateWithGemini(
+      env.GEMINI_API_KEY,
+      prompt,
+      "gemini-2.5-flash",
+      256,
+      emailPickerGeminiSchema
+    );
     const parsed = emailPickerResponseSchema.parse(JSON.parse(raw));
 
     if (emails.includes(parsed.email.toLowerCase())) {
