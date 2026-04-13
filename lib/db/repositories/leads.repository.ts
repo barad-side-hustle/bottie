@@ -78,4 +78,28 @@ export class LeadsRepository {
       .groupBy(leads.country);
     return rows;
   }
+
+  async countFoundSince(since: Date): Promise<number> {
+    const rows = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(leads)
+      .where(gte(leads.createdAt, since));
+    return rows[0]?.count ?? 0;
+  }
+
+  async countEmailsScrapedSince(since: Date): Promise<number> {
+    const rows = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(leads)
+      .where(and(isNotNull(leads.email), gte(leads.createdAt, since)));
+    return rows[0]?.count ?? 0;
+  }
+
+  async countSkippedSince(since: Date): Promise<number> {
+    const rows = await db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(leads)
+      .where(and(eq(leads.status, "skipped"), gte(leads.createdAt, since)));
+    return rows[0]?.count ?? 0;
+  }
 }

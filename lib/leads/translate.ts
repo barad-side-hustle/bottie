@@ -10,6 +10,7 @@ interface LeadInput {
 interface TranslationResult {
   hebrewBusinessName: string;
   hebrewCity: string;
+  shortName: string;
 }
 
 const responseSchema: ResponseSchema = {
@@ -19,8 +20,9 @@ const responseSchema: ResponseSchema = {
     properties: {
       hebrewBusinessName: { type: SchemaType.STRING },
       hebrewCity: { type: SchemaType.STRING },
+      shortName: { type: SchemaType.STRING },
     },
-    required: ["hebrewBusinessName", "hebrewCity"],
+    required: ["hebrewBusinessName", "hebrewCity", "shortName"],
   },
 };
 
@@ -32,6 +34,10 @@ function buildPrompt(leads: LeadInput[]): string {
 For each entry, provide:
 1. hebrewBusinessName — Transliterate the business name into Hebrew. If it's already Hebrew, keep it as-is. For English brand names, transliterate phonetically (e.g., "Augustine" → "אוגוסטין", "The Coffee Shop" → "דה קופי שופ"). If the name contains a Hebrew word, use the Hebrew version.
 2. hebrewCity — The Hebrew name of the city (e.g., "Ra'anana" → "רעננה", "Tel Aviv" → "תל אביב").
+3. shortName — A clean, short version of the business name in Hebrew suitable for use in an email subject line. Strip keyword stuffing, pipe-separated tags, SEO descriptions, and any promotional text. Keep only the core business name. Examples:
+   - "אדריכלית גוף ותנועה| יציבה נכונה| פילאטיס תראפיה| מפחית כאבים" → "אדריכלית גוף ותנועה"
+   - "חומוס אבו חסן - Abu Hassan - The best hummus in Jaffa" → "חומוס אבו חסן"
+   - "Dr. Sarah Cohen - Dermatologist | Skin Care | Tel Aviv" → "ד״ר שרה כהן"
 
 Return a JSON array with one object per entry, in the same order.
 

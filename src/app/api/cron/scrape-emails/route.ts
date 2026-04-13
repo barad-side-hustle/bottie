@@ -9,8 +9,6 @@ import {
   isSocialMediaUrl,
   SOCIAL_MEDIA_DOMAINS,
 } from "@/lib/leads/scraper";
-import { sendEmail } from "@/lib/utils/email-service";
-import { CronSummaryEmail } from "@/lib/emails/cron-summary";
 
 export const maxDuration = 300;
 
@@ -74,20 +72,6 @@ export async function GET(req: NextRequest) {
 
     console.log("[scrape-emails] Completed", summary);
 
-    await sendEmail(
-      "alon@bottie.ai",
-      `Scrape Emails: ${emailsFound} emails from ${processed} leads`,
-      CronSummaryEmail({
-        cronName: "Scrape Emails",
-        status: "success",
-        lines: [
-          `Processed: ${processed}`,
-          `Emails found: ${emailsFound}`,
-          `Duration: ${(elapsedMs / 1000).toFixed(1)}s`,
-        ],
-      })
-    );
-
     return NextResponse.json({ message: "Scrape-emails cron completed", ...summary });
   } catch (error) {
     const elapsedMs = Date.now() - startTime;
@@ -96,19 +80,6 @@ export async function GET(req: NextRequest) {
       stack: error instanceof Error ? error.stack : undefined,
       elapsedMs,
     });
-
-    await sendEmail(
-      "alon@bottie.ai",
-      "Scrape Emails: FAILED",
-      CronSummaryEmail({
-        cronName: "Scrape Emails",
-        status: "error",
-        lines: [
-          `Error: ${error instanceof Error ? error.message : String(error)}`,
-          `Duration: ${(elapsedMs / 1000).toFixed(1)}s`,
-        ],
-      })
-    ).catch(() => {});
 
     return new NextResponse("Internal Server Error", { status: 500 });
   }

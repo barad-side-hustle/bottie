@@ -4,10 +4,14 @@ import { env } from "@/lib/env";
 import { LeadsRepository } from "@/lib/db/repositories";
 import { sendEmail } from "@/lib/utils/email-service";
 import LeadOutreachEmail, { getOutreachSubject } from "@/lib/emails/lead-outreach";
-import { CronSummaryEmail } from "@/lib/emails/cron-summary";
 import { translateLeadNames } from "@/lib/leads/translate";
 import { COUNTRY_CONFIGS, getCountryConfig, type CountryConfig } from "@/lib/leads/countries";
 export const maxDuration = 300;
+
+function cleanBusinessName(name: string): string {
+  const cleaned = name.split(/\s*[|–—]\s*/)[0].trim();
+  return cleaned || name;
+}
 
 function secureCompare(a: string, b: string): boolean {
   const bufA = Buffer.from(a);
@@ -45,7 +49,7 @@ async function sendForCountry(
         return [
           idx,
           {
-            businessName: translation?.hebrewBusinessName || lead.businessName,
+            businessName: translation?.shortName || translation?.hebrewBusinessName || lead.businessName,
             city: translation?.hebrewCity || lead.city || "",
           },
         ];
@@ -53,7 +57,10 @@ async function sendForCountry(
     );
   } else {
     displayNames = new Map(
-      pendingLeads.map((lead, idx) => [idx, { businessName: lead.businessName, city: lead.city || "" }])
+      pendingLeads.map((lead, idx) => [
+        idx,
+        { businessName: cleanBusinessName(lead.businessName), city: lead.city || "" },
+      ])
     );
   }
 
@@ -155,25 +162,9 @@ export async function GET(req: NextRequest) {
       results[config.code] = await sendForCountry(leadsRepo, config, sentEmailSet, LIMIT_PER_COUNTRY);
     }
 
-    const totalSent = Object.values(results).reduce((sum, r) => sum + r.sent, 0);
-    const totalFailed = Object.values(results).reduce((sum, r) => sum + r.failed, 0);
     const elapsedMs = Date.now() - startTime;
 
-    const summaryLines = Object.entries(results).flatMap(([code, r]) => [
-      `${code}: ${r.sent} sent, ${r.failed} failed (${r.total} pending)${r.aborted ? " [ABORTED]" : ""}`,
-    ]);
-
     console.log("[send-outreach] Cron run completed", { results, elapsedMs });
-
-    await sendEmail(
-      "alon@bottie.ai",
-      `Outreach: ${totalSent} sent, ${totalFailed} failed`,
-      CronSummaryEmail({
-        cronName: "Send Outreach",
-        status: totalFailed > 0 && totalSent === 0 ? "error" : "success",
-        lines: [...summaryLines, `Duration: ${(elapsedMs / 1000).toFixed(1)}s`],
-      })
-    );
 
     return NextResponse.json({ message: "Send-outreach cron completed", results, elapsedMs });
   } catch (error) {
@@ -183,19 +174,6 @@ export async function GET(req: NextRequest) {
       stack: error instanceof Error ? error.stack : undefined,
       elapsedMs,
     });
-
-    await sendEmail(
-      "alon@bottie.ai",
-      "Outreach: FAILED",
-      CronSummaryEmail({
-        cronName: "Send Outreach",
-        status: "error",
-        lines: [
-          `Error: ${error instanceof Error ? error.message : String(error)}`,
-          `Duration: ${(elapsedMs / 1000).toFixed(1)}s`,
-        ],
-      })
-    ).catch(() => {});
 
     return new NextResponse("Internal Server Error", { status: 500 });
   }
