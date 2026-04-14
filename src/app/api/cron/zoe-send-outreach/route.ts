@@ -2,7 +2,7 @@ import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { env } from "@/lib/env";
 import { ZoeLeadsRepository } from "@/lib/db/repositories/zoe-leads.repository";
-import { sendEmail } from "@/lib/utils/email-service";
+import { zoeSendEmail } from "@/lib/utils/zoe-email-service";
 import ZoeLeadOutreachEmail, { getZoeOutreachSubject } from "@/lib/emails/zoe-lead-outreach";
 import { translateLeadNames } from "@/lib/leads/translate";
 import { ZOE_COUNTRY_CONFIG } from "@/lib/leads/zoe-countries";
@@ -106,7 +106,7 @@ export async function GET(req: NextRequest) {
         business: lead.businessName,
       });
 
-      const result = await sendEmail(
+      const result = await zoeSendEmail(
         lead.email,
         subject,
         emailComponent,
