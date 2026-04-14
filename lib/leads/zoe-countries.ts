@@ -80,7 +80,7 @@ export const ZOE_COUNTRY_CONFIG: CountryConfig = {
     "business consultants in {city}{suffix}",
   ],
   citiesPerRun: 1,
-  emailSender: "Zoe Dotan <zoe@zoedotan.com>",
-  emailReplyTo: "zoe@zoedotan.com",
+  emailSender: "Zoe <zoe@bottie.ai>",
+  emailReplyTo: "zoedotann@gmail.com",
   needsTranslation: true,
 };
