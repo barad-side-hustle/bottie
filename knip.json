@@ -1,5 +1,5 @@
 {
-  "ignore": ["src/i18n/request.ts", "public/sw.js"],
+  "ignore": ["public/sw.js"],
   "ignoreBinaries": [],
   "ignoreDependencies": [
     "@testing-library/dom",

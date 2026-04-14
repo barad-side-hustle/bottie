@@ -44,6 +44,7 @@ nvm use 22.13.0
 - **`location_metrics`**: Daily Google Business Profile performance data per location
 - **`location_posts`**: Google Business Profile posts (standard, event, offer)
 - **`leads`**: Scraped business leads with email, country, and outreach status
+- **`zoe_leads`**: Zoe Dotan pipeline leads with email, country, and outreach status (separate from Bottie leads)
 
 ### Key Relationships
 
@@ -120,7 +121,10 @@ src/
 │       ├── cron/find-leads/         # Lead discovery via Google Places
 │       ├── cron/send-outreach/      # Outreach emails to leads (per-country)
 │       ├── cron/daily-stats/        # Daily stats summary email
-│       └── cron/scrape-emails/      # Scrape emails for leads with websites
+│       ├── cron/scrape-emails/      # Scrape emails for leads with websites
+│       ├── cron/zoe-find-leads/     # Zoe pipeline: lead discovery via Google Places
+│       ├── cron/zoe-scrape-emails/  # Zoe pipeline: scrape emails for leads
+│       └── cron/zoe-send-outreach/  # Zoe pipeline: outreach emails to leads
 ├── components/
 │   ├── auth/          # Login, sign-up, password reset forms
 │   ├── checkout/      # Checkout flow
@@ -202,6 +206,7 @@ Required in `.env.local`:
 - `R2_SECRET_ACCESS_KEY`
 - `R2_BUCKET_NAME`
 - `R2_PUBLIC_URL`
+- `ZOE_RESEND_API_KEY` (optional — Zoe Dotan outreach pipeline)
 
 ## Testing
 
