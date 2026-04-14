@@ -29,7 +29,7 @@ export class ZoeLeadsRepository {
         and(
           eq(zoeLeads.status, "pending"),
           isNotNull(zoeLeads.email),
-          sql`${zoeLeads.email} NOT IN (SELECT ${zoeLeads.email} FROM ${zoeLeads} WHERE ${zoeLeads.status} = 'sent')`,
+          sql`${zoeLeads.email} NOT IN (SELECT ${zoeLeads.email} FROM ${zoeLeads} WHERE ${zoeLeads.status} = 'sent' AND ${zoeLeads.email} IS NOT NULL)`,
           country ? eq(zoeLeads.country, country) : undefined
         )
       )

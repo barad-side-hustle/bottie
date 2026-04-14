@@ -17,7 +17,6 @@ import {
 
 interface ZoeLeadOutreachEmailProps {
   businessName: string;
-  city: string;
 }
 
 export function getZoeOutreachSubject(businessName: string): string {
@@ -100,7 +99,6 @@ export default function ZoeLeadOutreachEmail({ businessName }: ZoeLeadOutreachEm
         <Preview>{`${businessName} — נוכחות דיגיטלית שממירה קליקים ללקוחות`}</Preview>
         <Body className="bg-bg my-auto mx-auto px-2" style={{ fontFamily: FONT_FAMILY, direction: "rtl" }}>
           <Container className="my-[32px] mx-auto max-w-[560px]" style={{ direction: "rtl", textAlign: "right" }}>
-
             <Section className="bg-cream rounded-t-3xl pt-8 pb-4 text-center">
               <Text
                 className="text-coral text-[28px] m-0 tracking-[1px]"
@@ -123,14 +121,20 @@ export default function ZoeLeadOutreachEmail({ businessName }: ZoeLeadOutreachEm
             </Section>
 
             <Section className="bg-cream px-[36px] pt-[32px] pb-0 text-right">
-              <Text className="text-brown text-[15px] leading-[1.8] m-0 mb-6" style={{ fontFamily: FONT_FAMILY, textAlign: "right" }}>
+              <Text
+                className="text-brown text-[15px] leading-[1.8] m-0 mb-6"
+                style={{ fontFamily: FONT_FAMILY, textAlign: "right" }}
+              >
                 אני זואי, מעצבת גרפית שמתמחה בבניית נוכחות דיגיטלית שלא נראית כמו &quot;עוד תבנית&quot;. אני עוזרת
                 לעסקים לדייק את הנראות שלהם ולהביא לקוחות איכותיים באמת.
               </Text>
             </Section>
 
             <Section className="bg-cream px-[36px] pb-[28px]">
-              <Section className="bg-lavender-light rounded-2xl px-[24px] py-[24px] text-right" style={{ direction: "rtl" }}>
+              <Section
+                className="bg-lavender-light rounded-2xl px-[24px] py-[24px] text-right"
+                style={{ direction: "rtl" }}
+              >
                 <Text className="text-brown text-[16px] m-0 mb-5" style={{ fontFamily: FONT_PLAYFUL, fontWeight: 700 }}>
                   מה אנחנו יכולים לעשות יחד?
                 </Text>
@@ -208,7 +212,10 @@ export default function ZoeLeadOutreachEmail({ businessName }: ZoeLeadOutreachEm
             </Section>
 
             <Section className="bg-cream px-[36px] pb-[36px] text-right">
-              <Text className="text-brown text-[15px] leading-[1.8] m-0 mb-7" style={{ fontFamily: FONT_FAMILY, textAlign: "right" }}>
+              <Text
+                className="text-brown text-[15px] leading-[1.8] m-0 mb-7"
+                style={{ fontFamily: FONT_FAMILY, textAlign: "right" }}
+              >
                 אני מאמינה ששילוב של עיצוב נכון ואסטרטגיה חכמה יכול להקפיץ את{" "}
                 <span style={{ fontWeight: 700, color: "#E8624A" }}>{businessName}</span> לשלב הבא.
               </Text>
@@ -257,5 +264,4 @@ export default function ZoeLeadOutreachEmail({ businessName }: ZoeLeadOutreachEm
 
 ZoeLeadOutreachEmail.PreviewProps = {
   businessName: "סטודיו לעיצוב",
-  city: "תל אביב",
 } as ZoeLeadOutreachEmailProps;

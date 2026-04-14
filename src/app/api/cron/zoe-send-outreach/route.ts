@@ -97,7 +97,6 @@ export async function GET(req: NextRequest) {
 
       const emailComponent = ZoeLeadOutreachEmail({
         businessName: display.businessName,
-        city: display.city,
       });
 
       console.log("[zoe-send-outreach] Sending email", {
