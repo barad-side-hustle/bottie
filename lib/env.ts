@@ -16,6 +16,7 @@ const serverEnvSchema = z.object({
   POLAR_ENVIRONMENT: z.enum(["sandbox", "production"]).optional(),
   RESEND_API_KEY: z.string().min(1),
   RESEND_FROM_EMAIL: z.string().min(1),
+  ZOE_RESEND_API_KEY: z.string().min(1).optional(),
   CRON_SECRET: z.string().min(1),
   GOOGLE_PLACES_API_KEY: z.string().min(1),
   CONTACT_FORM_RECIPIENTS: z.string().optional(),
