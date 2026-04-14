@@ -95,12 +95,8 @@
           "name": "account_user_id_user_id_fk",
           "tableFrom": "account",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -112,10 +108,7 @@
           "name": "account_service_role_access",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "postgres",
-            "service_role"
-          ],
+          "to": ["postgres", "service_role"],
           "using": "true",
           "withCheck": "true"
         }
@@ -184,12 +177,8 @@
           "name": "session_user_id_user_id_fk",
           "tableFrom": "session",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -199,9 +188,7 @@
         "session_token_unique": {
           "name": "session_token_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "token"
-          ]
+          "columns": ["token"]
         }
       },
       "policies": {
@@ -209,10 +196,7 @@
           "name": "session_service_role_access",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "postgres",
-            "service_role"
-          ],
+          "to": ["postgres", "service_role"],
           "using": "true",
           "withCheck": "true"
         }
@@ -284,9 +268,7 @@
         "user_email_unique": {
           "name": "user_email_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "email"
-          ]
+          "columns": ["email"]
         }
       },
       "policies": {
@@ -294,10 +276,7 @@
           "name": "user_service_role_access",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "postgres",
-            "service_role"
-          ],
+          "to": ["postgres", "service_role"],
           "using": "true",
           "withCheck": "true"
         }
@@ -373,10 +352,7 @@
           "name": "verification_service_role_access",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "postgres",
-            "service_role"
-          ],
+          "to": ["postgres", "service_role"],
           "using": "true",
           "withCheck": "true"
         }
@@ -473,10 +449,7 @@
           "name": "google_accounts_service_role_access",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "postgres",
-            "service_role"
-          ],
+          "to": ["postgres", "service_role"],
           "using": "true",
           "withCheck": "true"
         }
@@ -552,12 +525,8 @@
           "name": "user_accounts_user_id_user_id_fk",
           "tableFrom": "user_accounts",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -565,12 +534,8 @@
           "name": "user_accounts_account_id_google_accounts_id_fk",
           "tableFrom": "user_accounts",
           "tableTo": "google_accounts",
-          "columnsFrom": [
-            "account_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["account_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -578,10 +543,7 @@
       "compositePrimaryKeys": {
         "user_accounts_user_id_account_id_pk": {
           "name": "user_accounts_user_id_account_id_pk",
-          "columns": [
-            "user_id",
-            "account_id"
-          ]
+          "columns": ["user_id", "account_id"]
         }
       },
       "uniqueConstraints": {},
@@ -590,10 +552,7 @@
           "name": "user_accounts_service_role_access",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "postgres",
-            "service_role"
-          ],
+          "to": ["postgres", "service_role"],
           "using": "true",
           "withCheck": "true"
         }
@@ -710,12 +669,8 @@
           "name": "location_subscriptions_user_id_user_id_fk",
           "tableFrom": "location_subscriptions",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -723,12 +678,8 @@
           "name": "location_subscriptions_location_id_locations_id_fk",
           "tableFrom": "location_subscriptions",
           "tableTo": "locations",
-          "columnsFrom": [
-            "location_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["location_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -738,10 +689,7 @@
         "location_subscriptions_user_location_unique": {
           "name": "location_subscriptions_user_location_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "user_id",
-            "location_id"
-          ]
+          "columns": ["user_id", "location_id"]
         }
       },
       "policies": {
@@ -749,10 +697,7 @@
           "name": "location_subscriptions_service_role_access",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "postgres",
-            "service_role"
-          ],
+          "to": ["postgres", "service_role"],
           "using": "true",
           "withCheck": "true"
         }
@@ -930,9 +875,7 @@
         "locations_google_location_id_unique": {
           "name": "locations_google_location_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "google_location_id"
-          ]
+          "columns": ["google_location_id"]
         }
       },
       "policies": {
@@ -940,10 +883,7 @@
           "name": "locations_service_role_access",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "postgres",
-            "service_role"
-          ],
+          "to": ["postgres", "service_role"],
           "using": "true",
           "withCheck": "true"
         }
@@ -1069,12 +1009,8 @@
           "name": "account_locations_account_id_google_accounts_id_fk",
           "tableFrom": "account_locations",
           "tableTo": "google_accounts",
-          "columnsFrom": [
-            "account_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["account_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1082,12 +1018,8 @@
           "name": "account_locations_location_id_locations_id_fk",
           "tableFrom": "account_locations",
           "tableTo": "locations",
-          "columnsFrom": [
-            "location_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["location_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1097,10 +1029,7 @@
         "account_locations_account_location_unique": {
           "name": "account_locations_account_location_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "account_id",
-            "location_id"
-          ]
+          "columns": ["account_id", "location_id"]
         }
       },
       "policies": {
@@ -1108,10 +1037,7 @@
           "name": "account_locations_service_role_access",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "postgres",
-            "service_role"
-          ],
+          "to": ["postgres", "service_role"],
           "using": "true",
           "withCheck": "true"
         }
@@ -1432,12 +1358,8 @@
           "name": "reviews_location_id_locations_id_fk",
           "tableFrom": "reviews",
           "tableTo": "locations",
-          "columnsFrom": [
-            "location_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["location_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -1447,9 +1369,7 @@
         "reviews_google_review_id_unique": {
           "name": "reviews_google_review_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "google_review_id"
-          ]
+          "columns": ["google_review_id"]
         }
       },
       "policies": {
@@ -1457,10 +1377,7 @@
           "name": "reviews_service_role_access",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "postgres",
-            "service_role"
-          ],
+          "to": ["postgres", "service_role"],
           "using": "true",
           "withCheck": "true"
         }
@@ -1691,12 +1608,8 @@
           "name": "review_responses_review_id_reviews_id_fk",
           "tableFrom": "review_responses",
           "tableTo": "reviews",
-          "columnsFrom": [
-            "review_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["review_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1704,12 +1617,8 @@
           "name": "review_responses_location_id_locations_id_fk",
           "tableFrom": "review_responses",
           "tableTo": "locations",
-          "columnsFrom": [
-            "location_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["location_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1717,12 +1626,8 @@
           "name": "review_responses_account_id_google_accounts_id_fk",
           "tableFrom": "review_responses",
           "tableTo": "google_accounts",
-          "columnsFrom": [
-            "account_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["account_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1730,12 +1635,8 @@
           "name": "review_responses_generated_by_user_id_fk",
           "tableFrom": "review_responses",
           "tableTo": "user",
-          "columnsFrom": [
-            "generated_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["generated_by"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         },
@@ -1743,12 +1644,8 @@
           "name": "review_responses_posted_by_user_id_fk",
           "tableFrom": "review_responses",
           "tableTo": "user",
-          "columnsFrom": [
-            "posted_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["posted_by"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -1760,10 +1657,7 @@
           "name": "review_responses_service_role_access",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "postgres",
-            "service_role"
-          ],
+          "to": ["postgres", "service_role"],
           "using": "true",
           "withCheck": "true"
         }
@@ -1861,12 +1755,8 @@
           "name": "location_members_user_id_user_id_fk",
           "tableFrom": "location_members",
           "tableTo": "user",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1874,12 +1764,8 @@
           "name": "location_members_location_id_locations_id_fk",
           "tableFrom": "location_members",
           "tableTo": "locations",
-          "columnsFrom": [
-            "location_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["location_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -1887,12 +1773,8 @@
           "name": "location_members_invited_by_user_id_fk",
           "tableFrom": "location_members",
           "tableTo": "user",
-          "columnsFrom": [
-            "invited_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["invited_by"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -1902,10 +1784,7 @@
         "location_members_user_location_unique": {
           "name": "location_members_user_location_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "user_id",
-            "location_id"
-          ]
+          "columns": ["user_id", "location_id"]
         }
       },
       "policies": {
@@ -1913,10 +1792,7 @@
           "name": "location_members_service_role_access",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "postgres",
-            "service_role"
-          ],
+          "to": ["postgres", "service_role"],
           "using": "true",
           "withCheck": "true"
         }
@@ -2032,12 +1908,8 @@
           "name": "location_access_requests_requester_id_user_id_fk",
           "tableFrom": "location_access_requests",
           "tableTo": "user",
-          "columnsFrom": [
-            "requester_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["requester_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2045,12 +1917,8 @@
           "name": "location_access_requests_location_id_locations_id_fk",
           "tableFrom": "location_access_requests",
           "tableTo": "locations",
-          "columnsFrom": [
-            "location_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["location_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2058,12 +1926,8 @@
           "name": "location_access_requests_reviewed_by_user_id_fk",
           "tableFrom": "location_access_requests",
           "tableTo": "user",
-          "columnsFrom": [
-            "reviewed_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["reviewed_by"],
+          "columnsTo": ["id"],
           "onDelete": "set null",
           "onUpdate": "no action"
         }
@@ -2075,10 +1939,7 @@
           "name": "location_access_requests_service_role_access",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "postgres",
-            "service_role"
-          ],
+          "to": ["postgres", "service_role"],
           "using": "true",
           "withCheck": "true"
         }
@@ -2201,12 +2062,8 @@
           "name": "location_invitations_location_id_locations_id_fk",
           "tableFrom": "location_invitations",
           "tableTo": "locations",
-          "columnsFrom": [
-            "location_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["location_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -2214,12 +2071,8 @@
           "name": "location_invitations_invited_by_user_id_fk",
           "tableFrom": "location_invitations",
           "tableTo": "user",
-          "columnsFrom": [
-            "invited_by"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["invited_by"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2229,9 +2082,7 @@
         "location_invitations_token_unique": {
           "name": "location_invitations_token_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "token"
-          ]
+          "columns": ["token"]
         }
       },
       "policies": {
@@ -2239,10 +2090,7 @@
           "name": "location_invitations_service_role_access",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "postgres",
-            "service_role"
-          ],
+          "to": ["postgres", "service_role"],
           "using": "true",
           "withCheck": "true"
         }
@@ -2367,12 +2215,8 @@
           "name": "location_metrics_location_id_locations_id_fk",
           "tableFrom": "location_metrics",
           "tableTo": "locations",
-          "columnsFrom": [
-            "location_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["location_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2382,10 +2226,7 @@
         "location_metrics_location_date_unique": {
           "name": "location_metrics_location_date_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "location_id",
-            "date"
-          ]
+          "columns": ["location_id", "date"]
         }
       },
       "policies": {
@@ -2393,10 +2234,7 @@
           "name": "location_metrics_service_role_access",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "postgres",
-            "service_role"
-          ],
+          "to": ["postgres", "service_role"],
           "using": "true",
           "withCheck": "true"
         }
@@ -2549,12 +2387,8 @@
           "name": "location_posts_location_id_locations_id_fk",
           "tableFrom": "location_posts",
           "tableTo": "locations",
-          "columnsFrom": [
-            "location_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["location_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -2566,10 +2400,7 @@
           "name": "location_posts_service_role_access",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "postgres",
-            "service_role"
-          ],
+          "to": ["postgres", "service_role"],
           "using": "true",
           "withCheck": "true"
         }
@@ -2760,9 +2591,7 @@
         "leads_google_place_id_unique": {
           "name": "leads_google_place_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "google_place_id"
-          ]
+          "columns": ["google_place_id"]
         }
       },
       "policies": {
@@ -2770,10 +2599,7 @@
           "name": "leads_service_role_access",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "postgres",
-            "service_role"
-          ],
+          "to": ["postgres", "service_role"],
           "using": "true",
           "withCheck": "true"
         }
@@ -2969,9 +2795,7 @@
         "zoe_leads_google_place_id_unique": {
           "name": "zoe_leads_google_place_id_unique",
           "nullsNotDistinct": false,
-          "columns": [
-            "google_place_id"
-          ]
+          "columns": ["google_place_id"]
         }
       },
       "policies": {
@@ -2979,10 +2803,7 @@
           "name": "zoe_leads_service_role_access",
           "as": "PERMISSIVE",
           "for": "ALL",
-          "to": [
-            "postgres",
-            "service_role"
-          ],
+          "to": ["postgres", "service_role"],
           "using": "true",
           "withCheck": "true"
         }
