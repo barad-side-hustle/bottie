@@ -3,7 +3,6 @@ import {
   Container,
   Head,
   Html,
-  Link,
   Preview,
   Section,
   Text,
@@ -24,7 +23,13 @@ export function getZoeOutreachSubject(businessName: string): string {
 }
 
 const FONT_FAMILY = "Heebo, 'Segoe UI', Tahoma, sans-serif";
-const FONT_PLAYFUL = "'Playpen Sans Hebrew', 'Segoe UI', Tahoma, sans-serif";
+const CTA_URL = "https://dotan-visuals.vercel.app/exclusive-offer";
+const ACCENT_PINK = "#FFB6C1";
+const FOREGROUND = "#000000";
+const BACKGROUND = "#FFFFFF";
+const SECONDARY = "#E6E6FA";
+const LIGHT_BG = "#F8F8FF";
+const DARK_TEXT = "#333333";
 
 export default function ZoeLeadOutreachEmail({ businessName }: ZoeLeadOutreachEmailProps) {
   return (
@@ -34,21 +39,12 @@ export default function ZoeLeadOutreachEmail({ businessName }: ZoeLeadOutreachEm
           theme: {
             extend: {
               colors: {
-                bg: "#FFF5F0",
-                coral: "#E8624A",
-                "coral-light": "#F4A393",
-                "coral-pale": "#FDDDD6",
-                cream: "#FFF9F2",
-                blush: "#F9E4DD",
-                lavender: "#EDE3F5",
-                "lavender-light": "#F5F0FA",
-                sage: "#D4E4D2",
-                "sage-dark": "#7BA377",
-                brown: "#3D2B1F",
-                "brown-light": "#5C4033",
-                "brown-muted": "#8B7355",
-                warm: "#6B4D3E",
-                "warm-light": "#A08472",
+                background: BACKGROUND,
+                foreground: FOREGROUND,
+                "accent-pink": ACCENT_PINK,
+                secondary: SECONDARY,
+                "light-bg": LIGHT_BG,
+                "dark-text": DARK_TEXT,
               },
             },
           },
@@ -75,135 +71,269 @@ export default function ZoeLeadOutreachEmail({ businessName }: ZoeLeadOutreachEm
             fontWeight={700}
             fontStyle="normal"
           />
-          <Font
-            fontFamily="Playpen Sans Hebrew"
-            fallbackFontFamily="sans-serif"
-            webFont={{
-              url: "https://fonts.gstatic.com/s/playpensanshebrew/v8/lJws-okuj29wT-AN6RvLx8QqjkKhL7eAjoL9jK7L4vstDnnp55C6.ttf",
-              format: "truetype",
-            }}
-            fontWeight={400}
-            fontStyle="normal"
-          />
-          <Font
-            fontFamily="Playpen Sans Hebrew"
-            fallbackFontFamily="sans-serif"
-            webFont={{
-              url: "https://fonts.gstatic.com/s/playpensanshebrew/v8/lJws-okuj29wT-AN6RvLx8QqjkKhL7eAjoL9jK7L4vstDnkO4JC6.ttf",
-              format: "truetype",
-            }}
-            fontWeight={700}
-            fontStyle="normal"
-          />
         </Head>
         <Preview>{`${businessName} — נוכחות דיגיטלית שממירה קליקים ללקוחות`}</Preview>
-        <Body className="bg-bg my-auto mx-auto px-2" style={{ fontFamily: FONT_FAMILY, direction: "rtl" }}>
-          <Container className="my-[32px] mx-auto max-w-[560px]" style={{ direction: "rtl", textAlign: "right" }}>
-            <Section className="bg-cream rounded-t-3xl pt-8 pb-4 text-center">
+        <Body
+          className="bg-background my-auto mx-auto px-2"
+          style={{ fontFamily: FONT_FAMILY, direction: "rtl", backgroundColor: BACKGROUND }}
+        >
+          <Container
+            className="my-[32px] mx-auto max-w-[560px]"
+            style={{ direction: "rtl", textAlign: "right", backgroundColor: BACKGROUND }}
+          >
+            <Section className="px-[36px] pt-[40px] pb-[8px] text-right">
               <Text
-                className="text-coral text-[28px] m-0 tracking-[1px]"
-                style={{ fontFamily: FONT_FAMILY, fontWeight: 700 }}
+                className="m-0"
+                style={{
+                  fontFamily: FONT_FAMILY,
+                  fontWeight: 700,
+                  fontSize: "11px",
+                  letterSpacing: "3.5px",
+                  textTransform: "uppercase",
+                  color: FOREGROUND,
+                }}
               >
-                ZOE DOTAN
+                Zoe Dotan
               </Text>
-              <Text className="text-warm-light text-[11px] tracking-[1.5px] m-0 mt-1">VISUAL COMMUNICATION</Text>
+              <Text
+                className="m-0 mt-[4px]"
+                style={{
+                  fontFamily: FONT_FAMILY,
+                  fontWeight: 400,
+                  fontSize: "10px",
+                  letterSpacing: "2.5px",
+                  textTransform: "uppercase",
+                  color: DARK_TEXT,
+                  opacity: 0.6,
+                }}
+              >
+                Visual Communication
+              </Text>
             </Section>
 
-            <Section className="bg-coral py-8 px-[40px] text-center">
+            <Section className="px-[36px] pt-[36px] pb-[8px] text-right">
               <Text
-                className="text-cream text-[24px] leading-snug m-0"
-                style={{ fontFamily: FONT_FAMILY, fontWeight: 700 }}
+                className="m-0 mb-[14px]"
+                style={{
+                  fontFamily: FONT_FAMILY,
+                  fontWeight: 700,
+                  fontSize: "11px",
+                  letterSpacing: "3px",
+                  textTransform: "uppercase",
+                  color: ACCENT_PINK,
+                }}
+              >
+                {"// הצעה אישית"}
+              </Text>
+              <Text
+                className="m-0"
+                style={{
+                  fontFamily: FONT_FAMILY,
+                  fontWeight: 700,
+                  fontSize: "40px",
+                  lineHeight: 1.05,
+                  letterSpacing: "-1.2px",
+                  color: FOREGROUND,
+                }}
               >
                 נעים מאוד,
                 <br />
-                {businessName}
+                <span style={{ color: ACCENT_PINK }}>{businessName}</span>.
               </Text>
+              <div
+                style={{
+                  width: "64px",
+                  height: "4px",
+                  backgroundColor: ACCENT_PINK,
+                  marginTop: "28px",
+                  fontSize: "0",
+                  lineHeight: "0",
+                }}
+              />
             </Section>
 
-            <Section className="bg-cream px-[36px] pt-[32px] pb-0 text-right">
+            <Section className="px-[36px] pt-[28px] pb-[32px] text-right">
               <Text
-                className="text-brown text-[15px] leading-[1.8] m-0 mb-6"
-                style={{ fontFamily: FONT_FAMILY, textAlign: "right" }}
+                className="m-0"
+                style={{
+                  fontFamily: FONT_FAMILY,
+                  fontSize: "15px",
+                  lineHeight: 1.75,
+                  color: DARK_TEXT,
+                  textAlign: "right",
+                }}
               >
                 אני זואי, מעצבת גרפית שמתמחה בבניית נוכחות דיגיטלית שלא נראית כמו &quot;עוד תבנית&quot;. אני עוזרת
                 לעסקים לדייק את הנראות שלהם ולהביא לקוחות איכותיים באמת.
               </Text>
             </Section>
 
-            <Section className="bg-cream px-[36px] pb-[28px]">
+            <Section className="px-[36px] pb-[40px]">
               <Section
-                className="bg-lavender-light rounded-2xl px-[24px] py-[24px] text-right"
-                style={{ direction: "rtl" }}
+                className="rounded-2xl text-right"
+                style={{
+                  direction: "rtl",
+                  backgroundColor: LIGHT_BG,
+                  border: `1px solid ${SECONDARY}`,
+                  padding: "32px 28px",
+                }}
               >
-                <Text className="text-brown text-[16px] m-0 mb-5" style={{ fontFamily: FONT_PLAYFUL, fontWeight: 700 }}>
-                  מה אנחנו יכולים לעשות יחד?
+                <Text
+                  className="m-0 mb-[10px]"
+                  style={{
+                    fontFamily: FONT_FAMILY,
+                    fontWeight: 700,
+                    fontSize: "10px",
+                    letterSpacing: "2.5px",
+                    textTransform: "uppercase",
+                    color: DARK_TEXT,
+                    opacity: 0.7,
+                  }}
+                >
+                  Services
+                </Text>
+                <Text
+                  className="m-0 mb-[28px]"
+                  style={{
+                    fontFamily: FONT_FAMILY,
+                    fontWeight: 700,
+                    fontSize: "26px",
+                    lineHeight: 1.1,
+                    letterSpacing: "-0.6px",
+                    color: FOREGROUND,
+                  }}
+                >
+                  מה אנחנו יכולים לעשות <span style={{ color: ACCENT_PINK }}>יחד</span>.
                 </Text>
 
-                <Row className="mb-[14px]">
-                  <Column className="w-[40px] align-top">
+                <Row>
+                  <Column className="w-[64px] align-top" style={{ verticalAlign: "top" }}>
                     <Text
-                      className="text-coral text-[13px] m-0 rounded-full bg-coral-pale text-center leading-[28px] w-[28px] h-[28px]"
-                      style={{ fontWeight: 700 }}
+                      className="m-0"
+                      style={{
+                        fontFamily: FONT_FAMILY,
+                        fontWeight: 700,
+                        fontSize: "26px",
+                        letterSpacing: "-0.5px",
+                        color: ACCENT_PINK,
+                        lineHeight: 1,
+                      }}
                     >
                       01
                     </Text>
                   </Column>
                   <Column>
                     <Text
-                      className="text-brown text-[14px] m-0 mb-[2px]"
-                      style={{ fontFamily: FONT_PLAYFUL, fontWeight: 700 }}
+                      className="m-0"
+                      style={{
+                        fontFamily: FONT_FAMILY,
+                        fontWeight: 700,
+                        fontSize: "16px",
+                        color: FOREGROUND,
+                        marginBottom: "6px",
+                      }}
                     >
                       קמפיינים ממומנים
                     </Text>
-                    <Text className="text-brown-light text-[13px] leading-[1.6] m-0 opacity-80">
+                    <Text
+                      className="m-0"
+                      style={{
+                        fontFamily: FONT_FAMILY,
+                        fontSize: "13px",
+                        lineHeight: 1.65,
+                        color: DARK_TEXT,
+                      }}
+                    >
                       טירגוט מדויק לקהל הנכון באינסטגרם, פייסבוק וטיקטוק. מודעות שאי אפשר להתעלם מהן.
                     </Text>
                   </Column>
                 </Row>
 
-                <Hr className="border-lavender mx-0 w-full my-[12px]" />
+                <Hr style={{ borderColor: SECONDARY, margin: "20px 0", width: "100%" }} />
 
-                <Row className="mb-[14px]">
-                  <Column className="w-[40px] align-top">
+                <Row>
+                  <Column className="w-[64px] align-top" style={{ verticalAlign: "top" }}>
                     <Text
-                      className="text-coral text-[13px] m-0 rounded-full bg-coral-pale text-center leading-[28px] w-[28px] h-[28px]"
-                      style={{ fontWeight: 700 }}
+                      className="m-0"
+                      style={{
+                        fontFamily: FONT_FAMILY,
+                        fontWeight: 700,
+                        fontSize: "26px",
+                        letterSpacing: "-0.5px",
+                        color: ACCENT_PINK,
+                        lineHeight: 1,
+                      }}
                     >
                       02
                     </Text>
                   </Column>
                   <Column>
                     <Text
-                      className="text-brown text-[14px] m-0 mb-[2px]"
-                      style={{ fontFamily: FONT_PLAYFUL, fontWeight: 700 }}
+                      className="m-0"
+                      style={{
+                        fontFamily: FONT_FAMILY,
+                        fontWeight: 700,
+                        fontSize: "16px",
+                        color: FOREGROUND,
+                        marginBottom: "6px",
+                      }}
                     >
                       אתרים ודפי נחיתה
                     </Text>
-                    <Text className="text-brown-light text-[13px] leading-[1.6] m-0 opacity-80">
+                    <Text
+                      className="m-0"
+                      style={{
+                        fontFamily: FONT_FAMILY,
+                        fontSize: "13px",
+                        lineHeight: 1.65,
+                        color: DARK_TEXT,
+                      }}
+                    >
                       בנייה ב-Framer ו-Wix. עיצוב נקי וחווית משתמש שממירה גולשים ללקוחות.
                     </Text>
                   </Column>
                 </Row>
 
-                <Hr className="border-lavender mx-0 w-full my-[12px]" />
+                <Hr style={{ borderColor: SECONDARY, margin: "20px 0", width: "100%" }} />
 
                 <Row>
-                  <Column className="w-[40px] align-top">
+                  <Column className="w-[64px] align-top" style={{ verticalAlign: "top" }}>
                     <Text
-                      className="text-coral text-[13px] m-0 rounded-full bg-coral-pale text-center leading-[28px] w-[28px] h-[28px]"
-                      style={{ fontWeight: 700 }}
+                      className="m-0"
+                      style={{
+                        fontFamily: FONT_FAMILY,
+                        fontWeight: 700,
+                        fontSize: "26px",
+                        letterSpacing: "-0.5px",
+                        color: ACCENT_PINK,
+                        lineHeight: 1,
+                      }}
                     >
                       03
                     </Text>
                   </Column>
                   <Column>
                     <Text
-                      className="text-brown text-[14px] m-0 mb-[2px]"
-                      style={{ fontFamily: FONT_PLAYFUL, fontWeight: 700 }}
+                      className="m-0"
+                      style={{
+                        fontFamily: FONT_FAMILY,
+                        fontWeight: 700,
+                        fontSize: "16px",
+                        color: FOREGROUND,
+                        marginBottom: "6px",
+                      }}
                     >
                       מיתוג ואסטרטגיה
                     </Text>
-                    <Text className="text-brown-light text-[13px] leading-[1.6] m-0 opacity-80">
+                    <Text
+                      className="m-0"
+                      style={{
+                        fontFamily: FONT_FAMILY,
+                        fontSize: "13px",
+                        lineHeight: 1.65,
+                        color: DARK_TEXT,
+                      }}
+                    >
                       בניית זהות ויזואלית שלמה — מלוגו ועד שפה עיצובית שאי אפשר להתעלם ממנה.
                     </Text>
                   </Column>
@@ -211,47 +341,105 @@ export default function ZoeLeadOutreachEmail({ businessName }: ZoeLeadOutreachEm
               </Section>
             </Section>
 
-            <Section className="bg-cream px-[36px] pb-[36px] text-right">
+            <Section className="text-right" style={{ backgroundColor: FOREGROUND, padding: "44px 36px" }}>
               <Text
-                className="text-brown text-[15px] leading-[1.8] m-0 mb-7"
-                style={{ fontFamily: FONT_FAMILY, textAlign: "right" }}
+                className="m-0 mb-[14px]"
+                style={{
+                  fontFamily: FONT_FAMILY,
+                  fontWeight: 700,
+                  fontSize: "11px",
+                  letterSpacing: "3px",
+                  textTransform: "uppercase",
+                  color: ACCENT_PINK,
+                }}
               >
-                אני מאמינה ששילוב של עיצוב נכון ואסטרטגיה חכמה יכול להקפיץ את{" "}
-                <span style={{ fontWeight: 700, color: "#E8624A" }}>{businessName}</span> לשלב הבא.
+                {"// למה אני"}
               </Text>
-
-              <Section className="text-center">
-                <Button
-                  href="https://www.zoedotan.com"
-                  className="bg-brown text-cream rounded-full px-[36px] py-[14px] text-[15px] no-underline"
-                  style={{ fontFamily: FONT_FAMILY, fontWeight: 700 }}
-                >
-                  בואו נדבר &#8592;
-                </Button>
-              </Section>
+              <Text
+                className="m-0 mb-[18px]"
+                style={{
+                  fontFamily: FONT_FAMILY,
+                  fontWeight: 700,
+                  fontSize: "28px",
+                  lineHeight: 1.15,
+                  letterSpacing: "-0.6px",
+                  color: BACKGROUND,
+                }}
+              >
+                עיצוב נכון <span style={{ color: ACCENT_PINK }}>+</span> אסטרטגיה חכמה{" "}
+                <span style={{ color: ACCENT_PINK }}>=</span> שלב הבא.
+              </Text>
+              <Text
+                className="m-0"
+                style={{
+                  fontFamily: FONT_FAMILY,
+                  fontSize: "14px",
+                  lineHeight: 1.7,
+                  color: "rgba(255,255,255,0.8)",
+                }}
+              >
+                אני מאמינה ששילוב של השניים יכול להקפיץ את{" "}
+                <span style={{ fontWeight: 700, color: ACCENT_PINK }}>{businessName}</span> לשלב הבא — ואני אשמח להראות
+                לכם בדיוק איך.
+              </Text>
             </Section>
 
-            <Section className="bg-blush px-[36px] py-[28px] text-right">
-              <Text className="text-brown text-[15px] m-0" style={{ fontFamily: FONT_FAMILY }}>
+            <Section className="px-[36px] pt-[40px] pb-[16px] text-right">
+              <Button
+                href={CTA_URL}
+                style={{
+                  fontFamily: FONT_FAMILY,
+                  fontWeight: 700,
+                  backgroundColor: FOREGROUND,
+                  color: BACKGROUND,
+                  padding: "18px 36px",
+                  fontSize: "14px",
+                  textDecoration: "none",
+                  borderRadius: "0",
+                  display: "inline-block",
+                  letterSpacing: "1px",
+                  textTransform: "uppercase",
+                }}
+              >
+                להצעה הבלעדית &#8592;
+              </Button>
+            </Section>
+
+            <Section
+              className="px-[36px] pt-[32px] pb-[28px] text-right"
+              style={{ borderTop: `1px solid ${SECONDARY}`, marginTop: "24px" }}
+            >
+              <Text className="m-0" style={{ fontFamily: FONT_FAMILY, fontSize: "14px", color: DARK_TEXT }}>
                 המשך יום מהמם,
               </Text>
-              <Text className="text-coral text-[17px] m-0 mt-1" style={{ fontFamily: FONT_FAMILY, fontWeight: 700 }}>
+              <Text
+                className="m-0 mt-[6px]"
+                style={{
+                  fontFamily: FONT_FAMILY,
+                  fontWeight: 700,
+                  fontSize: "26px",
+                  letterSpacing: "-0.6px",
+                  color: FOREGROUND,
+                }}
+              >
                 זואי
               </Text>
             </Section>
 
-            <Section className="bg-cream rounded-b-3xl px-[36px] py-5 text-center">
-              <Link
-                href="https://www.zoedotan.com"
-                className="text-warm text-xs no-underline"
-                style={{ fontWeight: 700, fontFamily: FONT_FAMILY }}
+            <Section className="px-[36px] pb-[32px] text-center">
+              <Hr style={{ borderColor: SECONDARY, margin: "0 0 20px 0", width: "100%" }} />
+              <Text
+                className="m-0"
+                style={{
+                  fontFamily: FONT_FAMILY,
+                  fontSize: "10px",
+                  letterSpacing: "1.5px",
+                  textTransform: "uppercase",
+                  color: DARK_TEXT,
+                  opacity: 0.6,
+                  lineHeight: 1.7,
+                }}
               >
-                www.zoedotan.com
-              </Link>
-
-              <Hr className="border-blush mx-0 w-full my-3" />
-
-              <Text className="text-warm-light text-[10px] m-0 leading-relaxed">
                 קיבלתם את המייל הזה כי לעסק שלכם יש נוכחות דיגיטלית. לא מעוניינים? השיבו &quot;הסר&quot;.
               </Text>
             </Section>

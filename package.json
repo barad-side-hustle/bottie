@@ -28,8 +28,8 @@
     "cron:marketing": "dotenv -e .env -- bash -c 'curl -s -H \"Authorization: Bearer $CRON_SECRET\" http://localhost:3000/api/cron/find-leads && curl -s -H \"Authorization: Bearer $CRON_SECRET\" http://localhost:3000/api/cron/scrape-emails && curl -s -H \"Authorization: Bearer $CRON_SECRET\" http://localhost:3000/api/cron/send-outreach'",
     "comments:remove": "tsx scripts/remove-comments.ts",
     "pubsub:update": "bash scripts/update-pubsub-subscription.sh",
-    "email:dev": "bunx react-email dev --dir lib/emails",
-    "email:export": "bunx react-email export --dir lib/emails",
+    "email:dev": "email dev --dir lib/emails",
+    "email:export": "email export --dir lib/emails",
     "i18n:check": "tsx scripts/check-translations.ts",
     "ci": "bun run lint:check && bun run format:check && bun run comments:remove && bun run build && bun run test"
   },
