@@ -122,7 +122,7 @@ export default function DailyStatsEmail({
                 <div className="bg-background border border-solid border-border rounded-xl p-4">
                   {newGoogleAccounts.map((a, i) => (
                     <Text key={i} className="text-muted text-sm leading-relaxed m-0 mb-1">
-                      <span className="text-foreground font-bold">{a.email}</span> — {a.accountName}
+                      <span className="text-foreground font-bold">{a.email}</span> -{a.accountName}
                     </Text>
                   ))}
                 </div>
@@ -171,7 +171,7 @@ export default function DailyStatsEmail({
                   <div className="bg-background border border-solid border-border rounded-xl p-4">
                     {outreachStats.sentByCountry.map((s, i) => (
                       <Text key={`sent-${i}`} className="text-muted text-sm leading-relaxed m-0 mb-1">
-                        <span className="text-success font-bold">{s.count} sent</span> — {s.country}
+                        <span className="text-success font-bold">{s.count} sent</span> -{s.country}
                       </Text>
                     ))}
                     {outreachStats.sentByCountry.length === 0 && (
@@ -180,7 +180,7 @@ export default function DailyStatsEmail({
                     <Hr className="border-border opacity-30 mx-0 w-full my-2" />
                     {outreachStats.pendingByCountry.map((s, i) => (
                       <Text key={`pending-${i}`} className="text-muted text-sm leading-relaxed m-0 mb-1">
-                        <span className="text-warning font-bold">{s.count} pending</span> — {s.country}
+                        <span className="text-warning font-bold">{s.count} pending</span> -{s.country}
                       </Text>
                     ))}
                     {outreachStats.pendingByCountry.length === 0 && (

@@ -202,4 +202,4 @@ The `scripts/` folder contains utilities for testing:
 
 ---
 
-**RevYou** — Turning Reviews into Relationships.
+**RevYou** - Turning Reviews into Relationships.

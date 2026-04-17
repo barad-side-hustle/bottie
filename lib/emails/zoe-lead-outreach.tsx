@@ -334,7 +334,7 @@ export default function ZoeLeadOutreachEmail({ businessName }: ZoeLeadOutreachEm
                         color: DARK_TEXT,
                       }}
                     >
-                      בניית זהות ויזואלית שלמה — מלוגו ועד שפה עיצובית שאי אפשר להתעלם ממנה.
+                      בניית זהות ויזואלית שלמה -מלוגו ועד שפה עיצובית שאי אפשר להתעלם ממנה.
                     </Text>
                   </Column>
                 </Row>
@@ -379,7 +379,7 @@ export default function ZoeLeadOutreachEmail({ businessName }: ZoeLeadOutreachEm
                 }}
               >
                 אני מאמינה ששילוב של השניים יכול להקפיץ את{" "}
-                <span style={{ fontWeight: 700, color: ACCENT_PINK }}>{businessName}</span> לשלב הבא — ואני אשמח להראות
+                <span style={{ fontWeight: 700, color: ACCENT_PINK }}>{businessName}</span> לשלב הבא -ואני אשמח להראות
                 לכם בדיוק איך.
               </Text>
             </Section>

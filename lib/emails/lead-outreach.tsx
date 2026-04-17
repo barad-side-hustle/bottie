@@ -40,14 +40,14 @@ const content: Record<
   }
 > = {
   he: {
-    preview: (name) => `${name} — 3 כלים חינמיים לניהול ביקורות גוגל`,
+    preview: (name) => `${name} -3 כלים חינמיים לניהול ביקורות גוגל`,
     greeting: "שלום,",
     intro: (name, city) =>
       `שמי אלון, מייסד Bottie.ai. שמתי לב שיש ל${name} פרופיל עסקי בגוגל ורציתי להציע 3 כלים חינמיים שעוזרים לעסקים ב${city} לנהל ביקורות.`,
     whatYouGet: "מה מקבלים:",
-    benefit1: "תגובות אוטומטיות לביקורות — בעברית, בטון שמתאים לעסק שלכם. אתם מאשרים ומפרסמים בקליק.",
-    benefit2: "פילוח סנטימנט מהביקורות — תבינו מה הלקוחות אוהבים ואיפה כדאי להשתפר.",
-    benefit3: "כלים לקבלת ביקורות חדשות — עוזרים ללקוחות מרוצים להשאיר ביקורת בגוגל.",
+    benefit1: "תגובות אוטומטיות לביקורות -בעברית, בטון שמתאים לעסק שלכם. אתם מאשרים ומפרסמים בקליק.",
+    benefit2: "פילוח סנטימנט מהביקורות -תבינו מה הלקוחות אוהבים ואיפה כדאי להשתפר.",
+    benefit3: "כלים לקבלת ביקורות חדשות -עוזרים ללקוחות מרוצים להשאיר ביקורת בגוגל.",
     allFree: "הכל חינמי לגמרי. בלי כרטיס אשראי, בלי התחייבות.",
     ctaText: "לנסות בחינם",
     questions: "שאלות? פשוט השיבו למייל הזה.",
@@ -56,14 +56,14 @@ const content: Record<
     unsubscribe: 'קיבלתם את המייל הזה כי לעסק שלכם יש פרופיל בגוגל. לא מעוניינים? השיבו "הסר".',
   },
   en: {
-    preview: (name) => `${name} — 3 free tools to manage your Google reviews`,
+    preview: (name) => `${name} -3 free tools to manage your Google reviews`,
     greeting: "Hi there,",
     intro: (name, city) =>
       `I'm Alon, founder of Bottie.ai. I noticed ${name} has a Google Business Profile and wanted to offer 3 free tools that help businesses in ${city} manage their reviews.`,
     whatYouGet: "What you get:",
-    benefit1: "Automatic review replies — drafted in your tone of voice. You approve and publish in one click.",
-    benefit2: "Sentiment analysis — understand what customers love and where to improve.",
-    benefit3: "Tools to get more reviews — help happy customers leave a Google review.",
+    benefit1: "Automatic review replies -drafted in your tone of voice. You approve and publish in one click.",
+    benefit2: "Sentiment analysis -understand what customers love and where to improve.",
+    benefit3: "Tools to get more reviews -help happy customers leave a Google review.",
     allFree: "Completely free. No credit card, no commitment.",
     ctaText: "Try it free",
     questions: "Questions? Just reply to this email.",
@@ -73,14 +73,14 @@ const content: Record<
       'You received this email because your business has a Google Business Profile. Not interested? Reply "unsubscribe".',
   },
   es: {
-    preview: (name) => `${name} — 3 herramientas gratuitas para gestionar tus reseñas de Google`,
+    preview: (name) => `${name} -3 herramientas gratuitas para gestionar tus reseñas de Google`,
     greeting: "Hola,",
     intro: (name, city) =>
       `Soy Alon, fundador de Bottie.ai. Vi que ${name} tiene un Perfil de Negocio en Google y quería ofrecer 3 herramientas gratuitas que ayudan a negocios en ${city} a gestionar sus reseñas.`,
     whatYouGet: "Qué obtienes:",
-    benefit1: "Respuestas automáticas a reseñas — redactadas en tu tono de voz. Apruebas y publicas en un clic.",
-    benefit2: "Análisis de sentimiento — entiende qué aman tus clientes y dónde mejorar.",
-    benefit3: "Herramientas para obtener más reseñas — ayuda a clientes satisfechos a dejar una reseña en Google.",
+    benefit1: "Respuestas automáticas a reseñas -redactadas en tu tono de voz. Apruebas y publicas en un clic.",
+    benefit2: "Análisis de sentimiento -entiende qué aman tus clientes y dónde mejorar.",
+    benefit3: "Herramientas para obtener más reseñas -ayuda a clientes satisfechos a dejar una reseña en Google.",
     allFree: "Completamente gratis. Sin tarjeta de crédito, sin compromiso.",
     ctaText: "Pruébalo gratis",
     questions: "¿Preguntas? Simplemente responde a este correo.",
@@ -100,11 +100,11 @@ const dirMap: Record<string, "rtl" | "ltr"> = {
 export function getOutreachSubject(locale: Locale, businessName: string): string {
   switch (locale) {
     case "he":
-      return `3 כלים חינמיים לניהול ביקורות גוגל — ${businessName}`;
+      return `3 כלים חינמיים לניהול ביקורות גוגל -${businessName}`;
     case "es":
-      return `3 herramientas gratuitas para reseñas de Google — ${businessName}`;
+      return `3 herramientas gratuitas para reseñas de Google -${businessName}`;
     default:
-      return `3 free tools for your Google reviews — ${businessName}`;
+      return `3 free tools for your Google reviews -${businessName}`;
   }
 }
 

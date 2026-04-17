@@ -95,7 +95,7 @@ export default function ContactFormEmail({ senderEmail, subject, message }: Cont
 
             <Section className="mt-6">
               <Text className="text-muted text-xs text-center">
-                Bottie.ai Contact Form — Reply directly to respond to {senderEmail}
+                Bottie.ai Contact Form -Reply directly to respond to {senderEmail}
               </Text>
             </Section>
           </Container>
