@@ -2,6 +2,7 @@ import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { and, isNull } from "drizzle-orm";
 import { db } from "@/lib/db/client";
+import { queryWithRetry } from "@/lib/db/retry";
 import { reviews } from "@/lib/db/schema";
 import { ReviewsRepository } from "@/lib/db/repositories/reviews.repository";
 import { classifyReview } from "@/lib/ai/classification";
@@ -9,26 +10,6 @@ import { findLocationOwner } from "@/lib/utils/find-location-owner";
 import { env } from "@/lib/env";
 
 export const maxDuration = 300;
-
-async function queryWithRetry<T>(fn: () => Promise<T>, maxRetries = 3): Promise<T> {
-  for (let attempt = 0; attempt < maxRetries; attempt++) {
-    try {
-      return await fn();
-    } catch (error: unknown) {
-      const isTransient =
-        error instanceof Error &&
-        "code" in error &&
-        ["CONNECT_TIMEOUT", "CONNECTION_REFUSED", "CONNECTION_ENDED"].includes(
-          (error as NodeJS.ErrnoException).code ?? ""
-        );
-      if (!isTransient || attempt === maxRetries - 1) throw error;
-      const delay = 1000 * Math.pow(2, attempt);
-      console.warn(`DB query failed (attempt ${attempt + 1}/${maxRetries}), retrying in ${delay}ms...`, error);
-      await new Promise((r) => setTimeout(r, delay));
-    }
-  }
-  throw new Error("unreachable");
-}
 
 function secureCompare(a: string, b: string): boolean {
   const bufA = Buffer.from(a);

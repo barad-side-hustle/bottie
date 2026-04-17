@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { env } from "@/lib/env";
+import { queryWithRetry } from "@/lib/db/retry";
 import { ZoeLeadsRepository } from "@/lib/db/repositories/zoe-leads.repository";
 import {
   scrapeEmails,
@@ -36,7 +37,7 @@ export async function GET(req: NextRequest) {
       batchSize: BATCH_SIZE,
       excludeDomains: SOCIAL_MEDIA_DOMAINS.length,
     });
-    const leadsToScrape = await leadsRepo.findLeadsNeedingEmail(SOCIAL_MEDIA_DOMAINS, BATCH_SIZE);
+    const leadsToScrape = await queryWithRetry(() => leadsRepo.findLeadsNeedingEmail(SOCIAL_MEDIA_DOMAINS, BATCH_SIZE));
     console.log("[zoe-scrape-emails] Starting", { leadsToProcess: leadsToScrape.length });
 
     let emailsFound = 0;
