@@ -30,6 +30,9 @@ export const leads = pgTable(
     index("leads_email_idx").on(table.email),
     index("leads_created_at_idx").on(table.createdAt),
     index("leads_country_idx").on(table.country),
+    index("leads_needs_email_idx")
+      .on(table.createdAt)
+      .where(sql`status = 'pending' AND website_url IS NOT NULL AND email IS NULL`),
 
     check("leads_status_check", sql`${table.status} IN ('pending', 'sent', 'failed', 'skipped')`),
 

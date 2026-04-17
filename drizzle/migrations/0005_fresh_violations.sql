@@ -1,0 +1,2 @@
+CREATE INDEX "leads_needs_email_idx" ON "leads" USING btree ("created_at") WHERE status = 'pending' AND website_url IS NOT NULL AND email IS NULL;--> statement-breakpoint
+CREATE INDEX "zoe_leads_needs_email_idx" ON "zoe_leads" USING btree ("created_at") WHERE status = 'pending' AND website_url IS NOT NULL AND email IS NULL;

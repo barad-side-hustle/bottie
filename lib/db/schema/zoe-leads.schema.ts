@@ -30,6 +30,9 @@ export const zoeLeads = pgTable(
     index("zoe_leads_email_idx").on(table.email),
     index("zoe_leads_created_at_idx").on(table.createdAt),
     index("zoe_leads_country_idx").on(table.country),
+    index("zoe_leads_needs_email_idx")
+      .on(table.createdAt)
+      .where(sql`status = 'pending' AND website_url IS NOT NULL AND email IS NULL`),
 
     check("zoe_leads_status_check", sql`${table.status} IN ('pending', 'sent', 'failed', 'skipped')`),
 
