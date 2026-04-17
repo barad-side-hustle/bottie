@@ -328,14 +328,14 @@ async function main() {
     if (missing.length > 0) {
       totalMissing += missing.length;
       console.log(
-        `  ${locale}.json — ${missing.length} missing (in ${REFERENCE_LOCALE}.json but not in ${locale}.json):`
+        `  ${locale}.json -${missing.length} missing (in ${REFERENCE_LOCALE}.json but not in ${locale}.json):`
       );
       for (const key of missing) console.log(`    - ${key}`);
     }
 
     if (extra.length > 0) {
       totalExtra += extra.length;
-      console.log(`  ${locale}.json — ${extra.length} extra (in ${locale}.json but not in ${REFERENCE_LOCALE}.json):`);
+      console.log(`  ${locale}.json -${extra.length} extra (in ${locale}.json but not in ${REFERENCE_LOCALE}.json):`);
       for (const key of extra) console.log(`    + ${key}`);
     }
 

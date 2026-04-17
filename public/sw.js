@@ -1,6 +1,6 @@
 // Minimal service worker for PWA installability.
 // Satisfies Chrome's requirement of a fetch-handling SW.
-// No offline caching — the app requires connectivity.
+// No offline caching -the app requires connectivity.
 
 self.addEventListener("install", () => self.skipWaiting());
 

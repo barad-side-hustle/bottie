@@ -85,7 +85,7 @@
         "0": {
           "name": "Noa Peretz",
           "role": "Restaurant Owner",
-          "quote": "Between the kitchen and managing staff, I never had time to answer reviews. Now every reply goes out sounding like I actually wrote it — one of my regulars even mentioned how nice our responses are."
+          "quote": "Between the kitchen and managing staff, I never had time to answer reviews. Now every reply goes out sounding like I actually wrote it -one of my regulars even mentioned how nice our responses are."
         },
         "1": {
           "name": "Tom Hadad",
@@ -171,7 +171,7 @@
         },
         "8": {
           "question": "Can I create Google Posts directly from Bottie?",
-          "answer": "Yes! Bottie lets you create and publish Google Business Profile posts — including standard updates, events, and promotional offers — directly from your dashboard. You can add images, calls-to-action, event dates, and coupon codes. Posts can be saved as drafts or published immediately."
+          "answer": "Yes! Bottie lets you create and publish Google Business Profile posts -including standard updates, events, and promotional offers -directly from your dashboard. You can add images, calls-to-action, event dates, and coupon codes. Posts can be saved as drafts or published immediately."
         },
         "9": {
           "question": "What analytics and insights does Bottie provide?",
@@ -1003,16 +1003,16 @@
     },
     "hero": {
       "title": "About Bottie.ai",
-      "subtitle": "The all-in-one platform for managing your Google Business Profile. Automate review responses, publish posts, track performance metrics, and optimize your online presence — all powered by AI."
+      "subtitle": "The all-in-one platform for managing your Google Business Profile. Automate review responses, publish posts, track performance metrics, and optimize your online presence -all powered by AI."
     },
     "mission": {
       "title": "Our Mission",
-      "content": "Every customer review deserves a thoughtful, professional response — but for busy business owners, finding the time to reply to each one is nearly impossible. Bottie.ai was built to solve this problem. Our mission is to give every business, from local shops to multi-location enterprises, the ability to engage with customer feedback instantly and authentically, while providing the tools and insights needed to grow their online reputation."
+      "content": "Every customer review deserves a thoughtful, professional response -but for busy business owners, finding the time to reply to each one is nearly impossible. Bottie.ai was built to solve this problem. Our mission is to give every business, from local shops to multi-location enterprises, the ability to engage with customer feedback instantly and authentically, while providing the tools and insights needed to grow their online reputation."
     },
     "problem": {
       "title": "The Problem We Solve",
-      "content": "Online reviews directly impact purchasing decisions. Studies show that 93% of consumers read online reviews before visiting a business, and businesses that respond to reviews are perceived as 1.7x more trustworthy. Yet most business owners struggle to respond consistently — leading to missed opportunities, unanswered complaints, and a weakened online presence.",
-      "content2": "Beyond reviews, maintaining an active Google Business Profile requires regular posting, monitoring performance metrics, and ensuring your listing is complete and optimized. Managing all of this manually across multiple locations is overwhelming — and that's exactly where Bottie steps in."
+      "content": "Online reviews directly impact purchasing decisions. Studies show that 93% of consumers read online reviews before visiting a business, and businesses that respond to reviews are perceived as 1.7x more trustworthy. Yet most business owners struggle to respond consistently -leading to missed opportunities, unanswered complaints, and a weakened online presence.",
+      "content2": "Beyond reviews, maintaining an active Google Business Profile requires regular posting, monitoring performance metrics, and ensuring your listing is complete and optimized. Managing all of this manually across multiple locations is overwhelming -and that's exactly where Bottie steps in."
     },
     "solution": {
       "title": "How Bottie.ai Helps",
@@ -1037,11 +1037,11 @@
         },
         "multiLanguage": {
           "title": "Multi-Language Support",
-          "description": "Respond to reviews in Hebrew, English, Spanish, and more — matching your customers' language. Auto-detect mode identifies the review language and responds accordingly."
+          "description": "Respond to reviews in Hebrew, English, Spanish, and more -matching your customers' language. Auto-detect mode identifies the review language and responds accordingly."
         },
         "customTone": {
           "title": "Custom Tone & Voice",
-          "description": "Configure the AI to match your brand personality — professional, friendly, casual, or anything in between. Set different instructions for each star rating to ensure the right tone for every situation."
+          "description": "Configure the AI to match your brand personality -professional, friendly, casual, or anything in between. Set different instructions for each star rating to ensure the right tone for every situation."
         },
         "multiLocation": {
           "title": "Multi-Location Management",
@@ -1057,19 +1057,19 @@
         },
         "profileHealth": {
           "title": "Profile Health Score",
-          "description": "Get a real-time score that evaluates your Google Business Profile completeness — including business description, phone number, website, address, response rate, and average rating — with actionable recommendations."
+          "description": "Get a real-time score that evaluates your Google Business Profile completeness -including business description, phone number, website, address, response rate, and average rating -with actionable recommendations."
         }
       }
     },
     "platform": {
       "title": "A Complete Google Business Profile Management Platform",
-      "content": "Bottie.ai is more than a review response tool — it's a full-featured platform for managing your Google Business Profile. From the moment a customer leaves a review to the moment you publish a promotional post, Bottie handles every step of your online reputation management workflow.",
-      "content2": "The AI-powered insights engine classifies every review by sentiment and category, extracts key topics customers discuss, and tracks trends over time. This gives you a clear, data-driven picture of your business performance from the customer's perspective — across service quality, value, cleanliness, wait time, and dozens of other dimensions.",
-      "content3": "Your Profile Health Score provides a quick overview of how well-optimized your Google Business listing is. It checks for missing information like business description, phone number, and website, monitors your review response rate, and tracks your average rating — giving you a score out of 100 with specific actions to improve."
+      "content": "Bottie.ai is more than a review response tool -it's a full-featured platform for managing your Google Business Profile. From the moment a customer leaves a review to the moment you publish a promotional post, Bottie handles every step of your online reputation management workflow.",
+      "content2": "The AI-powered insights engine classifies every review by sentiment and category, extracts key topics customers discuss, and tracks trends over time. This gives you a clear, data-driven picture of your business performance from the customer's perspective -across service quality, value, cleanliness, wait time, and dozens of other dimensions.",
+      "content3": "Your Profile Health Score provides a quick overview of how well-optimized your Google Business listing is. It checks for missing information like business description, phone number, and website, monitors your review response rate, and tracks your average rating -giving you a score out of 100 with specific actions to improve."
     },
     "howItWorks": {
       "title": "How It Works",
-      "content": "Getting started takes just a few minutes. Connect your Google Business Profile via secure OAuth, select your locations, and configure your preferred response tone and language. Bottie.ai then monitors your reviews around the clock via Google Pub/Sub webhooks. When a new review comes in, the AI crafts a response within 1-2 minutes and either publishes it automatically or queues it for your approval — depending on your settings.",
+      "content": "Getting started takes just a few minutes. Connect your Google Business Profile via secure OAuth, select your locations, and configure your preferred response tone and language. Bottie.ai then monitors your reviews around the clock via Google Pub/Sub webhooks. When a new review comes in, the AI crafts a response within 1-2 minutes and either publishes it automatically or queues it for your approval -depending on your settings.",
       "content2": "From your dashboard, you can view all reviews across locations, filter by rating, sentiment, or response status, edit AI-generated replies, create Google Posts, track performance metrics, manage team access, and monitor your Profile Health Score. Everything you need to manage your Google Business Profile is in one place."
     },
     "security": {
@@ -1077,7 +1077,7 @@
       "items": {
         "oauth": {
           "title": "Secure OAuth 2.0",
-          "description": "We use official Google Business Profile API integration with OAuth 2.0. We never store your Google password — only securely encrypted refresh tokens."
+          "description": "We use official Google Business Profile API integration with OAuth 2.0. We never store your Google password -only securely encrypted refresh tokens."
         },
         "encryption": {
           "title": "Encrypted Data Storage",
@@ -1091,12 +1091,12 @@
     },
     "pricing": {
       "title": "Simple, Transparent Pricing",
-      "content": "Bottie.ai offers a free tier that lets you manage one business location with up to 5 AI-generated review responses per month — no credit card required. This is a great way to try the platform and see the quality of AI-generated replies for yourself.",
+      "content": "Bottie.ai offers a free tier that lets you manage one business location with up to 5 AI-generated review responses per month -no credit card required. This is a great way to try the platform and see the quality of AI-generated replies for yourself.",
       "content2": "For businesses that need unlimited responses, the paid plan is $39 per month per location and includes unlimited AI-generated replies, auto-publishing, Google Posts, performance analytics, Profile Health monitoring, team member access, and priority support. Each location is billed independently, so you only pay for the locations you actively manage."
     },
     "team": {
       "title": "Built in Tel Aviv",
-      "content": "Bottie.ai is built by a small team in Tel Aviv, Israel, passionate about helping local businesses thrive online. We understand the challenges of managing an online presence because we've seen it firsthand — and we built Bottie to be the tool we wished existed.",
+      "content": "Bottie.ai is built by a small team in Tel Aviv, Israel, passionate about helping local businesses thrive online. We understand the challenges of managing an online presence because we've seen it firsthand -and we built Bottie to be the tool we wished existed.",
       "content2": "We're committed to continuous improvement. We regularly ship new features, respond to user feedback, and optimize our AI models to generate better, more natural-sounding responses. If you have ideas or feedback, we'd love to hear from you."
     },
     "cta": {

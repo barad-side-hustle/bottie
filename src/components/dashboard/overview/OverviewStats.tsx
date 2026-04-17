@@ -20,7 +20,7 @@ export function OverviewStats({ data }: { data: OverviewData }) {
       />
       <StatCard
         label={t("averageRating")}
-        value={data.avgRating ? data.avgRating.toFixed(1) : "—"}
+        value={data.avgRating ? data.avgRating.toFixed(1) : "-"}
         icon={Star}
         iconBgColor="bg-primary/10"
         iconColor="text-primary"

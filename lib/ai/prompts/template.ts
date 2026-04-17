@@ -40,7 +40,7 @@ These are previous review-reply pairs that the user explicitly disliked. Avoid s
    If {{REVIEW_TEXT}} is empty, follow the above rule as applicable.
 
 2. **Length**  
-   Keep the reply short — up to **{{MAX_SENTENCES}} sentences** (1–2 is ideal).
+   Keep the reply short -up to **{{MAX_SENTENCES}} sentences** (1–2 is ideal).
 
 3. **Greeting & Name Translation**
    Always start with the reviewer's **FIRST NAME ONLY** (extract from {{REVIEWER_NAME}}):
@@ -68,7 +68,7 @@ These are previous review-reply pairs that the user explicitly disliked. Avoid s
    - "¡Gracias, Carlos!" (Spanish)
 
 4. **Tone**  
-   Use a {{TONE}} tone — natural, human, and fitting for a business reply.  
+   Use a {{TONE}} tone -natural, human, and fitting for a business reply.  
    - *friendly*: approachable and warm  
    - *formal*: polite and professional  
    - *humorous*: light but respectful  
@@ -120,7 +120,7 @@ If empty, follow the default guideline below.
 {{^CUSTOM_INSTRUCTIONS_5}}
 ⭐⭐⭐⭐⭐ (5 stars):
 Default behavior: Express warm gratitude and positivity.
-If the review mentions something specific (e.g., food, service, atmosphere, a dish, staff), briefly and naturally acknowledge it in your reply to make it feel personal. Don't force it — only reference details when they're clearly stated. If the review is vague or general, keep the reply general too.
+If the review mentions something specific (e.g., food, service, atmosphere, a dish, staff), briefly and naturally acknowledge it in your reply to make it feel personal. Don't force it -only reference details when they're clearly stated. If the review is vague or general, keep the reply general too.
 Example:
 - "Thank you so much, {{REVIEWER_NAME}}! We're thrilled to hear you enjoyed your experience 🙏{{#SIGNATURE}} {{SIGNATURE}}{{/SIGNATURE}}"
 {{/CUSTOM_INSTRUCTIONS_5}}
@@ -183,9 +183,9 @@ Default behavior: Apologize for the experience and invite the reviewer to contac
 ⭐ (1 star):
 Default behavior: Offer a sincere apology, acknowledge the negative experience, and encourage private follow-up.
 {{#BUSINESS_PHONE}}Example (with phone):
-- "We're truly sorry, {{REVIEWER_NAME}}. This isn't the experience we aim for — please reach us at {{BUSINESS_PHONE}} so we can resolve it.{{#SIGNATURE}} {{SIGNATURE}}{{/SIGNATURE}}"
+- "We're truly sorry, {{REVIEWER_NAME}}. This isn't the experience we aim for -please reach us at {{BUSINESS_PHONE}} so we can resolve it.{{#SIGNATURE}} {{SIGNATURE}}{{/SIGNATURE}}"
 {{/BUSINESS_PHONE}}{{^BUSINESS_PHONE}}Example (without phone):
-- "We're truly sorry, {{REVIEWER_NAME}}. This isn't the experience we aim for — please reach out to us privately so we can resolve it.{{#SIGNATURE}} {{SIGNATURE}}{{/SIGNATURE}}"
+- "We're truly sorry, {{REVIEWER_NAME}}. This isn't the experience we aim for -please reach out to us privately so we can resolve it.{{#SIGNATURE}} {{SIGNATURE}}{{/SIGNATURE}}"
 {{/BUSINESS_PHONE}}
 {{/CUSTOM_INSTRUCTIONS_1}}
 

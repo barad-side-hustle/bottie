@@ -19,7 +19,7 @@ interface ZoeLeadOutreachEmailProps {
 }
 
 export function getZoeOutreachSubject(businessName: string): string {
-  return `נוכחות דיגיטלית שממירה — ${businessName}`;
+  return `${businessName}, ראיתי את העסק שלכם`;
 }
 
 const FONT_FAMILY = "Heebo, 'Segoe UI', Tahoma, sans-serif";
@@ -72,7 +72,7 @@ export default function ZoeLeadOutreachEmail({ businessName }: ZoeLeadOutreachEm
             fontStyle="normal"
           />
         </Head>
-        <Preview>{`${businessName} — נוכחות דיגיטלית שממירה קליקים ללקוחות`}</Preview>
+        <Preview>{`${businessName}, ראיתי את העסק שלכם ויש לי רעיון`}</Preview>
         <Body
           className="bg-background my-auto mx-auto px-2"
           style={{ fontFamily: FONT_FAMILY, direction: "rtl", backgroundColor: BACKGROUND }}
@@ -334,7 +334,7 @@ export default function ZoeLeadOutreachEmail({ businessName }: ZoeLeadOutreachEm
                         color: DARK_TEXT,
                       }}
                     >
-                      בניית זהות ויזואלית שלמה — מלוגו ועד שפה עיצובית שאי אפשר להתעלם ממנה.
+                      בניית זהות ויזואלית שלמה -מלוגו ועד שפה עיצובית שאי אפשר להתעלם ממנה.
                     </Text>
                   </Column>
                 </Row>
@@ -379,7 +379,7 @@ export default function ZoeLeadOutreachEmail({ businessName }: ZoeLeadOutreachEm
                 }}
               >
                 אני מאמינה ששילוב של השניים יכול להקפיץ את{" "}
-                <span style={{ fontWeight: 700, color: ACCENT_PINK }}>{businessName}</span> לשלב הבא — ואני אשמח להראות
+                <span style={{ fontWeight: 700, color: ACCENT_PINK }}>{businessName}</span> לשלב הבא -ואני אשמח להראות
                 לכם בדיוק איך.
               </Text>
             </Section>
