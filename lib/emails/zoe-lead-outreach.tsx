@@ -190,7 +190,7 @@ export default function ZoeLeadOutreachEmail({ businessName }: ZoeLeadOutreachEm
                     opacity: 0.7,
                   }}
                 >
-                  Services
+                  שירותים
                 </Text>
                 <Text
                   className="m-0 mb-[28px]"
@@ -278,7 +278,7 @@ export default function ZoeLeadOutreachEmail({ businessName }: ZoeLeadOutreachEm
                         marginBottom: "6px",
                       }}
                     >
-                      אתרים ודפי נחיתה
+                      אתרים ותשתיות דיגיטליות
                     </Text>
                     <Text
                       className="m-0"
@@ -289,7 +289,8 @@ export default function ZoeLeadOutreachEmail({ businessName }: ZoeLeadOutreachEm
                         color: DARK_TEXT,
                       }}
                     >
-                      בנייה ב-Framer ו-Wix. עיצוב נקי וחווית משתמש שממירה גולשים ללקוחות.
+                      פיתוח ותכנון של אתרי אי-קומרס, אתרי תדמית ודפי נחיתה. השילוב בין עיצוב מקורי לטכנולוגיה מתקדמת
+                      מאפשר לייצר נוכחות דיגיטלית נקייה, מהירה ומשכנעת - כזו שמתאימה בדיוק לצרכים העסקיים שלכם.
                     </Text>
                   </Column>
                 </Row>
