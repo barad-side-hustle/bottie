@@ -154,7 +154,7 @@ export const ZOE_COUNTRY_CONFIG: CountryConfig = {
     "music schools in {city}{suffix}",
   ],
   citiesPerRun: 1,
-  emailSender: "Zoe <zoe@bottie.ai>",
+  emailSender: "Zoe <zoe@zoedotan.com>",
   emailReplyTo: "zoedotann@gmail.com",
   needsTranslation: true,
 };
