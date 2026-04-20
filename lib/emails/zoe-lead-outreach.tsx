@@ -23,7 +23,7 @@ export function getZoeOutreachSubject(businessName: string): string {
 }
 
 const FONT_FAMILY = "Heebo, 'Segoe UI', Tahoma, sans-serif";
-const CTA_URL = "https://dotan-visuals.vercel.app/exclusive-offer";
+const CTA_URL = "https://zoedotan.com/exclusive-offer";
 const ACCENT_PINK = "#FFB6C1";
 const FOREGROUND = "#000000";
 const BACKGROUND = "#FFFFFF";
