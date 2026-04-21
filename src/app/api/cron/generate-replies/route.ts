@@ -2,15 +2,20 @@ import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { and, eq, lt, or, sql } from "drizzle-orm";
 import { db } from "@/lib/db/client";
+import { queryWithRetry } from "@/lib/db/retry";
 import { reviews } from "@/lib/db/schema";
 import { ReviewsRepository } from "@/lib/db/repositories/reviews.repository";
 import { LocationsRepository } from "@/lib/db/repositories/locations.repository";
 import { ReviewsController } from "@/lib/controllers/reviews.controller";
 import { SubscriptionsController } from "@/lib/controllers/subscriptions.controller";
 import { findLocationOwner } from "@/lib/utils/find-location-owner";
+import { withTimeout, isDeadlineReached } from "@/lib/cron/deadline";
 import { env } from "@/lib/env";
 
 export const maxDuration = 300;
+
+const TIME_BUDGET_MS = 250_000;
+const GENERATE_REPLY_TIMEOUT_MS = 30_000;
 
 function secureCompare(a: string, b: string): boolean {
   const bufA = Buffer.from(a);
@@ -25,6 +30,8 @@ export async function GET(req: NextRequest) {
   if (!authHeader || !secureCompare(authHeader, expected)) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
+
+  const startTime = Date.now();
 
   try {
     const pendingWithNoDraft = and(
@@ -48,12 +55,14 @@ export async function GET(req: NextRequest) {
       lt(reviews.retryCount, maxRetries)
     );
 
-    const reviewsToProcess = await db
-      .select()
-      .from(reviews)
-      .where(or(pendingWithNoDraft, failedGeneration, failedQuota))
-      .orderBy(reviews.receivedAt)
-      .limit(100);
+    const reviewsToProcess = await queryWithRetry(() =>
+      db
+        .select()
+        .from(reviews)
+        .where(or(pendingWithNoDraft, failedGeneration, failedQuota))
+        .orderBy(reviews.receivedAt)
+        .limit(100)
+    );
 
     if (reviewsToProcess.length === 0) {
       return NextResponse.json({ message: "No reviews to process", processed: 0 });
@@ -76,6 +85,14 @@ export async function GET(req: NextRequest) {
     >();
 
     for (const review of reviewsToProcess) {
+      if (isDeadlineReached(startTime, TIME_BUDGET_MS)) {
+        console.warn("[generate-replies] Time budget exhausted, stopping early", {
+          processed,
+          failed,
+          remaining: reviewsToProcess.length - processed - failed,
+        });
+        break;
+      }
       try {
         if (!locationCache.has(review.locationId)) {
           const owner = await findLocationOwner(review.locationId);
@@ -126,7 +143,11 @@ export async function GET(req: NextRequest) {
 
         console.log("Generating AI reply", { reviewId: review.id });
         try {
-          await reviewsController.generateReply(review.id);
+          await withTimeout(
+            reviewsController.generateReply(review.id),
+            GENERATE_REPLY_TIMEOUT_MS,
+            `generateReply(${review.id})`
+          );
           console.log("AI reply generated", { reviewId: review.id });
         } catch (error) {
           console.error("Failed to generate AI reply", { reviewId: review.id, error });
