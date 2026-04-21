@@ -118,11 +118,10 @@ function linkSignals(...signals: (AbortSignal | undefined)[]): AbortSignal {
 }
 
 async function headExists(url: string, parentSignal?: AbortSignal): Promise<boolean> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 5000);
+  const signal = linkSignals(controller.signal, parentSignal);
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 5000);
-    const signal = linkSignals(controller.signal, parentSignal);
-
     const res = await fetch(url, {
       method: "HEAD",
       signal,
@@ -131,20 +130,38 @@ async function headExists(url: string, parentSignal?: AbortSignal): Promise<bool
       },
       redirect: "follow",
     });
-
-    clearTimeout(timeout);
     return res.ok;
   } catch {
     return false;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+async function readTextWithDeadline(res: Response, signal: AbortSignal, deadlineMs: number): Promise<string> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const deadline = new Promise<never>((_, reject) => {
+    timer = setTimeout(() => reject(new Error("body read timeout")), deadlineMs);
+  });
+  const onAbort = new Promise<never>((_, reject) => {
+    if (signal.aborted) {
+      reject(new Error("aborted"));
+      return;
+    }
+    signal.addEventListener("abort", () => reject(new Error("aborted")), { once: true });
+  });
+  try {
+    return await Promise.race([res.text(), deadline, onAbort]);
+  } finally {
+    if (timer) clearTimeout(timer);
   }
 }
 
 async function fetchPageEmails(url: string, parentSignal?: AbortSignal): Promise<string[]> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000);
+  const signal = linkSignals(controller.signal, parentSignal);
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 10000);
-    const signal = linkSignals(controller.signal, parentSignal);
-
     const res = await fetch(url, {
       signal,
       headers: {
@@ -153,10 +170,9 @@ async function fetchPageEmails(url: string, parentSignal?: AbortSignal): Promise
       redirect: "follow",
     });
 
-    clearTimeout(timeout);
     if (!res.ok) return [];
 
-    const html = await res.text();
+    const html = await readTextWithDeadline(res, signal, 8000);
     const matches = html.match(EMAIL_REGEX) || [];
 
     return matches
@@ -171,6 +187,8 @@ async function fetchPageEmails(url: string, parentSignal?: AbortSignal): Promise
       });
   } catch {
     return [];
+  } finally {
+    clearTimeout(timeout);
   }
 }
 
