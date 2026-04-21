@@ -21,6 +21,24 @@ function secureCompare(a: string, b: string): boolean {
 }
 
 const TIME_BUDGET_MS = 250_000;
+const TRANSLATE_TIMEOUT_MS = 30_000;
+const SEND_EMAIL_TIMEOUT_MS = 15_000;
+
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms);
+    promise.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (err) => {
+        clearTimeout(timer);
+        reject(err);
+      }
+    );
+  });
+}
 
 async function sendForCountry(
   leadsRepo: LeadsRepository,
@@ -44,7 +62,19 @@ async function sendForCountry(
       businessName: lead.businessName,
       city: lead.city || "",
     }));
-    const translationMap = await translateLeadNames(translationInputs);
+    let translationMap: Map<number, { hebrewBusinessName: string; hebrewCity: string; shortName: string }>;
+    try {
+      translationMap = await withTimeout(
+        translateLeadNames(translationInputs),
+        TRANSLATE_TIMEOUT_MS,
+        "translateLeadNames"
+      );
+    } catch (error) {
+      console.error(`[send-outreach] translateLeadNames failed for ${config.code}, falling back to raw names`, {
+        error: error instanceof Error ? error.message : String(error),
+      });
+      translationMap = new Map();
+    }
     displayNames = new Map(
       pendingLeads.map((lead, idx) => {
         const translation = translationMap.get(idx);
@@ -105,7 +135,16 @@ async function sendForCountry(
       country: config.code,
     });
 
-    const result = await sendEmail(lead.email, subject, emailComponent, config.emailSender, config.emailReplyTo);
+    let result: { success: boolean; error?: string };
+    try {
+      result = await withTimeout(
+        sendEmail(lead.email, subject, emailComponent, config.emailSender, config.emailReplyTo),
+        SEND_EMAIL_TIMEOUT_MS,
+        "sendEmail"
+      );
+    } catch (error) {
+      result = { success: false, error: error instanceof Error ? error.message : String(error) };
+    }
 
     if (result.success) {
       await leadsRepo.updateStatus(lead.id, "sent", { sentAt: new Date() });
