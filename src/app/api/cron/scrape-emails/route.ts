@@ -30,11 +30,14 @@ export async function GET(req: NextRequest) {
   const startTime = Date.now();
   const TIMEOUT_MS = 240_000;
   const BATCH_SIZE = 10;
+  const CONCURRENCY = 2;
+  const SCRAPE_TIMEOUT_MS = 30_000;
 
   try {
     const leadsRepo = new LeadsRepository();
     console.log("[scrape-emails] Querying leads needing email", {
       batchSize: BATCH_SIZE,
+      concurrency: CONCURRENCY,
       excludeDomains: SOCIAL_MEDIA_DOMAINS.length,
     });
     const leadsToScrape = await queryWithRetry(() => leadsRepo.findLeadsNeedingEmail(SOCIAL_MEDIA_DOMAINS, BATCH_SIZE));
@@ -42,41 +45,90 @@ export async function GET(req: NextRequest) {
 
     let emailsFound = 0;
     let processed = 0;
+    let skippedNoWebsite = 0;
+    let skippedSocial = 0;
+    let skippedBudget = 0;
+    let scrapeTimeouts = 0;
+    let noEmailsFound = 0;
 
-    const results = await withConcurrency(leadsToScrape, 5, async (lead) => {
+    const results = await withConcurrency(leadsToScrape, CONCURRENCY, async (lead, idx) => {
+      const leadLabel = `${idx + 1}/${leadsToScrape.length}`;
+
       if (Date.now() - startTime > TIMEOUT_MS) {
+        console.warn("[scrape-emails] Budget exhausted, skipping lead", {
+          leadLabel,
+          leadId: lead.id,
+          business: lead.businessName,
+        });
+        skippedBudget++;
         return { lead, email: "", scraped: false };
       }
 
-      if (!lead.websiteUrl || isSocialMediaUrl(lead.websiteUrl)) {
+      if (!lead.websiteUrl) {
+        console.log("[scrape-emails] Skip (no website)", {
+          leadLabel,
+          leadId: lead.id,
+          business: lead.businessName,
+        });
+        skippedNoWebsite++;
         return { lead, email: "", scraped: true };
       }
+
+      if (isSocialMediaUrl(lead.websiteUrl)) {
+        console.log("[scrape-emails] Skip (social media)", {
+          leadLabel,
+          leadId: lead.id,
+          business: lead.businessName,
+          website: lead.websiteUrl,
+        });
+        skippedSocial++;
+        return { lead, email: "", scraped: true };
+      }
+
+      const leadStart = Date.now();
+      console.log("[scrape-emails] Scraping", {
+        leadLabel,
+        leadId: lead.id,
+        business: lead.businessName,
+        website: lead.websiteUrl,
+      });
 
       try {
         const emails = await Promise.race([
           scrapeEmails(lead.websiteUrl),
-          new Promise<string[]>((_, reject) => setTimeout(() => reject(new Error("scrape timeout")), 30_000)),
+          new Promise<string[]>((_, reject) =>
+            setTimeout(() => reject(new Error("scrape timeout")), SCRAPE_TIMEOUT_MS)
+          ),
         ]);
         const best = pickBestEmail(emails, lead.websiteUrl);
         processed++;
+        if (best) {
+          emailsFound++;
+        } else {
+          noEmailsFound++;
+        }
 
-        console.log("[scrape-emails] Processed", {
+        console.log("[scrape-emails] Scraped", {
+          leadLabel,
+          leadId: lead.id,
           business: lead.businessName,
           website: lead.websiteUrl,
           emailsFound: emails.length,
           bestEmail: best || null,
+          elapsedMs: Date.now() - leadStart,
         });
-
-        if (best) {
-          emailsFound++;
-        }
 
         return { lead, email: best, scraped: true };
       } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        if (message === "scrape timeout") scrapeTimeouts++;
         console.warn("[scrape-emails] Lead failed", {
+          leadLabel,
+          leadId: lead.id,
           business: lead.businessName,
           website: lead.websiteUrl,
-          error: error instanceof Error ? error.message : String(error),
+          error: message,
+          elapsedMs: Date.now() - leadStart,
         });
         processed++;
         return { lead, email: "", scraped: true };
@@ -92,7 +144,16 @@ export async function GET(req: NextRequest) {
     }
 
     const elapsedMs = Date.now() - startTime;
-    const summary = { processed, emailsFound, elapsedMs };
+    const summary = {
+      processed,
+      emailsFound,
+      skippedNoWebsite,
+      skippedSocial,
+      skippedBudget,
+      scrapeTimeouts,
+      noEmailsFound,
+      elapsedMs,
+    };
 
     console.log("[scrape-emails] Completed", summary);
 

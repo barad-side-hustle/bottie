@@ -31,11 +31,13 @@ export async function GET(req: NextRequest) {
   const TIMEOUT_MS = 240_000;
   const PER_LEAD_BUDGET_MS = 45_000;
   const BATCH_SIZE = 10;
+  const CONCURRENCY = 2;
 
   try {
     const leadsRepo = new ZoeLeadsRepository();
     console.log("[zoe-scrape-emails] Querying leads needing email", {
       batchSize: BATCH_SIZE,
+      concurrency: CONCURRENCY,
       excludeDomains: SOCIAL_MEDIA_DOMAINS.length,
     });
     const leadsToScrape = await queryWithRetry(() => leadsRepo.findLeadsNeedingEmail(SOCIAL_MEDIA_DOMAINS, BATCH_SIZE));
@@ -43,14 +45,55 @@ export async function GET(req: NextRequest) {
 
     let emailsFound = 0;
     let processed = 0;
+    let skippedNoWebsite = 0;
+    let skippedSocial = 0;
+    let skippedBudget = 0;
+    let perLeadBudgetExceeded = 0;
+    let noEmailsFound = 0;
 
-    await withConcurrency(leadsToScrape, 5, async (lead) => {
-      if (Date.now() - startTime > TIMEOUT_MS) return;
+    await withConcurrency(leadsToScrape, CONCURRENCY, async (lead, idx) => {
+      const leadLabel = `${idx + 1}/${leadsToScrape.length}`;
 
-      if (!lead.websiteUrl || isSocialMediaUrl(lead.websiteUrl)) {
+      if (Date.now() - startTime > TIMEOUT_MS) {
+        console.warn("[zoe-scrape-emails] Budget exhausted, skipping lead", {
+          leadLabel,
+          leadId: lead.id,
+          business: lead.businessName,
+        });
+        skippedBudget++;
+        return;
+      }
+
+      if (!lead.websiteUrl) {
+        console.log("[zoe-scrape-emails] Skip (no website)", {
+          leadLabel,
+          leadId: lead.id,
+          business: lead.businessName,
+        });
+        skippedNoWebsite++;
         await leadsRepo.updateStatus(lead.id, "skipped");
         return;
       }
+
+      if (isSocialMediaUrl(lead.websiteUrl)) {
+        console.log("[zoe-scrape-emails] Skip (social media)", {
+          leadLabel,
+          leadId: lead.id,
+          business: lead.businessName,
+          website: lead.websiteUrl,
+        });
+        skippedSocial++;
+        await leadsRepo.updateStatus(lead.id, "skipped");
+        return;
+      }
+
+      const leadStart = Date.now();
+      console.log("[zoe-scrape-emails] Scraping", {
+        leadLabel,
+        leadId: lead.id,
+        business: lead.businessName,
+        website: lead.websiteUrl,
+      });
 
       const controller = new AbortController();
       const budgetTimer = setTimeout(() => controller.abort(new Error("per-lead budget exceeded")), PER_LEAD_BUDGET_MS);
@@ -61,24 +104,33 @@ export async function GET(req: NextRequest) {
         const best = pickBestEmail(emails, lead.websiteUrl);
         processed++;
 
-        console.log("[zoe-scrape-emails] Processed", {
+        console.log("[zoe-scrape-emails] Scraped", {
+          leadLabel,
+          leadId: lead.id,
           business: lead.businessName,
           website: lead.websiteUrl,
           emailsFound: emails.length,
           bestEmail: best || null,
+          elapsedMs: Date.now() - leadStart,
         });
 
         if (best) {
           emailsFound++;
           await leadsRepo.updateEmail(lead.id, best);
         } else {
+          noEmailsFound++;
           await leadsRepo.updateStatus(lead.id, "skipped");
         }
       } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        if (message === "per-lead budget exceeded") perLeadBudgetExceeded++;
         console.warn("[zoe-scrape-emails] Lead failed", {
+          leadLabel,
+          leadId: lead.id,
           business: lead.businessName,
           website: lead.websiteUrl,
-          error: error instanceof Error ? error.message : String(error),
+          error: message,
+          elapsedMs: Date.now() - leadStart,
         });
         processed++;
         await leadsRepo.updateStatus(lead.id, "skipped");
@@ -88,7 +140,16 @@ export async function GET(req: NextRequest) {
     });
 
     const elapsedMs = Date.now() - startTime;
-    const summary = { processed, emailsFound, elapsedMs };
+    const summary = {
+      processed,
+      emailsFound,
+      skippedNoWebsite,
+      skippedSocial,
+      skippedBudget,
+      perLeadBudgetExceeded,
+      noEmailsFound,
+      elapsedMs,
+    };
 
     console.log("[zoe-scrape-emails] Completed", summary);
 

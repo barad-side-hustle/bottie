@@ -237,14 +237,18 @@ export function pickBestEmail(emails: string[], websiteUrl?: string): string {
   return lowered.slice().sort((a, b) => score(b) - score(a))[0];
 }
 
-export async function withConcurrency<T, R>(items: T[], limit: number, fn: (item: T) => Promise<R>): Promise<R[]> {
+export async function withConcurrency<T, R>(
+  items: T[],
+  limit: number,
+  fn: (item: T, index: number) => Promise<R>
+): Promise<R[]> {
   const results: R[] = [];
   let index = 0;
 
   async function worker() {
     while (index < items.length) {
       const i = index++;
-      results[i] = await fn(items[i]);
+      results[i] = await fn(items[i], i);
     }
   }
 
