@@ -1,8 +1,3 @@
-import { generateWithGemini } from "@/lib/ai/core/gemini-client";
-import { env } from "@/lib/env";
-import { z } from "zod";
-import { SchemaType, type ResponseSchema } from "@google/generative-ai";
-
 const EMAIL_REGEX = /[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}/g;
 
 const CONTACT_PATHS = ["/contact", "/about", "/צור-קשר", "/contact-us", "/contactus", "/צרו-קשר", "/about-us"];
@@ -212,52 +207,34 @@ export async function scrapeEmails(websiteUrl: string, signal?: AbortSignal): Pr
   return [...emails];
 }
 
-function pickBestEmail(emails: string[]): string {
-  if (emails.length === 0) return "";
-
-  const personal = emails.filter((e) => !GENERIC_PREFIXES.some((g) => e.toLowerCase().startsWith(g)));
-
-  return personal.length > 0 ? personal[0] : emails[0];
+function extractHost(url: string): string | null {
+  try {
+    const withScheme = /^https?:\/\//i.test(url) ? url : `https://${url}`;
+    return new URL(withScheme).hostname.toLowerCase().replace(/^www\./, "");
+  } catch {
+    return null;
+  }
 }
 
-const emailPickerGeminiSchema: ResponseSchema = {
-  type: SchemaType.OBJECT,
-  properties: {
-    email: { type: SchemaType.STRING },
-  },
-  required: ["email"],
-};
-
-const emailPickerResponseSchema = z.object({
-  email: z.string().email(),
-});
-
-export async function pickBestEmailWithAI(emails: string[], businessName: string): Promise<string> {
+export function pickBestEmail(emails: string[], websiteUrl?: string): string {
   if (emails.length === 0) return "";
   if (emails.length === 1) return emails[0];
 
-  try {
-    const prompt = `Select the best contact email for "${businessName}" from this list:
-${emails.map((e, i) => `${i + 1}. ${e}`).join("\n")}
+  const lowered = [...new Set(emails.map((e) => e.toLowerCase()))];
+  const siteHost = websiteUrl ? extractHost(websiteUrl) : null;
+  const siteRoot = siteHost ? siteHost.split(".").slice(-2).join(".") : null;
 
-Prefer: domain matching the business > personal (owner/manager) > generic (info@, office@).`;
+  const score = (email: string): number => {
+    const [local, domain] = email.split("@");
+    if (!local || !domain) return -1000;
+    let s = 0;
+    if (siteRoot && (domain === siteRoot || domain.endsWith(`.${siteRoot}`))) s += 100;
+    if (!GENERIC_PREFIXES.some((g) => local.startsWith(g.replace("@", "")))) s += 30;
+    s -= Math.min(local.length, 30);
+    return s;
+  };
 
-    const raw = await generateWithGemini(env.GEMINI_API_KEY, prompt, "gemini-2.5-flash", 1024, emailPickerGeminiSchema);
-    const parsed = emailPickerResponseSchema.parse(JSON.parse(raw));
-
-    if (emails.includes(parsed.email.toLowerCase())) {
-      return parsed.email.toLowerCase();
-    }
-
-    return pickBestEmail(emails);
-  } catch (error) {
-    console.warn("[scraper] AI email picker failed, falling back to heuristic", {
-      error: error instanceof Error ? error.message : String(error),
-      businessName,
-      emailCount: emails.length,
-    });
-    return pickBestEmail(emails);
-  }
+  return lowered.slice().sort((a, b) => score(b) - score(a))[0];
 }
 
 export async function withConcurrency<T, R>(items: T[], limit: number, fn: (item: T) => Promise<R>): Promise<R[]> {

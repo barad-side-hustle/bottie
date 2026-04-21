@@ -5,7 +5,7 @@ import { queryWithRetry } from "@/lib/db/retry";
 import { ZoeLeadsRepository } from "@/lib/db/repositories/zoe-leads.repository";
 import {
   scrapeEmails,
-  pickBestEmailWithAI,
+  pickBestEmail,
   withConcurrency,
   isSocialMediaUrl,
   SOCIAL_MEDIA_DOMAINS,
@@ -58,14 +58,7 @@ export async function GET(req: NextRequest) {
       try {
         const emails = await scrapeEmails(lead.websiteUrl, controller.signal);
         if (controller.signal.aborted) throw new Error("per-lead budget exceeded");
-        const best = await Promise.race([
-          pickBestEmailWithAI(emails, lead.businessName),
-          new Promise<string>((_, reject) => {
-            controller.signal.addEventListener("abort", () => reject(new Error("per-lead budget exceeded")), {
-              once: true,
-            });
-          }),
-        ]);
+        const best = pickBestEmail(emails, lead.websiteUrl);
         processed++;
 
         console.log("[zoe-scrape-emails] Processed", {
