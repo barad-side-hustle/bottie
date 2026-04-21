@@ -5,7 +5,7 @@ import { queryWithRetry } from "@/lib/db/retry";
 import { LeadsRepository } from "@/lib/db/repositories";
 import {
   scrapeEmails,
-  pickBestEmailWithAI,
+  pickBestEmail,
   withConcurrency,
   isSocialMediaUrl,
   SOCIAL_MEDIA_DOMAINS,
@@ -57,7 +57,7 @@ export async function GET(req: NextRequest) {
           scrapeEmails(lead.websiteUrl),
           new Promise<string[]>((_, reject) => setTimeout(() => reject(new Error("scrape timeout")), 30_000)),
         ]);
-        const best = await pickBestEmailWithAI(emails, lead.businessName);
+        const best = pickBestEmail(emails, lead.websiteUrl);
         processed++;
 
         console.log("[scrape-emails] Processed", {
