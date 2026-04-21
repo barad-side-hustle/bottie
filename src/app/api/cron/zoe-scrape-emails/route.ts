@@ -57,6 +57,7 @@ export async function GET(req: NextRequest) {
 
       try {
         const emails = await scrapeEmails(lead.websiteUrl, controller.signal);
+        if (controller.signal.aborted) throw new Error("per-lead budget exceeded");
         const best = await Promise.race([
           pickBestEmailWithAI(emails, lead.businessName),
           new Promise<string>((_, reject) => {
