@@ -29,6 +29,7 @@ export async function GET(req: NextRequest) {
 
   const startTime = Date.now();
   const TIMEOUT_MS = 240_000;
+  const PER_LEAD_BUDGET_MS = 45_000;
   const BATCH_SIZE = 10;
 
   try {
@@ -43,21 +44,28 @@ export async function GET(req: NextRequest) {
     let emailsFound = 0;
     let processed = 0;
 
-    const results = await withConcurrency(leadsToScrape, 5, async (lead) => {
-      if (Date.now() - startTime > TIMEOUT_MS) {
-        return { lead, email: "", scraped: false };
-      }
+    await withConcurrency(leadsToScrape, 5, async (lead) => {
+      if (Date.now() - startTime > TIMEOUT_MS) return;
 
       if (!lead.websiteUrl || isSocialMediaUrl(lead.websiteUrl)) {
-        return { lead, email: "", scraped: true };
+        await leadsRepo.updateStatus(lead.id, "skipped");
+        return;
       }
 
+      const controller = new AbortController();
+      const budgetTimer = setTimeout(() => controller.abort(new Error("per-lead budget exceeded")), PER_LEAD_BUDGET_MS);
+
       try {
-        const emails = await Promise.race([
-          scrapeEmails(lead.websiteUrl),
-          new Promise<string[]>((_, reject) => setTimeout(() => reject(new Error("scrape timeout")), 30_000)),
+        const emails = await scrapeEmails(lead.websiteUrl, controller.signal);
+        if (controller.signal.aborted) throw new Error("per-lead budget exceeded");
+        const best = await Promise.race([
+          pickBestEmailWithAI(emails, lead.businessName),
+          new Promise<string>((_, reject) => {
+            controller.signal.addEventListener("abort", () => reject(new Error("per-lead budget exceeded")), {
+              once: true,
+            });
+          }),
         ]);
-        const best = await pickBestEmailWithAI(emails, lead.businessName);
         processed++;
 
         console.log("[zoe-scrape-emails] Processed", {
@@ -69,9 +77,10 @@ export async function GET(req: NextRequest) {
 
         if (best) {
           emailsFound++;
+          await leadsRepo.updateEmail(lead.id, best);
+        } else {
+          await leadsRepo.updateStatus(lead.id, "skipped");
         }
-
-        return { lead, email: best, scraped: true };
       } catch (error) {
         console.warn("[zoe-scrape-emails] Lead failed", {
           business: lead.businessName,
@@ -79,17 +88,11 @@ export async function GET(req: NextRequest) {
           error: error instanceof Error ? error.message : String(error),
         });
         processed++;
-        return { lead, email: "", scraped: true };
+        await leadsRepo.updateStatus(lead.id, "skipped");
+      } finally {
+        clearTimeout(budgetTimer);
       }
     });
-
-    for (const { lead, email, scraped } of results) {
-      if (email) {
-        await leadsRepo.updateEmail(lead.id, email);
-      } else if (scraped) {
-        await leadsRepo.updateStatus(lead.id, "skipped");
-      }
-    }
 
     const elapsedMs = Date.now() - startTime;
     const summary = { processed, emailsFound, elapsedMs };

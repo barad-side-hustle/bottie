@@ -109,14 +109,28 @@ function isValidEmail(email: string): boolean {
   return true;
 }
 
-async function headExists(url: string): Promise<boolean> {
+function linkSignals(...signals: (AbortSignal | undefined)[]): AbortSignal {
+  const controller = new AbortController();
+  for (const s of signals) {
+    if (!s) continue;
+    if (s.aborted) {
+      controller.abort(s.reason);
+      break;
+    }
+    s.addEventListener("abort", () => controller.abort(s.reason), { once: true });
+  }
+  return controller.signal;
+}
+
+async function headExists(url: string, parentSignal?: AbortSignal): Promise<boolean> {
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 5000);
+    const signal = linkSignals(controller.signal, parentSignal);
 
     const res = await fetch(url, {
       method: "HEAD",
-      signal: controller.signal,
+      signal,
       headers: {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
       },
@@ -130,13 +144,14 @@ async function headExists(url: string): Promise<boolean> {
   }
 }
 
-async function fetchPageEmails(url: string): Promise<string[]> {
+async function fetchPageEmails(url: string, parentSignal?: AbortSignal): Promise<string[]> {
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 10000);
+    const signal = linkSignals(controller.signal, parentSignal);
 
     const res = await fetch(url, {
-      signal: controller.signal,
+      signal,
       headers: {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36",
       },
@@ -164,13 +179,10 @@ async function fetchPageEmails(url: string): Promise<string[]> {
   }
 }
 
-export async function scrapeEmails(websiteUrl: string): Promise<string[]> {
+export async function scrapeEmails(websiteUrl: string, signal?: AbortSignal): Promise<string[]> {
   const emails = new Set<string>();
 
-  let homeEmails = await fetchPageEmails(websiteUrl);
-  if (homeEmails.length === 0) {
-    homeEmails = await fetchPageEmails(websiteUrl);
-  }
+  const homeEmails = await fetchPageEmails(websiteUrl, signal);
   homeEmails.forEach((e) => emails.add(e.toLowerCase()));
 
   const base = websiteUrl.replace(/\/$/, "");
@@ -183,12 +195,14 @@ export async function scrapeEmails(websiteUrl: string): Promise<string[]> {
   const candidateBases = base === origin ? [base] : [base, origin];
 
   for (const path of CONTACT_PATHS) {
+    if (signal?.aborted) break;
     for (const candidateBase of candidateBases) {
+      if (signal?.aborted) break;
       try {
         const url = candidateBase + path;
-        const exists = await headExists(url);
+        const exists = await headExists(url, signal);
         if (!exists) continue;
-        const pageEmails = await fetchPageEmails(url);
+        const pageEmails = await fetchPageEmails(url, signal);
         pageEmails.forEach((e) => emails.add(e.toLowerCase()));
       } catch {}
     }
