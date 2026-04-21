@@ -3,13 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { env } from "@/lib/env";
 import { queryWithRetry } from "@/lib/db/retry";
 import { ZoeLeadsRepository } from "@/lib/db/repositories/zoe-leads.repository";
-import {
-  scrapeEmails,
-  pickBestEmail,
-  withConcurrency,
-  isSocialMediaUrl,
-  SOCIAL_MEDIA_DOMAINS,
-} from "@/lib/leads/scraper";
+import { scrapeEmails, pickBestEmail, isSocialMediaUrl, SOCIAL_MEDIA_DOMAINS } from "@/lib/leads/scraper";
 
 export const maxDuration = 300;
 
@@ -28,134 +22,124 @@ export async function GET(req: NextRequest) {
   }
 
   const startTime = Date.now();
-  const TIMEOUT_MS = 240_000;
-  const PER_LEAD_BUDGET_MS = 45_000;
-  const BATCH_SIZE = 10;
-  const CONCURRENCY = 2;
+  const BATCH_SIZE = 1;
+  const PER_LEAD_BUDGET_MS = 30_000;
 
   try {
     const leadsRepo = new ZoeLeadsRepository();
     console.log("[zoe-scrape-emails] Querying leads needing email", {
       batchSize: BATCH_SIZE,
-      concurrency: CONCURRENCY,
       excludeDomains: SOCIAL_MEDIA_DOMAINS.length,
     });
     const leadsToScrape = await queryWithRetry(() => leadsRepo.findLeadsNeedingEmail(SOCIAL_MEDIA_DOMAINS, BATCH_SIZE));
     console.log("[zoe-scrape-emails] Starting", { leadsToProcess: leadsToScrape.length });
 
-    let emailsFound = 0;
-    let processed = 0;
-    let skippedNoWebsite = 0;
-    let skippedSocial = 0;
-    let skippedBudget = 0;
-    let perLeadBudgetExceeded = 0;
-    let noEmailsFound = 0;
+    const [lead] = leadsToScrape;
+    if (!lead) {
+      const elapsedMs = Date.now() - startTime;
+      console.log("[zoe-scrape-emails] Completed", { processed: 0, emailsFound: 0, elapsedMs });
+      return NextResponse.json({
+        message: "Zoe scrape-emails cron completed",
+        processed: 0,
+        emailsFound: 0,
+        elapsedMs,
+      });
+    }
 
-    await withConcurrency(leadsToScrape, CONCURRENCY, async (lead, idx) => {
-      const leadLabel = `${idx + 1}/${leadsToScrape.length}`;
+    await leadsRepo.updateStatus(lead.id, "skipped");
+    console.log("[zoe-scrape-emails] Marked skipped upfront", {
+      leadId: lead.id,
+      business: lead.businessName,
+      website: lead.websiteUrl,
+    });
 
-      if (Date.now() - startTime > TIMEOUT_MS) {
-        console.warn("[zoe-scrape-emails] Budget exhausted, skipping lead", {
-          leadLabel,
-          leadId: lead.id,
-          business: lead.businessName,
-        });
-        skippedBudget++;
-        return;
-      }
+    if (!lead.websiteUrl) {
+      console.log("[zoe-scrape-emails] Skip (no website)", { leadId: lead.id, business: lead.businessName });
+      const elapsedMs = Date.now() - startTime;
+      console.log("[zoe-scrape-emails] Completed", { processed: 1, emailsFound: 0, elapsedMs });
+      return NextResponse.json({
+        message: "Zoe scrape-emails cron completed",
+        processed: 1,
+        emailsFound: 0,
+        elapsedMs,
+      });
+    }
 
-      if (!lead.websiteUrl) {
-        console.log("[zoe-scrape-emails] Skip (no website)", {
-          leadLabel,
-          leadId: lead.id,
-          business: lead.businessName,
-        });
-        skippedNoWebsite++;
-        await leadsRepo.updateStatus(lead.id, "skipped");
-        return;
-      }
-
-      if (isSocialMediaUrl(lead.websiteUrl)) {
-        console.log("[zoe-scrape-emails] Skip (social media)", {
-          leadLabel,
-          leadId: lead.id,
-          business: lead.businessName,
-          website: lead.websiteUrl,
-        });
-        skippedSocial++;
-        await leadsRepo.updateStatus(lead.id, "skipped");
-        return;
-      }
-
-      const leadStart = Date.now();
-      console.log("[zoe-scrape-emails] Scraping", {
-        leadLabel,
+    if (isSocialMediaUrl(lead.websiteUrl)) {
+      console.log("[zoe-scrape-emails] Skip (social media)", {
         leadId: lead.id,
         business: lead.businessName,
         website: lead.websiteUrl,
       });
+      const elapsedMs = Date.now() - startTime;
+      console.log("[zoe-scrape-emails] Completed", { processed: 1, emailsFound: 0, elapsedMs });
+      return NextResponse.json({
+        message: "Zoe scrape-emails cron completed",
+        processed: 1,
+        emailsFound: 0,
+        elapsedMs,
+      });
+    }
 
-      const controller = new AbortController();
-      const budgetTimer = setTimeout(() => controller.abort(new Error("per-lead budget exceeded")), PER_LEAD_BUDGET_MS);
-
-      try {
-        const emails = await Promise.race([
-          scrapeEmails(lead.websiteUrl, controller.signal),
-          new Promise<string[]>((_, reject) =>
-            setTimeout(() => reject(new Error("per-lead budget exceeded")), PER_LEAD_BUDGET_MS)
-          ),
-        ]);
-        if (controller.signal.aborted) throw new Error("per-lead budget exceeded");
-        const best = pickBestEmail(emails, lead.websiteUrl);
-        processed++;
-
-        console.log("[zoe-scrape-emails] Scraped", {
-          leadLabel,
-          leadId: lead.id,
-          business: lead.businessName,
-          website: lead.websiteUrl,
-          emailsFound: emails.length,
-          bestEmail: best || null,
-          elapsedMs: Date.now() - leadStart,
-        });
-
-        if (best) {
-          emailsFound++;
-          await leadsRepo.updateEmail(lead.id, best);
-        } else {
-          noEmailsFound++;
-          await leadsRepo.updateStatus(lead.id, "skipped");
-        }
-      } catch (error) {
-        const message = error instanceof Error ? error.message : String(error);
-        if (message === "per-lead budget exceeded") perLeadBudgetExceeded++;
-        console.warn("[zoe-scrape-emails] Lead failed", {
-          leadLabel,
-          leadId: lead.id,
-          business: lead.businessName,
-          website: lead.websiteUrl,
-          error: message,
-          elapsedMs: Date.now() - leadStart,
-        });
-        processed++;
-        await leadsRepo.updateStatus(lead.id, "skipped");
-      } finally {
-        clearTimeout(budgetTimer);
-      }
+    const leadStart = Date.now();
+    console.log("[zoe-scrape-emails] Scraping", {
+      leadId: lead.id,
+      business: lead.businessName,
+      website: lead.websiteUrl,
     });
+
+    const controller = new AbortController();
+    const budgetTimer = setTimeout(() => controller.abort(new Error("per-lead budget exceeded")), PER_LEAD_BUDGET_MS);
+
+    let bestEmail = "";
+    let emailCount = 0;
+    let failureMessage: string | null = null;
+    try {
+      const emails = await Promise.race([
+        scrapeEmails(lead.websiteUrl, controller.signal),
+        new Promise<string[]>((_, reject) =>
+          setTimeout(() => reject(new Error("per-lead budget exceeded")), PER_LEAD_BUDGET_MS)
+        ),
+      ]);
+      if (controller.signal.aborted) throw new Error("per-lead budget exceeded");
+      emailCount = emails.length;
+      bestEmail = pickBestEmail(emails, lead.websiteUrl);
+    } catch (error) {
+      failureMessage = error instanceof Error ? error.message : String(error);
+    } finally {
+      clearTimeout(budgetTimer);
+    }
+
+    const leadElapsed = Date.now() - leadStart;
+    if (failureMessage) {
+      console.warn("[zoe-scrape-emails] Lead failed", {
+        leadId: lead.id,
+        business: lead.businessName,
+        website: lead.websiteUrl,
+        error: failureMessage,
+        elapsedMs: leadElapsed,
+      });
+    } else {
+      console.log("[zoe-scrape-emails] Scraped", {
+        leadId: lead.id,
+        business: lead.businessName,
+        website: lead.websiteUrl,
+        emailsFound: emailCount,
+        bestEmail: bestEmail || null,
+        elapsedMs: leadElapsed,
+      });
+    }
+
+    if (bestEmail) {
+      await leadsRepo.updateEmail(lead.id, bestEmail);
+    }
 
     const elapsedMs = Date.now() - startTime;
     const summary = {
-      processed,
-      emailsFound,
-      skippedNoWebsite,
-      skippedSocial,
-      skippedBudget,
-      perLeadBudgetExceeded,
-      noEmailsFound,
+      processed: 1,
+      emailsFound: bestEmail ? 1 : 0,
       elapsedMs,
     };
-
     console.log("[zoe-scrape-emails] Completed", summary);
 
     return NextResponse.json({ message: "Zoe scrape-emails cron completed", ...summary });
