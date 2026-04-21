@@ -16,12 +16,17 @@ function getDb() {
       throw new Error(`DB_POOL_MAX must be a positive integer, got: ${poolMaxRaw}`);
     }
 
+    const statementTimeoutMs = parseInt(process.env.DB_STATEMENT_TIMEOUT_MS ?? "25000", 10);
+
     client = postgres(env.DATABASE_URL, {
       max: poolMax,
       idle_timeout: 60,
       connect_timeout: 10,
       max_lifetime: 60 * 30,
       prepare: false,
+      connection: {
+        statement_timeout: statementTimeoutMs,
+      },
     });
     dbInstance = drizzle(client, { schema });
   }

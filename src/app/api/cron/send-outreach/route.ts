@@ -6,6 +6,7 @@ import { sendEmail } from "@/lib/utils/email-service";
 import LeadOutreachEmail, { getOutreachSubject } from "@/lib/emails/lead-outreach";
 import { translateLeadNames } from "@/lib/leads/translate";
 import { COUNTRY_CONFIGS, getCountryConfig, type CountryConfig } from "@/lib/leads/countries";
+import { withTimeout } from "@/lib/cron/deadline";
 export const maxDuration = 300;
 
 function cleanBusinessName(name: string): string {
@@ -23,22 +24,6 @@ function secureCompare(a: string, b: string): boolean {
 const TIME_BUDGET_MS = 250_000;
 const TRANSLATE_TIMEOUT_MS = 30_000;
 const SEND_EMAIL_TIMEOUT_MS = 15_000;
-
-function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
-  return new Promise<T>((resolve, reject) => {
-    const timer = setTimeout(() => reject(new Error(`${label} timed out after ${ms}ms`)), ms);
-    promise.then(
-      (value) => {
-        clearTimeout(timer);
-        resolve(value);
-      },
-      (err) => {
-        clearTimeout(timer);
-        reject(err);
-      }
-    );
-  });
-}
 
 async function sendForCountry(
   leadsRepo: LeadsRepository,
