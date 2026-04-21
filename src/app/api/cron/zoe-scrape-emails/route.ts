@@ -99,7 +99,12 @@ export async function GET(req: NextRequest) {
       const budgetTimer = setTimeout(() => controller.abort(new Error("per-lead budget exceeded")), PER_LEAD_BUDGET_MS);
 
       try {
-        const emails = await scrapeEmails(lead.websiteUrl, controller.signal);
+        const emails = await Promise.race([
+          scrapeEmails(lead.websiteUrl, controller.signal),
+          new Promise<string[]>((_, reject) =>
+            setTimeout(() => reject(new Error("per-lead budget exceeded")), PER_LEAD_BUDGET_MS)
+          ),
+        ]);
         if (controller.signal.aborted) throw new Error("per-lead budget exceeded");
         const best = pickBestEmail(emails, lead.websiteUrl);
         processed++;
