@@ -79,9 +79,7 @@ export async function GET(req: NextRequest) {
     try {
       const emails = await Promise.race([
         scrapeEmails(lead.websiteUrl),
-        new Promise<string[]>((_, reject) =>
-          setTimeout(() => reject(new Error("scrape timeout")), SCRAPE_TIMEOUT_MS)
-        ),
+        new Promise<string[]>((_, reject) => setTimeout(() => reject(new Error("scrape timeout")), SCRAPE_TIMEOUT_MS)),
       ]);
       emailCount = emails.length;
       bestEmail = pickBestEmail(emails, lead.websiteUrl);
