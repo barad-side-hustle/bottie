@@ -76,6 +76,8 @@ const mockReview = (overrides = {}) => ({
   ...overrides,
 });
 
+const dbMock = db as unknown as { limit: Mock };
+
 describe("send-notifications cron", () => {
   const mockReviewsRepoUpdate = vi.fn();
 
@@ -99,7 +101,7 @@ describe("send-notifications cron", () => {
 
     (sendReviewNotifications as Mock).mockResolvedValue(undefined);
 
-    (db.limit as Mock).mockResolvedValue([]);
+    dbMock.limit.mockResolvedValue([]);
   });
 
   it("should return 401 when authorization is missing", async () => {
@@ -116,7 +118,7 @@ describe("send-notifications cron", () => {
 
   it("should send notification for posted review and mark as sent", async () => {
     const review = mockReview({ replyStatus: "posted" });
-    (db.limit as Mock).mockResolvedValueOnce([review]).mockResolvedValueOnce([{ text: "AI reply text" }]);
+    dbMock.limit.mockResolvedValueOnce([review]).mockResolvedValueOnce([{ text: "AI reply text" }]);
 
     const res = await GET(createRequest("Bearer test-cron-secret"));
     const body = await res.json();
@@ -137,7 +139,7 @@ describe("send-notifications cron", () => {
 
   it("should send notification for failed review without aiReply", async () => {
     const review = mockReview({ replyStatus: "failed" });
-    (db.limit as Mock).mockResolvedValueOnce([review]);
+    dbMock.limit.mockResolvedValueOnce([review]);
 
     const res = await GET(createRequest("Bearer test-cron-secret"));
     const body = await res.json();
@@ -152,7 +154,7 @@ describe("send-notifications cron", () => {
   });
 
   it("should skip review when no owner found", async () => {
-    (db.limit as Mock).mockResolvedValueOnce([mockReview()]);
+    dbMock.limit.mockResolvedValueOnce([mockReview()]);
     (findLocationOwner as Mock).mockResolvedValue(null);
 
     const res = await GET(createRequest("Bearer test-cron-secret"));
@@ -164,7 +166,7 @@ describe("send-notifications cron", () => {
 
   it("should handle notification sending failure", async () => {
     const review = mockReview({ replyStatus: "failed" });
-    (db.limit as Mock).mockResolvedValueOnce([review]);
+    dbMock.limit.mockResolvedValueOnce([review]);
     (sendReviewNotifications as Mock).mockRejectedValue(new Error("Email service down"));
 
     const res = await GET(createRequest("Bearer test-cron-secret"));
@@ -177,7 +179,7 @@ describe("send-notifications cron", () => {
 
   it("should fail when posted review has no response found", async () => {
     const review = mockReview({ replyStatus: "posted" });
-    (db.limit as Mock).mockResolvedValueOnce([review]).mockResolvedValueOnce([]);
+    dbMock.limit.mockResolvedValueOnce([review]).mockResolvedValueOnce([]);
 
     const res = await GET(createRequest("Bearer test-cron-secret"));
     const body = await res.json();

@@ -74,6 +74,8 @@ const mockReview = (overrides = {}) => ({
   ...overrides,
 });
 
+const dbMock = db as unknown as { limit: Mock };
+
 describe("generate-replies cron", () => {
   const mockGenerateReply = vi.fn();
   const mockReviewsRepoUpdate = vi.fn();
@@ -107,7 +109,7 @@ describe("generate-replies cron", () => {
       return { update: mockReviewsRepoUpdate };
     });
 
-    (db.limit as Mock).mockResolvedValue([]);
+    dbMock.limit.mockResolvedValue([]);
   });
 
   it("should return 401 when authorization header is missing", async () => {
@@ -133,7 +135,7 @@ describe("generate-replies cron", () => {
 
   it("should generate reply for pending review", async () => {
     const review = mockReview();
-    (db.limit as Mock).mockResolvedValue([review]);
+    dbMock.limit.mockResolvedValue([review]);
 
     const req = createRequest("Bearer test-cron-secret");
     const res = await GET(req);
@@ -147,7 +149,7 @@ describe("generate-replies cron", () => {
   it("should bypass quota for imported reviews with consumesQuota=false (Bug #2)", async () => {
     const importedReview = mockReview({ id: "imported-1", consumesQuota: false });
     mockCheckQuota.mockResolvedValue({ allowed: false, currentCount: 10, limit: 10, isPaid: false });
-    (db.limit as Mock).mockResolvedValue([importedReview]);
+    dbMock.limit.mockResolvedValue([importedReview]);
 
     const req = createRequest("Bearer test-cron-secret");
     const res = await GET(req);
@@ -160,7 +162,7 @@ describe("generate-replies cron", () => {
   it("should mark as failed/quota when consumesQuota review exceeds quota", async () => {
     const review = mockReview({ consumesQuota: true });
     mockCheckQuota.mockResolvedValue({ allowed: false, currentCount: 10, limit: 10, isPaid: false });
-    (db.limit as Mock).mockResolvedValue([review]);
+    dbMock.limit.mockResolvedValue([review]);
 
     const req = createRequest("Bearer test-cron-secret");
     const res = await GET(req);
@@ -180,7 +182,7 @@ describe("generate-replies cron", () => {
     const importedReview = mockReview({ id: "r2", consumesQuota: false, locationId: "loc-1" });
     mockCheckQuota.mockResolvedValue({ allowed: true, currentCount: 9, limit: 10, isPaid: false });
     mockGenerateReply.mockResolvedValue({ review: mockReview(), aiReply: "AI reply" });
-    (db.limit as Mock).mockResolvedValue([quotaReview, importedReview]);
+    dbMock.limit.mockResolvedValue([quotaReview, importedReview]);
 
     const req = createRequest("Bearer test-cron-secret");
     const res = await GET(req);
@@ -192,7 +194,7 @@ describe("generate-replies cron", () => {
 
   it("should increment retryCount on generation failure (Bug #3)", async () => {
     const review = mockReview({ retryCount: 2 });
-    (db.limit as Mock).mockResolvedValue([review]);
+    dbMock.limit.mockResolvedValue([review]);
     mockGenerateReply.mockRejectedValue(new Error("AI generation failed"));
 
     const req = createRequest("Bearer test-cron-secret");
@@ -209,7 +211,7 @@ describe("generate-replies cron", () => {
 
   it("should skip review when no owner found", async () => {
     const review = mockReview();
-    (db.limit as Mock).mockResolvedValue([review]);
+    dbMock.limit.mockResolvedValue([review]);
     (findLocationOwner as Mock).mockResolvedValue(null);
 
     const req = createRequest("Bearer test-cron-secret");

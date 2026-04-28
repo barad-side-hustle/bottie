@@ -84,6 +84,8 @@ const mockReview = (overrides = {}) => ({
   ...overrides,
 });
 
+const dbMock = db as unknown as { limit: Mock };
+
 describe("post-replies cron", () => {
   const mockPostReply = vi.fn();
   const mockReviewsRepoUpdate = vi.fn();
@@ -117,7 +119,7 @@ describe("post-replies cron", () => {
       return { update: mockReviewsRepoUpdate };
     });
 
-    (db.limit as Mock).mockResolvedValue([]);
+    dbMock.limit.mockResolvedValue([]);
   });
 
   it("should return 401 when authorization is missing", async () => {
@@ -133,7 +135,7 @@ describe("post-replies cron", () => {
   });
 
   it("should post reply for pending review with draft", async () => {
-    (db.limit as Mock).mockResolvedValue([mockReview()]);
+    dbMock.limit.mockResolvedValue([mockReview()]);
 
     const res = await GET(createRequest("Bearer test-cron-secret"));
     const body = await res.json();
@@ -144,7 +146,7 @@ describe("post-replies cron", () => {
 
   it("should skip review when autoReply is disabled for that star rating", async () => {
     const review = mockReview({ rating: 1 });
-    (db.limit as Mock).mockResolvedValue([review]);
+    dbMock.limit.mockResolvedValue([review]);
     (LocationsRepository as unknown as Mock).mockImplementation(function () {
       return {
         get: vi.fn().mockResolvedValue({
@@ -163,7 +165,7 @@ describe("post-replies cron", () => {
   });
 
   it("should fail when no refresh token available", async () => {
-    (db.limit as Mock).mockResolvedValue([mockReview()]);
+    dbMock.limit.mockResolvedValue([mockReview()]);
     (AccountsRepository as unknown as Mock).mockImplementation(function () {
       return { get: vi.fn().mockResolvedValue({ id: "acc-1", googleRefreshToken: null }) };
     });
@@ -182,7 +184,7 @@ describe("post-replies cron", () => {
 
   it("should increment retryCount on posting failure (Bug #5)", async () => {
     const review = mockReview({ retryCount: 2 });
-    (db.limit as Mock).mockResolvedValue([review]);
+    dbMock.limit.mockResolvedValue([review]);
     mockPostReply.mockRejectedValue(new Error("Google API error"));
 
     const res = await GET(createRequest("Bearer test-cron-secret"));
@@ -197,7 +199,7 @@ describe("post-replies cron", () => {
   });
 
   it("should handle REVIEW_DELETED_FROM_GOOGLE gracefully", async () => {
-    (db.limit as Mock).mockResolvedValue([mockReview()]);
+    dbMock.limit.mockResolvedValue([mockReview()]);
     mockPostReply.mockRejectedValue(new Error("REVIEW_DELETED_FROM_GOOGLE"));
 
     const res = await GET(createRequest("Bearer test-cron-secret"));
@@ -208,7 +210,7 @@ describe("post-replies cron", () => {
   });
 
   it("should skip review when no owner found", async () => {
-    (db.limit as Mock).mockResolvedValue([mockReview()]);
+    dbMock.limit.mockResolvedValue([mockReview()]);
     (findLocationOwner as Mock).mockResolvedValue(null);
 
     const res = await GET(createRequest("Bearer test-cron-secret"));
