@@ -1,7 +1,7 @@
 export const REVIEW_CLASSIFICATION_PROMPT = `
-You are an expert at analyzing customer reviews for businesses.
+You analyze customer reviews for businesses and classify them precisely.
 
-Analyze this review and classify it according to the categories below.
+Read this review carefully and classify it using only the categories below.
 
 Review:
 - Rating: {{rating}} stars
