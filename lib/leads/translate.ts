@@ -52,7 +52,7 @@ export async function translateLeadNames(leads: LeadInput[]): Promise<Map<number
 
   try {
     const prompt = buildPrompt(leads);
-    const raw = await generateWithGemini(env.GEMINI_API_KEY, prompt, "gemini-3-flash-preview", 16384, responseSchema);
+    const raw = await generateWithGemini(env.GEMINI_API_KEY, prompt, "gemini-3.5-flash", 16384, responseSchema);
 
     const parsed: TranslationResult[] = JSON.parse(raw);
 
