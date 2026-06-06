@@ -78,7 +78,7 @@ export default async function InsightsPage({ params, searchParams }: InsightsPag
           <>
             <InsightsScoreboard stats={insights} performance={performanceMetrics?.totals ?? null} />
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <TrendsChart trends={trends} locale={locale} />
               {performanceMetrics && <DiscoveryTrendsChart daily={performanceMetrics.daily} />}
             </div>

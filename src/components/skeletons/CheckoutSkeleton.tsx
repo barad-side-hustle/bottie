@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export function CheckoutSkeleton() {
   return (
-    <div className="min-h-screen flex flex-col" style={{ background: "var(--gradient-soft)" }}>
+    <div className="min-h-screen flex flex-col bg-pastel-cream">
       <header className="flex items-center justify-between px-4 sm:px-8 py-4 max-w-7xl mx-auto w-full">
         <div className="flex items-center gap-2">
           <Skeleton className="h-9 w-9 rounded-md" />

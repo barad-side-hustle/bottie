@@ -157,7 +157,7 @@ export function PostComposer({ locationId, editingPost, onPostCreated, onCancelE
         <div>
           <Label>{t("postType")}</Label>
           <Select value={topicType} onValueChange={(v) => setTopicType(v as PostType)}>
-            <SelectTrigger className="mt-1">
+            <SelectTrigger className="mt-1.5">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -174,18 +174,18 @@ export function PostComposer({ locationId, editingPost, onPostCreated, onCancelE
             value={summary}
             onChange={(e) => setSummary(e.target.value)}
             placeholder={t("contentPlaceholder")}
-            className="mt-1 min-h-[100px]"
+            className="mt-1.5 min-h-[120px]"
             maxLength={1500}
           />
-          <p className="text-xs text-muted-foreground mt-1">{summary.length}/1500</p>
+          <p className="text-xs text-muted-foreground mt-1.5 text-end tabular-nums">{summary.length}/1500</p>
         </div>
 
         <div>
           <Label>{t("image")}</Label>
-          <div className="mt-1">
+          <div className="mt-1.5">
             {mediaUrl ? (
-              <div className="flex items-center gap-3 rounded-lg border border-border/60 p-3">
-                <div className="flex size-10 items-center justify-center rounded bg-primary/10">
+              <div className="flex items-center gap-3 rounded-2xl border border-border/60 bg-muted/30 p-3">
+                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10">
                   <ImageIcon className="size-5 text-primary" />
                 </div>
                 <span className="flex-1 text-sm font-medium">{t("imageUploaded")}</span>
@@ -203,7 +203,7 @@ export function PostComposer({ locationId, editingPost, onPostCreated, onCancelE
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploading}
-                className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed border-border/60 p-6 text-sm text-muted-foreground transition-colors hover:border-border hover:text-foreground"
+                className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border/60 bg-muted/20 p-8 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:bg-muted/40 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {uploading ? (
                   <>
@@ -230,11 +230,11 @@ export function PostComposer({ locationId, editingPost, onPostCreated, onCancelE
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 gap-3 rounded-2xl border border-border/60 p-4 sm:grid-cols-2">
           <div>
             <Label>{t("ctaType")}</Label>
             <Select value={ctaType} onValueChange={(v) => setCtaType(v as CallToActionType)}>
-              <SelectTrigger className="mt-1">
+              <SelectTrigger className="mt-1.5">
                 <SelectValue placeholder={t("ctaNone")} />
               </SelectTrigger>
               <SelectContent>
@@ -253,15 +253,15 @@ export function PostComposer({ locationId, editingPost, onPostCreated, onCancelE
               value={ctaUrl}
               onChange={(e) => setCtaUrl(e.target.value)}
               placeholder="https://..."
-              className="mt-1"
+              className="mt-1.5"
               disabled={!ctaType}
             />
           </div>
         </div>
 
         {(topicType === "EVENT" || topicType === "OFFER") && (
-          <div className="space-y-3 rounded-lg border border-border/40 p-3">
-            <Label className="text-sm font-medium">{t("eventDetails")}</Label>
+          <div className="space-y-3 rounded-2xl border border-border/60 p-4">
+            <Label className="text-sm font-semibold">{t("eventDetails")}</Label>
             <Input
               value={eventTitle}
               onChange={(e) => setEventTitle(e.target.value)}
@@ -275,7 +275,7 @@ export function PostComposer({ locationId, editingPost, onPostCreated, onCancelE
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-full mt-1 justify-start text-start font-normal",
+                        "w-full mt-1.5 justify-start text-start font-normal",
                         !eventStartDate && "text-muted-foreground"
                       )}
                     >
@@ -295,7 +295,7 @@ export function PostComposer({ locationId, editingPost, onPostCreated, onCancelE
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-full mt-1 justify-start text-start font-normal",
+                        "w-full mt-1.5 justify-start text-start font-normal",
                         !eventEndDate && "text-muted-foreground"
                       )}
                     >
@@ -313,8 +313,8 @@ export function PostComposer({ locationId, editingPost, onPostCreated, onCancelE
         )}
 
         {topicType === "OFFER" && (
-          <div className="space-y-3 rounded-lg border border-border/40 p-3">
-            <Label className="text-sm font-medium">{t("offerDetails")}</Label>
+          <div className="space-y-3 rounded-2xl border border-border/60 p-4">
+            <Label className="text-sm font-semibold">{t("offerDetails")}</Label>
             <Input
               value={offerCode}
               onChange={(e) => setOfferCode(e.target.value)}
@@ -328,7 +328,7 @@ export function PostComposer({ locationId, editingPost, onPostCreated, onCancelE
           </div>
         )}
 
-        <div className="flex gap-2 pt-2 justify-end">
+        <div className="flex flex-col-reverse gap-2 border-t border-border/60 pt-4 sm:flex-row sm:justify-end">
           {editingPost ? (
             <>
               <Button onClick={() => onCancelEdit?.()} variant="outline" disabled={isLoading}>

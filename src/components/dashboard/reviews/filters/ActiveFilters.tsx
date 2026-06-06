@@ -3,7 +3,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ReviewFilters } from "@/lib/types";
-import { X } from "lucide-react";
+import { X, Star } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import { format } from "date-fns";
 import { he, enUS } from "date-fns/locale";
@@ -37,67 +37,66 @@ export function ActiveFilters({ filters, onRemove, onClearAll }: ActiveFiltersPr
   return (
     <div className="flex flex-wrap gap-2 items-center mt-4">
       {filters.replyStatus?.map((status) => (
-        <Badge key={status} variant="secondary" className="gap-1">
+        <Badge key={status} variant="secondary" className="gap-1 ps-2.5 pe-1 py-1">
           {t(`status.${status}`)}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-4 w-4 rounded-full p-0 hover:bg-muted"
+          <button
+            type="button"
+            className="flex size-4 items-center justify-center rounded-full text-secondary-foreground/70 transition-colors hover:bg-primary/15 hover:text-secondary-foreground"
             onClick={() => onRemove("replyStatus", status)}
             aria-label={t("removeFilter")}
           >
             <X className="h-3 w-3" aria-hidden="true" />
-          </Button>
+          </button>
         </Badge>
       ))}
 
       {filters.rating?.map((rating) => (
-        <Badge key={rating} variant="secondary" className="gap-1">
-          {rating} ★
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-4 w-4 rounded-full p-0 hover:bg-muted"
+        <Badge key={rating} variant="secondary" className="gap-1 ps-2.5 pe-1 py-1">
+          <span className="inline-flex items-center gap-0.5">
+            {rating}
+            <Star className="size-3 fill-star-filled text-star-filled" aria-hidden="true" />
+          </span>
+          <button
+            type="button"
+            className="flex size-4 items-center justify-center rounded-full text-secondary-foreground/70 transition-colors hover:bg-primary/15 hover:text-secondary-foreground"
             onClick={() => onRemove("rating", rating)}
             aria-label={t("removeFilter")}
           >
             <X className="h-3 w-3" aria-hidden="true" />
-          </Button>
+          </button>
         </Badge>
       ))}
 
       {filters.sentiment?.map((sentiment) => (
-        <Badge key={sentiment} variant="secondary" className="gap-1">
+        <Badge key={sentiment} variant="secondary" className="gap-1 ps-2.5 pe-1 py-1">
           {t(`sentimentValues.${sentiment}`)}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-4 w-4 rounded-full p-0 hover:bg-muted"
+          <button
+            type="button"
+            className="flex size-4 items-center justify-center rounded-full text-secondary-foreground/70 transition-colors hover:bg-primary/15 hover:text-secondary-foreground"
             onClick={() => onRemove("sentiment", sentiment)}
             aria-label={t("removeFilter")}
           >
             <X className="h-3 w-3" aria-hidden="true" />
-          </Button>
+          </button>
         </Badge>
       ))}
 
       {(filters.dateFrom || filters.dateTo) && (
-        <Badge variant="secondary" className="gap-1">
+        <Badge variant="secondary" className="gap-1 ps-2.5 pe-1 py-1">
           {filters.dateFrom ? format(filters.dateFrom, "LLL dd", { locale: dateLocale }) : "..."} -{" "}
           {filters.dateTo ? format(filters.dateTo, "LLL dd", { locale: dateLocale }) : "..."}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-4 w-4 rounded-full p-0 hover:bg-muted"
+          <button
+            type="button"
+            className="flex size-4 items-center justify-center rounded-full text-secondary-foreground/70 transition-colors hover:bg-primary/15 hover:text-secondary-foreground"
             onClick={() => onRemove("dateFrom")}
             aria-label={t("removeFilter")}
           >
             <X className="h-3 w-3" aria-hidden="true" />
-          </Button>
+          </button>
         </Badge>
       )}
 
-      <Button variant="ghost" size="sm" onClick={onClearAll} className="h-6 px-2 text-xs">
+      <Button variant="ghost" size="sm" onClick={onClearAll} className="h-7 px-2.5 text-xs">
         {t("clearAll")}
       </Button>
     </div>

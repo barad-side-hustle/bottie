@@ -73,9 +73,11 @@ export function ChooseLocationStep({ availableLocations, onConnect, onBack, prog
       }
     >
       {hasNoLocations ? (
-        <div className="text-center py-8">
-          <AlertCircle className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-          <p className="text-muted-foreground">{t("errors.noBusinessesFound")}</p>
+        <div className="flex flex-col items-center text-center py-10">
+          <span className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-secondary text-primary mb-4">
+            <AlertCircle className="h-7 w-7" />
+          </span>
+          <p className="text-base leading-relaxed text-muted-foreground max-w-sm">{t("errors.noBusinessesFound")}</p>
         </div>
       ) : (
         <RadioGroup

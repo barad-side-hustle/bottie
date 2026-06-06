@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { SectionBlock, SectionHeading } from "@/components/ui/section-block";
 import { Link2, Settings, MessageSquare, CheckCircle } from "lucide-react";
 import { Link } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
@@ -24,53 +25,43 @@ export function HowItWorks() {
   const t = useTranslations("landing.howItWorks");
 
   return (
-    <div id="how-it-works" tabIndex={-1}>
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4">{t("title")}</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{t("subtitle")}</p>
-        </div>
+    <SectionBlock tone="cream" id="how-it-works" tabIndex={-1} width="md">
+      <SectionHeading title={t("title")} subtitle={t("subtitle")} />
 
-        <div className="max-w-5xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-            {STEPS.map((step, index) => {
-              const stepNumber = index + 1;
-              const pc = PASTEL_CLASSES[step.pastel];
-              return (
-                <div
-                  key={index}
-                  className={cn(
-                    "relative overflow-hidden rounded-2xl",
-                    "border border-border/60 bg-primary/[0.03] shadow-sm",
-                    "p-8"
-                  )}
-                >
-                  <div className="flex items-start gap-5">
-                    <div className={cn("flex h-12 w-12 shrink-0 items-center justify-center rounded-xl", pc.iconBg)}>
-                      <step.icon className="h-6 w-6 text-primary" />
-                    </div>
+      <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-8">
+        {STEPS.map((step, index) => {
+          const stepNumber = index + 1;
+          const pc = PASTEL_CLASSES[step.pastel];
+          return (
+            <div
+              key={index}
+              className={cn(
+                "flex items-start gap-5 rounded-3xl border border-border/60 bg-card p-6 shadow-sm sm:p-8",
+                "transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+              )}
+            >
+              <div className={cn("flex size-12 shrink-0 items-center justify-center rounded-2xl", pc.iconBg)}>
+                <step.icon className="size-6 text-primary" />
+              </div>
 
-                    <div className="min-w-0">
-                      <span className="text-xs font-semibold text-muted-foreground/60 uppercase tracking-wider">
-                        {stepNumber.toString().padStart(2, "0")}
-                      </span>
-                      <h3 className="text-lg font-semibold text-foreground mt-1 mb-2">{t(step.titleKey)}</h3>
-                      <p className="text-sm text-muted-foreground leading-relaxed">{t(step.descKey)}</p>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="text-center mt-12">
-          <p className="text-lg text-muted-foreground mb-6">{t("ctaText")}</p>
-          <Link href="/login">
-            <Button className="text-lg px-8">{t("ctaButton")}</Button>
-          </Link>
-        </div>
+              <div className="min-w-0">
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/70">
+                  {stepNumber.toString().padStart(2, "0")}
+                </span>
+                <h3 className="mb-2 mt-1 text-lg font-semibold text-foreground">{t(step.titleKey)}</h3>
+                <p className="text-sm leading-relaxed text-muted-foreground">{t(step.descKey)}</p>
+              </div>
+            </div>
+          );
+        })}
       </div>
-    </div>
+
+      <div className="mt-12 flex flex-col items-center gap-6 text-center">
+        <p className="text-lg text-muted-foreground">{t("ctaText")}</p>
+        <Button asChild size="pill">
+          <Link href="/login">{t("ctaButton")}</Link>
+        </Button>
+      </div>
+    </SectionBlock>
   );
 }

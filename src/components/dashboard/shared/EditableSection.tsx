@@ -4,7 +4,6 @@ import { ReactNode, useState } from "react";
 import {
   DashboardCard,
   DashboardCardHeader,
-  DashboardCardTitle,
   DashboardCardDescription,
   DashboardCardContent,
 } from "@/components/ui/dashboard-card";
@@ -59,14 +58,19 @@ export default function EditableSection<T>({
     <>
       <DashboardCard>
         <DashboardCardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <DashboardCardTitle icon={icon}>{title}</DashboardCardTitle>
-              <DashboardCardDescription>{description}</DashboardCardDescription>
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex min-w-0 items-start gap-3">
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary [&_svg]:size-5">
+                {icon}
+              </span>
+              <div className="min-w-0 space-y-1">
+                <h3 className="text-lg font-semibold leading-none tracking-tight">{title}</h3>
+                <DashboardCardDescription>{description}</DashboardCardDescription>
+              </div>
             </div>
             <Button
-              variant="ghost"
-              size="sm"
+              variant="outline"
+              size="icon-sm"
               onClick={() => setShowEditModal(true)}
               disabled={loading}
               aria-label={`Edit ${title}`}

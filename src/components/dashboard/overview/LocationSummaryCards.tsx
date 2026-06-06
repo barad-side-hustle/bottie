@@ -31,7 +31,7 @@ export function LocationSummaryCards({ summaries }: { summaries: LocationSummary
             <DashboardCard className="hover:shadow-md hover:border-primary/20 transition-all cursor-pointer">
               <DashboardCardContent className="p-4">
                 <div className="flex items-center gap-3">
-                  <div className="flex size-10 items-center justify-center rounded-lg bg-muted overflow-hidden shrink-0">
+                  <div className="flex size-11 items-center justify-center rounded-xl bg-muted overflow-hidden shrink-0">
                     {loc.photoUrl ? (
                       <Image
                         src={loc.photoUrl}

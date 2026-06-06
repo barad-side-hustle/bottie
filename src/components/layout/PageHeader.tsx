@@ -15,9 +15,9 @@ export function PageHeader({ title, description, icon, actions, className }: Pag
       <div className="space-y-1">
         <div className="flex items-center gap-3">
           {icon && <div className="shrink-0">{icon}</div>}
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">{title}</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground md:text-3xl">{title}</h1>
         </div>
-        {description && <p className="text-sm text-muted-foreground">{description}</p>}
+        {description && <p className="text-sm text-muted-foreground md:text-base">{description}</p>}
       </div>
       {actions && <div className="flex items-center gap-2">{actions}</div>}
     </div>

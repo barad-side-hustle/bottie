@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Check, Copy, ExternalLink } from "lucide-react";
+import { Check, Copy, ExternalLink, QrCode } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DashboardCard,
@@ -34,7 +34,7 @@ export function SolicitationContent({
   const t = useTranslations("dashboard.solicitation");
 
   if (!reviewUrl) {
-    return <EmptyState title={t("noReviewUrl.title")} description={t("noReviewUrl.description")} />;
+    return <EmptyState title={t("noReviewUrl.title")} description={t("noReviewUrl.description")} icon={QrCode} />;
   }
 
   return (
@@ -81,14 +81,14 @@ function CopyLinkRow({ label, url }: { label: string; url: string }) {
   }, [url]);
 
   return (
-    <div className="flex items-center gap-3 rounded-lg border border-border/40 p-3">
+    <div className="flex items-center gap-3 rounded-xl border border-border/60 p-3.5">
       <div className="min-w-0 flex-1">
         <p className="text-sm font-medium">{label}</p>
         <p className="truncate text-xs text-muted-foreground">{url}</p>
       </div>
       <div className="flex shrink-0 gap-2">
         <Button variant="outline" size="sm" onClick={handleCopy}>
-          {copied ? <Check className="size-4 text-green-500" /> : <Copy className="size-4" />}
+          {copied ? <Check className="size-4 text-success" /> : <Copy className="size-4" />}
           {copied ? t("copied") : t("copy")}
         </Button>
         <Button variant="ghost" size="sm" asChild>

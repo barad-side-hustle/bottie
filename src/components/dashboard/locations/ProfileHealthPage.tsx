@@ -24,45 +24,73 @@ export function ProfileHealthPage({ result }: ProfileHealthPageProps) {
 
   if (!result) {
     return (
-      <div className="text-center py-16">
+      <div className="py-16 text-center">
         <p className="text-muted-foreground">{t("noData")}</p>
       </div>
     );
   }
 
   const scoreColor = result.score >= 80 ? "text-success" : result.score >= 50 ? "text-warning" : "text-destructive";
-  const scoreBgColor =
-    result.score >= 80 ? "bg-success/10" : result.score >= 50 ? "bg-warning/10" : "bg-destructive/10";
-  const scoreRingColor =
-    result.score >= 80 ? "ring-success/20" : result.score >= 50 ? "ring-warning/20" : "ring-destructive/20";
+  const scoreTrackColor =
+    result.score >= 80 ? "text-success/15" : result.score >= 50 ? "text-warning/15" : "text-destructive/15";
   const scoreLabel =
     result.score >= 80 ? t("scoreExcellent") : result.score >= 50 ? t("scoreNeedsWork") : t("scoreCritical");
 
   const completedCount = result.breakdown.filter((i) => i.status === "complete").length;
 
+  const ringSize = 132;
+  const ringStroke = 12;
+  const ringRadius = (ringSize - ringStroke) / 2;
+  const ringCircumference = ringRadius * 2 * Math.PI;
+  const ringOffset = ringCircumference - (Math.min(Math.max(result.score, 0), 100) / 100) * ringCircumference;
+
   return (
     <div>
-      <div className="space-y-1 mb-8">
+      <div className="mb-8 space-y-1">
         <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
         <p className="text-muted-foreground">{t("subtitle")}</p>
       </div>
 
       <DashboardCard className="mb-8">
-        <DashboardCardContent className="p-6">
-          <div className="flex items-center gap-6">
+        <DashboardCardContent className="p-6 sm:p-8">
+          <div className="flex flex-col items-center gap-6 text-center sm:flex-row sm:text-start">
             <div
-              className={cn(
-                "flex items-center justify-center size-24 rounded-full ring-2",
-                scoreBgColor,
-                scoreRingColor
-              )}
+              className="relative inline-flex shrink-0 items-center justify-center"
+              style={{ width: ringSize, height: ringSize }}
+              role="progressbar"
+              aria-valuenow={result.score}
+              aria-valuemin={0}
+              aria-valuemax={100}
             >
-              <span className={cn("text-4xl font-bold", scoreColor)}>{result.score}</span>
+              <svg width={ringSize} height={ringSize} className="-rotate-90">
+                <circle
+                  cx={ringSize / 2}
+                  cy={ringSize / 2}
+                  r={ringRadius}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={ringStroke}
+                  className={scoreTrackColor}
+                />
+                <circle
+                  cx={ringSize / 2}
+                  cy={ringSize / 2}
+                  r={ringRadius}
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={ringStroke}
+                  strokeLinecap="round"
+                  strokeDasharray={ringCircumference}
+                  strokeDashoffset={ringOffset}
+                  className={cn("transition-all duration-500 ease-out", scoreColor)}
+                />
+              </svg>
+              <span className={cn("absolute text-4xl font-bold tabular-nums", scoreColor)}>{result.score}</span>
             </div>
-            <div>
-              <p className={cn("text-lg font-semibold", scoreColor)}>{scoreLabel}</p>
+            <div className="space-y-1">
+              <p className={cn("text-xl font-semibold", scoreColor)}>{scoreLabel}</p>
               <p className="text-sm text-muted-foreground">{t("outOf100")}</p>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className="text-sm text-muted-foreground">
                 {t("completedItems", { completed: completedCount, total: result.breakdown.length })}
               </p>
             </div>
@@ -70,32 +98,26 @@ export function ProfileHealthPage({ result }: ProfileHealthPageProps) {
         </DashboardCardContent>
       </DashboardCard>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+      <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2">
         {result.breakdown.map((item) => {
           const statusConfig = {
             complete: {
               icon: Check,
-              bg: "bg-success/5",
-              border: "border-success/20",
-              iconBg: "bg-success/10",
-              iconColor: "text-success",
               barColor: "bg-success",
+              statusColor: "text-success",
+              calloutBg: "bg-success/10",
             },
             warning: {
               icon: AlertTriangle,
-              bg: "bg-warning/5",
-              border: "border-warning/20",
-              iconBg: "bg-warning/10",
-              iconColor: "text-warning",
               barColor: "bg-warning",
+              statusColor: "text-warning",
+              calloutBg: "bg-warning/10",
             },
             incomplete: {
               icon: X,
-              bg: "bg-destructive/5",
-              border: "border-destructive/20",
-              iconBg: "bg-destructive/10",
-              iconColor: "text-destructive",
               barColor: "bg-destructive",
+              statusColor: "text-destructive",
+              calloutBg: "bg-destructive/10",
             },
           }[item.status];
 
@@ -104,42 +126,43 @@ export function ProfileHealthPage({ result }: ProfileHealthPageProps) {
           const percentage = Math.round((item.score / item.maxScore) * 100);
 
           return (
-            <DashboardCard key={item.label} className={cn("transition-colors", statusConfig.bg, statusConfig.border)}>
-              <DashboardCardContent className="p-5">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-3">
-                    <div className={cn("flex items-center justify-center size-10 rounded-lg", statusConfig.iconBg)}>
-                      <ItemIcon className={cn("size-5", statusConfig.iconColor)} />
-                    </div>
-                    <div>
-                      <p className="font-medium">{t(`items.${item.label}.title`)}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {item.score}/{item.maxScore} {t("points")}
-                      </p>
-                    </div>
+            <div
+              key={item.label}
+              className="rounded-2xl border border-border/60 bg-card p-5 shadow-sm transition-all duration-200 hover:shadow-md"
+            >
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <div className="flex min-w-0 items-center gap-3">
+                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary">
+                    <ItemIcon className="size-5" />
                   </div>
-                  <div className="flex items-center gap-1.5">
-                    <StatusIcon className={cn("size-4", statusConfig.iconColor)} />
-                    <span className={cn("text-sm font-medium", statusConfig.iconColor)}>{percentage}%</span>
+                  <div className="min-w-0">
+                    <p className="truncate font-semibold">{t(`items.${item.label}.title`)}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {item.score}/{item.maxScore} {t("points")}
+                    </p>
                   </div>
                 </div>
-
-                <div className="h-2 bg-secondary rounded-full overflow-hidden mb-3">
-                  <div
-                    className={cn("h-full rounded-full transition-all", statusConfig.barColor)}
-                    style={{ width: `${percentage}%` }}
-                  />
+                <div className={cn("flex shrink-0 items-center gap-1.5", statusConfig.statusColor)}>
+                  <StatusIcon className="size-4" />
+                  <span className="text-sm font-semibold tabular-nums">{percentage}%</span>
                 </div>
+              </div>
 
-                <p className="text-sm text-muted-foreground">{t(`items.${item.label}.description`)}</p>
+              <div className="mb-3 h-2 overflow-hidden rounded-full bg-muted">
+                <div
+                  className={cn("h-full rounded-full transition-all duration-500", statusConfig.barColor)}
+                  style={{ width: `${percentage}%` }}
+                />
+              </div>
 
-                {item.actionItem && (
-                  <div className={cn("mt-3 p-3 rounded-lg text-sm", statusConfig.iconBg)}>
-                    <p className={cn("font-medium", statusConfig.iconColor)}>{t(`items.${item.label}.action`)}</p>
-                  </div>
-                )}
-              </DashboardCardContent>
-            </DashboardCard>
+              <p className="text-sm text-muted-foreground">{t(`items.${item.label}.description`)}</p>
+
+              {item.actionItem && (
+                <div className={cn("mt-3 rounded-xl p-3 text-sm", statusConfig.calloutBg)}>
+                  <p className={cn("font-medium", statusConfig.statusColor)}>{t(`items.${item.label}.action`)}</p>
+                </div>
+              )}
+            </div>
           );
         })}
       </div>

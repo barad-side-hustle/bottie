@@ -61,8 +61,12 @@ export function ImportReviewsStep({ accountId, locationId, onComplete, progressB
       <div className="flex flex-col items-center justify-center py-12 gap-4">
         {error ? (
           <>
-            <AlertCircle className="h-10 w-10 text-muted-foreground" />
-            <p className="text-sm text-muted-foreground text-center">{t("errorDescription")}</p>
+            <span className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-secondary text-primary">
+              <AlertCircle className="h-7 w-7" />
+            </span>
+            <p className="text-base leading-relaxed text-muted-foreground text-center max-w-sm">
+              {t("errorDescription")}
+            </p>
           </>
         ) : (
           <Loading size="lg" text={t("loading")} description={t("loadingDescription")} />

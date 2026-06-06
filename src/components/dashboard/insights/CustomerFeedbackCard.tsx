@@ -64,8 +64,10 @@ export function CustomerFeedbackCard({
       <DashboardCardContent className="pt-0">
         {sentimentTotal > 0 && (
           <div className="mb-6">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-sm font-medium text-muted-foreground">{t("scoreboard.sentiment")}</p>
+            <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                {t("scoreboard.sentiment")}
+              </p>
               <div className="flex items-center gap-4">
                 <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
                   <span className="size-2 rounded-full bg-success" />
@@ -99,21 +101,23 @@ export function CustomerFeedbackCard({
         )}
 
         {hasCategories && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="rounded-2xl border border-border/60 p-4">
               <div className="flex items-center gap-2 mb-3">
-                <TrendingUp className="size-4 text-success" />
-                <h4 className="text-sm font-medium text-success">{tCategories("topPositives")}</h4>
+                <span className="flex size-7 items-center justify-center rounded-lg bg-success/15 text-success">
+                  <TrendingUp className="size-4" />
+                </span>
+                <h4 className="text-sm font-semibold text-success">{tCategories("topPositives")}</h4>
               </div>
               <div className="space-y-0.5">
                 {topPositives.map((cat) => (
                   <button
                     key={cat.category}
                     onClick={() => onCategoryClick(cat.category, "positive")}
-                    className="w-full flex items-center gap-3 p-2 rounded-md hover:bg-muted/50 transition-colors cursor-pointer text-start"
+                    className="w-full flex items-center gap-3 px-2.5 py-2 rounded-xl hover:bg-muted/40 transition-colors cursor-pointer text-start"
                   >
                     <span className="flex-1 text-sm font-medium truncate">{tCategories(cat.category)}</span>
-                    <span className="text-sm text-muted-foreground shrink-0">
+                    <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">
                       {cat.count} ({cat.percentage}%)
                     </span>
                   </button>
@@ -122,20 +126,22 @@ export function CustomerFeedbackCard({
               </div>
             </div>
 
-            <div>
+            <div className="rounded-2xl border border-border/60 p-4">
               <div className="flex items-center gap-2 mb-3">
-                <TrendingDown className="size-4 text-destructive" />
-                <h4 className="text-sm font-medium text-destructive">{tCategories("topNegatives")}</h4>
+                <span className="flex size-7 items-center justify-center rounded-lg bg-destructive/15 text-destructive">
+                  <TrendingDown className="size-4" />
+                </span>
+                <h4 className="text-sm font-semibold text-destructive">{tCategories("topNegatives")}</h4>
               </div>
               <div className="space-y-0.5">
                 {topNegatives.map((cat) => (
                   <button
                     key={cat.category}
                     onClick={() => onCategoryClick(cat.category, "negative")}
-                    className="w-full flex items-center gap-3 p-2 rounded-md hover:bg-muted/50 transition-colors cursor-pointer text-start"
+                    className="w-full flex items-center gap-3 px-2.5 py-2 rounded-xl hover:bg-muted/40 transition-colors cursor-pointer text-start"
                   >
                     <span className="flex-1 text-sm font-medium truncate">{tCategories(cat.category)}</span>
-                    <span className="text-sm text-muted-foreground shrink-0">
+                    <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">
                       {cat.count} ({cat.percentage}%)
                     </span>
                   </button>
@@ -147,8 +153,10 @@ export function CustomerFeedbackCard({
         )}
 
         {hasTopics && (
-          <div className={hasCategories || sentimentTotal > 0 ? "mt-6 pt-6 border-t border-border/40" : ""}>
-            <h4 className="text-sm font-medium text-muted-foreground mb-3">{t("sections.topics")}</h4>
+          <div className={hasCategories || sentimentTotal > 0 ? "mt-6 pt-6 border-t border-border/60" : ""}>
+            <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
+              {t("sections.topics")}
+            </h4>
             <div className="flex flex-wrap gap-2">
               {visibleTopics.map((topic) => (
                 <Badge key={topic.topic} variant="secondary" className="text-sm font-normal px-3 py-1.5">
@@ -161,7 +169,7 @@ export function CustomerFeedbackCard({
               <button
                 type="button"
                 onClick={() => setShowAllTopics(!showAllTopics)}
-                className="mt-3 text-xs text-muted-foreground hover:text-foreground transition-colors inline-flex items-center gap-1 cursor-pointer"
+                className="mt-3 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium text-muted-foreground hover:bg-muted/40 hover:text-foreground transition-colors cursor-pointer"
               >
                 {showAllTopics ? (
                   <>

@@ -119,7 +119,7 @@ export function ReviewsList({ reviews: initialReviews, locationId, userId }: Rev
         <button
           type="button"
           onClick={handleSelectAll}
-          className="flex w-full items-center gap-2 px-4 py-2 rounded-lg bg-muted/50 border border-border/30 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          className="flex w-full items-center gap-2 px-4 py-2.5 rounded-2xl bg-muted/40 border border-border/60 text-sm text-muted-foreground hover:text-foreground hover:border-border transition-colors"
         >
           <CheckSquare className="size-3.5" />
           <span>{t("selectAllHint", { count: publishableIds.size })}</span>
@@ -149,7 +149,7 @@ export function ReviewsList({ reviews: initialReviews, locationId, userId }: Rev
               ))}
             </div>
           ) : (
-            <Button variant="outline" className="w-full gap-2" onClick={loadMoreReviews}>
+            <Button variant="outline" className="w-full gap-2 rounded-2xl" onClick={loadMoreReviews}>
               <ChevronDown className="size-4" />
               {t("loadMore")}
             </Button>
@@ -181,14 +181,14 @@ export function ReviewsList({ reviews: initialReviews, locationId, userId }: Rev
 
 function ReviewCardSkeleton() {
   return (
-    <div className="w-full rounded-2xl border border-border/40 bg-card overflow-hidden">
+    <div className="w-full rounded-3xl border border-border/60 bg-card overflow-hidden">
       <div className="flex">
-        <div className="w-[3px] shrink-0 bg-muted" />
+        <div className="w-1 shrink-0 bg-muted" />
         <div className="flex-1 p-5 sm:p-6">
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <Skeleton className="h-10 w-10 rounded-full" />
+                <Skeleton className="h-10 w-10 rounded-xl" />
                 <div className="space-y-1.5">
                   <Skeleton className="h-4 w-28" />
                   <Skeleton className="h-3 w-20" />
@@ -203,18 +203,18 @@ function ReviewCardSkeleton() {
               <Skeleton className="h-4 w-full" />
               <Skeleton className="h-4 w-3/4" />
             </div>
-            <div className="pt-3 mt-3 border-t border-border/30">
-              <Skeleton className="h-3 w-20 mb-2" />
-              <div className="border-s-2 border-primary/30 ps-3 pe-3 py-2.5 rounded-e-lg bg-muted/30 space-y-2">
+            <div className="pt-3 mt-3 border-t border-border/40">
+              <Skeleton className="h-6 w-16 mb-2 rounded-full" />
+              <div className="border-s-2 border-primary/30 ps-3.5 pe-3.5 py-2.5 rounded-e-xl bg-muted/40 space-y-2">
                 <Skeleton className="h-4 w-full" />
                 <Skeleton className="h-4 w-2/3" />
               </div>
             </div>
-            <div className="pt-2 mt-1 border-t border-border/20 flex items-center justify-end gap-1">
-              <Skeleton className="h-9 w-9 rounded-md" />
-              <Skeleton className="h-9 w-9 rounded-md" />
-              <div className="h-5 w-px bg-border/40 mx-0.5" />
-              <Skeleton className="h-8 w-20 rounded-md" />
+            <div className="pt-2 mt-1 border-t border-border/40 flex items-center justify-end gap-1">
+              <Skeleton className="h-8 w-8 rounded-lg" />
+              <Skeleton className="h-8 w-8 rounded-lg" />
+              <div className="h-5 w-px bg-border/60 mx-1" />
+              <Skeleton className="h-8 w-8 rounded-lg" />
             </div>
           </div>
         </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { useTranslations } from "next-intl";
 import { sileo } from "sileo";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import {
   DashboardCard,
   DashboardCardHeader,
-  DashboardCardTitle,
   DashboardCardDescription,
   DashboardCardContent,
 } from "@/components/ui/dashboard-card";
@@ -28,6 +27,17 @@ import {
   getPendingRequests,
   getPendingInvitations,
 } from "@/lib/actions/location-members.actions";
+
+function SectionHeading({ icon, title }: { icon: ReactNode; title: string }) {
+  return (
+    <div className="flex items-center gap-3">
+      <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary [&_svg]:size-5">
+        {icon}
+      </span>
+      <h3 className="text-lg font-semibold leading-none tracking-tight">{title}</h3>
+    </div>
+  );
+}
 
 interface MembersSectionProps {
   locationId: string;
@@ -157,33 +167,36 @@ export function MembersSection({
     <div className="space-y-6">
       <DashboardCard>
         <DashboardCardHeader>
-          <DashboardCardTitle icon={<Users className="h-5 w-5" />}>{t("title")}</DashboardCardTitle>
+          <SectionHeading icon={<Users />} title={t("title")} />
           <DashboardCardDescription>{t("description")}</DashboardCardDescription>
         </DashboardCardHeader>
-        <DashboardCardContent className="space-y-4">
+        <DashboardCardContent className="space-y-2">
           {sortedMembers.map((member) => (
-            <div key={member.id} className="flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3 min-w-0">
+            <div
+              key={member.id}
+              className="flex items-center justify-between gap-4 rounded-2xl border border-border/60 bg-card p-3"
+            >
+              <div className="flex min-w-0 items-center gap-3">
                 <Avatar className="h-9 w-9">
                   {member.user.image && <AvatarImage src={member.user.image} alt={member.user.name} />}
                   <AvatarFallback className="text-xs">{getInitials(member.user.name)}</AvatarFallback>
                 </Avatar>
                 <div className="min-w-0">
-                  <p className="text-sm font-medium truncate">{member.user.name}</p>
-                  <p className="text-xs text-muted-foreground truncate">{member.user.email}</p>
+                  <p className="truncate text-sm font-medium">{member.user.name}</p>
+                  <p className="truncate text-xs text-muted-foreground">{member.user.email}</p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 shrink-0">
-                <Badge variant={member.role === "owner" ? "default" : "secondary"} className="gap-1">
+              <div className="flex shrink-0 items-center gap-2">
+                <Badge variant={member.role === "owner" ? "brand" : "secondary"} className="gap-1">
                   {member.role === "owner" ? <Crown className="h-3 w-3" /> : <Shield className="h-3 w-3" />}
                   {t(member.role)}
                 </Badge>
                 {isOwner && member.userId !== currentUserId && member.role !== "owner" && (
                   <Button
                     variant="ghost"
-                    size="icon"
-                    className="h-8 w-8 text-destructive hover:text-destructive"
+                    size="icon-sm"
+                    className="text-destructive hover:text-destructive"
                     onClick={() => handleRemoveMember(member.userId)}
                     disabled={loadingActions[`remove-${member.userId}`]}
                   >
@@ -199,13 +212,13 @@ export function MembersSection({
       {isOwner && requests.length > 0 && (
         <DashboardCard>
           <DashboardCardHeader>
-            <DashboardCardTitle icon={<ClipboardList className="h-5 w-5" />}>{t("pendingRequests")}</DashboardCardTitle>
+            <SectionHeading icon={<ClipboardList />} title={t("pendingRequests")} />
             <DashboardCardDescription>{t("pendingRequestsDescription")}</DashboardCardDescription>
           </DashboardCardHeader>
-          <DashboardCardContent className="space-y-4">
+          <DashboardCardContent className="space-y-2">
             {requests.map((request) => (
-              <div key={request.id} className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3 min-w-0">
+              <div key={request.id} className="flex items-center justify-between gap-4 rounded-2xl bg-secondary/40 p-3">
+                <div className="flex min-w-0 items-center gap-3">
                   <Avatar className="h-9 w-9">
                     {request.requester.image && (
                       <AvatarImage src={request.requester.image} alt={request.requester.name} />
@@ -213,15 +226,15 @@ export function MembersSection({
                     <AvatarFallback className="text-xs">{getInitials(request.requester.name)}</AvatarFallback>
                   </Avatar>
                   <div className="min-w-0">
-                    <p className="text-sm font-medium truncate">{request.requester.name}</p>
-                    <p className="text-xs text-muted-foreground truncate">{request.requester.email}</p>
+                    <p className="truncate text-sm font-medium">{request.requester.name}</p>
+                    <p className="truncate text-xs text-muted-foreground">{request.requester.email}</p>
                     {request.message && (
-                      <p className="text-xs text-muted-foreground mt-1 italic">&quot;{request.message}&quot;</p>
+                      <p className="mt-1 text-xs italic text-muted-foreground">&quot;{request.message}&quot;</p>
                     )}
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex shrink-0 items-center gap-2">
                   <Button
                     variant="outline"
                     size="sm"
@@ -252,24 +265,27 @@ export function MembersSection({
       {isOwner && invitations.length > 0 && (
         <DashboardCard>
           <DashboardCardHeader>
-            <DashboardCardTitle icon={<Mail className="h-5 w-5" />}>{t("pendingInvitations")}</DashboardCardTitle>
+            <SectionHeading icon={<Mail />} title={t("pendingInvitations")} />
           </DashboardCardHeader>
-          <DashboardCardContent className="space-y-3">
+          <DashboardCardContent className="space-y-2">
             {invitations.map((invitation) => (
-              <div key={invitation.id} className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-full bg-muted">
-                    <Mail className="h-4 w-4 text-muted-foreground" />
+              <div
+                key={invitation.id}
+                className="flex items-center justify-between gap-4 rounded-2xl bg-secondary/40 p-3"
+              >
+                <div className="flex min-w-0 items-center gap-3">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary">
+                    <Mail className="h-4 w-4" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-sm font-medium truncate">{invitation.email}</p>
+                    <p className="truncate text-sm font-medium">{invitation.email}</p>
                     <p className="text-xs text-muted-foreground">{t("invitedAs", { role: t("admin") })}</p>
                   </div>
                 </div>
                 <Button
                   variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-destructive hover:text-destructive shrink-0"
+                  size="icon-sm"
+                  className="shrink-0 text-destructive hover:text-destructive"
                   onClick={() => handleCancelInvitation(invitation.id)}
                   disabled={loadingActions[`cancel-${invitation.id}`]}
                 >
@@ -284,11 +300,11 @@ export function MembersSection({
       {isOwner && (
         <DashboardCard>
           <DashboardCardHeader>
-            <DashboardCardTitle icon={<UserPlus className="h-5 w-5" />}>{t("inviteTitle")}</DashboardCardTitle>
+            <SectionHeading icon={<UserPlus />} title={t("inviteTitle")} />
             <DashboardCardDescription>{t("inviteDescription")}</DashboardCardDescription>
           </DashboardCardHeader>
           <DashboardCardContent>
-            <div className="flex gap-2">
+            <div className="flex flex-col gap-2 sm:flex-row">
               <Input
                 type="email"
                 placeholder={t("inviteEmailPlaceholder")}

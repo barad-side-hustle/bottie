@@ -1,41 +1,45 @@
 "use client";
 
-import { Quote } from "lucide-react";
+import { Quote, Star } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { SectionBlock, SectionHeading } from "@/components/ui/section-block";
 
 export function Testimonials() {
   const t = useTranslations("landing.testimonials");
 
   return (
-    <section id="testimonials" tabIndex={-1}>
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4">{t("title")}</h2>
-        </div>
+    <SectionBlock tone="periwinkle" id="testimonials" tabIndex={-1} width="md">
+      <SectionHeading title={t("title")} />
 
-        <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          {[0, 1, 2].map((i) => (
-            <div
-              key={i}
-              className="relative flex flex-col p-8 rounded-2xl border border-border/60 bg-primary/[0.03] shadow-sm"
-            >
-              <Quote className="h-8 w-8 text-primary/15 mb-4" />
-
-              <p className="text-muted-foreground text-base leading-relaxed mb-8">{t(`items.${i}.quote`)}</p>
-
-              <div className="flex items-center gap-3 mt-auto">
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary">
-                  {t(`items.${i}.name`).charAt(0)}
-                </div>
-                <div>
-                  <div className="text-sm font-semibold text-foreground">{t(`items.${i}.name`)}</div>
-                  <div className="text-xs text-muted-foreground">{t(`items.${i}.role`)}</div>
-                </div>
+      <div className="mt-12 grid gap-6 md:grid-cols-3">
+        {[0, 1, 2].map((i) => (
+          <div
+            key={i}
+            className="flex flex-col rounded-3xl border border-border/60 bg-card p-8 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
+          >
+            <div className="mb-4 flex items-center justify-between">
+              <Quote className="size-8 fill-primary/15 text-primary/15" />
+              <div className="flex items-center gap-0.5">
+                {[0, 1, 2, 3, 4].map((s) => (
+                  <Star key={s} className="size-4 fill-star-filled text-star-filled" />
+                ))}
               </div>
             </div>
-          ))}
-        </div>
+
+            <p className="mb-8 text-base leading-relaxed text-foreground/80">{t(`items.${i}.quote`)}</p>
+
+            <div className="mt-auto flex items-center gap-3">
+              <div className="flex size-10 items-center justify-center rounded-full bg-secondary text-sm font-bold text-primary">
+                {t(`items.${i}.name`).charAt(0)}
+              </div>
+              <div>
+                <div className="text-sm font-semibold text-foreground">{t(`items.${i}.name`)}</div>
+                <div className="text-xs text-muted-foreground">{t(`items.${i}.role`)}</div>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
-    </section>
+    </SectionBlock>
   );
 }

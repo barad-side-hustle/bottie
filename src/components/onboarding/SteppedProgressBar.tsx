@@ -17,12 +17,13 @@ export function SteppedProgressBar({ steps, currentStep }: SteppedProgressBarPro
 
         return (
           <div key={label} className="flex items-center gap-3 flex-1 last:flex-none">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               <div
                 className={cn(
-                  "h-8 w-8 rounded-full flex items-center justify-center text-xs font-semibold transition-all duration-300 shrink-0",
+                  "h-8 w-8 rounded-full flex items-center justify-center text-sm font-semibold tabular-nums transition-all duration-300 shrink-0",
                   isCompleted && "bg-primary text-primary-foreground",
-                  isActive && "bg-primary text-primary-foreground animate-onboarding-pulse-dot",
+                  isActive &&
+                    "bg-primary text-primary-foreground ring-2 ring-primary/25 ring-offset-2 ring-offset-card animate-onboarding-pulse-dot",
                   !isCompleted && !isActive && "bg-muted text-muted-foreground"
                 )}
               >
@@ -41,7 +42,7 @@ export function SteppedProgressBar({ steps, currentStep }: SteppedProgressBarPro
             </div>
 
             {index < steps.length - 1 && (
-              <div className="flex-1 h-0.5 rounded-full bg-muted overflow-hidden">
+              <div className="flex-1 h-0.5 rounded-full bg-border overflow-hidden">
                 <div
                   className="h-full bg-primary rounded-full transition-all duration-500 ease-out"
                   style={{ width: isCompleted ? "100%" : "0%" }}

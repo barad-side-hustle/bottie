@@ -22,10 +22,12 @@ export function PendingReviewsBanner({ data }: { data: OverviewData }) {
   };
 
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-warning/20 bg-warning/5 p-4">
-      <AlertCircle className="size-5 text-warning-foreground shrink-0" />
-      <p className="flex-1 text-sm text-foreground">{t("pendingBanner", { count: data.pendingCount })}</p>
-      <Button variant="outline" size="sm" onClick={handleNavigate}>
+    <div className="flex flex-col items-start gap-3 rounded-3xl border border-warning/25 bg-warning/10 p-5 sm:flex-row sm:items-center">
+      <span className="flex size-10 shrink-0 items-center justify-center rounded-2xl bg-warning/20 text-warning-foreground">
+        <AlertCircle className="size-5" />
+      </span>
+      <p className="flex-1 text-sm font-medium text-foreground">{t("pendingBanner", { count: data.pendingCount })}</p>
+      <Button variant="default" size="sm" className="w-full shrink-0 sm:w-auto" onClick={handleNavigate}>
         {t("reviewNow")}
       </Button>
     </div>

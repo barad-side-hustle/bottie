@@ -52,8 +52,10 @@ export function ContactForm() {
 
   if (status === "success") {
     return (
-      <div className="text-center py-12">
-        <CheckCircle2 className="h-12 w-12 text-green-500 mx-auto mb-4" />
+      <div className="flex flex-col items-center py-12 text-center">
+        <span className="mb-4 inline-flex size-14 items-center justify-center rounded-full bg-success/15 text-success">
+          <CheckCircle2 className="size-7" />
+        </span>
         <h3 className="text-lg font-semibold text-foreground mb-2">{t("form.successTitle")}</h3>
         <p className="text-muted-foreground">{t("form.successMessage")}</p>
       </div>
@@ -61,7 +63,7 @@ export function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-lg mx-auto">
+    <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
         <Label htmlFor="subject">{t("form.subject")}</Label>
         <Select value={subject} onValueChange={setSubject} required>
@@ -105,18 +107,18 @@ export function ContactForm() {
       </div>
 
       {status === "error" && (
-        <div className="flex items-center gap-2 text-sm text-destructive">
-          <AlertCircle className="h-4 w-4" />
+        <div className="flex items-center gap-2 rounded-xl border border-destructive/30 bg-destructive/10 px-3.5 py-2.5 text-sm text-destructive">
+          <AlertCircle className="size-4 shrink-0" />
           <span>{errorMessage}</span>
         </div>
       )}
 
-      <Button type="submit" disabled={isSubmitting || !subject} className="w-full">
+      <Button type="submit" size="lg" disabled={isSubmitting || !subject} className="w-full">
         {isSubmitting ? (
           t("form.submitting")
         ) : (
           <>
-            <Send className="h-4 w-4 me-2" />
+            <Send className="size-4 me-2" />
             {t("form.submit")}
           </>
         )}

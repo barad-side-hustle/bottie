@@ -4,13 +4,6 @@ import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { useLocale } from "next-intl";
 import { authClient } from "@/lib/auth-client";
-import {
-  DashboardCard,
-  DashboardCardContent,
-  DashboardCardDescription,
-  DashboardCardHeader,
-  DashboardCardTitle,
-} from "@/components/ui/dashboard-card";
 import { Logo } from "@/components/ui/Logo";
 import { GoogleSsoButton } from "@/components/ui/google-sso-button";
 import { Button } from "@/components/ui/button";
@@ -71,19 +64,16 @@ export function LoginForm() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-linear-to-b from-background to-muted p-4">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-pastel-cream p-4">
       <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <Logo className="justify-center mb-4" href={"/"} size="xl" variant="full" />
-          <p className="text-muted-foreground">{t("tagline")}</p>
-        </div>
+        <div className="rounded-3xl border border-border/60 bg-card p-8 shadow-lg">
+          <div className="flex flex-col items-center text-center">
+            <Logo href={"/"} size="lg" variant="full" />
+            <h1 className="mt-6 text-2xl font-bold tracking-tight text-foreground">{t("title")}</h1>
+            <p className="mt-2 text-sm text-muted-foreground">{t("description")}</p>
+          </div>
 
-        <DashboardCard>
-          <DashboardCardHeader className="text-center">
-            <DashboardCardTitle className="justify-center">{t("title")}</DashboardCardTitle>
-            <DashboardCardDescription>{t("description")}</DashboardCardDescription>
-          </DashboardCardHeader>
-          <DashboardCardContent className="space-y-4">
+          <div className="mt-8 space-y-4">
             <GoogleSsoButton
               onClick={handleGoogleSignIn}
               isLoading={isGoogleLoading}
@@ -93,10 +83,10 @@ export function LoginForm() {
 
             <div className="relative my-2">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t" />
+                <div className="w-full border-t border-border/60" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card text-muted-foreground px-2">{t("orContinueWith")}</span>
+                <span className="bg-card px-2 text-muted-foreground">{t("orContinueWith")}</span>
               </div>
             </div>
 
@@ -115,7 +105,7 @@ export function LoginForm() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <Label htmlFor="password">{t("passwordLabel")}</Label>
-                  <Link href="/forgot-password" className="text-muted-foreground hover:text-primary text-xs">
+                  <Link href="/forgot-password" className="text-xs text-muted-foreground hover:text-primary">
                     {t("forgotPassword")}
                   </Link>
                 </div>
@@ -128,7 +118,7 @@ export function LoginForm() {
                 />
               </div>
 
-              {error && <p className="text-destructive text-sm">{error}</p>}
+              {error && <p className="text-sm text-destructive">{error}</p>}
 
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading && <Loader2 className="h-4 w-4 animate-spin" />}
@@ -136,7 +126,7 @@ export function LoginForm() {
               </Button>
             </form>
 
-            <p className="text-muted-foreground text-center text-sm">
+            <p className="text-center text-sm text-muted-foreground">
               {t("noAccount")}{" "}
               <Link
                 href={
@@ -144,21 +134,21 @@ export function LoginForm() {
                     ? `/sign-up?callbackURL=${encodeURIComponent(callbackURL)}`
                     : "/sign-up"
                 }
-                className="text-primary hover:underline"
+                className="font-medium text-primary hover:underline"
               >
                 {t("signUpLink")}
               </Link>
             </p>
-          </DashboardCardContent>
-        </DashboardCard>
+          </div>
+        </div>
 
-        <p className="text-center text-sm text-muted-foreground mt-6">
+        <p className="mt-6 text-center text-sm text-muted-foreground">
           {t("termsPrefix")}{" "}
-          <Link href="/terms" className="text-primary hover:underline transition-all">
+          <Link href="/terms" className="text-primary transition-all hover:underline">
             {t("termsLink")}
           </Link>{" "}
           {t("termsMiddle")}{" "}
-          <Link href="/privacy" className="text-primary hover:underline transition-all">
+          <Link href="/privacy" className="text-primary transition-all hover:underline">
             {t("privacyLink")}
           </Link>
         </p>

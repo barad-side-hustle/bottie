@@ -1,15 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
+import { CheckCircle2, Loader2 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
-import {
-  DashboardCard,
-  DashboardCardContent,
-  DashboardCardDescription,
-  DashboardCardHeader,
-  DashboardCardTitle,
-} from "@/components/ui/dashboard-card";
 import { Logo } from "@/components/ui/Logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,40 +48,40 @@ export function ResetPasswordForm({ token }: { token: string }) {
 
   if (success) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-linear-to-b from-background to-muted p-4">
+      <div className="flex min-h-screen flex-col items-center justify-center bg-pastel-cream p-4">
         <div className="w-full max-w-md">
-          <div className="text-center mb-8">
-            <Logo className="justify-center mb-4" href={"/"} size="xl" variant="full" />
+          <div className="rounded-3xl border border-border/60 bg-card p-8 shadow-lg">
+            <div className="flex flex-col items-center text-center">
+              <Logo href={"/"} size="lg" variant="full" />
+              <div className="mt-6 flex size-14 items-center justify-center rounded-2xl bg-secondary text-primary">
+                <CheckCircle2 className="size-7" />
+              </div>
+              <h1 className="mt-4 text-2xl font-bold tracking-tight text-foreground">{t("successTitle")}</h1>
+              <p className="mt-2 text-sm text-muted-foreground">{t("successDescription")}</p>
+            </div>
+
+            <div className="mt-8">
+              <Button asChild className="w-full">
+                <Link href="/login">{t("goToSignIn")}</Link>
+              </Button>
+            </div>
           </div>
-          <DashboardCard>
-            <DashboardCardHeader className="text-center">
-              <DashboardCardTitle className="justify-center">{t("successTitle")}</DashboardCardTitle>
-              <DashboardCardDescription>{t("successDescription")}</DashboardCardDescription>
-            </DashboardCardHeader>
-            <DashboardCardContent>
-              <Link href="/login">
-                <Button className="w-full cursor-pointer">{t("goToSignIn")}</Button>
-              </Link>
-            </DashboardCardContent>
-          </DashboardCard>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-linear-to-b from-background to-muted p-4">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-pastel-cream p-4">
       <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <Logo className="justify-center mb-4" href={"/"} size="xl" variant="full" />
-        </div>
+        <div className="rounded-3xl border border-border/60 bg-card p-8 shadow-lg">
+          <div className="flex flex-col items-center text-center">
+            <Logo href={"/"} size="lg" variant="full" />
+            <h1 className="mt-6 text-2xl font-bold tracking-tight text-foreground">{t("title")}</h1>
+            <p className="mt-2 text-sm text-muted-foreground">{t("description")}</p>
+          </div>
 
-        <DashboardCard>
-          <DashboardCardHeader className="text-center">
-            <DashboardCardTitle className="justify-center">{t("title")}</DashboardCardTitle>
-            <DashboardCardDescription>{t("description")}</DashboardCardDescription>
-          </DashboardCardHeader>
-          <DashboardCardContent className="space-y-4">
+          <div className="mt-8 space-y-4">
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="password">{t("newPasswordLabel")}</Label>
@@ -115,15 +108,15 @@ export function ResetPasswordForm({ token }: { token: string }) {
                 />
               </div>
 
-              {error && <p className="text-destructive text-sm">{error}</p>}
+              {error && <p className="text-sm text-destructive">{error}</p>}
 
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading && <Loader2 className="h-4 w-4 animate-spin" />}
                 {t("resetButton")}
               </Button>
             </form>
-          </DashboardCardContent>
-        </DashboardCard>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -48,7 +48,7 @@ export default function LocationIdentitySection({ location, loading, onSave }: L
           </DashboardCardField>
 
           <DashboardCardField label={t("fields.description")}>
-            <p className="text-sm bg-muted/50 p-3 rounded-md whitespace-pre-wrap leading-relaxed">
+            <p className="whitespace-pre-wrap rounded-xl bg-muted/60 p-3.5 text-sm leading-relaxed">
               {location.description || t("noDescription")}
             </p>
           </DashboardCardField>

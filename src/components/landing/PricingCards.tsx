@@ -1,7 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Check } from "lucide-react";
+import { SectionBlock, SectionHeading } from "@/components/ui/section-block";
+import { CheckCircle2 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTranslations } from "next-intl";
@@ -43,76 +44,73 @@ export function PricingCards() {
   };
 
   return (
-    <div id="pricing">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4">{t("title")}</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">{t("subtitle")}</p>
+    <SectionBlock tone="plain" id="pricing" width="md">
+      <SectionHeading title={t("title")} subtitle={t("subtitle")} />
+
+      <div className="mx-auto mt-12 grid max-w-4xl grid-cols-1 gap-8 md:grid-cols-2 md:gap-6">
+        <div className="flex flex-col rounded-3xl border border-border/60 bg-card p-8 shadow-sm">
+          <div className="mb-6">
+            <h3 className="mb-2 text-2xl font-bold text-foreground">{t("plans.free.name")}</h3>
+            <p className="mb-4 text-sm text-muted-foreground">
+              {t("plans.free.description", { count: FREE_LOCATION_LIMITS.reviewsPerMonth })}
+            </p>
+            <div className="flex items-baseline gap-1">
+              <span className="text-5xl font-bold tracking-tight text-foreground">$0</span>
+            </div>
+            <p className="mt-2 text-sm text-muted-foreground">
+              {t("freeReplies", { count: FREE_LOCATION_LIMITS.reviewsPerMonth })}
+            </p>
+          </div>
+
+          <ul className="mb-8 grow space-y-3">
+            {freeFeatures.map((feature, i) => (
+              <li key={i} className="flex items-start gap-2.5">
+                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-brand" />
+                <span className="text-sm text-foreground">{feature}</span>
+              </li>
+            ))}
+          </ul>
+
+          <Button
+            className="w-full"
+            size="pill"
+            variant="outline"
+            onClick={() => handleGetStarted("free")}
+            disabled={loadingPlan === "free"}
+          >
+            {loadingPlan === "free" ? t("loading") : t("freeCta")}
+          </Button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-6 max-w-4xl mx-auto">
-          <div className="relative p-8 flex flex-col rounded-2xl border border-border/60 bg-primary/[0.03] shadow-sm">
-            <div className="mb-6">
-              <h3 className="text-2xl font-bold text-foreground mb-2">{t("plans.free.name")}</h3>
-              <p className="text-sm text-muted-foreground mb-4">
-                {t("plans.free.description", { count: FREE_LOCATION_LIMITS.reviewsPerMonth })}
-              </p>
-              <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-bold text-foreground">$0</span>
-              </div>
-              <p className="text-sm text-muted-foreground mt-1">
-                {t("freeReplies", { count: FREE_LOCATION_LIMITS.reviewsPerMonth })}
-              </p>
-            </div>
-
-            <ul className="space-y-3 mb-8 grow">
-              {freeFeatures.map((feature, i) => (
-                <li key={i} className="flex items-start gap-2">
-                  <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                  <span className="text-sm text-foreground">{feature}</span>
-                </li>
-              ))}
-            </ul>
-
-            <div>
-              <Button
-                className="w-full"
-                variant="outline"
-                onClick={() => handleGetStarted("free")}
-                disabled={loadingPlan === "free"}
-              >
-                {loadingPlan === "free" ? t("loading") : t("freeCta")}
-              </Button>
+        <div className="flex flex-col rounded-3xl bg-secondary/40 p-8 shadow-lg ring-2 ring-primary">
+          <div className="mb-6">
+            <h3 className="mb-2 text-2xl font-bold text-foreground">{t("plans.pro.name")}</h3>
+            <p className="mb-4 text-sm text-muted-foreground">{t("plans.pro.description")}</p>
+            <div className="flex items-baseline gap-1">
+              <span className="text-5xl font-bold tracking-tight text-foreground">${PRICE_PER_LOCATION}</span>
+              <span className="text-muted-foreground">{t("perLocation")}</span>
             </div>
           </div>
 
-          <div className="relative p-8 flex flex-col rounded-2xl border-2 border-primary/40 bg-primary/[0.06] shadow-sm">
-            <div className="mb-6">
-              <h3 className="text-2xl font-bold text-foreground mb-2">{t("plans.pro.name")}</h3>
-              <p className="text-sm text-muted-foreground mb-4">{t("plans.pro.description")}</p>
-              <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-bold text-foreground">${PRICE_PER_LOCATION}</span>
-                <span className="text-muted-foreground">{t("perLocation")}</span>
-              </div>
-            </div>
+          <ul className="mb-8 grow space-y-3">
+            {proFeatures.map((feature, i) => (
+              <li key={i} className="flex items-start gap-2.5">
+                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-brand" />
+                <span className="text-sm text-foreground">{feature}</span>
+              </li>
+            ))}
+          </ul>
 
-            <ul className="space-y-3 mb-8 grow">
-              {proFeatures.map((feature, i) => (
-                <li key={i} className="flex items-start gap-2">
-                  <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
-                  <span className="text-sm text-foreground">{feature}</span>
-                </li>
-              ))}
-            </ul>
-
-            <div>
-              <Button className="w-full" onClick={() => handleGetStarted("pro")} disabled={loadingPlan === "pro"}>
-                {loadingPlan === "pro" ? t("loading") : t("proCta")}
-              </Button>
-            </div>
-          </div>
+          <Button
+            className="w-full"
+            size="pill"
+            onClick={() => handleGetStarted("pro")}
+            disabled={loadingPlan === "pro"}
+          >
+            {loadingPlan === "pro" ? t("loading") : t("proCta")}
+          </Button>
         </div>
       </div>
-    </div>
+    </SectionBlock>
   );
 }
