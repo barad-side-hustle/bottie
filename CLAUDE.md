@@ -111,8 +111,7 @@ src/
 │       ├── auth/[...all]/           # Better Auth handler
 │       ├── google/auth/             # Google OAuth initiation
 │       ├── google/callback/         # Google OAuth callback
-│       ├── webhooks/google-reviews/ # Pub/Sub webhook
-│       ├── internal/process-review/ # AI generation endpoint
+│       ├── webhooks/google-reviews/ # Pub/Sub webhook (ingests new reviews)
 │       ├── import-reviews/          # Bulk review import
 │       ├── upload/post-image/       # Post image upload + proxy
 │       ├── user/settings/           # User settings
@@ -149,11 +148,12 @@ src/
 
 ### Review Processing
 
-1. Google Pub/Sub webhook → `/api/webhooks/google-reviews`
-2. Webhook triggers → `/api/internal/process-review`
+1. Google Pub/Sub webhook → `/api/webhooks/google-reviews` ingests new reviews into the DB
+2. Polling crons (every 5 min) process reviews in stages:
+   `cron/classify-reviews` → `cron/generate-replies` → `cron/post-replies` → `cron/send-notifications`
 3. AI generates reply using location's tone/language settings
 4. Reply stored with `status: 'pending'`
-5. User can edit/approve/publish from dashboard
+5. User can edit/approve/publish from dashboard (auto-reply configs may auto-post)
 
 ### Onboarding
 
@@ -172,7 +172,6 @@ bun run db:generate   # Generate Drizzle migrations
 bun run db:push       # Push schema to database
 bun run db:migrate    # Run Drizzle migrations
 bun run db:studio     # Open Drizzle Studio
-bun run db:triggers   # Setup database triggers
 bun run lint:check    # ESLint check
 bun run format:write  # Prettier format
 bun run knip          # Find unused exports/dependencies
