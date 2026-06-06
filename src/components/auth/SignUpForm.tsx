@@ -1,15 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2 } from "lucide-react";
+import { Loader2, MailCheck } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
-import {
-  DashboardCard,
-  DashboardCardContent,
-  DashboardCardDescription,
-  DashboardCardHeader,
-  DashboardCardTitle,
-} from "@/components/ui/dashboard-card";
 import { Logo } from "@/components/ui/Logo";
 import { GoogleSsoButton } from "@/components/ui/google-sso-button";
 import { Button } from "@/components/ui/button";
@@ -72,49 +65,48 @@ export function SignUpForm() {
 
   if (success) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-linear-to-b from-background to-muted p-4">
+      <div className="flex min-h-screen flex-col items-center justify-center bg-pastel-cream p-4">
         <div className="w-full max-w-md">
-          <div className="text-center mb-8">
-            <Logo className="justify-center mb-4" href={"/"} size="xl" variant="full" />
-          </div>
-          <DashboardCard>
-            <DashboardCardHeader className="text-center">
-              <DashboardCardTitle className="justify-center">{t("checkEmailTitle")}</DashboardCardTitle>
-              <DashboardCardDescription>{t("checkEmailDescription", { email })}</DashboardCardDescription>
-            </DashboardCardHeader>
-            <DashboardCardContent>
-              <Link
-                href={
-                  callbackURL !== `/${locale}/dashboard/home`
-                    ? `/login?callbackURL=${encodeURIComponent(callbackURL)}`
-                    : "/login"
-                }
-              >
-                <Button variant="outline" className="w-full cursor-pointer">
+          <div className="rounded-3xl border border-border/60 bg-card p-8 shadow-lg">
+            <div className="flex flex-col items-center text-center">
+              <Logo href={"/"} size="lg" variant="full" />
+              <div className="mt-6 flex size-14 items-center justify-center rounded-2xl bg-secondary text-primary">
+                <MailCheck className="size-7" />
+              </div>
+              <h1 className="mt-4 text-2xl font-bold tracking-tight text-foreground">{t("checkEmailTitle")}</h1>
+              <p className="mt-2 text-sm text-muted-foreground">{t("checkEmailDescription", { email })}</p>
+            </div>
+
+            <div className="mt-8">
+              <Button asChild variant="outline" className="w-full">
+                <Link
+                  href={
+                    callbackURL !== `/${locale}/dashboard/home`
+                      ? `/login?callbackURL=${encodeURIComponent(callbackURL)}`
+                      : "/login"
+                  }
+                >
                   {t("goToSignIn")}
-                </Button>
-              </Link>
-            </DashboardCardContent>
-          </DashboardCard>
+                </Link>
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-linear-to-b from-background to-muted p-4">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-pastel-cream p-4">
       <div className="w-full max-w-md">
-        <div className="text-center mb-8">
-          <Logo className="justify-center mb-4" href={"/"} size="xl" variant="full" />
-          <p className="text-muted-foreground">{t("tagline")}</p>
-        </div>
+        <div className="rounded-3xl border border-border/60 bg-card p-8 shadow-lg">
+          <div className="flex flex-col items-center text-center">
+            <Logo href={"/"} size="lg" variant="full" />
+            <h1 className="mt-6 text-2xl font-bold tracking-tight text-foreground">{t("title")}</h1>
+            <p className="mt-2 text-sm text-muted-foreground">{t("description")}</p>
+          </div>
 
-        <DashboardCard>
-          <DashboardCardHeader className="text-center">
-            <DashboardCardTitle className="justify-center">{t("title")}</DashboardCardTitle>
-            <DashboardCardDescription>{t("description")}</DashboardCardDescription>
-          </DashboardCardHeader>
-          <DashboardCardContent className="space-y-4">
+          <div className="mt-8 space-y-4">
             <GoogleSsoButton
               onClick={handleGoogleSignIn}
               isLoading={isGoogleLoading}
@@ -124,10 +116,10 @@ export function SignUpForm() {
 
             <div className="relative my-2">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t" />
+                <div className="w-full border-t border-border/60" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-card text-muted-foreground px-2">{t("orContinueWith")}</span>
+                <span className="bg-card px-2 text-muted-foreground">{t("orContinueWith")}</span>
               </div>
             </div>
 
@@ -167,7 +159,7 @@ export function SignUpForm() {
                 />
               </div>
 
-              {error && <p className="text-destructive text-sm">{error}</p>}
+              {error && <p className="text-sm text-destructive">{error}</p>}
 
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading && <Loader2 className="h-4 w-4 animate-spin" />}
@@ -175,7 +167,7 @@ export function SignUpForm() {
               </Button>
             </form>
 
-            <p className="text-muted-foreground text-center text-sm">
+            <p className="text-center text-sm text-muted-foreground">
               {t("hasAccount")}{" "}
               <Link
                 href={
@@ -183,13 +175,13 @@ export function SignUpForm() {
                     ? `/login?callbackURL=${encodeURIComponent(callbackURL)}`
                     : "/login"
                 }
-                className="text-primary hover:underline"
+                className="font-medium text-primary hover:underline"
               >
                 {t("signInLink")}
               </Link>
             </p>
-          </DashboardCardContent>
-        </DashboardCard>
+          </div>
+        </div>
       </div>
     </div>
   );

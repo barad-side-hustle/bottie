@@ -34,30 +34,30 @@ export default function StarRatingConfigSection({ starConfigs, loading, onSave }
       saveLabel={tCommon("save")}
       savingLabel={tCommon("saving")}
       renderDisplay={() => (
-        <>
+        <div className="space-y-3">
           {([5, 4, 3, 2, 1] as const).map((rating) => {
             const starConfig = starConfigs[rating];
 
             return (
-              <div key={rating} className="pb-6 last:pb-0 border-b last:border-b-0 border-border/40">
-                <div className="flex items-center justify-between mb-3">
-                  <Badge variant={starConfig.autoReply ? "default" : "secondary"}>
+              <div key={rating} className="rounded-2xl border border-border/60 bg-card p-4">
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <StarRating rating={rating} size={18} />
+                  <Badge variant={starConfig.autoReply ? "success" : "muted"}>
                     {t("autoReply")} {starConfig.autoReply ? t("enabled") : t("disabled")}
                   </Badge>
-                  <StarRating rating={rating} size={18} />
                 </div>
 
                 {starConfig.customInstructions ? (
-                  <div className="text-sm bg-muted/50 p-3 rounded-md">
-                    <p className="whitespace-pre-wrap leading-relaxed">{starConfig.customInstructions}</p>
-                  </div>
+                  <p className="whitespace-pre-wrap rounded-xl bg-muted/60 p-3.5 text-sm leading-relaxed">
+                    {starConfig.customInstructions}
+                  </p>
                 ) : (
-                  <p className="text-sm text-muted-foreground italic">{t("noInstructions")}</p>
+                  <p className="text-sm italic text-muted-foreground">{t("noInstructions")}</p>
                 )}
               </div>
             );
           })}
-        </>
+        </div>
       )}
       renderForm={({ data, isLoading, onChange }) => (
         <StarRatingConfigForm values={data} onChange={onChange} disabled={isLoading} />

@@ -71,7 +71,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   return (
     <>
       <StructuredData data={schemas} />
-      <main className="grow space-y-20">
+      <main className="grow">
         <Hero />
         <Statistics />
         <HowItWorks />

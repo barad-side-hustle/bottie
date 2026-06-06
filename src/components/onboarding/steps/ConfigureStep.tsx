@@ -73,8 +73,8 @@ export function ConfigureStep({
       }}
     >
       <div className="space-y-6">
-        <div>
-          <h3 className="text-sm font-semibold text-foreground mb-3">{t("businessDetails.title")}</h3>
+        <div className="space-y-4">
+          <h3 className="text-base font-semibold text-foreground">{t("businessDetails.title")}</h3>
           <LocationDetailsForm
             values={locationDetails}
             onChange={handleLocationChange}
@@ -82,11 +82,13 @@ export function ConfigureStep({
           />
         </div>
 
-        <div className="border-t border-border/40" />
+        <div className="border-t border-border/60" />
 
-        <div>
-          <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-primary" />
+        <div className="space-y-4">
+          <h3 className="text-base font-semibold text-foreground flex items-center gap-2.5">
+            <span className="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-secondary text-primary">
+              <Sparkles className="h-4 w-4" />
+            </span>
             {t("aiSettings.title")}
           </h3>
           <AIResponseSettingsForm values={aiSettings} onChange={handleAIChange} />

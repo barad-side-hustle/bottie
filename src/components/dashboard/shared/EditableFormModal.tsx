@@ -87,16 +87,18 @@ export function EditableFormModal<T>({
     <Dialog open={open} onOpenChange={(open) => !open && handleCancel()}>
       <DialogContent className="sm:max-w-[600px]" dir={dir}>
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            {icon}
-            {title}
-          </DialogTitle>
+          <div className="flex items-center gap-3">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary [&_svg]:size-5">
+              {icon}
+            </span>
+            <DialogTitle>{title}</DialogTitle>
+          </div>
           <DialogDescription>{description}</DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">{renderForm({ data: formData, isLoading, onChange: handleChange })}</div>
+        <div className="space-y-6 py-2">{renderForm({ data: formData, isLoading, onChange: handleChange })}</div>
 
-        <DialogFooter className="flex justify-between gap-2">
+        <DialogFooter className="gap-2 sm:justify-between">
           <Button type="button" variant="outline" onClick={handleCancel} disabled={isLoading}>
             {cancelLabel}
           </Button>

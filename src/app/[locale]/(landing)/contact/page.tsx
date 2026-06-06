@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
 import { locales, getLocaleCode, type Locale } from "@/lib/locale";
 import { ContactForm } from "@/components/landing/ContactForm";
+import { SectionBlock, SectionHeading } from "@/components/ui/section-block";
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -54,12 +55,11 @@ export default async function ContactPage() {
   const t = await getTranslations("contact");
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-      <div className="text-center mb-12">
-        <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">{t("page.title")}</h1>
-        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{t("page.description")}</p>
+    <SectionBlock tone="cream" width="sm">
+      <SectionHeading title={t("page.title")} subtitle={t("page.description")} className="mb-12" />
+      <div className="mx-auto w-full max-w-lg rounded-3xl border border-border/60 bg-card p-6 shadow-sm sm:p-8 md:p-10">
+        <ContactForm />
       </div>
-      <ContactForm />
-    </div>
+    </SectionBlock>
   );
 }

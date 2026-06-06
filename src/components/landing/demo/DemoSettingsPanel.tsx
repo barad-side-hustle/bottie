@@ -20,10 +20,10 @@ export function DemoSettingsPanel({ tone, language, onToneChange, onLanguageChan
   const t = useTranslations("landing.demo.settings");
 
   return (
-    <div className="rounded-2xl border border-border/60 bg-primary/[0.03] shadow-sm p-6 lg:sticky lg:top-8 h-fit">
+    <div className="h-fit rounded-3xl border border-border/60 bg-card p-6 shadow-sm lg:sticky lg:top-8">
       <div className="space-y-5">
         <div className="space-y-2">
-          <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+          <Label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
             {t("toneOfVoice")}
           </Label>
           <div className="flex flex-wrap gap-2">
@@ -36,7 +36,7 @@ export function DemoSettingsPanel({ tone, language, onToneChange, onLanguageChan
         </div>
 
         <div className="space-y-2">
-          <Label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{t("language")}</Label>
+          <Label className="text-xs font-medium uppercase tracking-wide text-muted-foreground">{t("language")}</Label>
           <div className="flex flex-wrap gap-2">
             {languageOptions.map((option) => (
               <ToggleChip key={option} selected={language === option} onToggle={() => onLanguageChange(option)}>

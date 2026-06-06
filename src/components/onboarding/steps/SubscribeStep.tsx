@@ -55,16 +55,18 @@ export function SubscribeStep({ locationId, locationName, onSkip, onBack, progre
       }}
     >
       <div className="space-y-6">
-        <div className="rounded-xl border bg-card p-5 space-y-4">
+        <div className="rounded-2xl border border-primary bg-card p-6 ring-2 ring-primary/30 space-y-5">
           <div className="flex items-baseline gap-1">
-            <span className="text-3xl font-bold">${PRICE_PER_LOCATION}</span>
+            <span className="text-4xl font-bold tabular-nums">${PRICE_PER_LOCATION}</span>
             <span className="text-muted-foreground text-sm">{t("perMonth")}</span>
           </div>
 
           <ul className="space-y-3">
             {features.map((feature) => (
-              <li key={feature.label} className="flex items-center gap-3 text-sm">
-                <feature.icon className="h-4 w-4 text-primary shrink-0" />
+              <li key={feature.label} className="flex items-center gap-3 text-sm text-foreground">
+                <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-secondary text-primary">
+                  <feature.icon className="h-4 w-4" />
+                </span>
                 <span>{feature.label}</span>
               </li>
             ))}
@@ -74,7 +76,7 @@ export function SubscribeStep({ locationId, locationName, onSkip, onBack, progre
         <button
           onClick={onSkip}
           disabled={loading}
-          className="w-full text-center text-sm text-muted-foreground hover:text-foreground transition-colors underline-offset-4 hover:underline cursor-pointer"
+          className="w-full text-center text-sm font-medium text-muted-foreground hover:text-foreground transition-colors underline-offset-4 hover:underline cursor-pointer disabled:pointer-events-none disabled:opacity-50"
         >
           {t("skipFree")}
         </button>

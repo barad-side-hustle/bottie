@@ -32,18 +32,18 @@ export function StatCard({
   const deltaDisplay = getDeltaDisplay(delta);
 
   return (
-    <DashboardCard className="border-transparent shadow-xs hover:shadow-sm transition-shadow">
+    <DashboardCard className="shadow-xs hover:shadow-sm transition-shadow">
       <DashboardCardContent className="p-5">
-        <div className="flex items-center justify-between gap-4">
-          <div className="min-w-0">
-            <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{label}</p>
-            <div className="flex items-center gap-2 mt-2">
-              <p className={cn("text-2xl font-bold tabular-nums", valueColor)}>{value}</p>
+        <div className="flex items-start justify-between gap-4">
+          <div className="min-w-0 space-y-2">
+            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{label}</p>
+            <div className="flex items-center gap-2">
+              <p className={cn("text-2xl font-bold tracking-tight tabular-nums md:text-3xl", valueColor)}>{value}</p>
               {deltaDisplay}
             </div>
           </div>
           {Icon && (
-            <div className={cn("size-10 rounded-lg shrink-0 flex items-center justify-center", iconBgColor)}>
+            <div className={cn("flex size-10 shrink-0 items-center justify-center rounded-xl", iconBgColor)}>
               <Icon className={cn("size-[18px]", iconColor)} />
             </div>
           )}

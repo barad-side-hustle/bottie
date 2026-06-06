@@ -2,6 +2,7 @@
 
 import { useTranslations, useLocale } from "next-intl";
 import type { Locale } from "@/lib/locale";
+import { SectionBlock, SectionHeading } from "@/components/ui/section-block";
 
 const LAST_UPDATED_DATE = new Date("2025-11-09");
 
@@ -16,11 +17,11 @@ export function TermsContent() {
   });
 
   return (
-    <main className="grow container mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold text-foreground mb-8">{t("title")}</h1>
+    <main className="grow">
+      <SectionBlock tone="plain" width="sm">
+        <SectionHeading title={t("title")} align="start" className="mb-10" />
 
-        <div className="prose prose-slate max-w-none">
+        <div className="prose prose-neutral dark:prose-invert max-w-none">
           <section className="mb-8">
             <h2 className="text-2xl font-semibold text-foreground mb-4">{t("sections.general.title")}</h2>
             <p className="text-muted-foreground leading-relaxed">{t("sections.general.content")}</p>
@@ -75,7 +76,7 @@ export function TermsContent() {
             <p className="text-sm text-muted-foreground">{t("lastUpdated", { date: formattedDate })}</p>
           </div>
         </div>
-      </div>
+      </SectionBlock>
     </main>
   );
 }

@@ -17,23 +17,22 @@ export function UnifiedNavbar() {
 
   return (
     <NavbarContainer>
-      <div className="shrink-0 ps-2">
-        <Logo href="/" />
+      <div className="shrink-0">
+        <Logo href="/" variant="full" size="md" />
       </div>
 
-      <nav className="hidden md:flex items-center flex-1 justify-center h-full gap-1">
+      <nav className="hidden md:flex items-center gap-1">
         {navItems.map((item) => {
           const isItemActive = isActive(item.href);
           const itemClass = cn(
-            "relative text-sm font-medium px-4 py-2 rounded-lg cursor-pointer transition-colors",
-            isItemActive ? "text-foreground font-semibold" : "text-muted-foreground hover:text-foreground"
+            "rounded-full px-4 py-2 text-sm font-medium transition-colors cursor-pointer",
+            isItemActive ? "bg-secondary text-primary" : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
           );
 
           if (item.href.startsWith("/#")) {
             return (
               <button key={item.label} type="button" onClick={() => scrollToSection(item.href)} className={itemClass}>
                 {t(item.label)}
-                {isItemActive && <div className="absolute bottom-1 inset-x-0 h-[2px] bg-primary rounded-full mx-2" />}
               </button>
             );
           }
@@ -41,19 +40,18 @@ export function UnifiedNavbar() {
           return (
             <Link key={item.label} href={item.href} className={itemClass}>
               {t(item.label)}
-              {isItemActive && <div className="absolute bottom-1 inset-x-0 h-[2px] bg-primary rounded-full mx-2" />}
             </Link>
           );
         })}
       </nav>
 
-      <div className="flex items-center gap-2 shrink-0 pe-2">
+      <div className="flex items-center gap-2 shrink-0">
         {user ? (
-          <Link href="/dashboard/home">
-            <Button size="sm">{t("auth.dashboard")}</Button>
-          </Link>
+          <Button asChild className="rounded-full">
+            <Link href="/dashboard/home">{t("auth.dashboard")}</Link>
+          </Button>
         ) : (
-          <AuthButton />
+          <AuthButton size="default" className="rounded-full" />
         )}
       </div>
     </NavbarContainer>

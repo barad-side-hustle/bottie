@@ -104,9 +104,9 @@ export function AppSidebar({ user }: { user: { name: string; email: string; imag
                     size="lg"
                     tooltip={{ children: user.name || user.email, side: dir === "rtl" ? "left" : "right" }}
                   >
-                    <Avatar className="size-8 rounded-lg">
+                    <Avatar className="size-8 rounded-xl">
                       <AvatarImage src={user.image || undefined} alt={user.name || "User"} />
-                      <AvatarFallback className="rounded-lg bg-primary text-primary-foreground text-xs">
+                      <AvatarFallback className="rounded-xl bg-primary text-primary-foreground text-xs">
                         {user.name
                           ? user.name
                               .split(" ")
@@ -125,16 +125,16 @@ export function AppSidebar({ user }: { user: { name: string; email: string; imag
                   </SidebarMenuButton>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
-                  className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+                  className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-2xl"
                   side={isMobile ? "bottom" : dir === "rtl" ? "left" : "right"}
                   align="end"
                   sideOffset={4}
                 >
                   <DropdownMenuLabel className="p-0 font-normal">
                     <div className="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
-                      <Avatar className="size-8 rounded-lg">
+                      <Avatar className="size-8 rounded-xl">
                         <AvatarImage src={user.image || undefined} alt={user.name || "User"} />
-                        <AvatarFallback className="rounded-lg bg-primary text-primary-foreground text-xs">
+                        <AvatarFallback className="rounded-xl bg-primary text-primary-foreground text-xs">
                           {user.name
                             ? user.name
                                 .split(" ")

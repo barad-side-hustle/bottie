@@ -19,32 +19,26 @@ export function StatCard({ icon: Icon, value, decimals = 0, suffix = "", label, 
   return (
     <div
       className={cn(
-        "relative p-6 sm:p-8 rounded-2xl",
-        "border border-border/40 bg-card shadow-sm",
-        "group transition-all duration-300",
-        "hover:shadow-lg hover:-translate-y-1"
+        "group flex flex-col items-center gap-3 rounded-3xl border border-border/60 bg-card p-6 text-center shadow-sm sm:p-8",
+        "transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
       )}
     >
-      <div className="absolute inset-0 bg-linear-to-br from-primary/5 via-transparent to-primary/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl" />
-
-      <div className="relative flex flex-col items-center text-center gap-3">
-        <div
-          className={cn(
-            "inline-flex h-12 w-12 items-center justify-center rounded-xl",
-            "group-hover:scale-110 transition-transform duration-300",
-            iconBgClass
-          )}
-        >
-          <Icon className="h-6 w-6 text-primary" />
-        </div>
-
-        <div ref={ref} className="text-4xl sm:text-5xl font-bold text-primary tabular-nums">
-          {formattedValue}
-          {suffix}
-        </div>
-
-        <div className="text-sm sm:text-base text-muted-foreground font-medium">{label}</div>
+      <div
+        className={cn(
+          "inline-flex size-12 items-center justify-center rounded-2xl",
+          "transition-transform duration-200 group-hover:scale-105",
+          iconBgClass
+        )}
+      >
+        <Icon className="size-6 text-primary" />
       </div>
+
+      <div ref={ref} className="text-4xl font-bold tracking-tight tabular-nums text-foreground sm:text-5xl">
+        {formattedValue}
+        {suffix}
+      </div>
+
+      <div className="text-sm font-medium text-muted-foreground sm:text-base">{label}</div>
     </div>
   );
 }

@@ -13,6 +13,7 @@ import { UpgradeButton } from "@/components/dashboard/subscription/UpgradeButton
 import { MapPin, DollarSign, Crown, ShieldCheck } from "lucide-react";
 import { PRICE_PER_LOCATION, FREE_LOCATION_LIMITS } from "@/lib/subscriptions/plans";
 import { useTranslations } from "next-intl";
+import { cn } from "@/lib/utils";
 import type { LocationSummaryWithSubscription } from "@/lib/controllers/stats.controller";
 
 interface SubscriptionInfoProps {
@@ -41,7 +42,7 @@ export function SubscriptionInfo({
         <StatCard label={t("monthlyTotal")} value={`$${monthlyTotal}`} icon={DollarSign} />
       </div>
 
-      <DashboardCard className="border-transparent shadow-xs">
+      <DashboardCard>
         <DashboardCardHeader>
           <DashboardCardTitle>{t("title")}</DashboardCardTitle>
           <DashboardCardDescription>{t("description")}</DashboardCardDescription>
@@ -50,13 +51,21 @@ export function SubscriptionInfo({
           {locationSummaries.length === 0 ? (
             <p className="text-sm text-muted-foreground">{t("noLocations")}</p>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-2">
               {locationSummaries.map((loc) => (
-                <div key={loc.locationId} className="flex items-center justify-between rounded-lg bg-muted/50 p-4">
-                  <div className="flex items-center gap-3 min-w-0">
-                    <MapPin className="h-4 w-4 text-muted-foreground shrink-0" />
+                <div
+                  key={loc.locationId}
+                  className={cn(
+                    "flex items-center justify-between gap-4 rounded-2xl border p-4",
+                    loc.isPaid ? "border-primary/40 bg-secondary/40" : "border-border/60 bg-card"
+                  )}
+                >
+                  <div className="flex min-w-0 items-center gap-3">
+                    <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary">
+                      <MapPin className="h-4 w-4" />
+                    </div>
                     <div className="min-w-0">
-                      <p className="text-sm font-medium truncate">{loc.locationName}</p>
+                      <p className="truncate text-sm font-medium">{loc.locationName}</p>
                       <p className="text-xs text-muted-foreground">
                         {loc.isPaid
                           ? t("unlimitedReplies")
@@ -64,12 +73,15 @@ export function SubscriptionInfo({
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-3 shrink-0">
+                  <div className="flex shrink-0 items-center gap-3">
                     {loc.isPaid ? (
-                      <Badge variant="default">{t("plans.pro")}</Badge>
+                      <Badge variant="brand" className="gap-1">
+                        <Crown className="h-3 w-3" />
+                        {t("plans.pro")}
+                      </Badge>
                     ) : (
                       <>
-                        <Badge variant="secondary">{t("plans.free")}</Badge>
+                        <Badge variant="muted">{t("plans.free")}</Badge>
                         <UpgradeButton locationId={loc.locationId} size="sm" />
                       </>
                     )}
@@ -80,7 +92,7 @@ export function SubscriptionInfo({
           )}
 
           {unpaidLocations > 0 && (
-            <p className="text-xs text-muted-foreground mt-4">{t("upgradeHint", { price: PRICE_PER_LOCATION })}</p>
+            <p className="mt-4 text-xs text-muted-foreground">{t("upgradeHint", { price: PRICE_PER_LOCATION })}</p>
           )}
         </DashboardCardContent>
       </DashboardCard>

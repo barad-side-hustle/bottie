@@ -13,10 +13,10 @@ const GoogleSsoButton = React.forwardRef<HTMLButtonElement, GoogleSsoButtonProps
       <button
         ref={ref}
         className={cn(
-          "inline-flex items-center justify-center gap-2 w-full h-9 px-4 py-2",
-          "rounded-md text-sm font-medium border border-input bg-background shadow-sm",
+          "inline-flex items-center justify-center gap-2 w-full h-11 px-4 py-2 cursor-pointer",
+          "rounded-xl text-sm font-semibold border border-border bg-card shadow-xs",
           "hover:bg-accent hover:text-accent-foreground transition-colors",
-          "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/25",
           "disabled:pointer-events-none disabled:opacity-50",
           className
         )}

@@ -18,7 +18,7 @@ import { postReviewReply, generateReviewReply, setReviewResponseFeedback } from 
 import { useAuth } from "@/contexts/AuthContext";
 import { ReplyEditor } from "@/components/dashboard/reviews/ReplyEditor";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
-import { User, Bot, RotateCcw, Pencil, Send, ThumbsUp, ThumbsDown, Check } from "lucide-react";
+import { User, Bot, RotateCcw, Pencil, Send, ThumbsUp, ThumbsDown, Check, Sparkles } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -247,12 +247,12 @@ export function ReviewCard({
     <>
       <div
         className={cn(
-          "w-full rounded-2xl border border-border/40 bg-card overflow-hidden transition-all duration-200",
-          isSelected ? "ring-2 ring-primary/30 bg-primary/[0.02]" : "hover:shadow-md hover:border-border/60"
+          "w-full rounded-3xl border border-border/60 bg-card overflow-hidden transition-all duration-200",
+          isSelected ? "ring-2 ring-primary/30 border-primary/30" : "hover:shadow-md hover:border-border"
         )}
       >
         <div className="flex">
-          <div className={cn("w-[3px] shrink-0", statusAccentColor)} />
+          <div className={cn("w-1 shrink-0", statusAccentColor)} />
           <div className="flex-1 p-5 sm:p-6">
             <div className="space-y-3">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -280,13 +280,13 @@ export function ReviewCard({
                         </span>
                       </button>
                     )}
-                    <Avatar className="h-10 w-10 shrink-0">
+                    <Avatar className="h-10 w-10 shrink-0 rounded-xl">
                       <AvatarImage src={review.photoUrl || undefined} alt={`${review.name} profile`} />
-                      <AvatarFallback className="bg-primary/10">
+                      <AvatarFallback className="rounded-xl bg-secondary">
                         {review.photoUrl ? (
                           <User className="h-5 w-5 text-primary" />
                         ) : (
-                          <span className="text-sm font-medium text-primary">{getInitials(review.name)}</span>
+                          <span className="text-sm font-semibold text-primary">{getInitials(review.name)}</span>
                         )}
                       </AvatarFallback>
                     </Avatar>
@@ -317,8 +317,12 @@ export function ReviewCard({
               </p>
 
               {review.latestAiReply && (
-                <div className="pt-3 mt-3 border-t border-border/30">
-                  <div className="flex items-center gap-1.5 mb-2">
+                <div className="pt-3 mt-3 border-t border-border/40">
+                  <div className="flex items-center gap-2 mb-2">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-brand/12 px-2.5 py-1 text-xs font-semibold text-brand">
+                      <Sparkles className="size-3.5" />
+                      AI
+                    </span>
                     <span className="text-xs font-medium text-muted-foreground">{t("aiReplyLabel")}</span>
                     {review.replyStatus === "posted" && review.latestAiReplyPostedAt && (
                       <>
@@ -334,7 +338,7 @@ export function ReviewCard({
                       </>
                     )}
                   </div>
-                  <div className="border-s-2 border-primary/30 ps-3 py-2.5 pe-3 rounded-e-lg bg-muted/30">
+                  <div className="border-s-2 border-primary/30 ps-3.5 py-2.5 pe-3.5 rounded-e-xl bg-muted/40">
                     {isLoading ? (
                       <div className="space-y-2">
                         <Skeleton className="h-4 w-full" />
@@ -348,7 +352,7 @@ export function ReviewCard({
               )}
 
               {(hasActions || showFeedback) && (
-                <div className="space-y-2 pt-2 mt-1 border-t border-border/20">
+                <div className="space-y-2 pt-2 mt-1 border-t border-border/40">
                   <div className="flex items-center justify-between">
                     {showFeedback && (
                       <div className="flex items-center gap-1">
@@ -359,13 +363,11 @@ export function ReviewCard({
                                 type="button"
                                 onClick={(e) => handleFeedback("liked", e)}
                                 disabled={isFeedbackLoading || isLoading}
-                                size="icon"
+                                size="icon-sm"
                                 variant="ghost"
                                 aria-label={t("feedback.like")}
                                 className={cn(
-                                  "h-7 w-7",
-                                  feedbackState === "liked" &&
-                                    "text-green-600 bg-green-50 hover:bg-green-100 dark:bg-green-950 dark:hover:bg-green-900"
+                                  feedbackState === "liked" && "bg-success/15 text-success hover:bg-success/20"
                                 )}
                               >
                                 <ThumbsUp className="size-3.5" />
@@ -381,13 +383,12 @@ export function ReviewCard({
                                 type="button"
                                 onClick={(e) => handleFeedback("disliked", e)}
                                 disabled={isFeedbackLoading || isLoading}
-                                size="icon"
+                                size="icon-sm"
                                 variant="ghost"
                                 aria-label={t("feedback.dislike")}
                                 className={cn(
-                                  "h-7 w-7",
                                   feedbackState === "disliked" &&
-                                    "text-red-600 bg-red-50 hover:bg-red-100 dark:bg-red-950 dark:hover:bg-red-900"
+                                    "bg-destructive/15 text-destructive hover:bg-destructive/20"
                                 )}
                               >
                                 <ThumbsDown className="size-3.5" />
@@ -407,7 +408,7 @@ export function ReviewCard({
                                 type="button"
                                 onClick={handleRegenerate}
                                 disabled={isLoading}
-                                size="icon"
+                                size="icon-sm"
                                 variant="ghost"
                                 aria-label={t("actions.regenerate")}
                               >
@@ -428,7 +429,7 @@ export function ReviewCard({
                                   setShowEditor(true);
                                 }}
                                 disabled={isLoading}
-                                size="icon"
+                                size="icon-sm"
                                 variant="ghost"
                                 aria-label={t("actions.edit")}
                               >
@@ -438,7 +439,7 @@ export function ReviewCard({
                             <TooltipContent>{t("actions.edit")}</TooltipContent>
                           </Tooltip>
                         </TooltipProvider>
-                        <div className="h-5 w-px bg-border/40 mx-0.5" />
+                        <div className="h-5 w-px bg-border/60 mx-1" />
                         <TooltipProvider delayDuration={300}>
                           <Tooltip>
                             <TooltipTrigger asChild>
@@ -450,7 +451,7 @@ export function ReviewCard({
                                   setShowPublishDialog(true);
                                 }}
                                 disabled={isLoading}
-                                size="icon"
+                                size="icon-sm"
                                 variant="default"
                                 aria-label={
                                   review.replyStatus === "posted" ? t("actions.update") : t("actions.publish")
@@ -515,7 +516,7 @@ export function ReviewCard({
         description={
           <div className="space-y-3">
             <p>{review.replyStatus === "posted" ? t("updateDialog.description") : t("publishDialog.description")}</p>
-            <div className="rounded-md bg-muted p-3 space-y-2">
+            <div className="rounded-xl bg-muted/40 p-3.5 space-y-2">
               <div className="flex items-center gap-2 text-sm">
                 <span className="font-medium">{t("publishDialog.reviewer")}</span>
                 <span>{review.name}</span>
@@ -526,8 +527,11 @@ export function ReviewCard({
                 {review.text && <p className="mt-1 text-muted-foreground">{review.text}</p>}
               </div>
             </div>
-            <div className="rounded-md border border-accent bg-accent/10 p-3">
-              <p className="text-sm font-medium mb-1">{t("publishDialog.replyPreview")}</p>
+            <div className="rounded-e-xl border-s-2 border-primary/30 bg-muted/40 ps-3.5 pe-3.5 py-3">
+              <div className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-brand">
+                <Sparkles className="size-3.5" />
+                {t("publishDialog.replyPreview")}
+              </div>
               <p className="text-sm text-foreground">{review.latestAiReply}</p>
             </div>
           </div>

@@ -3,6 +3,7 @@
 import { ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { SectionBlock, SectionHeading } from "@/components/ui/section-block";
 import { cn } from "@/lib/utils";
 
 const FAQ_ITEM_COUNT = 10;
@@ -16,41 +17,36 @@ export function FAQ() {
   };
 
   return (
-    <div id="faq" tabIndex={-1}>
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4">{t("title")}</h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">{t("subtitle")}</p>
-        </div>
+    <SectionBlock tone="cream" id="faq" tabIndex={-1} width="sm">
+      <SectionHeading title={t("title")} subtitle={t("subtitle")} />
 
-        <div className="max-w-3xl mx-auto rounded-2xl border border-border/60 bg-primary/[0.03] shadow-sm overflow-hidden divide-y divide-border/40">
-          {Array.from({ length: FAQ_ITEM_COUNT }).map((_, index) => (
-            <div key={index}>
-              <button
-                onClick={() => toggleFAQ(index)}
-                className="w-full text-start px-6 py-5 flex items-center justify-between cursor-pointer"
-              >
-                <h3 className="text-base font-medium text-foreground pe-4">{t(`items.${index}.question`)}</h3>
-                <div className={cn("transition-transform duration-300 shrink-0", openIndex === index && "rotate-180")}>
-                  <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                </div>
-              </button>
-              <div
-                className={cn(
-                  "grid transition-[grid-template-rows,opacity] duration-300",
-                  openIndex === index ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
-                )}
-              >
-                <div className="overflow-hidden">
-                  <div className="px-6 pb-5 pt-0">
-                    <p className="text-sm text-muted-foreground leading-relaxed">{t(`items.${index}.answer`)}</p>
-                  </div>
+      <div className="mt-12 divide-y divide-border/60 overflow-hidden rounded-3xl border border-border/60 bg-card shadow-sm">
+        {Array.from({ length: FAQ_ITEM_COUNT }).map((_, index) => (
+          <div key={index}>
+            <button
+              onClick={() => toggleFAQ(index)}
+              className="flex w-full cursor-pointer items-center justify-between px-6 py-5 text-start transition-colors hover:bg-muted/40"
+            >
+              <h3 className="pe-4 text-base font-medium text-foreground">{t(`items.${index}.question`)}</h3>
+              <div className={cn("shrink-0 transition-transform duration-300", openIndex === index && "rotate-180")}>
+                <ChevronDown className="size-4 text-muted-foreground" />
+              </div>
+            </button>
+            <div
+              className={cn(
+                "grid transition-[grid-template-rows,opacity] duration-300",
+                openIndex === index ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+              )}
+            >
+              <div className="overflow-hidden">
+                <div className="px-6 pb-5 pt-0">
+                  <p className="text-sm leading-relaxed text-muted-foreground">{t(`items.${index}.answer`)}</p>
                 </div>
               </div>
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
-    </div>
+    </SectionBlock>
   );
 }

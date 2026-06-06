@@ -24,14 +24,14 @@ export function UpgradeBanner() {
       <SidebarMenuItem>
         <SidebarMenuButton
           asChild
-          className="bg-primary/10 hover:bg-primary/15 text-primary h-auto py-2"
+          className="h-auto bg-secondary py-2 text-primary hover:bg-secondary/70"
           tooltip={{ children: t("title"), side: dir === "rtl" ? "left" : "right" }}
         >
           <Link href="/dashboard/subscription">
             <Sparkles className="size-4 shrink-0" />
             <div className="grid text-start text-xs leading-tight">
-              <span className="font-semibold truncate">{t("title")}</span>
-              <span className="text-muted-foreground truncate">{t("upgradeNow")}</span>
+              <span className="truncate font-semibold">{t("title")}</span>
+              <span className="truncate text-primary/70">{t("upgradeNow")}</span>
             </div>
           </Link>
         </SidebarMenuButton>

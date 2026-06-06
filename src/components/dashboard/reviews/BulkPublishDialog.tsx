@@ -115,10 +115,10 @@ export function BulkPublishDialog({
 
   const getStatusIcon = (status: ReviewStatus) => {
     if (status === "publishing") return <Loader2 className="size-4 animate-spin text-primary" />;
-    if (status === "succeeded") return <CheckCircle2 className="size-4 text-green-600 dark:text-green-400" />;
+    if (status === "succeeded") return <CheckCircle2 className="size-4 text-success" />;
     if (status === "removed") return <Trash2 className="size-4 text-muted-foreground" />;
     if (typeof status === "object") return <XCircle className="size-4 text-destructive" />;
-    return <div className="size-4 rounded-full border-2 border-border/40" />;
+    return <div className="size-4 rounded-full border-2 border-border/60" />;
   };
 
   return (
@@ -143,10 +143,10 @@ export function BulkPublishDialog({
         {phase === "confirm" && (
           <div className="max-h-64 overflow-y-auto space-y-2">
             {selectedReviews.map((review) => (
-              <div key={review.id} className="flex items-start gap-3 rounded-lg border border-border/40 p-3">
-                <Avatar className="h-8 w-8 shrink-0">
+              <div key={review.id} className="flex items-start gap-3 rounded-xl border border-border/60 p-3">
+                <Avatar className="h-8 w-8 shrink-0 rounded-lg">
                   <AvatarImage src={review.photoUrl || undefined} />
-                  <AvatarFallback className="bg-primary/10 text-xs">
+                  <AvatarFallback className="rounded-lg bg-secondary text-xs text-primary">
                     {review.photoUrl ? <User className="h-4 w-4 text-primary" /> : getInitials(review.name)}
                   </AvatarFallback>
                 </Avatar>
@@ -174,8 +174,8 @@ export function BulkPublishDialog({
                   <div
                     key={review.id}
                     className={cn(
-                      "flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors",
-                      status === "publishing" && "bg-primary/5",
+                      "flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm transition-colors",
+                      status === "publishing" && "bg-secondary",
                       (status === "succeeded" || status === "removed") && "opacity-60"
                     )}
                   >
@@ -197,7 +197,7 @@ export function BulkPublishDialog({
         {phase === "results" && (
           <div className="space-y-3">
             {results.succeeded.length > 0 && (
-              <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
+              <div className="flex items-center gap-2 text-sm text-success">
                 <CheckCircle2 className="h-4 w-4 shrink-0" />
                 <span>{t("complete", { succeeded: results.succeeded.length, total })}</span>
               </div>

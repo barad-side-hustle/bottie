@@ -5,6 +5,7 @@ import { useRouter } from "@/i18n/routing";
 import { useTranslations } from "next-intl";
 import { Building2, Star, MessageSquare } from "lucide-react";
 import { OnboardingFormPanel } from "@/components/onboarding/OnboardingFormPanel";
+import { GoogleSsoButton } from "@/components/ui/google-sso-button";
 import { sendRybbitEvent } from "@/lib/analytics";
 
 interface ConnectStepProps {
@@ -38,26 +39,29 @@ export function ConnectStep({ progressBar }: ConnectStepProps) {
         onClick: () => router.push("/dashboard/home"),
         label: tCommon("back"),
       }}
-      nextButton={{
-        label: t("connectButton"),
-        loadingLabel: t("connectingButton"),
-        onClick: handleConnect,
-        loading: connecting,
-      }}
     >
-      <div className="space-y-4">
-        <p className="text-sm font-medium text-foreground">{t("permissionsTitle")}</p>
-        <div className="flex flex-wrap gap-2">
-          {permissions.map((perm) => (
-            <div
-              key={perm.label}
-              className="inline-flex items-center gap-2 rounded-full bg-pastel-lavender/20 border border-border/40 px-4 py-2 text-sm text-muted-foreground"
-            >
-              <perm.icon className="h-4 w-4 text-primary shrink-0" />
-              <span>{perm.label}</span>
-            </div>
-          ))}
+      <div className="space-y-6">
+        <div className="space-y-3">
+          <p className="text-sm font-semibold text-foreground">{t("permissionsTitle")}</p>
+          <ul className="space-y-2.5">
+            {permissions.map((perm) => (
+              <li key={perm.label} className="flex items-center gap-3 text-sm text-foreground">
+                <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-secondary text-primary">
+                  <perm.icon className="h-4 w-4" />
+                </span>
+                <span>{perm.label}</span>
+              </li>
+            ))}
+          </ul>
         </div>
+
+        <GoogleSsoButton
+          onClick={handleConnect}
+          isLoading={connecting}
+          label={t("connectButton")}
+          labelLoading={t("connectingButton")}
+          className="h-12 text-base"
+        />
       </div>
     </OnboardingFormPanel>
   );

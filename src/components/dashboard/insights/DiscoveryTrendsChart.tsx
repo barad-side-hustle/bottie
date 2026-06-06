@@ -41,16 +41,6 @@ export function DiscoveryTrendsChart({ daily }: DiscoveryTrendsChartProps) {
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={chartData} margin={{ top: 8, right: 12, left: -16, bottom: 0 }}>
-              <defs>
-                <linearGradient id="discoveryImpressions" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.15} />
-                  <stop offset="95%" stopColor="var(--primary)" stopOpacity={0} />
-                </linearGradient>
-                <linearGradient id="discoveryActions" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--success, #22c55e)" stopOpacity={0.15} />
-                  <stop offset="95%" stopColor="var(--success, #22c55e)" stopOpacity={0} />
-                </linearGradient>
-              </defs>
               <CartesianGrid stroke="var(--border)" strokeOpacity={0.5} vertical={false} />
               <XAxis
                 dataKey="date"
@@ -71,24 +61,26 @@ export function DiscoveryTrendsChart({ daily }: DiscoveryTrendsChartProps) {
                 allowDecimals={false}
               />
               <Tooltip
+                cursor={{ stroke: "var(--border)", strokeWidth: 1 }}
                 contentStyle={{
                   backgroundColor: "var(--card)",
-                  border: "none",
+                  border: "1px solid var(--border)",
                   borderRadius: "0.75rem",
                   boxShadow: "var(--shadow-md)",
                   padding: "8px 12px",
                   fontSize: "13px",
                 }}
+                labelStyle={{ color: "var(--muted-foreground)", marginBottom: "4px", fontWeight: 600 }}
               />
-              <Legend wrapperStyle={{ fontSize: "12px", paddingTop: "8px" }} iconType="circle" iconSize={8} />
+              <Legend wrapperStyle={{ fontSize: "12px", paddingTop: "12px" }} iconType="circle" iconSize={8} />
               <Area
                 type="monotone"
                 dataKey="impressions"
                 name={t("performance.totalImpressions")}
                 stroke="var(--primary)"
                 strokeWidth={2}
-                fillOpacity={1}
-                fill="url(#discoveryImpressions)"
+                fill="var(--primary)"
+                fillOpacity={0.12}
               />
               <Area
                 type="monotone"
@@ -96,8 +88,8 @@ export function DiscoveryTrendsChart({ daily }: DiscoveryTrendsChartProps) {
                 name={t("scoreboard.customerActions")}
                 stroke="var(--success, #22c55e)"
                 strokeWidth={2}
-                fillOpacity={1}
-                fill="url(#discoveryActions)"
+                fill="var(--success, #22c55e)"
+                fillOpacity={0.12}
               />
             </AreaChart>
           </ResponsiveContainer>
