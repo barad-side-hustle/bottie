@@ -633,7 +633,14 @@
       "inbox": {
         "detailEmptyTitle": "בחר ביקורת",
         "detailEmptyHint": "בחר ביקורת מהרשימה כדי לקרוא אותה ולנסח תגובה.",
-        "keyboardHint": "השתמש ב-J / K כדי לנוע, Enter כדי לפתוח"
+        "keyboardHint": "השתמש ב-J / K כדי לנוע, Enter כדי לפתוח",
+        "searchPlaceholder": "חיפוש ביקורות",
+        "tabs": {
+          "all": "הכול",
+          "pending": "ממתינות לתגובה"
+        },
+        "noResults": "אין ביקורות תואמות",
+        "noResultsHint": "נסה לשנות את החיפוש או הסינון."
       }
     },
     "subscription": {

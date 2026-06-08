@@ -676,7 +676,14 @@
       "inbox": {
         "detailEmptyTitle": "Select a review",
         "detailEmptyHint": "Choose a review from the list to read it and craft a reply.",
-        "keyboardHint": "Use J / K to move, Enter to open"
+        "keyboardHint": "Use J / K to move, Enter to open",
+        "searchPlaceholder": "Search reviews",
+        "tabs": {
+          "all": "All",
+          "pending": "Needs reply"
+        },
+        "noResults": "No matching reviews",
+        "noResultsHint": "Try adjusting your search or filters."
       }
     },
     "reviewDetail": {

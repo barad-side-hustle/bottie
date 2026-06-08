@@ -22,6 +22,7 @@ const ReviewFiltersSchema = z
     sentiment: z.array(z.enum(["positive", "neutral", "negative"])).optional(),
     dateFrom: z.date().optional(),
     dateTo: z.date().optional(),
+    search: z.string().optional(),
   })
   .optional();
 
