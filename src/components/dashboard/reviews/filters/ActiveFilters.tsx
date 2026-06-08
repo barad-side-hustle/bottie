@@ -18,15 +18,18 @@ interface ActiveFiltersProps {
   filters: ReviewFilters;
   onRemove: (key: keyof ReviewFilters, value?: string | number) => void;
   onClearAll: () => void;
+  hideReplyStatus?: boolean;
 }
 
-export function ActiveFilters({ filters, onRemove, onClearAll }: ActiveFiltersProps) {
+export function ActiveFilters({ filters, onRemove, onClearAll, hideReplyStatus = false }: ActiveFiltersProps) {
   const t = useTranslations("dashboard.reviews.filters");
   const locale = useLocale();
   const dateLocale = localeMap[locale] || enUS;
 
+  const showReplyStatus = !hideReplyStatus && (filters.replyStatus?.length ?? 0) > 0;
+
   const hasFilters =
-    (filters.replyStatus?.length ?? 0) > 0 ||
+    showReplyStatus ||
     (filters.rating?.length ?? 0) > 0 ||
     (filters.sentiment?.length ?? 0) > 0 ||
     filters.dateFrom ||
@@ -39,19 +42,20 @@ export function ActiveFilters({ filters, onRemove, onClearAll }: ActiveFiltersPr
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      {filters.replyStatus?.map((status) => (
-        <Badge key={status} variant="outline" className="gap-1 bg-surface-2 ps-2.5 pe-1 py-1 text-ink">
-          {t(`status.${status}`)}
-          <button
-            type="button"
-            className={removeButtonClass}
-            onClick={() => onRemove("replyStatus", status)}
-            aria-label={t("removeFilter")}
-          >
-            <X className="h-3 w-3" aria-hidden="true" />
-          </button>
-        </Badge>
-      ))}
+      {showReplyStatus &&
+        filters.replyStatus?.map((status) => (
+          <Badge key={status} variant="outline" className="gap-1 bg-surface-2 ps-2.5 pe-1 py-1 text-ink">
+            {t(`status.${status}`)}
+            <button
+              type="button"
+              className={removeButtonClass}
+              onClick={() => onRemove("replyStatus", status)}
+              aria-label={t("removeFilter")}
+            >
+              <X className="h-3 w-3" aria-hidden="true" />
+            </button>
+          </Badge>
+        ))}
 
       {filters.rating?.map((rating) => (
         <Badge key={rating} variant="outline" className="gap-1 bg-surface-2 ps-2.5 pe-1 py-1 text-ink">

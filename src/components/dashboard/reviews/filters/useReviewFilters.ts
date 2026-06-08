@@ -5,11 +5,10 @@ import { useRouter, usePathname, useSearchParams, useParams } from "next/navigat
 import { ReviewFilters } from "@/lib/types";
 import { parseFiltersFromSearchParams, buildSearchParams, DEFAULT_REVIEW_SORT } from "@/lib/utils/filter-utils";
 import { useFiltersStore } from "@/lib/store/filters-store";
-import { ReviewFiltersForm } from "./ReviewFiltersForm";
-import { ResponsiveFilterPanel } from "./ResponsiveFilterPanel";
-import { ActiveFilters } from "./ActiveFilters";
 
-function useReviewFilters() {
+const URL_FILTER_KEYS = ["replyStatus", "rating", "sentiment", "dateFrom", "dateTo", "search", "sortBy", "sortDir"];
+
+export function useReviewFilters() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -25,9 +24,7 @@ function useReviewFilters() {
     paramsObj[key] = value;
   });
 
-  const hasUrlParams = Object.keys(paramsObj).some((key) =>
-    ["replyStatus", "rating", "dateFrom", "dateTo", "sortBy", "sortDir"].includes(key)
-  );
+  const hasUrlParams = Object.keys(paramsObj).some((key) => URL_FILTER_KEYS.includes(key));
 
   let filters: ReviewFilters;
   if (hasUrlParams) {
@@ -38,20 +35,22 @@ function useReviewFilters() {
   }
 
   const activeCount =
-    (filters.replyStatus?.length ?? 0) +
-    (filters.rating?.length ?? 0) +
-    (filters.sentiment?.length ?? 0) +
-    (filters.dateFrom || filters.dateTo ? 1 : 0);
+    (filters.rating?.length ?? 0) + (filters.sentiment?.length ?? 0) + (filters.dateFrom || filters.dateTo ? 1 : 0);
 
   const handleFilterChange = (newFilters: ReviewFilters) => {
     storeSetFilters(locationId, newFilters);
     const params = buildSearchParams(newFilters);
-    router.push(`${pathname}?${params.toString()}`);
+    const query = params.toString();
+    router.push(query ? `${pathname}?${query}` : pathname);
   };
 
   const handleReset = () => {
     clearFilters(locationId);
     router.push(pathname);
+  };
+
+  const handleSearchChange = (search: string) => {
+    handleFilterChange({ ...filters, search: search.trim() || undefined });
   };
 
   const handleRemoveFilter = (key: keyof ReviewFilters, value?: string | number) => {
@@ -71,19 +70,14 @@ function useReviewFilters() {
     handleFilterChange(newFilters);
   };
 
-  return { filters, activeCount, isOpen, setIsOpen, handleFilterChange, handleReset, handleRemoveFilter };
-}
-
-export function ReviewsFilterBar() {
-  const { filters, activeCount, isOpen, setIsOpen, handleFilterChange, handleReset, handleRemoveFilter } =
-    useReviewFilters();
-
-  return (
-    <div className="flex flex-wrap items-center gap-3">
-      <ResponsiveFilterPanel activeCount={activeCount} open={isOpen} onOpenChange={setIsOpen}>
-        <ReviewFiltersForm filters={filters} onApply={handleFilterChange} onReset={handleReset} />
-      </ResponsiveFilterPanel>
-      <ActiveFilters filters={filters} onRemove={handleRemoveFilter} onClearAll={handleReset} />
-    </div>
-  );
+  return {
+    filters,
+    activeCount,
+    isOpen,
+    setIsOpen,
+    handleFilterChange,
+    handleReset,
+    handleSearchChange,
+    handleRemoveFilter,
+  };
 }

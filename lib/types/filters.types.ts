@@ -15,6 +15,7 @@ export interface ReviewFilters extends TFilters {
   sentiment?: Sentiment[];
   dateFrom?: Date;
   dateTo?: Date;
+  search?: string;
   sort: ReviewSortOptions;
 }
 

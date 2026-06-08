@@ -676,7 +676,14 @@
       "inbox": {
         "detailEmptyTitle": "Selecciona una resena",
         "detailEmptyHint": "Elige una resena de la lista para leerla y redactar una respuesta.",
-        "keyboardHint": "Usa J / K para moverte, Enter para abrir"
+        "keyboardHint": "Usa J / K para moverte, Enter para abrir",
+        "searchPlaceholder": "Buscar resenas",
+        "tabs": {
+          "all": "Todas",
+          "pending": "Por responder"
+        },
+        "noResults": "No hay resenas que coincidan",
+        "noResultsHint": "Prueba a ajustar la busqueda o los filtros."
       }
     },
     "reviewDetail": {

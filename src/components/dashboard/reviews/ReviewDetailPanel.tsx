@@ -1,17 +1,18 @@
 "use client";
 
-import { useRef, useImperativeHandle, forwardRef } from "react";
+import { useRef, useImperativeHandle, useCallback, forwardRef, type ReactNode } from "react";
 import { StarRating } from "@/components/ui/StarRating";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider, TooltipIcon } from "@/components/ui/tooltip";
 import { ReviewStatusBadge } from "@/components/dashboard/reviews/ReviewStatusBadge";
 import { useReplyWorkspace } from "@/components/dashboard/reviews/useReplyWorkspace";
-import { User, RotateCcw, Send, ThumbsUp, ThumbsDown, Check } from "lucide-react";
+import { User, RotateCcw, Pencil, Send, ThumbsUp, ThumbsDown, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslations, useFormatter } from "next-intl";
 import { useDirection } from "@/contexts/DirectionProvider";
@@ -42,6 +43,43 @@ function getInitials(name: string) {
     .slice(0, 2);
 }
 
+function ToolbarButton({
+  label,
+  onClick,
+  disabled,
+  active,
+  activeClass,
+  children,
+}: {
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
+  active?: boolean;
+  activeClass?: string;
+  children: ReactNode;
+}) {
+  return (
+    <TooltipProvider delayDuration={300}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Button
+            type="button"
+            size="icon-sm"
+            variant="ghost"
+            onClick={onClick}
+            disabled={disabled}
+            aria-label={label}
+            className={cn(active && activeClass)}
+          >
+            {children}
+          </Button>
+        </TooltipTrigger>
+        <TooltipContent>{label}</TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+}
+
 export const ReviewDetailPanel = forwardRef<ReviewDetailPanelHandle, ReviewDetailPanelProps>(function ReviewDetailPanel(
   { review, locationId, onUpdate, onPublished, variant = "panel", className },
   ref
@@ -55,12 +93,12 @@ export const ReviewDetailPanel = forwardRef<ReviewDetailPanelHandle, ReviewDetai
 
   const workspace = useReplyWorkspace({ review, locationId, onUpdate });
 
-  const handlePublish = async () => {
+  const handlePublish = useCallback(async () => {
     try {
       await workspace.publish();
       onPublished?.(review.id);
     } catch {}
-  };
+  }, [workspace, onPublished, review.id]);
 
   useImperativeHandle(
     ref,
@@ -70,7 +108,7 @@ export const ReviewDetailPanel = forwardRef<ReviewDetailPanelHandle, ReviewDetai
         if (isReviewPublishable(review) && !workspace.isBusy) void handlePublish();
       },
     }),
-    [review, workspace.isBusy]
+    [review, workspace.isBusy, handlePublish]
   );
 
   const classification = review.classifications;
@@ -89,44 +127,84 @@ export const ReviewDetailPanel = forwardRef<ReviewDetailPanelHandle, ReviewDetai
 
   const isPage = variant === "page";
 
+  const showReplySection = hasReply || canEdit;
+
   return (
     <div className={cn("flex h-full min-h-0 flex-col", className)} dir={dir}>
+      {showReplySection && (
+        <div className="flex items-center gap-0.5 border-b border-hairline bg-card px-2 py-1.5">
+          <ToolbarButton label={t("actions.regenerate")} onClick={workspace.regenerate} disabled={workspace.isBusy}>
+            <RotateCcw className={cn("size-4", workspace.isRegenerating && "animate-spin")} />
+          </ToolbarButton>
+          <ToolbarButton
+            label={t("actions.edit")}
+            onClick={() => textareaRef.current?.focus()}
+            disabled={workspace.isBusy || workspace.isRegenerating}
+          >
+            <Pencil className="size-4" />
+          </ToolbarButton>
+
+          {hasReply && (
+            <>
+              <Separator orientation="vertical" className="mx-1 h-5" />
+              <ToolbarButton
+                label={t("feedback.like")}
+                onClick={() => workspace.setFeedback("liked")}
+                disabled={workspace.isFeedbackLoading || workspace.isBusy}
+                active={workspace.feedbackState === "liked"}
+                activeClass="bg-positive-tint text-success-foreground"
+              >
+                <ThumbsUp className="size-3.5" />
+              </ToolbarButton>
+              <ToolbarButton
+                label={t("feedback.dislike")}
+                onClick={() => workspace.setFeedback("disliked")}
+                disabled={workspace.isFeedbackLoading || workspace.isBusy}
+                active={workspace.feedbackState === "disliked"}
+                activeClass="bg-negative-tint text-destructive"
+              >
+                <ThumbsDown className="size-3.5" />
+              </ToolbarButton>
+            </>
+          )}
+
+          <span className="ms-auto pe-1">
+            <ReviewStatusBadge review={review} />
+          </span>
+        </div>
+      )}
+
       <div className={cn("min-h-0 flex-1", !isPage && "overflow-y-auto")}>
-        <div className="space-y-5 p-5">
-          <div className="flex items-start gap-3">
-            <Avatar className="mt-0.5 h-10 w-10 shrink-0 rounded-md">
-              <AvatarImage src={review.photoUrl || undefined} alt={`${review.name} profile`} />
-              <AvatarFallback className="rounded-md bg-surface-2">
-                {review.photoUrl ? (
-                  <User className="h-5 w-5 text-ink-3" />
-                ) : (
-                  <span className="text-sm font-semibold text-ink-2">{getInitials(review.name)}</span>
-                )}
-              </AvatarFallback>
-            </Avatar>
-            <div className="min-w-0 flex-1 space-y-1.5">
-              <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                <h2 className="truncate font-sans text-base font-semibold tracking-[-0.01em] text-ink">
-                  {review.name}
-                </h2>
-                <span className="ms-auto">
-                  <ReviewStatusBadge review={review} />
-                </span>
-              </div>
-              <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                <StarRating rating={review.rating} size={15} />
-                <span className="flex items-center gap-1 text-xs tabular-nums text-ink-3">
-                  {format.dateTime(new Date(review.date), {
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric",
-                  })}
-                  <TooltipIcon text={t("dateTooltip")} additionalInfoLabel={t("reviewDateLabel")} />
-                </span>
-              </div>
+        <div className="flex items-start gap-3 p-5">
+          <Avatar className="mt-0.5 h-10 w-10 shrink-0 rounded-md">
+            <AvatarImage src={review.photoUrl || undefined} alt={`${review.name} profile`} />
+            <AvatarFallback className="rounded-md bg-surface-2">
+              {review.photoUrl ? (
+                <User className="h-5 w-5 text-ink-3" />
+              ) : (
+                <span className="text-sm font-semibold text-ink-2">{getInitials(review.name)}</span>
+              )}
+            </AvatarFallback>
+          </Avatar>
+          <div className="min-w-0 flex-1 space-y-1.5">
+            <h2 className="truncate font-sans text-base font-semibold tracking-[-0.01em] text-ink">{review.name}</h2>
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+              <StarRating rating={review.rating} size={15} />
+              <span className="flex items-center gap-1 text-xs tabular-nums text-ink-3">
+                {format.dateTime(new Date(review.date), {
+                  year: "numeric",
+                  month: "short",
+                  day: "numeric",
+                })}
+                <TooltipIcon text={t("dateTooltip")} additionalInfoLabel={t("reviewDateLabel")} />
+              </span>
             </div>
           </div>
+        </div>
 
+        <Separator />
+
+        <div className="space-y-3 p-5">
           <p className={cn("text-sm leading-relaxed text-ink-2", !review.text && "italic text-ink-3")}>
             {review.text || t("noText")}
           </p>
@@ -149,70 +227,26 @@ export const ReviewDetailPanel = forwardRef<ReviewDetailPanelHandle, ReviewDetai
               ))}
             </div>
           )}
+        </div>
 
-          {(hasReply || canEdit) && (
-            <div className="space-y-2 border-t border-hairline pt-5">
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-semibold uppercase tracking-[0.02em] text-ink-2">
-                    {t("aiReplyLabel")}
+        {showReplySection && (
+          <>
+            <Separator />
+            <div className="space-y-2 p-5">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-semibold uppercase tracking-[0.02em] text-ink-2">
+                  {t("aiReplyLabel")}
+                </span>
+                {isPosted && review.latestAiReplyPostedAt && (
+                  <span className="flex items-center gap-1 text-xs tabular-nums text-ink-3">
+                    &middot;{" "}
+                    {format.dateTime(new Date(review.latestAiReplyPostedAt), {
+                      year: "numeric",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                    <TooltipIcon text={t("replyDateTooltip")} additionalInfoLabel={t("replyDateLabel")} />
                   </span>
-                  {isPosted && review.latestAiReplyPostedAt && (
-                    <span className="flex items-center gap-1 text-xs tabular-nums text-ink-3">
-                      &middot;{" "}
-                      {format.dateTime(new Date(review.latestAiReplyPostedAt), {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                      })}
-                      <TooltipIcon text={t("replyDateTooltip")} additionalInfoLabel={t("replyDateLabel")} />
-                    </span>
-                  )}
-                </div>
-
-                {hasReply && (
-                  <div className="flex items-center gap-0.5">
-                    <TooltipProvider delayDuration={300}>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            type="button"
-                            onClick={() => workspace.setFeedback("liked")}
-                            disabled={workspace.isFeedbackLoading || workspace.isBusy}
-                            size="icon-sm"
-                            variant="ghost"
-                            aria-label={t("feedback.like")}
-                            className={cn(
-                              workspace.feedbackState === "liked" && "bg-positive-tint text-success-foreground"
-                            )}
-                          >
-                            <ThumbsUp className="size-3.5" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>{t("feedback.like")}</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                    <TooltipProvider delayDuration={300}>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button
-                            type="button"
-                            onClick={() => workspace.setFeedback("disliked")}
-                            disabled={workspace.isFeedbackLoading || workspace.isBusy}
-                            size="icon-sm"
-                            variant="ghost"
-                            aria-label={t("feedback.dislike")}
-                            className={cn(
-                              workspace.feedbackState === "disliked" && "bg-negative-tint text-destructive"
-                            )}
-                          >
-                            <ThumbsDown className="size-3.5" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>{t("feedback.dislike")}</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
                 )}
               </div>
 
@@ -283,33 +317,21 @@ export const ReviewDetailPanel = forwardRef<ReviewDetailPanelHandle, ReviewDetai
                 </form>
               )}
             </div>
-          )}
-        </div>
+          </>
+        )}
       </div>
 
-      {(hasReply || canEdit) && (
+      {showReplySection && (
         <div
           className={cn(
-            "flex items-center gap-2 border-t border-hairline bg-card px-5 py-3",
+            "flex items-center justify-end gap-2 border-t border-hairline bg-card px-5 py-3",
             !isPage && "sticky bottom-0"
           )}
         >
           <Button
             type="button"
-            variant="outline"
             size="sm"
             className="gap-1.5"
-            onClick={workspace.regenerate}
-            disabled={workspace.isBusy}
-          >
-            <RotateCcw className={cn("size-4", workspace.isRegenerating && "animate-spin")} />
-            {t("actions.regenerate")}
-          </Button>
-
-          <Button
-            type="button"
-            size="sm"
-            className="ms-auto gap-1.5"
             onClick={handlePublish}
             disabled={!publishable || workspace.isBusy || !workspace.replyText.trim()}
           >

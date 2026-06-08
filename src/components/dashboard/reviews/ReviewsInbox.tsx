@@ -5,12 +5,13 @@ import { useRouter } from "@/i18n/routing";
 import { useSearchParams } from "next/navigation";
 import { ReviewCard, isReviewPublishable } from "@/components/dashboard/reviews/ReviewCard";
 import { ReviewDetailPanel, type ReviewDetailPanelHandle } from "@/components/dashboard/reviews/ReviewDetailPanel";
+import { ReviewsListHeader } from "@/components/dashboard/reviews/ReviewsListHeader";
 import { BulkActionBar } from "@/components/dashboard/reviews/BulkActionBar";
 import { BulkPublishDialog } from "@/components/dashboard/reviews/BulkPublishDialog";
 import { getReviews } from "@/lib/actions/reviews.actions";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
-import { CheckSquare, ChevronDown, Inbox } from "lucide-react";
+import { CheckSquare, ChevronDown, Inbox, SearchX } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTranslations } from "next-intl";
 import { useMediaQuery } from "react-responsive";
@@ -207,6 +208,12 @@ export function ReviewsInbox({ reviews: initialReviews, locationId, userId }: Re
     return () => window.removeEventListener("keydown", handler);
   }, [reviews, activeReviewId, activeReview, isDesktop, hasMore, isLoading, loadMoreReviews]);
 
+  useEffect(() => {
+    if (!activeReviewId || !isDesktop) return;
+    const el = listRef.current?.querySelector(`[data-review-id="${activeReviewId}"]`);
+    el?.scrollIntoView({ block: "nearest" });
+  }, [activeReviewId, isDesktop]);
+
   const detailPanel = activeReview ? (
     <ReviewDetailPanel
       key={activeReview.id}
@@ -220,70 +227,76 @@ export function ReviewsInbox({ reviews: initialReviews, locationId, userId }: Re
     <EmptyDetail title={tInbox("detailEmptyTitle")} hint={tInbox("detailEmptyHint")} />
   );
 
-  const list = (
-    <div
-      ref={listRef}
-      className="divide-y divide-border overflow-hidden rounded-lg border border-hairline bg-card lg:rounded-none lg:border-x-0 lg:border-t-0"
-    >
-      {publishableIds.size > 0 && selectedPublishable.length === 0 && (
-        <button
-          type="button"
-          onClick={handleSelectAll}
-          className="flex w-full items-center gap-2 border-b border-hairline bg-surface-2 px-4 py-2.5 text-start text-sm text-ink-2 transition-colors hover:text-ink"
-        >
-          <CheckSquare className="size-3.5" />
-          <span>{t("selectAllHint", { count: publishableIds.size })}</span>
-        </button>
-      )}
+  const listBody =
+    reviews.length === 0 ? (
+      <NoResults title={tInbox("noResults")} hint={tInbox("noResultsHint")} />
+    ) : (
+      <div className="flex flex-col gap-2 p-3">
+        {publishableIds.size > 0 && selectedPublishable.length === 0 && (
+          <button
+            type="button"
+            onClick={handleSelectAll}
+            className="flex w-full items-center gap-2 rounded-md border border-hairline bg-surface-2 px-3 py-2 text-start text-xs text-ink-2 transition-colors hover:text-ink"
+          >
+            <CheckSquare className="size-3.5" />
+            <span>{t("selectAllHint", { count: publishableIds.size })}</span>
+          </button>
+        )}
 
-      {reviews.map((review) => (
-        <ReviewCard
-          key={review.id}
-          review={review}
-          locationId={locationId}
-          userId={userId}
-          onUpdate={handleUpdate}
-          isSelectable={isReviewPublishable(review)}
-          isSelected={selectedIds.has(review.id)}
-          onSelectionChange={handleSelectionChange}
-          isActive={activeReviewId === review.id}
-          onActivate={openReview}
-          density="compact"
-        />
-      ))}
+        {reviews.map((review) => (
+          <ReviewCard
+            key={review.id}
+            review={review}
+            locationId={locationId}
+            userId={userId}
+            onUpdate={handleUpdate}
+            isSelectable={isReviewPublishable(review)}
+            isSelected={selectedIds.has(review.id)}
+            onSelectionChange={handleSelectionChange}
+            isActive={activeReviewId === review.id}
+            onActivate={openReview}
+            density="compact"
+          />
+        ))}
 
-      {hasMore && isLoading && Array.from({ length: 2 }).map((_, i) => <ReviewRowSkeleton key={i} />)}
+        {hasMore && isLoading && Array.from({ length: 2 }).map((_, i) => <ReviewRowSkeleton key={i} />)}
 
-      {hasMore && !isLoading && (
-        <button
-          type="button"
-          onClick={loadMoreReviews}
-          className="flex w-full items-center justify-center gap-2 px-4 py-3 text-sm text-ink-2 transition-colors hover:bg-surface-2 hover:text-ink"
-        >
-          <ChevronDown className="size-4" />
-          {t("loadMore")}
-        </button>
-      )}
-    </div>
-  );
+        {hasMore && !isLoading && (
+          <button
+            type="button"
+            onClick={loadMoreReviews}
+            className="flex w-full items-center justify-center gap-2 rounded-md border border-hairline px-4 py-2.5 text-sm text-ink-2 transition-colors hover:bg-surface-2 hover:text-ink"
+          >
+            <ChevronDown className="size-4" />
+            {t("loadMore")}
+          </button>
+        )}
+      </div>
+    );
 
   return (
     <div className={cn(selectedPublishable.length > 0 && "pb-20")}>
-      <div className="hidden lg:grid lg:grid-cols-[minmax(360px,1fr)_minmax(440px,520px)]">
-        <div className="min-w-0 border-e border-hairline">{list}</div>
-        <aside className="min-w-0">
-          <div className="sticky top-32 h-[calc(100vh-9rem)] overflow-hidden rounded-lg border border-hairline bg-card">
-            {detailPanel}
+      <div className="overflow-hidden rounded-lg border border-hairline bg-card lg:h-[calc(100vh-12rem)] lg:min-h-[600px]">
+        <div className="grid h-full grid-cols-1 lg:grid-cols-[minmax(320px,2fr)_minmax(0,3fr)]">
+          <div className="flex min-h-0 flex-col lg:border-e lg:border-hairline">
+            <ReviewsListHeader />
+            <div ref={listRef} className="min-h-0 flex-1 overflow-y-auto">
+              {listBody}
+            </div>
           </div>
-        </aside>
-      </div>
 
-      <div className="lg:hidden">{list}</div>
+          <aside className="hidden min-h-0 lg:flex lg:flex-col">{detailPanel}</aside>
+        </div>
+      </div>
 
       <Sheet open={sheetOpen && !isDesktop} onOpenChange={setSheetOpen}>
         <SheetContent side="bottom" className="h-[88vh] gap-0 rounded-t-lg p-0">
           <SheetTitle className="sr-only">{activeReview?.name ?? tInbox("detailEmptyTitle")}</SheetTitle>
-          <div className="h-full pt-2">{detailPanel}</div>
+
+          <div className="flex h-12 shrink-0 items-center justify-center">
+            <div className="h-1.5 w-10 rounded-full bg-line-strong" aria-hidden="true" />
+          </div>
+          <div className="h-[calc(100%-3rem)]">{detailPanel}</div>
         </SheetContent>
       </Sheet>
 
@@ -325,19 +338,31 @@ function EmptyDetail({ title, hint }: { title: string; hint: string }) {
   );
 }
 
+function NoResults({ title, hint }: { title: string; hint: string }) {
+  return (
+    <div className="flex h-full flex-col items-center justify-center gap-3 p-8 text-center">
+      <span className="flex size-10 items-center justify-center rounded-lg border border-hairline bg-surface-2 text-ink-3">
+        <SearchX className="size-5" />
+      </span>
+      <div className="space-y-1">
+        <p className="font-sans text-sm font-semibold tracking-[-0.01em] text-ink">{title}</p>
+        <p className="text-sm text-ink-2">{hint}</p>
+      </div>
+    </div>
+  );
+}
+
 function ReviewRowSkeleton() {
   return (
-    <div className="flex gap-3 px-4 py-3">
-      <Skeleton className="mt-0.5 h-9 w-9 shrink-0 rounded-md" />
-      <div className="min-w-0 flex-1 space-y-2">
-        <div className="flex items-center gap-2">
-          <Skeleton className="h-4 w-28" />
-          <Skeleton className="h-3 w-20" />
-          <Skeleton className="ms-auto h-5 w-16 rounded-full" />
-        </div>
-        <Skeleton className="h-4 w-full" />
-        <Skeleton className="h-4 w-3/4" />
+    <div className="rounded-lg border border-hairline p-3">
+      <div className="flex items-center gap-2">
+        <Skeleton className="h-4 w-28" />
+        <Skeleton className="ms-auto h-3 w-12" />
       </div>
+      <Skeleton className="mt-2 h-3 w-20" />
+      <Skeleton className="mt-2.5 h-3.5 w-full" />
+      <Skeleton className="mt-1.5 h-3.5 w-3/4" />
+      <Skeleton className="mt-2.5 h-5 w-20 rounded-full" />
     </div>
   );
 }

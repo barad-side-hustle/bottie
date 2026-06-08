@@ -1,4 +1,4 @@
-import { eq, and, inArray, gte, lte, desc, asc, sql } from "drizzle-orm";
+import { eq, and, or, inArray, gte, lte, ilike, desc, asc, sql } from "drizzle-orm";
 import { db } from "@/lib/db/client";
 import { reviews, reviewResponses, type Review, type ReviewInsert } from "@/lib/db/schema";
 import type { ReviewFilters } from "@/lib/types";
@@ -80,6 +80,11 @@ export class ReviewsRepository extends BaseRepository<ReviewInsert, Review, Part
 
     if (filters.sentiment && filters.sentiment.length > 0) {
       conditions.push(sql`${reviews.classifications}->>'sentiment' IN (${sql.join(filters.sentiment, sql`, `)})`);
+    }
+
+    if (filters.search?.trim()) {
+      const term = `%${filters.search.trim()}%`;
+      conditions.push(or(ilike(reviews.name, term), ilike(reviews.text, term))!);
     }
 
     const limit = filters.limit || undefined;

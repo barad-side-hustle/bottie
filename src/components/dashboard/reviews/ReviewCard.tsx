@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { StarRating } from "@/components/ui/StarRating";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { TooltipIcon, Tooltip, TooltipTrigger, TooltipContent, TooltipProvider } from "@/components/ui/tooltip";
 import { postReviewReply, generateReviewReply, setReviewResponseFeedback } from "@/lib/actions/reviews.actions";
@@ -57,6 +58,7 @@ export function ReviewCard({
   onActivate,
 }: ReviewCardProps) {
   const t = useTranslations("dashboard.reviews.card");
+  const tCategories = useTranslations("dashboard.insights.categories");
   const format = useFormatter();
   const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
@@ -215,10 +217,16 @@ export function ReviewCard({
   );
 
   if (density === "compact") {
+    const categoryChips = [
+      ...(review.classifications?.positives ?? []).map((m) => m.category),
+      ...(review.classifications?.negatives ?? []).map((m) => m.category),
+    ].slice(0, 2);
+
     return (
       <div
         role="button"
         tabIndex={0}
+        data-review-id={review.id}
         onClick={() => onActivate?.(review.id)}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
@@ -228,30 +236,36 @@ export function ReviewCard({
         }}
         aria-current={isActive ? "true" : undefined}
         className={cn(
-          "group relative flex w-full cursor-pointer gap-3 px-4 py-3 text-start outline-none transition-colors duration-150",
-          "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset",
-          isActive ? "bg-surface-3" : isSelected ? "bg-accent-tint" : "hover:bg-surface-2"
+          "group relative flex w-full cursor-pointer flex-col gap-2 rounded-lg border p-3 text-start outline-none transition-colors duration-150",
+          "focus-visible:ring-2 focus-visible:ring-ring",
+          isActive
+            ? "border-line-strong bg-surface-3"
+            : isSelected
+              ? "border-line-strong bg-accent-tint"
+              : "border-hairline hover:border-line-strong hover:bg-surface-2"
         )}
       >
-        {checkbox}
-        {avatar}
+        <div className="flex items-center gap-2">
+          {checkbox}
+          <h3 className="truncate text-sm font-semibold text-ink">{review.name}</h3>
+          <span className="ms-auto shrink-0 text-xs tabular-nums text-ink-3">
+            {format.dateTime(new Date(review.date), { month: "short", day: "numeric" })}
+          </span>
+        </div>
 
-        <div className="min-w-0 flex-1 space-y-1">
-          <div className="flex items-center gap-x-2">
-            <h3 className="truncate text-sm font-medium text-ink">{review.name}</h3>
-            <StarRating rating={review.rating} size={13} />
-            <span className="ms-auto shrink-0 text-xs tabular-nums text-ink-3">
-              {format.dateTime(new Date(review.date), { month: "short", day: "numeric" })}
-            </span>
-          </div>
+        <StarRating rating={review.rating} size={14} />
 
-          <p className={cn("line-clamp-2 text-sm leading-snug text-ink-2", !review.text && "italic text-ink-3")}>
-            {review.text || t("noText")}
-          </p>
+        <p className={cn("line-clamp-2 text-xs leading-snug text-ink-2", !review.text && "italic text-ink-3")}>
+          {review.text || t("noText")}
+        </p>
 
-          <div className="flex items-center gap-2 pt-0.5">
-            <ReviewStatusBadge review={review} />
-          </div>
+        <div className="flex flex-wrap items-center gap-1.5">
+          <ReviewStatusBadge review={review} />
+          {categoryChips.map((category) => (
+            <Badge key={category} variant="outline" className="rounded-full bg-surface-2 font-normal">
+              {tCategories(category)}
+            </Badge>
+          ))}
         </div>
       </div>
     );

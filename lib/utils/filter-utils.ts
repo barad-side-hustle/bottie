@@ -35,6 +35,10 @@ export function parseFiltersFromSearchParams(searchParams: {
     filters.dateTo = new Date(searchParams.dateTo);
   }
 
+  if (typeof searchParams.search === "string" && searchParams.search.trim()) {
+    filters.search = searchParams.search;
+  }
+
   filters.sort = {
     orderBy: (searchParams.sortBy as ReviewSortField) || DEFAULT_REVIEW_SORT.orderBy,
     orderDirection: (searchParams.sortDir as "asc" | "desc") || DEFAULT_REVIEW_SORT.orderDirection,
@@ -64,6 +68,10 @@ export function buildSearchParams(filters: Partial<ReviewFilters>): URLSearchPar
 
   if (filters.dateTo) {
     params.set("dateTo", format(filters.dateTo, "yyyy-MM-dd"));
+  }
+
+  if (filters.search?.trim()) {
+    params.set("search", filters.search.trim());
   }
 
   if (filters.sort) {
