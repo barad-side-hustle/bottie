@@ -4,18 +4,19 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const badgeVariants = cva(
-  "inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 [&_svg]:size-3 [&_svg]:shrink-0",
+  "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 [&_svg]:size-3 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "border-transparent bg-primary text-primary-foreground",
-        brand: "border-transparent bg-brand/15 text-brand",
+        default: "border-transparent bg-surface-2 text-ink-2",
+        accent: "border-transparent bg-accent-tint text-accent-text",
+        brand: "border-transparent bg-accent-tint text-accent-text",
         secondary: "border-transparent bg-secondary text-secondary-foreground",
-        destructive: "border-transparent bg-destructive/15 text-destructive",
-        outline: "border-border text-foreground",
-        warning: "border-transparent bg-warning/20 text-warning-foreground",
-        success: "border-transparent bg-success/20 text-success-foreground",
-        info: "border-transparent bg-info/15 text-info-foreground",
+        destructive: "border-transparent bg-negative-tint text-destructive",
+        outline: "border-hairline text-ink-2",
+        warning: "border-transparent bg-pending-tint text-warning-foreground",
+        success: "border-transparent bg-positive-tint text-success-foreground",
+        info: "border-transparent bg-notice-tint text-info-foreground",
         muted: "border-transparent bg-muted text-muted-foreground",
       },
     },

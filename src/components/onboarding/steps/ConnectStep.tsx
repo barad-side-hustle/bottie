@@ -41,14 +41,12 @@ export function ConnectStep({ progressBar }: ConnectStepProps) {
       }}
     >
       <div className="space-y-6">
-        <div className="space-y-3">
-          <p className="text-sm font-semibold text-foreground">{t("permissionsTitle")}</p>
+        <div className="rounded-lg border border-hairline bg-surface-2 p-4 space-y-3">
+          <p className="text-xs font-semibold uppercase tracking-[0.02em] text-ink-2">{t("permissionsTitle")}</p>
           <ul className="space-y-2.5">
             {permissions.map((perm) => (
-              <li key={perm.label} className="flex items-center gap-3 text-sm text-foreground">
-                <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-secondary text-primary">
-                  <perm.icon className="h-4 w-4" />
-                </span>
+              <li key={perm.label} className="flex items-center gap-2.5 text-sm text-foreground">
+                <perm.icon className="h-4 w-4 shrink-0 text-ink-3" />
                 <span>{perm.label}</span>
               </li>
             ))}

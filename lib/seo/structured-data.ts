@@ -1,24 +1,33 @@
-import { getTranslations } from "next-intl/server";
+import { getTranslations, getMessages } from "next-intl/server";
 import { type Locale } from "@/lib/locale";
+import { PRICE_PER_LOCATION, FREE_LOCATION_LIMITS } from "@/lib/subscriptions/plans";
 
-export function generateOrganizationSchema(locale: Locale) {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+const APP_NAME = "Bottie";
+
+function getBaseUrl() {
+  return process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+}
+
+export async function generateOrganizationSchema(locale: Locale) {
+  const baseUrl = getBaseUrl();
+  const t = await getTranslations({ locale, namespace: "metadata" });
 
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
-    name: "Bottie.ai",
+    "@id": `${baseUrl}/#organization`,
+    name: APP_NAME,
     url: baseUrl,
-    logo: `${baseUrl}/images/logo-full.svg`,
-    description:
-      locale === "en"
-        ? "AI-powered Google review management and automated response generation for businesses"
-        : "ניהול ביקורות Google ויצירת מענה אוטומטי מבוסס בינה מלאכותית לעסקים",
+    logo: {
+      "@type": "ImageObject",
+      url: `${baseUrl}/images/logo-full.svg`,
+    },
+    description: t("description"),
     contactPoint: {
       "@type": "ContactPoint",
       email: "alon@bottie.ai",
       contactType: "customer support",
-      availableLanguage: ["English", "Hebrew"],
+      availableLanguage: ["English", "Hebrew", "Spanish"],
     },
     address: {
       "@type": "PostalAddress",
@@ -28,76 +37,101 @@ export function generateOrganizationSchema(locale: Locale) {
   };
 }
 
-export function generateSoftwareApplicationSchema(locale: Locale) {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+export function generateWebSiteSchema(locale: Locale) {
+  const baseUrl = getBaseUrl();
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": `${baseUrl}/#website`,
+    name: APP_NAME,
+    url: `${baseUrl}/${locale}`,
+    inLanguage: locale,
+    publisher: {
+      "@id": `${baseUrl}/#organization`,
+    },
+  };
+}
+
+export async function generateSoftwareApplicationSchema(locale: Locale) {
+  const baseUrl = getBaseUrl();
+  const t = await getTranslations({ locale, namespace: "metadata" });
+  const tPlans = await getTranslations({ locale, namespace: "landing.pricing.plans" });
 
   return {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
-    name: "Bottie.ai",
+    name: APP_NAME,
     applicationCategory: "BusinessApplication",
     operatingSystem: "Web Browser",
     url: baseUrl,
-    description:
-      locale === "en"
-        ? "Automatically generate professional responses to customer reviews using artificial intelligence. Bottie.ai integrates with Google Business Profile to help businesses manage their online reputation efficiently."
-        : "ייצור אוטומטי של תשובות מקצועיות לביקורות לקוחות באמצעות בינה מלאכותית. Bottie.ai משתלב עם Google Business Profile כדי לעזור לעסקים לנהל את המוניטין המקוון שלהם ביעילות.",
+    description: t("description"),
     offers: [
       {
         "@type": "Offer",
-        name: locale === "en" ? "Free Plan" : "תוכנית חינמית",
+        name: tPlans("free.name"),
         price: "0",
-        priceCurrency: "ILS",
-        description:
-          locale === "en"
-            ? "5 AI-generated responses per month, 1 location, manual approval"
-            : "5 תשובות AI בחודש, מיקום אחד, אישור ידני",
+        priceCurrency: "USD",
+        description: tPlans("free.description", { count: FREE_LOCATION_LIMITS.reviewsPerMonth }),
       },
       {
         "@type": "Offer",
-        name: locale === "en" ? "Basic Plan" : "תוכנית בסיסית",
-        price: "290",
-        priceCurrency: "ILS",
-        description:
-          locale === "en"
-            ? "100 AI-generated responses per month, 3 locations, auto-publish, WhatsApp support"
-            : "100 תשובות AI בחודש, 3 מיקומים, פרסום אוטומטי, תמיכה בווטסאפ",
-      },
-      {
-        "@type": "Offer",
-        name: locale === "en" ? "Pro Plan" : "תוכנית מקצועית",
-        price: "790",
-        priceCurrency: "ILS",
-        description:
-          locale === "en"
-            ? "Unlimited AI-generated responses, unlimited locations, auto-publish, priority WhatsApp support"
-            : "תשובות AI ללא הגבלה, מיקומים ללא הגבלה, פרסום אוטומטי, תמיכה עדיפה בווטסאפ",
+        name: tPlans("pro.name"),
+        price: String(PRICE_PER_LOCATION),
+        priceCurrency: "USD",
+        description: tPlans("pro.description"),
       },
     ],
     featureList: [
-      locale === "en" ? "AI-powered review responses" : "תשובות ביקורות מבוססות AI",
-      locale === "en" ? "Google Business Profile integration" : "אינטגרציה עם Google Business Profile",
-      locale === "en" ? "Automatic response publishing" : "פרסום תשובות אוטומטי",
-      locale === "en" ? "Manual approval workflow" : "תהליך אישור ידני",
-      locale === "en" ? "WhatsApp support" : "תמיכה בווטסאפ",
-      locale === "en" ? "Multi-location management" : "ניהול מיקומים מרובים",
-      locale === "en" ? "Custom tone and language settings" : "הגדרות טון ושפה מותאמות אישית",
+      locale === "en"
+        ? "AI-powered review responses"
+        : locale === "he"
+          ? "תשובות ביקורות מבוססות AI"
+          : "Respuestas a resenas con IA",
+      locale === "en"
+        ? "Google Business Profile integration"
+        : locale === "he"
+          ? "אינטגרציה עם Google Business Profile"
+          : "Integracion con Google Business Profile",
+      locale === "en"
+        ? "Automatic response publishing"
+        : locale === "he"
+          ? "פרסום תשובות אוטומטי"
+          : "Publicacion automatica de respuestas",
+      locale === "en"
+        ? "Manual approval workflow"
+        : locale === "he"
+          ? "תהליך אישור ידני"
+          : "Flujo de aprobacion manual",
+      locale === "en"
+        ? "Performance analytics and insights"
+        : locale === "he"
+          ? "ניתוח ביצועים ותובנות"
+          : "Analiticas e informacion de rendimiento",
+      locale === "en"
+        ? "Multi-location management"
+        : locale === "he"
+          ? "ניהול מיקומים מרובים"
+          : "Gestion de multiples ubicaciones",
+      locale === "en"
+        ? "Custom tone and language settings"
+        : locale === "he"
+          ? "הגדרות טון ושפה מותאמות אישית"
+          : "Ajustes de tono e idioma personalizados",
     ],
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: "4.8",
-      ratingCount: "3",
-      bestRating: "5",
-      worstRating: "1",
-    },
   };
 }
 
 export async function generateFAQPageSchema(locale: Locale) {
   const t = await getTranslations({ locale, namespace: "landing.faq" });
+  const messages = (await getMessages({ locale })) as {
+    landing?: { faq?: { items?: Record<string, unknown> } };
+  };
 
-  const FAQ_ITEM_COUNT = 8;
-  const mainEntity = Array.from({ length: FAQ_ITEM_COUNT }).map((_, index) => ({
+  const items = messages.landing?.faq?.items ?? {};
+  const itemCount = Object.keys(items).length;
+
+  const mainEntity = Array.from({ length: itemCount }).map((_, index) => ({
     "@type": "Question",
     name: t(`items.${index}.question`),
     acceptedAnswer: {

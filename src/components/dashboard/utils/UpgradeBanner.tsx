@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Sparkles } from "lucide-react";
+import { ArrowUpCircle } from "lucide-react";
 import { useLocationSubscriptions } from "@/hooks/use-subscription";
 import { useCurrentLocation } from "@/hooks/use-current-location";
 import { Link } from "@/i18n/routing";
@@ -24,14 +24,14 @@ export function UpgradeBanner() {
       <SidebarMenuItem>
         <SidebarMenuButton
           asChild
-          className="h-auto bg-secondary py-2 text-primary hover:bg-secondary/70"
+          className="h-auto border border-hairline py-2 text-foreground hover:bg-surface-3"
           tooltip={{ children: t("title"), side: dir === "rtl" ? "left" : "right" }}
         >
-          <Link href="/dashboard/subscription">
-            <Sparkles className="size-4 shrink-0" />
+          <Link href="/dashboard/settings?tab=billing">
+            <ArrowUpCircle className="size-4 shrink-0 text-ink-3" />
             <div className="grid text-start text-xs leading-tight">
-              <span className="truncate font-semibold">{t("title")}</span>
-              <span className="truncate text-primary/70">{t("upgradeNow")}</span>
+              <span className="truncate font-medium">{t("title")}</span>
+              <span className="truncate text-ink-2">{t("upgradeNow")}</span>
             </div>
           </Link>
         </SidebarMenuButton>

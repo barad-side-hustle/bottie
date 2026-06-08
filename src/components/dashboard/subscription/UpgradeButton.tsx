@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { authClient } from "@/lib/auth-client";
 
@@ -30,8 +29,7 @@ export function UpgradeButton({ locationId, size = "lg" }: UpgradeButtonProps) {
   };
 
   return (
-    <Button onClick={handleUpgrade} size={size} disabled={loading} className="gap-1.5">
-      <Sparkles className="size-4" />
+    <Button onClick={handleUpgrade} size={size} disabled={loading}>
       {t("upgradePlan")}
     </Button>
   );

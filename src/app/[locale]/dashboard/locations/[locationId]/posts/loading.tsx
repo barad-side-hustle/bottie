@@ -6,61 +6,64 @@ export default function PostsLoading() {
   return (
     <PageContainer>
       <div className="space-y-2">
-        <Skeleton className="h-8 w-48" />
-        <Skeleton className="h-5 w-80" />
+        <Skeleton className="h-7 w-48" />
+        <Skeleton className="h-4 w-80" />
       </div>
 
-      <div className="mt-6 space-y-6">
-        <DashboardCard>
-          <DashboardCardHeader>
-            <Skeleton className="h-6 w-32" />
-          </DashboardCardHeader>
-          <DashboardCardContent className="pt-0 space-y-4">
-            <div className="space-y-1">
-              <Skeleton className="h-4 w-20" />
-              <Skeleton className="h-10 w-full" />
-            </div>
-            <div className="space-y-1">
-              <Skeleton className="h-4 w-16" />
-              <Skeleton className="h-[100px] w-full" />
-            </div>
-            <div className="space-y-1">
-              <Skeleton className="h-4 w-20" />
-              <Skeleton className="h-10 w-full" />
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <Skeleton className="h-4 w-28" />
-                <Skeleton className="h-10 w-full" />
+      <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,440px)_1fr]">
+        <div className="lg:sticky lg:top-6 lg:self-start">
+          <DashboardCard>
+            <DashboardCardHeader>
+              <Skeleton className="h-6 w-32" />
+            </DashboardCardHeader>
+            <DashboardCardContent className="space-y-4 pt-0">
+              <div className="space-y-1.5">
+                <Skeleton className="h-3 w-20" />
+                <Skeleton className="h-9 w-full rounded-md" />
               </div>
-            </div>
-            <div className="flex gap-2 pt-2">
-              <Skeleton className="h-10 w-32" />
-              <Skeleton className="h-10 w-32" />
-            </div>
-          </DashboardCardContent>
-        </DashboardCard>
-
-        {[1, 2, 3].map((i) => (
-          <DashboardCard key={i}>
-            <DashboardCardContent className="py-4">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Skeleton className="h-5 w-16 rounded-full" />
-                    <Skeleton className="h-5 w-20 rounded-full" />
-                    <Skeleton className="h-4 w-24" />
-                  </div>
-                  <Skeleton className="h-4 w-full max-w-md" />
-                  <Skeleton className="h-4 w-3/4 max-w-sm mt-1" />
-                </div>
-                <div className="flex items-center gap-1 shrink-0">
-                  <Skeleton className="h-8 w-8" />
-                </div>
+              <div className="space-y-1.5">
+                <Skeleton className="h-3 w-16" />
+                <Skeleton className="h-28 w-full rounded-md" />
+              </div>
+              <div className="space-y-1.5">
+                <Skeleton className="h-3 w-24" />
+                <Skeleton className="h-9 w-full rounded-md" />
+              </div>
+              <div className="flex gap-2 pt-2">
+                <Skeleton className="h-9 w-32 rounded-md" />
+                <Skeleton className="h-9 w-24 rounded-md" />
               </div>
             </DashboardCardContent>
           </DashboardCard>
-        ))}
+        </div>
+
+        <DashboardCard>
+          <DashboardCardHeader className="pb-0">
+            <Skeleton className="h-6 w-28" />
+          </DashboardCardHeader>
+          <DashboardCardContent className="pt-4">
+            <div className="divide-y divide-hairline">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="flex gap-4 py-4 first:pt-0">
+                  <Skeleton className="size-12 shrink-0 rounded-md" />
+                  <div className="min-w-0 flex-1 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Skeleton className="h-3 w-16" />
+                      <Skeleton className="h-3 w-20" />
+                      <Skeleton className="ms-auto h-5 w-16 rounded-full" />
+                    </div>
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-2/3" />
+                    <div className="flex items-center gap-1 pt-1">
+                      <Skeleton className="size-8 rounded-md" />
+                      <Skeleton className="size-8 rounded-md" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </DashboardCardContent>
+        </DashboardCard>
       </div>
     </PageContainer>
   );

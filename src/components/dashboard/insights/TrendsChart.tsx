@@ -34,10 +34,10 @@ const localeMap: Record<string, Locale> = {
 type SeriesKey = "totalReviews" | "positiveCount" | "negativeCount" | "neutralCount";
 
 const SERIES_CONFIG: Record<SeriesKey, { colorVar: string }> = {
-  totalReviews: { colorVar: "var(--primary)" },
-  positiveCount: { colorVar: "var(--success, #22c55e)" },
-  negativeCount: { colorVar: "var(--destructive)" },
-  neutralCount: { colorVar: "var(--muted-foreground)" },
+  totalReviews: { colorVar: "var(--chart-1)" },
+  positiveCount: { colorVar: "var(--positive)" },
+  negativeCount: { colorVar: "var(--negative)" },
+  neutralCount: { colorVar: "var(--chart-neutral)" },
 };
 
 interface TrendsChartProps {
@@ -85,7 +85,7 @@ export function TrendsChart({ trends, locale }: TrendsChartProps) {
     if (!payload) return null;
 
     return (
-      <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 pt-3 pb-1">
+      <div className="flex flex-wrap items-center justify-center gap-1.5 pt-4 pb-1">
         {payload.map((entry) => {
           const key = entry.dataKey as SeriesKey;
           const isActive = visibleSeries[key];
@@ -94,12 +94,16 @@ export function TrendsChart({ trends, locale }: TrendsChartProps) {
               key={key}
               type="button"
               onClick={() => handleLegendClick(key)}
+              aria-pressed={isActive}
               className={cn(
-                "inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium transition-colors hover:bg-muted/60",
-                isActive ? "text-foreground" : "text-muted-foreground/60"
+                "inline-flex items-center gap-1.5 rounded-md border px-2 py-1 text-xs font-medium transition-colors",
+                isActive ? "border-hairline bg-surface-2 text-ink" : "border-transparent text-ink-3 hover:bg-surface-2"
               )}
             >
-              <span className="size-2.5 rounded-full" style={{ backgroundColor: entry.color }} />
+              <span
+                className="h-0.5 w-3 rounded-full"
+                style={{ backgroundColor: isActive ? entry.color : "var(--ink-3)" }}
+              />
               <span>{entry.value}</span>
             </button>
           );
@@ -113,68 +117,79 @@ export function TrendsChart({ trends, locale }: TrendsChartProps) {
       <DashboardCardHeader className="pb-0">
         <div className="flex items-center justify-between gap-3">
           <DashboardCardTitle>{t("sections.trends")}</DashboardCardTitle>
-          {trendDelta !== null && <DeltaBadge value={trendDelta} className="rounded-full bg-muted/60 px-2.5 py-1" />}
+          {trendDelta !== null && <DeltaBadge value={trendDelta} />}
         </div>
       </DashboardCardHeader>
       <DashboardCardContent className="pt-2 px-2 sm:px-4 pb-2 sm:pb-4">
         <div className="h-80">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={trendData} margin={{ top: 8, right: 50, left: -16, bottom: 0 }}>
-              <CartesianGrid stroke="var(--border)" strokeOpacity={0.5} vertical={false} />
+              <defs>
+                <linearGradient id="trendsLeadFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="var(--chart-1)" stopOpacity={0.1} />
+                  <stop offset="100%" stopColor="var(--chart-1)" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid stroke="var(--hairline)" vertical={false} />
               <XAxis
                 dataKey="formattedDate"
-                tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
+                tick={{ fill: "var(--ink-3)", fontSize: 12 }}
                 axisLine={false}
                 tickLine={false}
                 tickMargin={8}
               />
               <YAxis
-                tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
+                tick={{ fill: "var(--ink-3)", fontSize: 12, style: { fontVariantNumeric: "tabular-nums" } }}
                 axisLine={false}
                 tickLine={false}
                 tickMargin={8}
                 allowDecimals={false}
+                width={40}
               />
               <Tooltip
-                cursor={{ stroke: "var(--border)", strokeWidth: 1 }}
+                cursor={{ stroke: "var(--hairline)", strokeWidth: 1 }}
                 contentStyle={{
-                  backgroundColor: "var(--card)",
-                  border: "1px solid var(--border)",
-                  borderRadius: "0.75rem",
+                  backgroundColor: "var(--popover)",
+                  border: "1px solid var(--hairline)",
+                  borderRadius: "var(--radius-lg)",
                   boxShadow: "var(--shadow-md)",
                   padding: "8px 12px",
                   fontSize: "13px",
+                  fontVariantNumeric: "tabular-nums",
                 }}
-                labelStyle={{ color: "var(--muted-foreground)", marginBottom: "4px", fontWeight: 600 }}
+                labelStyle={{ color: "var(--ink-3)", marginBottom: "4px", fontWeight: 600 }}
               />
               <Legend content={renderLegend} />
               {visibleSeries.totalReviews && average > 0 && (
                 <ReferenceLine
                   y={average}
-                  stroke="var(--muted-foreground)"
+                  stroke="var(--ink-3)"
                   strokeDasharray="4 4"
-                  strokeOpacity={0.6}
                   label={{
                     value: `${t("trends.average")}: ${average}`,
                     position: "right",
-                    fill: "var(--muted-foreground)",
+                    fill: "var(--ink-3)",
                     fontSize: 11,
                   }}
                 />
               )}
-              {seriesKeys.map(({ key, labelKey }) => (
-                <Area
-                  key={key}
-                  type="monotone"
-                  dataKey={key}
-                  stroke={SERIES_CONFIG[key].colorVar}
-                  strokeWidth={2}
-                  fill={SERIES_CONFIG[key].colorVar}
-                  fillOpacity={0.12}
-                  name={t(labelKey)}
-                  hide={!visibleSeries[key]}
-                />
-              ))}
+              {seriesKeys.map(({ key, labelKey }) => {
+                const isLead = key === "totalReviews";
+                return (
+                  <Area
+                    key={key}
+                    type="monotone"
+                    dataKey={key}
+                    stroke={SERIES_CONFIG[key].colorVar}
+                    strokeWidth={2}
+                    fill={isLead ? "url(#trendsLeadFill)" : "transparent"}
+                    fillOpacity={1}
+                    activeDot={{ r: 3, strokeWidth: 0 }}
+                    name={t(labelKey)}
+                    hide={!visibleSeries[key]}
+                  />
+                );
+              })}
             </AreaChart>
           </ResponsiveContainer>
         </div>

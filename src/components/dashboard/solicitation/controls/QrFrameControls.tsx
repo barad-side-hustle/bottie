@@ -18,22 +18,23 @@ export function QrFrameControls({ settings, onChange }: QrFrameControlsProps) {
   return (
     <div className="space-y-4">
       <div className="space-y-3">
-        <label className="text-xs font-medium text-muted-foreground">{t("title")}</label>
+        <label className="text-xs font-semibold uppercase tracking-[0.02em] text-ink-2">{t("title")}</label>
         <div className="grid grid-cols-2 gap-2">
           {FRAME_STYLES.map((style) => (
             <button
               key={style}
               type="button"
               onClick={() => onChange({ frameStyle: style })}
+              aria-pressed={settings.frameStyle === style}
               className={cn(
-                "flex cursor-pointer flex-col items-center gap-1.5 rounded-lg border p-3 text-xs transition-all",
+                "flex cursor-pointer flex-col items-center gap-1.5 rounded-md border p-3 text-xs transition-colors duration-150 ease-[var(--ease-standard)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                 settings.frameStyle === style
-                  ? "border-primary bg-primary/5 ring-2 ring-primary"
-                  : "border-border/60 hover:border-border"
+                  ? "border-line-strong bg-surface-3 font-medium text-ink"
+                  : "border-hairline text-ink-2 hover:bg-surface-2"
               )}
             >
               <FramePreview style={style} />
-              <span className="font-medium">{t(style)}</span>
+              <span>{t(style)}</span>
             </button>
           ))}
         </div>

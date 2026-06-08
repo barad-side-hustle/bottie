@@ -1,6 +1,5 @@
 import { PageContainer } from "@/components/layout/PageContainer";
-import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
-import { buildLocationBreadcrumbs } from "@/lib/utils/breadcrumbs";
+import { PageHeader } from "@/components/layout/PageHeader";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { getLocation } from "@/lib/actions/locations.actions";
@@ -15,11 +14,10 @@ export default async function ProfileHealthRoute({
   params: Promise<{ locale: string; locationId: string }>;
 }) {
   const { locale, locationId } = await params;
-  const tBreadcrumbs = await getTranslations({ locale, namespace: "breadcrumbs" });
+  const t = await getTranslations({ locale, namespace: "dashboard.profileHealth" });
 
-  let location;
   try {
-    location = await getLocation({ locationId });
+    await getLocation({ locationId });
   } catch {
     redirect(`/${locale}/dashboard/home`);
   }
@@ -28,18 +26,11 @@ export default async function ProfileHealthRoute({
 
   return (
     <PageContainer>
-      <div className="mb-4">
-        <Breadcrumbs
-          items={buildLocationBreadcrumbs({
-            locationName: location.name,
-            locationId,
-            currentSection: "profileHealth",
-            t: tBreadcrumbs,
-          })}
-        />
-      </div>
+      <PageHeader title={t("title")} description={t("subtitle")} />
 
-      <ProfileHealthPage result={profileHealth} />
+      <div className="mt-6">
+        <ProfileHealthPage result={profileHealth} />
+      </div>
     </PageContainer>
   );
 }

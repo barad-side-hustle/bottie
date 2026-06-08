@@ -4,13 +4,6 @@ import { useCallback, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Check, Copy, ExternalLink, QrCode } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  DashboardCard,
-  DashboardCardContent,
-  DashboardCardDescription,
-  DashboardCardHeader,
-  DashboardCardTitle,
-} from "@/components/ui/dashboard-card";
 import { EmptyState } from "@/components/ui/empty-state";
 import { QrCustomizer } from "./QrCustomizer";
 import { getDefaultQrSettings } from "@/lib/utils/qr-defaults";
@@ -38,7 +31,7 @@ export function SolicitationContent({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <QrCustomizer
         reviewUrl={reviewUrl}
         mapsUrl={mapsUrl}
@@ -55,18 +48,16 @@ function ShareLinksSection({ reviewUrl, mapsUrl }: { reviewUrl: string; mapsUrl:
   const t = useTranslations("dashboard.solicitation.shareLinks");
 
   return (
-    <DashboardCard>
-      <DashboardCardHeader>
-        <DashboardCardTitle>{t("title")}</DashboardCardTitle>
-        <DashboardCardDescription>{t("description")}</DashboardCardDescription>
-      </DashboardCardHeader>
-      <DashboardCardContent>
-        <div className="space-y-4">
-          <CopyLinkRow label={t("googleReviews")} url={reviewUrl} />
-          {mapsUrl && <CopyLinkRow label={t("googleMaps")} url={mapsUrl} />}
-        </div>
-      </DashboardCardContent>
-    </DashboardCard>
+    <section className="rounded-lg border border-hairline bg-card p-4 sm:p-6">
+      <div className="space-y-1">
+        <h3 className="text-sm font-semibold tracking-tight text-ink">{t("title")}</h3>
+        <p className="text-sm leading-relaxed text-ink-2">{t("description")}</p>
+      </div>
+      <ul className="mt-4 divide-y divide-hairline border-t border-hairline">
+        <CopyLinkRow label={t("googleReviews")} url={reviewUrl} />
+        {mapsUrl && <CopyLinkRow label={t("googleMaps")} url={mapsUrl} />}
+      </ul>
+    </section>
   );
 }
 
@@ -81,22 +72,24 @@ function CopyLinkRow({ label, url }: { label: string; url: string }) {
   }, [url]);
 
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-border/60 p-3.5">
+    <li className="flex items-center gap-3 py-3">
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-medium">{label}</p>
-        <p className="truncate text-xs text-muted-foreground">{url}</p>
+        <p className="text-sm font-medium text-ink">{label}</p>
+        <p className="truncate text-xs text-ink-3" dir="ltr">
+          {url}
+        </p>
       </div>
-      <div className="flex shrink-0 gap-2">
+      <div className="flex shrink-0 items-center gap-1">
         <Button variant="outline" size="sm" onClick={handleCopy}>
           {copied ? <Check className="size-4 text-success" /> : <Copy className="size-4" />}
           {copied ? t("copied") : t("copy")}
         </Button>
-        <Button variant="ghost" size="sm" asChild>
-          <a href={url} target="_blank" rel="noopener noreferrer">
+        <Button variant="ghost" size="icon-sm" asChild>
+          <a href={url} target="_blank" rel="noopener noreferrer" aria-label={label}>
             <ExternalLink className="size-4" />
           </a>
         </Button>
       </div>
-    </div>
+    </li>
   );
 }

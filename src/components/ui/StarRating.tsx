@@ -17,7 +17,9 @@ export function StarRating({ rating, size = 20, className = "", showNumber = fal
           className={star <= rating ? "fill-star-filled text-star-filled" : "fill-star-empty text-star-empty"}
         />
       ))}
-      {showNumber && <span className="me-1 text-sm font-medium text-muted-foreground">{rating.toFixed(1)}</span>}
+      {showNumber && (
+        <span className="me-1 text-sm font-medium tabular-nums text-muted-foreground">{rating.toFixed(1)}</span>
+      )}
     </div>
   );
 }

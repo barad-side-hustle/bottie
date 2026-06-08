@@ -31,7 +31,7 @@ export function OnboardingLayout({ formPanel }: OnboardingLayoutProps) {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-pastel-cream">
+    <div className="min-h-screen flex flex-col bg-paper">
       <header className="flex items-center justify-between px-4 sm:px-8 py-4 max-w-7xl mx-auto w-full">
         <div className="flex items-center gap-2">
           <Button
@@ -40,7 +40,6 @@ export function OnboardingLayout({ formPanel }: OnboardingLayoutProps) {
             size="icon"
             disabled={isSigningOut}
             aria-label={tAuth("signOut")}
-            className="hover:bg-background/50"
           >
             <LogOut className="h-5 w-5" />
           </Button>
@@ -48,9 +47,9 @@ export function OnboardingLayout({ formPanel }: OnboardingLayoutProps) {
         </div>
       </header>
 
-      <main className="flex-1 flex items-stretch justify-center px-4 sm:px-8 pb-8">
+      <main className="flex-1 flex items-stretch justify-center px-4 sm:px-8 pb-12">
         <div className="w-full max-w-2xl mx-auto flex">
-          <div className="bg-card rounded-3xl border border-border/40 shadow-lg p-6 sm:p-8 flex flex-col flex-1">
+          <div className="bg-surface rounded-lg border border-hairline p-6 sm:p-10 flex flex-col flex-1">
             {formPanel}
           </div>
         </div>

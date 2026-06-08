@@ -60,26 +60,27 @@ export default function EditableSection<T>({
         <DashboardCardHeader>
           <div className="flex items-start justify-between gap-4">
             <div className="flex min-w-0 items-start gap-3">
-              <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary [&_svg]:size-5">
-                {icon}
-              </span>
+              <span className="mt-0.5 shrink-0 text-ink-3 [&_svg]:size-4">{icon}</span>
               <div className="min-w-0 space-y-1">
-                <h3 className="text-lg font-semibold leading-none tracking-tight">{title}</h3>
+                <h3 className="text-base font-medium leading-none tracking-tight">{title}</h3>
                 <DashboardCardDescription>{description}</DashboardCardDescription>
               </div>
             </div>
             <Button
-              variant="outline"
-              size="icon-sm"
+              variant="ghost"
+              size="sm"
               onClick={() => setShowEditModal(true)}
               disabled={loading}
               aria-label={`Edit ${title}`}
+              className="shrink-0 gap-1.5 text-ink-2"
             >
-              <Pencil className="h-4 w-4" />
+              <Pencil className="h-3.5 w-3.5" />
             </Button>
           </div>
         </DashboardCardHeader>
-        <DashboardCardContent className="space-y-6">{renderDisplay()}</DashboardCardContent>
+        <DashboardCardContent className="space-y-5 border-t border-hairline pt-5">
+          {renderDisplay()}
+        </DashboardCardContent>
       </DashboardCard>
 
       <EditableFormModal

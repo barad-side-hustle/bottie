@@ -1,6 +1,7 @@
 "use client";
 
-import { Link } from "@/i18n/routing";
+import { useTransition } from "react";
+import { Link, useRouter } from "@/i18n/routing";
 import { Logo } from "@/components/ui/Logo";
 import { NavbarContainer } from "./NavbarContainer";
 import { useNavigation } from "@/hooks/use-navigation";
@@ -14,6 +15,8 @@ export function UnifiedNavbar() {
   const { navItems, scrollToSection, isActive } = useNavigation();
   const t = useTranslations();
   const { user } = useAuth();
+  const router = useRouter();
+  const [navigating, startNavigation] = useTransition();
 
   return (
     <NavbarContainer>
@@ -21,12 +24,12 @@ export function UnifiedNavbar() {
         <Logo href="/" variant="full" size="md" />
       </div>
 
-      <nav className="hidden md:flex items-center gap-1">
+      <nav className="hidden md:flex items-center gap-6">
         {navItems.map((item) => {
           const isItemActive = isActive(item.href);
           const itemClass = cn(
-            "rounded-full px-4 py-2 text-sm font-medium transition-colors cursor-pointer",
-            isItemActive ? "bg-secondary text-primary" : "text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+            "text-sm transition-colors cursor-pointer underline-offset-8 decoration-1",
+            isItemActive ? "text-foreground font-medium underline" : "text-ink-2 hover:text-foreground"
           );
 
           if (item.href.startsWith("/#")) {
@@ -47,11 +50,11 @@ export function UnifiedNavbar() {
 
       <div className="flex items-center gap-2 shrink-0">
         {user ? (
-          <Button asChild className="rounded-full">
-            <Link href="/dashboard/home">{t("auth.dashboard")}</Link>
+          <Button loading={navigating} onClick={() => startNavigation(() => router.push("/dashboard/home"))}>
+            {t("auth.dashboard")}
           </Button>
         ) : (
-          <AuthButton size="default" className="rounded-full" />
+          <AuthButton size="default" />
         )}
       </div>
     </NavbarContainer>

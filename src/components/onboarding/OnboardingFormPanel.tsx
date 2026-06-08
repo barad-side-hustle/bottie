@@ -39,23 +39,23 @@ export function OnboardingFormPanel({
 }: OnboardingFormPanelProps) {
   return (
     <div className={`flex flex-col h-full ${className || ""}`}>
-      {progressBar && <div className="mb-8">{progressBar}</div>}
+      {progressBar && <div className="mb-10">{progressBar}</div>}
 
-      <div className="mb-6 space-y-2">
-        <h1 className="text-2xl font-bold tracking-tight text-balance">{title}</h1>
-        <p className="text-base leading-relaxed text-muted-foreground">{description}</p>
+      <div className="mb-8 space-y-2">
+        <h1 className="text-2xl font-semibold tracking-[-0.02em] text-balance text-foreground">{title}</h1>
+        <p className="text-base leading-relaxed text-ink-2">{description}</p>
       </div>
 
       <div className="flex-1 overflow-y-auto -mx-1 px-1 min-h-0">{children}</div>
 
       {!hideNavigation && (
-        <div className="flex gap-3 pt-6 mt-auto shrink-0">
+        <div className="flex gap-3 pt-8 mt-auto shrink-0">
           {backButton && (
             <Button
               onClick={backButton.onClick}
-              variant="outline"
+              variant="ghost"
               size="lg"
-              className="flex-1"
+              className={nextButton ? "" : "flex-1"}
               disabled={backButton.disabled || backButton.loading}
             >
               {backButton.loading ? backButton.loadingLabel || backButton.label : backButton.label}

@@ -93,11 +93,11 @@ export function CategoryReviewsModal({
 
         <div className="space-y-4 mt-4">
           {isLoading ? (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="space-y-2 p-4 border border-border/60 rounded-2xl">
+                <div key={i} className="space-y-2 rounded-lg border border-hairline p-4">
                   <div className="flex items-center gap-3">
-                    <Skeleton className="h-10 w-10 rounded-full" />
+                    <Skeleton className="h-10 w-10 rounded-md" />
                     <div className="space-y-1">
                       <Skeleton className="h-4 w-24" />
                       <Skeleton className="h-3 w-16" />
@@ -108,28 +108,28 @@ export function CategoryReviewsModal({
               ))}
             </div>
           ) : reviews.length === 0 ? (
-            <p className="text-muted-foreground text-center py-8">{t("modal.noReviews")}</p>
+            <p className="py-8 text-center text-sm text-ink-2">{t("modal.noReviews")}</p>
           ) : (
             reviews.map((review) => (
               <div
                 key={review.id}
-                className="p-4 border border-border/60 rounded-2xl space-y-3 transition-colors hover:bg-muted/40"
+                className="space-y-3 rounded-lg border border-hairline p-4 transition-colors hover:bg-surface-2"
               >
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <Avatar className="h-10 w-10 shrink-0">
+                    <Avatar className="h-10 w-10 shrink-0 rounded-md">
                       <AvatarImage src={review.photoUrl || undefined} alt={`${review.name} profile`} />
-                      <AvatarFallback className="bg-primary/10">
+                      <AvatarFallback className="rounded-md bg-surface-2">
                         {review.photoUrl ? (
-                          <User className="h-5 w-5 text-primary" />
+                          <User className="h-4 w-4 text-ink-3" />
                         ) : (
-                          <span className="text-sm font-medium text-primary">{getInitials(review.name)}</span>
+                          <span className="text-xs font-semibold text-ink-2">{getInitials(review.name)}</span>
                         )}
                       </AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="font-medium">{review.name}</p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-sm font-medium text-ink">{review.name}</p>
+                      <p className="text-xs tabular-nums text-ink-3">
                         {format.dateTime(new Date(review.date), {
                           year: "numeric",
                           month: "short",
@@ -140,7 +140,7 @@ export function CategoryReviewsModal({
                   </div>
                   <StarRating rating={review.rating} size={16} />
                 </div>
-                {review.text && <p className="text-sm text-muted-foreground leading-relaxed">{review.text}</p>}
+                {review.text && <p className="text-sm leading-relaxed text-ink-2">{review.text}</p>}
               </div>
             ))
           )}

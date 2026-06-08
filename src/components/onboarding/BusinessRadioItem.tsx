@@ -3,7 +3,8 @@
 import { GoogleBusinessProfileLocation } from "@/lib/types";
 import { RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Building2, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface LocationRadioItemProps {
   location: GoogleBusinessProfileLocation;
@@ -13,20 +14,18 @@ interface LocationRadioItemProps {
 export function LocationRadioItem({ location, selected }: LocationRadioItemProps) {
   return (
     <div
-      className={`relative flex items-start gap-4 rounded-2xl border p-5 transition-all duration-200 ${selected ? "border-primary ring-2 ring-primary/30 bg-secondary/40" : "border-border/60 hover:border-primary/50 hover:bg-secondary/20"}`}
+      className={cn(
+        "relative flex items-start gap-3 rounded-lg border p-4 transition-colors duration-[var(--dur-fast)] ease-[var(--ease-standard)]",
+        selected ? "border-primary bg-accent-tint" : "border-line-strong hover:bg-surface-2"
+      )}
     >
-      <RadioGroupItem value={location.id} id={location.id} className="mt-1" />
-      <Label htmlFor={location.id} className="flex-1 cursor-pointer space-y-2">
-        <div className="flex items-center gap-3">
-          <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-secondary text-primary">
-            <Building2 className="h-4 w-4" />
-          </div>
-          <span className="font-semibold text-lg">{location.name}</span>
-        </div>
+      <RadioGroupItem value={location.id} id={location.id} className="mt-0.5" />
+      <Label htmlFor={location.id} className="flex-1 min-w-0 cursor-pointer space-y-1">
+        <span className="block truncate font-medium text-base text-foreground">{location.name}</span>
         {location.address && (
-          <div className="flex items-start gap-2 text-sm text-muted-foreground">
-            <MapPin className="h-3.5 w-3.5 mt-0.5 shrink-0" />
-            <span>{location.address}</span>
+          <div className="flex items-start gap-1.5 text-sm text-ink-2 min-w-0">
+            <MapPin className="h-3.5 w-3.5 mt-0.5 shrink-0 text-ink-3" />
+            <span className="truncate">{location.address}</span>
           </div>
         )}
       </Label>

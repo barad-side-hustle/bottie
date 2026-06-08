@@ -47,9 +47,14 @@ export function LocationDetailsForm({
           onChange={(e) => onChange("name", e.target.value)}
           placeholder={locationNamePlaceholder || t("name.placeholder")}
           disabled={disabled}
+          aria-describedby={locationNamePlaceholder ? "locationName-helper" : undefined}
           dir={dir}
         />
-        {locationNamePlaceholder && <p className="text-xs text-muted-foreground text-start">{t("name.helper")}</p>}
+        {locationNamePlaceholder && (
+          <p id="locationName-helper" className="text-start text-xs text-ink-3">
+            {t("name.helper")}
+          </p>
+        )}
       </div>
 
       <div className="space-y-2">
@@ -64,10 +69,13 @@ export function LocationDetailsForm({
           placeholder={t("description.placeholder")}
           rows={4}
           disabled={disabled}
+          aria-describedby="locationDescription-helper"
           className="resize-none"
           dir={dir}
         />
-        <p className="text-xs text-muted-foreground text-start">{t("description.helper")}</p>
+        <p id="locationDescription-helper" className="text-start text-xs text-ink-3">
+          {t("description.helper")}
+        </p>
       </div>
 
       <div className="space-y-2">
@@ -82,9 +90,12 @@ export function LocationDetailsForm({
           onChange={(e) => onChange("phoneNumber", e.target.value)}
           placeholder={t("phone.placeholder")}
           disabled={disabled}
+          aria-describedby="locationPhone-helper"
           dir="ltr"
         />
-        <p className="text-xs text-muted-foreground text-start">{t("phone.helper")}</p>
+        <p id="locationPhone-helper" className="text-start text-xs text-ink-3">
+          {t("phone.helper")}
+        </p>
       </div>
     </div>
   );

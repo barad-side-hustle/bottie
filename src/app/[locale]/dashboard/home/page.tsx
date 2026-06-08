@@ -3,8 +3,8 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { getTranslations } from "next-intl/server";
 import { getOverviewData } from "@/lib/actions/overview.actions";
 import { RedirectToOnboarding } from "@/components/dashboard/home/RedirectToOnboarding";
+import { AttentionHero } from "@/components/dashboard/overview/AttentionHero";
 import { OverviewStats } from "@/components/dashboard/overview/OverviewStats";
-import { PendingReviewsBanner } from "@/components/dashboard/overview/PendingReviewsBanner";
 import { LocationSummaryCards } from "@/components/dashboard/overview/LocationSummaryCards";
 
 export const dynamic = "force-dynamic";
@@ -22,9 +22,10 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   return (
     <PageContainer>
       <PageHeader title={t("title")} description={t("description")} />
-      <div className="space-y-6">
+
+      <div className="space-y-10">
+        <AttentionHero data={overviewData} />
         <OverviewStats data={overviewData} />
-        {overviewData.pendingCount > 0 && <PendingReviewsBanner data={overviewData} />}
         <LocationSummaryCards summaries={overviewData.locationSummaries} />
       </div>
     </PageContainer>

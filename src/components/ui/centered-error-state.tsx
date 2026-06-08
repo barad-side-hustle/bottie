@@ -19,10 +19,10 @@ const defaultIcons = {
   info: Info,
 };
 
-const iconContainerVariants = {
-  error: "bg-destructive/10 text-destructive",
-  warning: "bg-warning/10 text-warning-foreground",
-  info: "bg-info/10 text-info-foreground",
+const iconColorVariants = {
+  error: "text-destructive",
+  warning: "text-warning-foreground",
+  info: "text-info-foreground",
 };
 
 export function CenteredErrorState({
@@ -39,20 +39,17 @@ export function CenteredErrorState({
   return (
     <div className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-card px-4 py-8 shadow sm:rounded-lg sm:px-10 text-center">
-          <div
-            className={cn(
-              "mx-auto flex h-12 w-12 items-center justify-center rounded-full",
-              iconContainerVariants[variant]
-            )}
-          >
-            {icon || <IconComponent className="h-6 w-6" aria-hidden="true" />}
+        <div className="flex flex-col items-center gap-4 rounded-lg border border-hairline bg-card px-6 py-12 text-center sm:px-10">
+          <div className={cn("flex items-center justify-center", iconColorVariants[variant])}>
+            {icon || <IconComponent className="size-6" strokeWidth={1.5} aria-hidden="true" />}
           </div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold tracking-tight text-foreground">{title}</h2>
-          <p className="mt-2 text-center text-sm text-muted-foreground">{description}</p>
+          <div className="space-y-1">
+            <h2 className="text-base font-medium tracking-tight text-foreground">{title}</h2>
+            <p className="mx-auto max-w-sm text-sm leading-relaxed text-ink-2">{description}</p>
+          </div>
 
           {actionLabel && (actionHref || onAction) && (
-            <div className="mt-6">
+            <div className="mt-2 w-full">
               {actionHref ? (
                 <Button asChild className="w-full">
                   <Link href={actionHref}>{actionLabel}</Link>

@@ -1,16 +1,20 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { DashboardCard, DashboardCardContent } from "@/components/ui/dashboard-card";
+import { useParams } from "next/navigation";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import type { ProfileHealthResult } from "@/lib/profile-health";
-import { Check, AlertTriangle, X, FileText, Phone, Globe, MapPin, MessageSquare, Star } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Check, AlertTriangle, X, FileText, Phone, Globe, MapPin, MessageSquare, Star, ArrowRight } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
+import type { BadgeProps } from "@/components/ui/badge";
 
 interface ProfileHealthPageProps {
   result: ProfileHealthResult | null;
 }
 
-const ITEM_ICONS: Record<string, typeof FileText> = {
+const ITEM_ICONS: Record<string, LucideIcon> = {
   description: FileText,
   phoneNumber: Phone,
   websiteUrl: Globe,
@@ -19,8 +23,29 @@ const ITEM_ICONS: Record<string, typeof FileText> = {
   averageRating: Star,
 };
 
+const STATUS_CONFIG: Record<string, { icon: LucideIcon; variant: BadgeProps["variant"] }> = {
+  complete: { icon: Check, variant: "success" },
+  warning: { icon: AlertTriangle, variant: "warning" },
+  incomplete: { icon: X, variant: "destructive" },
+};
+
+const STATUS_PRIORITY: Record<string, number> = { incomplete: 0, warning: 1, complete: 2 };
+
+const FIX_TARGET: Record<string, { section: string; labelKey: string }> = {
+  description: { section: "settings", labelKey: "settings" },
+  phoneNumber: { section: "settings", labelKey: "settings" },
+  websiteUrl: { section: "settings", labelKey: "settings" },
+  address: { section: "settings", labelKey: "settings" },
+  responseRate: { section: "reviews", labelKey: "reviews" },
+  averageRating: { section: "get-reviews", labelKey: "getReviews" },
+};
+
 export function ProfileHealthPage({ result }: ProfileHealthPageProps) {
   const t = useTranslations("dashboard.profileHealth");
+  const tBreadcrumbs = useTranslations("breadcrumbs");
+  const params = useParams();
+  const locale = params.locale as string;
+  const locationId = params.locationId as string;
 
   if (!result) {
     return (
@@ -30,141 +55,113 @@ export function ProfileHealthPage({ result }: ProfileHealthPageProps) {
     );
   }
 
-  const scoreColor = result.score >= 80 ? "text-success" : result.score >= 50 ? "text-warning" : "text-destructive";
-  const scoreTrackColor =
-    result.score >= 80 ? "text-success/15" : result.score >= 50 ? "text-warning/15" : "text-destructive/15";
   const scoreLabel =
     result.score >= 80 ? t("scoreExcellent") : result.score >= 50 ? t("scoreNeedsWork") : t("scoreCritical");
 
   const completedCount = result.breakdown.filter((i) => i.status === "complete").length;
 
-  const ringSize = 132;
+  const orderedBreakdown = [...result.breakdown].sort((a, b) => STATUS_PRIORITY[a.status] - STATUS_PRIORITY[b.status]);
+
+  const ringSize = 168;
   const ringStroke = 12;
   const ringRadius = (ringSize - ringStroke) / 2;
   const ringCircumference = ringRadius * 2 * Math.PI;
   const ringOffset = ringCircumference - (Math.min(Math.max(result.score, 0), 100) / 100) * ringCircumference;
 
   return (
-    <div>
-      <div className="mb-8 space-y-1">
-        <h1 className="text-2xl font-bold tracking-tight">{t("title")}</h1>
-        <p className="text-muted-foreground">{t("subtitle")}</p>
-      </div>
-
-      <DashboardCard className="mb-8">
-        <DashboardCardContent className="p-6 sm:p-8">
-          <div className="flex flex-col items-center gap-6 text-center sm:flex-row sm:text-start">
-            <div
-              className="relative inline-flex shrink-0 items-center justify-center"
-              style={{ width: ringSize, height: ringSize }}
-              role="progressbar"
-              aria-valuenow={result.score}
-              aria-valuemin={0}
-              aria-valuemax={100}
-            >
-              <svg width={ringSize} height={ringSize} className="-rotate-90">
-                <circle
-                  cx={ringSize / 2}
-                  cy={ringSize / 2}
-                  r={ringRadius}
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={ringStroke}
-                  className={scoreTrackColor}
-                />
-                <circle
-                  cx={ringSize / 2}
-                  cy={ringSize / 2}
-                  r={ringRadius}
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth={ringStroke}
-                  strokeLinecap="round"
-                  strokeDasharray={ringCircumference}
-                  strokeDashoffset={ringOffset}
-                  className={cn("transition-all duration-500 ease-out", scoreColor)}
-                />
-              </svg>
-              <span className={cn("absolute text-4xl font-bold tabular-nums", scoreColor)}>{result.score}</span>
-            </div>
-            <div className="space-y-1">
-              <p className={cn("text-xl font-semibold", scoreColor)}>{scoreLabel}</p>
-              <p className="text-sm text-muted-foreground">{t("outOf100")}</p>
-              <p className="text-sm text-muted-foreground">
-                {t("completedItems", { completed: completedCount, total: result.breakdown.length })}
-              </p>
+    <div className="grid grid-cols-1 gap-8 lg:grid-cols-[280px_1fr]">
+      <div className="lg:sticky lg:top-6 lg:self-start">
+        <div className="flex flex-col items-center gap-5 rounded-lg border border-hairline bg-card p-6 text-center">
+          <div
+            className="relative inline-flex shrink-0 items-center justify-center"
+            style={{ width: ringSize, height: ringSize }}
+            role="progressbar"
+            aria-valuenow={result.score}
+            aria-valuemin={0}
+            aria-valuemax={100}
+          >
+            <svg width={ringSize} height={ringSize} className="-rotate-90">
+              <circle
+                cx={ringSize / 2}
+                cy={ringSize / 2}
+                r={ringRadius}
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={ringStroke}
+                className="text-surface-2"
+              />
+              <circle
+                cx={ringSize / 2}
+                cy={ringSize / 2}
+                r={ringRadius}
+                fill="none"
+                stroke="currentColor"
+                strokeWidth={ringStroke}
+                strokeLinecap="round"
+                strokeDasharray={ringCircumference}
+                strokeDashoffset={ringOffset}
+                className="text-primary transition-all duration-500 ease-out"
+              />
+            </svg>
+            <div className="absolute flex flex-col items-center">
+              <span className="text-5xl font-semibold tabular-nums leading-none text-primary">{result.score}</span>
+              <span className="mt-1 text-xs text-ink-3">{t("outOf100")}</span>
             </div>
           </div>
-        </DashboardCardContent>
-      </DashboardCard>
+          <div className="space-y-1">
+            <p className="text-lg font-semibold tracking-[-0.01em] text-ink">{scoreLabel}</p>
+            <p className="text-sm tabular-nums text-ink-2">
+              {t("completedItems", { completed: completedCount, total: result.breakdown.length })}
+            </p>
+          </div>
+        </div>
+      </div>
 
-      <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-2">
-        {result.breakdown.map((item) => {
-          const statusConfig = {
-            complete: {
-              icon: Check,
-              barColor: "bg-success",
-              statusColor: "text-success",
-              calloutBg: "bg-success/10",
-            },
-            warning: {
-              icon: AlertTriangle,
-              barColor: "bg-warning",
-              statusColor: "text-warning",
-              calloutBg: "bg-warning/10",
-            },
-            incomplete: {
-              icon: X,
-              barColor: "bg-destructive",
-              statusColor: "text-destructive",
-              calloutBg: "bg-destructive/10",
-            },
-          }[item.status];
+      <div className="rounded-lg border border-hairline bg-card">
+        <ul className="divide-y divide-hairline">
+          {orderedBreakdown.map((item) => {
+            const statusConfig = STATUS_CONFIG[item.status];
+            const ItemIcon = ITEM_ICONS[item.label] || FileText;
+            const StatusIcon = statusConfig.icon;
+            const percentage = Math.round((item.score / item.maxScore) * 100);
+            const fix = item.actionItem ? FIX_TARGET[item.label] : undefined;
 
-          const ItemIcon = ITEM_ICONS[item.label] || FileText;
-          const StatusIcon = statusConfig.icon;
-          const percentage = Math.round((item.score / item.maxScore) * 100);
+            return (
+              <li key={item.label} className="flex items-start gap-4 p-4">
+                <ItemIcon className="mt-0.5 size-4 shrink-0 text-ink-3" strokeWidth={1.5} aria-hidden />
 
-          return (
-            <div
-              key={item.label}
-              className="rounded-2xl border border-border/60 bg-card p-5 shadow-sm transition-all duration-200 hover:shadow-md"
-            >
-              <div className="mb-4 flex items-center justify-between gap-3">
-                <div className="flex min-w-0 items-center gap-3">
-                  <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary">
-                    <ItemIcon className="size-5" />
-                  </div>
-                  <div className="min-w-0">
-                    <p className="truncate font-semibold">{t(`items.${item.label}.title`)}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {item.score}/{item.maxScore} {t("points")}
+                <div className="min-w-0 flex-1 space-y-1">
+                  <div className="flex items-center gap-3">
+                    <p className="min-w-0 flex-1 truncate text-sm font-medium text-ink">
+                      {t(`items.${item.label}.title`)}
                     </p>
+                    <span className="shrink-0 text-xs font-medium tabular-nums text-ink-3">
+                      {item.score}/{item.maxScore} {t("points")}
+                    </span>
+                    <Badge variant={statusConfig.variant} className="shrink-0 tabular-nums">
+                      <StatusIcon />
+                      {percentage}%
+                    </Badge>
                   </div>
+                  <p className="text-sm leading-relaxed text-ink-2">{t(`items.${item.label}.description`)}</p>
+                  {item.actionItem && (
+                    <p className="text-sm leading-relaxed text-ink-3">{t(`items.${item.label}.action`)}</p>
+                  )}
+                  {fix && (
+                    <div className="pt-1">
+                      <Button asChild variant="outline" size="sm">
+                        <Link href={`/${locale}/dashboard/locations/${locationId}/${fix.section}`}>
+                          {tBreadcrumbs(fix.labelKey)}
+                          <ArrowRight className="size-3.5" />
+                        </Link>
+                      </Button>
+                    </div>
+                  )}
                 </div>
-                <div className={cn("flex shrink-0 items-center gap-1.5", statusConfig.statusColor)}>
-                  <StatusIcon className="size-4" />
-                  <span className="text-sm font-semibold tabular-nums">{percentage}%</span>
-                </div>
-              </div>
-
-              <div className="mb-3 h-2 overflow-hidden rounded-full bg-muted">
-                <div
-                  className={cn("h-full rounded-full transition-all duration-500", statusConfig.barColor)}
-                  style={{ width: `${percentage}%` }}
-                />
-              </div>
-
-              <p className="text-sm text-muted-foreground">{t(`items.${item.label}.description`)}</p>
-
-              {item.actionItem && (
-                <div className={cn("mt-3 rounded-xl p-3 text-sm", statusConfig.calloutBg)}>
-                  <p className={cn("font-medium", statusConfig.statusColor)}>{t(`items.${item.label}.action`)}</p>
-                </div>
-              )}
-            </div>
-          );
-        })}
+              </li>
+            );
+          })}
+        </ul>
       </div>
     </div>
   );

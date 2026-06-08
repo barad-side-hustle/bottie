@@ -1,8 +1,8 @@
 import { ImageResponse } from "next/og";
 import { getTranslations } from "next-intl/server";
 
-import { BotIconSvg, BRAND_BLUE } from "@/lib/brand/logo";
-import { BG_LIGHT, DARK_TEXT, MUTED_TEXT, PASTEL_LAVENDER, PASTEL_SKY, fixRtlText, loadRubikFont } from "./og-utils";
+import { BotIconSvg } from "@/lib/brand/logo";
+import { ACCENT_TEAL, BG_LIGHT, DARK_TEXT, MUTED_TEXT, fixRtlText, loadRubikFont } from "./og-utils";
 import { getLocaleDir, type Locale } from "@/lib/locale";
 
 export const alt = "Bottie.ai - AI Review Management";
@@ -39,32 +39,7 @@ export default async function OGImage({ params }: { params: Promise<{ locale: st
         overflow: "hidden",
       }}
     >
-      <div
-        style={{
-          position: "absolute",
-          top: -80,
-          right: -60,
-          width: 400,
-          height: 400,
-          borderRadius: "50%",
-          background: PASTEL_LAVENDER,
-          opacity: 0.6,
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          bottom: -100,
-          left: -80,
-          width: 350,
-          height: 350,
-          borderRadius: "50%",
-          background: PASTEL_SKY,
-          opacity: 0.6,
-        }}
-      />
-
-      <BotIconSvg size={80} />
+      <BotIconSvg size={80} color={ACCENT_TEAL} />
 
       <div
         style={{
@@ -90,7 +65,7 @@ export default async function OGImage({ params }: { params: Promise<{ locale: st
           style={{
             fontSize: 52,
             fontWeight: 700,
-            color: BRAND_BLUE,
+            color: ACCENT_TEAL,
             textAlign: "center",
             lineHeight: 1.2,
             marginTop: 4,
@@ -122,12 +97,12 @@ export default async function OGImage({ params }: { params: Promise<{ locale: st
           gap: 10,
         }}
       >
-        <BotIconSvg size={28} />
+        <BotIconSvg size={28} color={ACCENT_TEAL} />
         <div
           style={{
             fontSize: 22,
             fontWeight: 700,
-            color: BRAND_BLUE,
+            color: ACCENT_TEAL,
           }}
         >
           Bottie.ai

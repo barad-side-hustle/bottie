@@ -39,8 +39,12 @@ export function CheckoutForm() {
 
   return (
     <CheckoutPageLayout>
-      <div className="flex flex-col items-center text-center py-8">
-        <Loading text={t("processing")} description={t("almostThere")} size="lg" />
+      <div className="flex flex-col items-center gap-6 text-center py-6">
+        <Loading size="lg" />
+        <div className="space-y-1.5">
+          <h1 className="text-xl font-semibold tracking-[-0.02em] text-foreground">{t("processing")}</h1>
+          <p className="text-sm text-muted-foreground">{t("almostThere")}</p>
+        </div>
       </div>
     </CheckoutPageLayout>
   );

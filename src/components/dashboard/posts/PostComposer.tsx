@@ -177,17 +177,15 @@ export function PostComposer({ locationId, editingPost, onPostCreated, onCancelE
             className="mt-1.5 min-h-[120px]"
             maxLength={1500}
           />
-          <p className="text-xs text-muted-foreground mt-1.5 text-end tabular-nums">{summary.length}/1500</p>
+          <p className="mt-1.5 text-end text-xs tabular-nums text-ink-3">{summary.length}/1500</p>
         </div>
 
         <div>
           <Label>{t("image")}</Label>
           <div className="mt-1.5">
             {mediaUrl ? (
-              <div className="flex items-center gap-3 rounded-2xl border border-border/60 bg-muted/30 p-3">
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10">
-                  <ImageIcon className="size-5 text-primary" />
-                </div>
+              <div className="flex items-center gap-3 rounded-md border border-hairline bg-surface-2 p-3">
+                <ImageIcon className="size-4 shrink-0 text-ink-3" strokeWidth={1.5} aria-hidden />
                 <span className="flex-1 text-sm font-medium">{t("imageUploaded")}</span>
                 <Button variant="ghost" size="sm" onClick={() => fileInputRef.current?.click()}>
                   <RefreshCw className="size-4 me-1" />
@@ -203,7 +201,7 @@ export function PostComposer({ locationId, editingPost, onPostCreated, onCancelE
                 type="button"
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploading}
-                className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-border/60 bg-muted/20 p-8 text-sm font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:bg-muted/40 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-60"
+                className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-md border border-dashed border-line-strong bg-surface-2 p-8 text-sm font-medium text-ink-2 transition-colors hover:bg-surface-3 hover:text-foreground disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {uploading ? (
                   <>
@@ -225,12 +223,12 @@ export function PostComposer({ locationId, editingPost, onPostCreated, onCancelE
               onChange={handleImageUpload}
               className="hidden"
             />
-            <p className="text-xs text-muted-foreground mt-1">{t("imageMaxSize")}</p>
-            {uploadError && <p className="text-xs text-destructive mt-1">{uploadError}</p>}
+            <p className="mt-1.5 text-xs text-ink-3">{t("imageMaxSize")}</p>
+            {uploadError && <p className="mt-1.5 text-xs text-destructive">{uploadError}</p>}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-3 rounded-2xl border border-border/60 p-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 rounded-lg border border-hairline p-4 sm:grid-cols-2">
           <div>
             <Label>{t("ctaType")}</Label>
             <Select value={ctaType} onValueChange={(v) => setCtaType(v as CallToActionType)}>
@@ -260,7 +258,7 @@ export function PostComposer({ locationId, editingPost, onPostCreated, onCancelE
         </div>
 
         {(topicType === "EVENT" || topicType === "OFFER") && (
-          <div className="space-y-3 rounded-2xl border border-border/60 p-4">
+          <div className="space-y-3 rounded-lg border border-hairline p-4">
             <Label className="text-sm font-semibold">{t("eventDetails")}</Label>
             <Input
               value={eventTitle}
@@ -313,7 +311,7 @@ export function PostComposer({ locationId, editingPost, onPostCreated, onCancelE
         )}
 
         {topicType === "OFFER" && (
-          <div className="space-y-3 rounded-2xl border border-border/60 p-4">
+          <div className="space-y-3 rounded-lg border border-hairline p-4">
             <Label className="text-sm font-semibold">{t("offerDetails")}</Label>
             <Input
               value={offerCode}
@@ -328,7 +326,7 @@ export function PostComposer({ locationId, editingPost, onPostCreated, onCancelE
           </div>
         )}
 
-        <div className="flex flex-col-reverse gap-2 border-t border-border/60 pt-4 sm:flex-row sm:justify-end">
+        <div className="flex flex-col-reverse gap-2 border-t border-hairline pt-4 sm:flex-row sm:justify-end">
           {editingPost ? (
             <>
               <Button onClick={() => onCancelEdit?.()} variant="outline" disabled={isLoading}>

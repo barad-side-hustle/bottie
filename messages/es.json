@@ -1,10 +1,10 @@
 {
   "metadata": {
-    "title": "Bottie - Respuestas con IA e Insights para Google Business",
-    "description": "Genera automaticamente respuestas con inteligencia artificial para las resenas de Google Business y obtiene informacion util a partir de los comentarios de tus clientes. Ahorra tiempo mientras mejoras tu reputacion en linea y comprendes el sentimiento de tus clientes.",
-    "keywords": "respuestas con IA a resenas, Google Business Profile, gestion de resenas, respuestas automaticas, engagement de clientes, reputacion empresarial, automatizacion de resenas",
+    "title": "Respuestas con IA a Resenas de Google - Bottie",
+    "description": "Bottie responde a cada resena de Google con tu voz, automaticamente. Conecta tu Perfil de Negocio de Google, ahorra horas y protege tu reputacion. Empieza gratis.",
+    "keywords": "responder resenas de google, respuestas con IA a resenas, gestion de resenas de google, google business profile, automatizacion de respuestas a resenas, gestion de reputacion para pequenas empresas",
     "ogImage": {
-      "alt": "Bottie.ai - Gestion de Resenas con IA"
+      "alt": "Bottie - IA que responde resenas de Google con tu voz"
     }
   },
   "common": {
@@ -41,15 +41,16 @@
     },
     "sidebar": {
       "reviews": "Resenas",
+      "inbox": "Bandeja de entrada",
       "insights": "Insights",
       "locationSettings": "Configuracion de ubicacion",
       "overview": "Resumen",
-      "billing": "Facturacion",
       "settings": "Configuracion",
       "getReviews": "Obtener resenas",
       "posts": "Publicaciones",
       "profileHealth": "Salud del perfil",
       "locationLabel": "Ubicacion",
+      "workspaceLabel": "Espacio de trabajo",
       "addLocation": "Agregar ubicacion",
       "selectLocation": "Seleccionar ubicacion"
     }
@@ -61,17 +62,51 @@
     "settings": "Configuracion",
     "profileHealth": "Salud del perfil",
     "getReviews": "Obtener resenas",
-    "posts": "Publicaciones"
+    "posts": "Publicaciones",
+    "billing": "Facturacion"
   },
   "landing": {
     "hero": {
-      "title": "Respuestas profesionales a resenas",
-      "titleHighlight": "Automaticamente",
-      "description": "Ahorra tiempo valioso y responde a cada resena de manera personal y profesional con el poder de la inteligencia artificial. Mantiene la voz de tu marca y mejora la reputacion de tu negocio.",
-      "cta": "Comienza gratis ahora",
-      "ctaSecondary": "Ver como funciona",
-      "badge1": "Completamente gratis",
-      "badge2": "Sin compromiso"
+      "title": "Responde a cada resena de Google",
+      "titleHighlight": "con tu voz, automaticamente",
+      "description": "Conecta tu Perfil de Negocio de Google y Bottie redacta una respuesta en tu tono y en el idioma de tu cliente a los pocos minutos de cada nueva resena. Apruebala con un toque, o deja que se publique sola.",
+      "ctaSecondary": "Velo en accion",
+      "headline": "Responde a cada resena de Google con tu voz, automaticamente",
+      "subhead": "Conecta tu Perfil de Negocio de Google y Bottie redacta una respuesta en tu tono y en el idioma de tu cliente a los pocos minutos de cada nueva resena. Apruebala con un toque, o deja que se publique sola.",
+      "ctaPrimary": "Conecta tu Perfil de Negocio de Google",
+      "trust": {
+        "0": "Gratis para empezar",
+        "1": "Sin tarjeta de credito"
+      },
+      "preview": {
+        "businessName": "Cafe Riverside",
+        "reviewer": "Sara M.",
+        "timeAgo": "hace 2h",
+        "reviewText": "Un lugar precioso junto al agua y el cafe estaba buenisimo. El servicio fue un poco lento en el brunch, pero volveremos.",
+        "replyLabel": "Borrador IA",
+        "replyText": "Muchisimas gracias, Sara. Nos encanta que disfrutaras del cafe y de la vista, y tienes razon en que el brunch se llena. Estamos trabajando para agilizarlo y nos vemos muy pronto.",
+        "approve": "Aprobar y publicar",
+        "statusPending": "Falta responder"
+      }
+    },
+    "whyBottie": {
+      "eyebrow": "Por que Bottie",
+      "title": "Respuestas con tu voz, sin el trabajo tedioso",
+      "subtitle": "La mayoria de las herramientas publican respuestas roboticas o te entierran en un panel empresarial. Bottie hace una cosa bien: respuestas pensadas que suenan como tu, en tus terminos.",
+      "points": {
+        "0": {
+          "title": "Respuestas que suenan como tu",
+          "description": "Bottie escribe en tu tono y en el idioma de tu cliente, no con plantillas de copiar y pegar. Cada respuesta refleja tu marca, ya sea que la resena llegue en ingles, hebreo o espanol."
+        },
+        "1": {
+          "title": "Tu mantienes el control",
+          "description": "Aprueba cada borrador con un toque, o configura la publicacion automatica por calificacion. Deja que tus resenas de 5 estrellas se respondan solas mientras tu manejas todo lo que esta por debajo de 3."
+        },
+        "2": {
+          "title": "Datos sobre los que actuas",
+          "description": "Ve tus calificaciones, tasa de respuesta, sentimiento y rendimiento del perfil en un panel limpio. Los numeros que mueven tu negocio, no una suite empresarial inflada."
+        }
+      }
     },
     "stats": {
       "businesses": "Negocios conectados",
@@ -80,36 +115,37 @@
       "hoursSaved": "Horas ahorradas"
     },
     "testimonials": {
-      "title": "La confianza de los duenos de negocios",
+      "title": "Duenos que recuperaron su tiempo",
       "items": {
         "0": {
-          "name": "Sarah Cohen",
+          "name": "Noa Peretz",
           "role": "Duena de restaurante",
-          "quote": "Esta herramienta cambio por completo la forma en que manejamos las resenas. Nos ahorra horas cada semana y las respuestas son profesionales y personalizadas."
+          "quote": "Entre la cocina y dirigir al personal, nunca tenia tiempo de responder resenas. Ahora cada respuesta sale como si la hubiera escrito yo misma. Una clienta habitual hasta menciono lo bien que estan nuestras respuestas."
         },
         "1": {
-          "name": "David Levi",
-          "role": "Gerente de tienda",
-          "quote": "Al principio era esceptico, pero la IA entiende nuestro tono a la perfeccion. Altamente recomendado para cualquier dueno de negocio."
+          "name": "Tom Hadad",
+          "role": "Dueno de taller mecanico",
+          "quote": "La verdad no pensaba que la IA pudiera igualar como hablamos con los clientes. Me tomo unos 10 minutos configurarlo y casi no he tenido que editar una sola respuesta desde entonces. Ojala lo hubiera encontrado antes."
         },
         "2": {
-          "name": "Michael Chen",
-          "role": "Dueno de cafeteria",
-          "quote": "Facil de configurar y funciona como magia. Las respuestas automaticas para resenas de 5 estrellas son un cambio total."
+          "name": "Lina Marcos",
+          "role": "Gerente de hotel boutique",
+          "quote": "Antes ignorabamos todo lo que estuviera por debajo de 4 estrellas porque no sabiamos que decir. Ahora cada resena recibe una respuesta pensada, y hasta hemos visto volver a algunos clientes molestos."
         }
       }
     },
     "finalCTA": {
-      "title": "Listo para transformar tus resenas?",
-      "description": "Unete a cientos de negocios que usan IA para mejorar su reputacion y ahorrar tiempo.",
-      "cta": "Comienza gratis",
+      "title": "No vuelvas a dejar una resena sin responder",
+      "description": "Conecta tu Perfil de Negocio de Google en minutos y deja que cada resena reciba una respuesta con tu voz, de dia o de noche.",
+      "cta": "Conecta tu Perfil de Negocio de Google",
       "noCreditCard": "No se requiere tarjeta de credito - Cancela cuando quieras"
     },
     "pricing": {
-      "title": "Precios simples por ubicacion",
-      "subtitle": "Respuestas con IA ilimitadas por ubicacion. Comienza gratis, actualiza cuando quieras.",
+      "title": "Un precio simple por ubicacion",
+      "subtitle": "Respuestas con IA ilimitadas para cada ubicacion. Empieza gratis y mejora tu plan cuando estes listo.",
       "freeCta": "Comenzar gratis",
       "proCta": "Comenzar ahora",
+      "recommendedLabel": "Mas popular",
       "loading": "Cargando...",
       "perLocation": "/ubicacion/mes",
       "freeReplies": "{count} respuestas con IA gratis/mes por ubicacion",
@@ -135,73 +171,69 @@
     },
     "faq": {
       "title": "Preguntas frecuentes",
-      "subtitle": "Encuentra respuestas a las preguntas mas comunes sobre el sistema",
+      "subtitle": "Las respuestas a lo que los duenos preguntan antes de conectarse",
       "items": {
         "0": {
-          "question": "Como crea el sistema las respuestas a resenas?",
-          "answer": "El sistema utiliza la tecnologia Gemini AI de Google para crear respuestas personalizadas. Tiene en cuenta la descripcion de tu negocio, el tono de voz elegido, la calificacion por estrellas y las instrucciones especificas que hayas configurado para cada tipo de resena."
+          "question": "Como escribe Bottie las respuestas a mis resenas?",
+          "answer": "Bottie usa Gemini AI de Google para escribir una respuesta personalizada a cada resena. Se apoya en la descripcion de tu negocio, el tono de voz que elijas, la calificacion por estrellas y cualquier instruccion especifica que configures por tipo de resena, para que cada respuesta suene como tu negocio."
         },
         "1": {
-          "question": "Puedo editar las respuestas antes de publicarlas?",
-          "answer": "Por supuesto! Puedes configurar el sistema en tres modos: aprobacion manual (revisar cada respuesta), publicacion automatica completa, o modo hibrido donde decides segun la calificacion por estrellas. Por ejemplo, las resenas de 4-5 estrellas se publican automaticamente mientras que las calificaciones mas bajas requieren aprobacion manual."
+          "question": "Puedo revisar las respuestas antes de que se publiquen?",
+          "answer": "Si. Puedes usar Bottie en tres modos: aprobar tu mismo cada respuesta, publicacion automatica total, o un modo hibrido donde tus reglas deciden. Una configuracion comun es publicar de forma automatica las resenas de 4 y 5 estrellas y dejar para aprobacion manual cualquier calificacion mas baja."
         },
         "2": {
-          "question": "El sistema soporta multiples idiomas?",
-          "answer": "Si! El sistema soporta completamente varios idiomas, incluyendo hebreo, ingles y espanol. Puedes configurar el idioma predeterminado de las respuestas, o elegir el modo 'auto-detectar' donde el sistema identifica el idioma de la resena y responde en el mismo idioma."
+          "question": "Que idiomas admite Bottie?",
+          "answer": "Bottie responde en ingles, hebreo y espanol. Configura un idioma predeterminado, o usa la auto-deteccion para que Bottie reconozca el idioma de cada resena y responda en el mismo."
         },
         "3": {
-          "question": "Cuanto tiempo tarda en generarse una respuesta automatica?",
-          "answer": "El sistema recibe notificaciones en tiempo real de nuevas resenas a traves de Google Pub/Sub. Normalmente, una respuesta se genera en 1-2 minutos despues de que se publica la resena. En modo de publicacion automatica, la respuesta se publica inmediatamente despues."
+          "question": "Cuanto tarda en redactarse una respuesta?",
+          "answer": "Bottie recibe aviso de las nuevas resenas en tiempo real a traves de Google Pub/Sub, asi que una respuesta suele estar lista en 1-2 minutos desde que la resena se publica. En modo automatico se publica de inmediato."
         },
         "4": {
-          "question": "Puedo configurar respuestas diferentes para distintas calificaciones?",
-          "answer": "Si! Esta es una de las funciones principales del sistema. Puedes establecer instrucciones especificas para cada calificacion por estrellas (1-5). Por ejemplo, para una resena de 1 estrella puedes configurar una respuesta mas empatica con una oferta de solucion, mientras que una resena de 5 estrellas recibe una respuesta mas agradecida."
+          "question": "Puedo poner respuestas distintas para cada calificacion?",
+          "answer": "Si, y la mayoria de los duenos lo hace. Configura instrucciones especificas por calificacion (de 1 a 5). Para una resena de 1 estrella puedes pedir una respuesta empatica que ofrezca una solucion, y para una de 5 estrellas un agradecimiento calido que invite al cliente a volver."
         },
         "5": {
-          "question": "Que pasa si el sistema crea una respuesta inapropiada?",
-          "answer": "Si has habilitado el modo de aprobacion manual, puedes rechazar o editar la respuesta antes de publicarla. En el modo de publicacion automatica, siempre puedes eliminar o editar la respuesta incluso despues de publicada. Ademas, el sistema aprende de tus ediciones y mejora con el tiempo."
+          "question": "Que pasa si Bottie escribe una respuesta que no me gusta?",
+          "answer": "En modo de aprobacion manual puedes editar o rechazar cualquier respuesta antes de que se publique. En modo automatico puedes editar o eliminar una respuesta incluso despues de publicada. Bottie tambien aprende de tus ediciones y se acerca a tu voz con el tiempo."
         },
         "6": {
-          "question": "Es seguro el sistema? Que hay sobre la privacidad de datos?",
-          "answer": "El sistema utiliza la integracion oficial de la API de Google Business Profile con OAuth 2.0, por lo que nunca almacenamos tu contrasena de Google. Toda la informacion esta encriptada y almacenada de forma segura en PostgreSQL. Cumplimos con los mas altos estandares de seguridad y privacidad de datos."
+          "question": "Estan seguros mis datos? Como funciona la conexion con Google?",
+          "answer": "Bottie se conecta a traves de la API oficial de Google Business Profile usando OAuth 2.0, por lo que nunca vemos ni almacenamos tu contrasena de Google. Tus datos estan encriptados y guardados de forma segura en PostgreSQL, y los tokens de actualizacion se encriptan con AES-256."
         },
         "7": {
-          "question": "Puedo probar el sistema antes de pagar?",
-          "answer": "Si! Tenemos un plan gratuito que te permite administrar un negocio y hasta 5 resenas por mes sin necesidad de tarjeta de credito. Puedes actualizar a un plan de pago en cualquier momento."
+          "question": "Puedo probar Bottie antes de pagar?",
+          "answer": "Si. El plan gratuito cubre una ubicacion y hasta 5 respuestas con IA al mes, sin tarjeta de credito. Pasa a respuestas ilimitadas cuando quieras y cancela en cualquier momento."
         },
         "8": {
-          "question": "Puedo crear publicaciones de Google directamente desde Bottie?",
-          "answer": "Si! Bottie te permite crear y publicar publicaciones en tu Perfil de Negocio de Google, incluyendo actualizaciones estandar, eventos y ofertas promocionales, directamente desde tu panel de control. Puedes agregar imagenes, llamadas a la accion, fechas de eventos y codigos de cupon. Las publicaciones se pueden guardar como borradores o publicar inmediatamente."
+          "question": "Puedo crear publicaciones de Google desde Bottie?",
+          "answer": "Si. Crea y publica publicaciones en tu Perfil de Negocio de Google, incluyendo actualizaciones, eventos y ofertas, directamente desde tu panel. Agrega imagenes, un boton de llamada a la accion, fechas de eventos y codigos de cupon, y luego guarda como borrador o publica ya."
         },
         "9": {
-          "question": "Que analiticas e insights ofrece Bottie?",
-          "answer": "Bottie ofrece un panel de analiticas completo que incluye metricas de rendimiento del Perfil de Negocio de Google (impresiones, clics al sitio web, llamadas telefonicas, solicitudes de direccion), analisis de sentimiento de resenas, desgloses por categorias, tendencias de temas y una Puntuacion de Salud del Perfil que evalua la completitud de tu listado y tu tasa de respuesta."
+          "question": "Que insights me da Bottie?",
+          "answer": "Bottie sigue el rendimiento del Perfil de Negocio de Google (impresiones, clics al sitio web, llamadas telefonicas y solicitudes de direccion), el sentimiento de las resenas, los desgloses por categoria y las tendencias de temas. Una Puntuacion de Salud del Perfil muestra que tan completo esta tu listado y que tan bien respondes a las resenas."
         }
       }
     },
     "howItWorks": {
-      "title": "Como funciona?",
-      "subtitle": "Cuatro simples pasos para activar el sistema y obtener respuestas automaticas a resenas",
+      "title": "De una nueva resena a una respuesta publicada en tres pasos",
+      "subtitle": "Configuralo una vez y luego mira como cada resena recibe una respuesta pensada sin mover un dedo.",
       "steps": {
         "0": {
-          "title": "Conecta tu cuenta de Google Business",
-          "description": "Conecta con un clic a tu cuenta de Google Business Profile y selecciona el negocio a activar"
+          "title": "Conecta tu Perfil de Negocio de Google",
+          "description": "Un clic vincula tus ubicaciones. Bottie empieza a vigilar nuevas resenas en cuanto te conectas, sin plugins y sin copiar y pegar."
         },
         "1": {
-          "title": "Configura tus preferencias",
-          "description": "Personaliza el tono de voz, el estilo de respuesta y las instrucciones especiales para cada calificacion por estrellas"
+          "title": "Bottie redacta una respuesta en tu tono e idioma",
+          "description": "A los pocos minutos de una nueva resena, Bottie escribe una respuesta que coincide con tu voz y responde en el idioma del cliente."
         },
         "2": {
-          "title": "Recibe respuestas automaticas",
-          "description": "El sistema detecta nuevas resenas y crea respuestas personalizadas automaticamente"
-        },
-        "3": {
-          "title": "Revisa y publica",
-          "description": "Revisa y aprueba las respuestas antes de publicarlas, o habilita el modo de publicacion completamente automatico"
+          "title": "Apruebala, o deja que se publique sola por calificacion",
+          "description": "Revisa y publica con un toque, o configura la publicacion automatica por calificacion para que tus mejores resenas se respondan solas."
         }
       },
-      "ctaText": "Listo para comenzar? Toma menos de 5 minutos",
-      "ctaButton": "Comienza gratis ahora"
+      "ctaText": "Listo para empezar? Toma menos de 5 minutos",
+      "ctaButton": "Conecta tu Perfil de Negocio de Google"
     },
     "demo": {
       "title": "Velo en accion",
@@ -226,8 +258,7 @@
     },
     "footer": {
       "company": {
-        "name": "Bottie.ai",
-        "description": "Solucion avanzada de IA para gestionar y automatizar respuestas a resenas de clientes. Ahorra tiempo y mejora la reputacion de tu negocio.",
+        "description": "IA que responde a tus resenas de Google con tu voz, automaticamente. Ahorra horas y protege tu reputacion.",
         "location": "Tel Aviv, Israel",
         "contact": "Contactanos"
       },
@@ -255,7 +286,6 @@
     "dashboard": "Panel de control",
     "checkingAuth": "Verificando autenticacion...",
     "loginPage": {
-      "tagline": "Inicia sesion para comenzar a gestionar tus resenas",
       "title": "Iniciar sesion",
       "description": "Inicia sesion en tu cuenta para continuar",
       "googleButton": "Iniciar sesion con Google",
@@ -274,7 +304,6 @@
       "privacyLink": "Politica de privacidad"
     },
     "signUpPage": {
-      "tagline": "Crea una cuenta para comenzar a gestionar tus resenas",
       "title": "Crear cuenta",
       "description": "Registrate para comenzar con Bottie",
       "googleButton": "Registrarse con Google",
@@ -340,12 +369,17 @@
       "averageRating": "Calificacion promedio",
       "reviewsThisMonth": "Resenas este mes",
       "totalLocations": "Ubicaciones",
-      "pendingBanner": "Tienes {count, plural, one {# resena} other {# resenas}} esperando respuesta",
-      "reviewNow": "Revisar ahora",
       "yourLocations": "Tus ubicaciones",
       "pendingBadge": "{count} pendientes",
       "proBadge": "Pro",
-      "freeBadge": "Gratis"
+      "freeBadge": "Gratis",
+      "attention": {
+        "title": "Necesita tu atencion",
+        "needsReply": "{count, plural, one {# resena esperando respuesta} other {# resenas esperando respuesta}}",
+        "openInbox": "Abrir bandeja de entrada",
+        "allCaughtUp": "Estas al dia",
+        "allCaughtUpHint": "Las nuevas resenas aparecen aqui a los pocos minutos de publicarse."
+      }
     },
     "home": {
       "title": "Resumen",
@@ -485,8 +519,6 @@
       }
     },
     "subscription": {
-      "title": "Ubicaciones y facturacion",
-      "description": "Administra las suscripciones de tus ubicaciones",
       "upgradePlan": "Actualizar",
       "successMessage": "Tu suscripcion ha sido activada exitosamente!",
       "info": {
@@ -509,6 +541,8 @@
     "accountSettings": {
       "title": "Configuracion",
       "description": "Administra las preferencias de tu cuenta",
+      "accountTab": "Cuenta",
+      "billingTab": "Facturacion",
       "emailNotifications": {
         "title": "Notificaciones por email",
         "description": "Configura que notificaciones por email deseas recibir",
@@ -638,6 +672,11 @@
         "loadMore": "Cargar mas resenas",
         "reviewRemoved": "Eliminada de Google",
         "removedCount": "{count} eliminadas (borradas de Google)"
+      },
+      "inbox": {
+        "detailEmptyTitle": "Selecciona una resena",
+        "detailEmptyHint": "Elige una resena de la lista para leerla y redactar una respuesta.",
+        "keyboardHint": "Usa J / K para moverte, Enter para abrir"
       }
     },
     "reviewDetail": {
@@ -648,6 +687,12 @@
       "description": "Comprende el rendimiento de tu negocio a traves del analisis de resenas",
       "noData": "No hay datos disponibles",
       "noDataDescription": "No hay resenas clasificadas para el periodo seleccionado",
+      "tabs": {
+        "overview": "Resumen",
+        "trends": "Tendencias",
+        "categories": "Categorias",
+        "performance": "Rendimiento"
+      },
       "dateFilter": {
         "selectDateRange": "Seleccionar rango de fechas",
         "last7Days": "Ultimos 7 dias",
@@ -997,27 +1042,27 @@
   },
   "about": {
     "meta": {
-      "title": "Acerca de Bottie - Plataforma de gestion de resenas de Google con IA",
-      "description": "Descubre como Bottie.ai ayuda a las empresas a responder automaticamente a las resenas de Google con IA, crear publicaciones de Google, rastrear metricas de rendimiento y monitorear la salud del perfil. Ahorra tiempo y construye una reputacion online mas solida.",
-      "keywords": "acerca de Bottie, gestion de resenas con IA, automatizacion de Google Business Profile, herramienta de respuesta a resenas, gestion de reputacion empresarial, publicaciones de Google, analiticas de rendimiento, puntuacion de salud del perfil"
+      "title": "Acerca de Bottie - Gestion de Resenas de Google con IA",
+      "description": "Bottie ayuda a las pequenas empresas a responder resenas de Google con su voz, automaticamente. Asi automatizamos respuestas, publicaciones de Google e insights para ahorrarte horas.",
+      "keywords": "acerca de Bottie, respuestas con IA a resenas, gestion de resenas de google, google business profile, automatizacion de respuestas a resenas, gestion de reputacion para pequenas empresas"
     },
     "hero": {
-      "title": "Acerca de Bottie.ai",
-      "subtitle": "La plataforma integral para gestionar tu Perfil de Negocio de Google. Automatiza respuestas a resenas, publica posts, rastrea metricas de rendimiento y optimiza tu presencia online, todo impulsado por IA."
+      "title": "Acerca de Bottie",
+      "subtitle": "Una plataforma para gestionar tu Perfil de Negocio de Google. Responde resenas con tu voz, publica posts, sigue tu rendimiento y manten tu listado sano, todo impulsado por IA."
     },
     "mission": {
       "title": "Nuestra mision",
-      "content": "Cada resena de cliente merece una respuesta profesional y reflexiva, pero para los duenos de negocios ocupados, encontrar el tiempo para responder a cada una es casi imposible. Bottie.ai fue creado para resolver este problema. Nuestra mision es dar a cada negocio, desde tiendas locales hasta empresas con multiples ubicaciones, la capacidad de interactuar con los comentarios de los clientes de manera instantanea y autentica, proporcionando las herramientas e insights necesarios para hacer crecer su reputacion online."
+      "content": "Cada resena de cliente merece una respuesta pensada, pero para un dueno ocupado encontrar tiempo para responder a cada una es casi imposible. Creamos Bottie para cerrar esa brecha. Nuestra mision es dar a cada negocio, desde una sola tienda local hasta una marca con varias ubicaciones, una forma de responder a los comentarios de los clientes rapido y con su propia voz, con los insights para hacer crecer su reputacion con el tiempo."
     },
     "problem": {
       "title": "El problema que resolvemos",
-      "content": "Las resenas online impactan directamente en las decisiones de compra. Los estudios muestran que el 93% de los consumidores lee resenas online antes de visitar un negocio, y las empresas que responden a las resenas son percibidas como 1.7 veces mas confiables. Sin embargo, la mayoria de los duenos de negocios tienen dificultades para responder de manera consistente, lo que lleva a oportunidades perdidas, quejas sin respuesta y una presencia online debilitada.",
-      "content2": "Mas alla de las resenas, mantener un Perfil de Negocio de Google activo requiere publicaciones regulares, monitoreo de metricas de rendimiento y asegurar que tu listado este completo y optimizado. Gestionar todo esto manualmente en multiples ubicaciones es abrumador, y es exactamente donde Bottie interviene."
+      "content": "Las resenas mueven las decisiones de compra. El 93% de los consumidores lee resenas antes de visitar un negocio, y las empresas que responden se perciben como 1.7 veces mas confiables. Aun asi, la mayoria de los duenos no logran seguir el ritmo, y el costo se nota: clientes perdidos, quejas que quedan en el aire y un perfil que se ve descuidado.",
+      "content2": "Un Perfil de Negocio de Google activo tambien necesita publicaciones regulares, atencion al rendimiento y un listado completo y preciso. Hacer todo eso a mano, en mas de una ubicacion, es demasiado para una sola persona. Ahi es donde entra Bottie."
     },
     "solution": {
-      "title": "Como ayuda Bottie.ai",
-      "content": "Bottie.ai se conecta directamente a tu Perfil de Negocio de Google y monitorea las resenas entrantes en tiempo real. Cuando llega una nueva resena, nuestra IA genera una respuesta personalizada que coincide con el tono y las preferencias de idioma de tu negocio. Puedes revisar y aprobar las respuestas manualmente, o habilitar la publicacion automatica para ahorrar aun mas tiempo.",
-      "content2": "Pero Bottie va mucho mas alla de las respuestas a resenas. Puedes crear y publicar publicaciones de Google directamente desde tu panel de control, rastrear metricas de rendimiento detalladas como impresiones, clics y llamadas telefonicas, analizar el sentimiento de los clientes con insights impulsados por IA y monitorear tu Puntuacion de Salud del Perfil para asegurarte de que tu listado este completamente optimizado."
+      "title": "Como ayuda Bottie",
+      "content": "Bottie se conecta a tu Perfil de Negocio de Google y vigila las nuevas resenas en tiempo real. Cuando llega una, redacta una respuesta que coincide con tu tono y con el idioma de tu cliente. Aprueba las respuestas tu mismo, o activa la publicacion automatica y deja que las rutinarias se respondan solas.",
+      "content2": "Bottie hace mas que responder. Crea y publica publicaciones de Google desde tu panel, sigue impresiones, clics y llamadas telefonicas, lee el sentimiento con IA en cada resena y observa tu Puntuacion de Salud del Perfil para saber siempre que arreglar a continuacion."
     },
     "features": {
       "title": "Que hace diferente a Bottie.ai",
@@ -1100,20 +1145,20 @@
       "content2": "Estamos comprometidos con la mejora continua. Lanzamos nuevas funciones regularmente, respondemos a los comentarios de los usuarios y optimizamos nuestros modelos de IA para generar respuestas mejores y mas naturales. Si tienes ideas o comentarios, nos encantaria escucharte."
     },
     "cta": {
-      "title": "Listo para ahorrar tiempo en resenas?",
-      "subtitle": "Unete a los negocios que ya usan Bottie.ai para responder a cada resena de Google automaticamente, publicar posts y rastrear su rendimiento.",
-      "button": "Comienza gratis"
+      "title": "Listo para recuperar tu tiempo?",
+      "subtitle": "Unete a los negocios que ya usan Bottie para responder a cada resena de Google con su voz, publicar posts y seguir su rendimiento.",
+      "button": "Empieza gratis"
     }
   },
   "contact": {
     "meta": {
-      "title": "Contactanos - Bottie.ai",
-      "description": "Ponte en contacto con el equipo de Bottie.ai. Estamos aqui para ayudarte con cualquier pregunta sobre nuestra plataforma de gestion de resenas con IA.",
-      "keywords": "contacto Bottie, soporte, ayuda, servicio al cliente"
+      "title": "Contacta a Bottie - Soporte de Resenas de Google",
+      "description": "Tienes preguntas sobre responder resenas de Google con Bottie? Contacta a nuestro equipo sobre planes, configuracion, tu Perfil de Negocio de Google o alianzas.",
+      "keywords": "contacto Bottie, soporte de Bottie, ayuda gestion de resenas de google, google business profile, respuestas con IA a resenas"
     },
     "page": {
       "title": "Contactanos",
-      "description": "Tienes alguna pregunta o comentario? Nos encantaria saber de ti. Completa el formulario y te responderemos lo antes posible."
+      "description": "Tienes una pregunta sobre Bottie o tu Perfil de Negocio de Google? Escribenos y te responderemos en un dia habil."
     },
     "form": {
       "subject": "Asunto",

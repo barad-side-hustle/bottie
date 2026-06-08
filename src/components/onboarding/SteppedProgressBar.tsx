@@ -10,31 +10,34 @@ interface SteppedProgressBarProps {
 
 export function SteppedProgressBar({ steps, currentStep }: SteppedProgressBarProps) {
   return (
-    <div className="flex items-center gap-3 w-full">
+    <ol className="flex items-center gap-3 w-full">
       {steps.map((label, index) => {
         const isCompleted = index < currentStep;
         const isActive = index === currentStep;
 
         return (
-          <div key={label} className="flex items-center gap-3 flex-1 last:flex-none">
+          <li
+            key={label}
+            className="flex items-center gap-3 flex-1 last:flex-none"
+            aria-current={isActive ? "step" : undefined}
+          >
             <div className="flex items-center gap-2.5">
               <div
                 className={cn(
-                  "h-8 w-8 rounded-full flex items-center justify-center text-sm font-semibold tabular-nums transition-all duration-300 shrink-0",
+                  "h-7 w-7 rounded-full flex items-center justify-center text-sm font-medium tabular-nums shrink-0 transition-colors duration-[var(--dur-fast)] ease-[var(--ease-standard)]",
                   isCompleted && "bg-primary text-primary-foreground",
-                  isActive &&
-                    "bg-primary text-primary-foreground ring-2 ring-primary/25 ring-offset-2 ring-offset-card animate-onboarding-pulse-dot",
-                  !isCompleted && !isActive && "bg-muted text-muted-foreground"
+                  isActive && "border border-line-strong bg-surface-2 text-foreground",
+                  !isCompleted && !isActive && "border border-hairline bg-surface text-ink-3"
                 )}
               >
                 {isCompleted ? <Check className="h-4 w-4" /> : index + 1}
               </div>
               <span
                 className={cn(
-                  "text-sm font-medium hidden sm:block whitespace-nowrap transition-colors duration-300",
-                  isActive && "text-foreground",
+                  "text-sm hidden sm:block whitespace-nowrap transition-colors duration-[var(--dur-fast)]",
+                  isActive && "font-medium text-foreground",
                   isCompleted && "text-foreground",
-                  !isCompleted && !isActive && "text-muted-foreground"
+                  !isCompleted && !isActive && "text-ink-3"
                 )}
               >
                 {label}
@@ -42,16 +45,16 @@ export function SteppedProgressBar({ steps, currentStep }: SteppedProgressBarPro
             </div>
 
             {index < steps.length - 1 && (
-              <div className="flex-1 h-0.5 rounded-full bg-border overflow-hidden">
+              <div className="flex-1 h-px bg-hairline overflow-hidden">
                 <div
-                  className="h-full bg-primary rounded-full transition-all duration-500 ease-out"
+                  className="h-full bg-primary transition-[width] duration-[var(--dur-slow)] ease-[var(--ease-standard)]"
                   style={{ width: isCompleted ? "100%" : "0%" }}
                 />
               </div>
             )}
-          </div>
+          </li>
         );
       })}
-    </div>
+    </ol>
   );
 }

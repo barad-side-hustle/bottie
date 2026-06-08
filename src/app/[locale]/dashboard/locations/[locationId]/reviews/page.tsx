@@ -6,15 +6,9 @@ import { getTranslations } from "next-intl/server";
 import { getLocation } from "@/lib/actions/locations.actions";
 import { getReviews } from "@/lib/actions/reviews.actions";
 import { getAuthenticatedUserId } from "@/lib/api/auth";
-import { ReviewsList } from "@/components/dashboard/reviews/ReviewsList";
-import {
-  ReviewsFilterBar,
-  ReviewsDesktopFilterPanel,
-  ReviewsActiveFilters,
-} from "@/components/dashboard/reviews/filters/ReviewsFilterBar";
+import { ReviewsInbox } from "@/components/dashboard/reviews/ReviewsInbox";
+import { ReviewsFilterBar } from "@/components/dashboard/reviews/filters/ReviewsFilterBar";
 import { parseFiltersFromSearchParams } from "@/lib/utils/filter-utils";
-import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
-import { buildLocationBreadcrumbs } from "@/lib/utils/breadcrumbs";
 
 export const dynamic = "force-dynamic";
 
@@ -29,7 +23,6 @@ export default async function LocationReviewsPage({ params, searchParams }: Loca
   const filters = parseFiltersFromSearchParams(resolvedSearchParams);
   const { userId } = await getAuthenticatedUserId();
   const t = await getTranslations({ locale, namespace: "dashboard.reviews" });
-  const tBreadcrumbs = await getTranslations({ locale, namespace: "breadcrumbs" });
   const [location, reviews] = await Promise.all([
     getLocation({ locationId }),
     getReviews({
@@ -42,49 +35,28 @@ export default async function LocationReviewsPage({ params, searchParams }: Loca
   ]);
 
   return (
-    <PageContainer>
-      <div className="mb-4">
-        <Breadcrumbs
-          items={buildLocationBreadcrumbs({
-            locationName: location.name,
-            locationId,
-            currentSection: "reviews",
-            t: tBreadcrumbs,
-          })}
-        />
-      </div>
-
+    <PageContainer className="max-w-[1440px] space-y-0">
       <PageHeader title={t("reviewsFor", { businessName: location.name })} description={t("allReviews")} />
 
-      <div className="lg:flex lg:gap-6 mt-6">
-        <div className="flex-1 min-w-0 space-y-4">
-          <div className="lg:hidden">
+      {reviews.length === 0 ? (
+        <div className="mt-6">
+          <EmptyState title={t("noReviews")} description={t("noReviewsDescription")} />
+        </div>
+      ) : (
+        <>
+          <div className="sticky top-14 z-30 -mx-4 mt-4 border-b border-hairline bg-paper px-4 py-3 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
             <Suspense>
               <ReviewsFilterBar />
             </Suspense>
           </div>
-          <div className="hidden lg:block">
-            <Suspense>
-              <ReviewsActiveFilters />
-            </Suspense>
-          </div>
-          {reviews.length === 0 ? (
-            <EmptyState title={t("noReviews")} description={t("noReviewsDescription")} />
-          ) : (
-            <Suspense>
-              <ReviewsList reviews={reviews} locationId={locationId} userId={userId} />
-            </Suspense>
-          )}
-        </div>
 
-        <aside className="hidden lg:block w-[280px] shrink-0">
-          <div className="sticky top-20">
+          <div className="mt-4 lg:mt-0">
             <Suspense>
-              <ReviewsDesktopFilterPanel />
+              <ReviewsInbox reviews={reviews} locationId={locationId} userId={userId} />
             </Suspense>
           </div>
-        </aside>
-      </div>
+        </>
+      )}
     </PageContainer>
   );
 }

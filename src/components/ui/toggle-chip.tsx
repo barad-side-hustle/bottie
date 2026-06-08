@@ -13,10 +13,10 @@ export function ToggleChip({ selected, onToggle, children, className }: ToggleCh
       type="button"
       onClick={() => onToggle(!selected)}
       className={cn(
-        "inline-flex items-center rounded-full border px-3 py-1.5 text-xs font-medium cursor-pointer transition-colors",
+        "inline-flex items-center rounded-full border px-3 py-1.5 text-xs font-medium cursor-pointer transition-colors duration-150 ease-[var(--ease-standard)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
         selected
-          ? "border-primary/30 bg-primary/10 text-primary"
-          : "border-border/60 bg-transparent text-muted-foreground hover:border-primary/40 hover:bg-primary/5",
+          ? "border-transparent bg-accent-tint text-accent-text"
+          : "border-line-strong bg-surface text-ink-2 hover:bg-surface-3",
         className
       )}
     >

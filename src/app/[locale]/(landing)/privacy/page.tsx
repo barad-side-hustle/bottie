@@ -22,7 +22,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       type: "website",
       images: [
         {
-          url: `/${locale}/privacy/opengraph-image`,
+          url: `/${locale}/opengraph-image`,
           width: 1200,
           height: 630,
           alt: t("title"),
@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       card: "summary_large_image",
       title: t("title"),
       description: t("sections.introduction.content"),
-      images: [`/${locale}/privacy/opengraph-image`],
+      images: [`/${locale}/opengraph-image`],
     },
     alternates: {
       canonical: `${baseUrl}/${locale}/privacy`,

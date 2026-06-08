@@ -24,7 +24,7 @@ export function Logo({ href, className, size = "xl", variant = "icon" }: SiteLog
 
   return (
     <Link href={href} className={cn("flex items-center", className)}>
-      {variant === "icon" ? <BotIconSvg size={px} /> : <FullLogoJsx height={px} />}
+      {variant === "icon" ? <BotIconSvg size={px} color="var(--primary)" /> : <FullLogoJsx height={px} />}
     </Link>
   );
 }

@@ -1,7 +1,6 @@
 "use client";
 
 import { Location } from "@/lib/types";
-import { DashboardCardField } from "@/components/ui/dashboard-card";
 import { Building2 } from "lucide-react";
 import EditableSection from "@/components/dashboard/shared/EditableSection";
 import {
@@ -42,21 +41,26 @@ export default function LocationIdentitySection({ location, loading, onSave }: L
       saveLabel={tCommon("save")}
       savingLabel={tCommon("saving")}
       renderDisplay={() => (
-        <>
-          <DashboardCardField label={t("fields.name")}>
-            <p className="text-sm font-medium">{location.name}</p>
-          </DashboardCardField>
+        <dl className="space-y-4">
+          <div className="flex items-start justify-between gap-6 border-b border-hairline pb-4">
+            <dt className="text-xs font-semibold uppercase tracking-wide text-ink-2">{t("fields.name")}</dt>
+            <dd className="text-end text-sm font-medium text-foreground">{location.name}</dd>
+          </div>
 
-          <DashboardCardField label={t("fields.description")}>
-            <p className="whitespace-pre-wrap rounded-xl bg-muted/60 p-3.5 text-sm leading-relaxed">
-              {location.description || t("noDescription")}
-            </p>
-          </DashboardCardField>
+          <div className="space-y-1.5 border-b border-hairline pb-4">
+            <dt className="text-xs font-semibold uppercase tracking-wide text-ink-2">{t("fields.description")}</dt>
+            <dd className="whitespace-pre-wrap text-sm leading-relaxed text-foreground">
+              {location.description || <span className="text-ink-3">{t("noDescription")}</span>}
+            </dd>
+          </div>
 
-          <DashboardCardField label={t("fields.phone")}>
-            <p className="text-sm font-medium">{location.phoneNumber || t("noPhone")}</p>
-          </DashboardCardField>
-        </>
+          <div className="flex items-start justify-between gap-6">
+            <dt className="text-xs font-semibold uppercase tracking-wide text-ink-2">{t("fields.phone")}</dt>
+            <dd className="text-end text-sm font-medium tabular-nums text-foreground">
+              {location.phoneNumber || <span className="text-ink-3">{t("noPhone")}</span>}
+            </dd>
+          </div>
+        </dl>
       )}
       renderForm={({ data, isLoading, onChange }) => (
         <LocationDetailsForm

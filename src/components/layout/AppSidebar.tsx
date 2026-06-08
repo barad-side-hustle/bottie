@@ -4,13 +4,13 @@ import { useLocale, useTranslations } from "next-intl";
 import { Link, usePathname, useRouter } from "@/i18n/routing";
 import { useDirection } from "@/contexts/DirectionProvider";
 import { useActiveLocation } from "@/hooks/use-active-location";
-import { sidebarLocationItems, resolveHref, type SidebarNavItem } from "@/lib/navigation";
+import { sidebarLocationItems, sidebarWorkspaceItems, resolveHref, type SidebarNavItem } from "@/lib/navigation";
 import { useSidebarData } from "@/contexts/SidebarDataContext";
 import { signOut } from "@/lib/auth/auth";
 import { LocationSwitcher } from "./LocationSwitcher";
 import { UpgradeBanner } from "@/components/dashboard/utils/UpgradeBanner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { ChevronsUpDown, LogOut, Settings, Check, Globe, CreditCard } from "lucide-react";
+import { ChevronsUpDown, LogOut, Check, Globe } from "lucide-react";
 import { locales, localeConfig, type Locale } from "@/lib/locale";
 import { BotIconSvg } from "@/lib/brand/logo";
 import {
@@ -46,7 +46,7 @@ export function AppSidebar({ user }: { user: { name: string; email: string; imag
   const { pendingCount } = useSidebarData();
   const locale = useLocale() as Locale;
   const router = useRouter();
-  const { isMobile, setOpenMobile } = useSidebar();
+  const { isMobile } = useSidebar();
 
   const handleLocaleChange = (newLocale: Locale) => {
     if (newLocale === locale) return;
@@ -65,14 +65,9 @@ export function AppSidebar({ user }: { user: { name: string; email: string; imag
             <SidebarMenuButton size="lg" asChild>
               <Link href="/dashboard/home">
                 <div className="flex aspect-square size-8 items-center justify-center">
-                  <BotIconSvg size={32} />
+                  <BotIconSvg size={32} color="var(--primary)" />
                 </div>
                 <span className="font-semibold">Bottie</span>
-                {pendingCount > 0 && (
-                  <span className="ms-auto flex size-5 items-center justify-center rounded-full bg-destructive/15 text-[10px] font-medium text-destructive">
-                    {pendingCount > 9 ? "9+" : pendingCount}
-                  </span>
-                )}
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -86,11 +81,26 @@ export function AppSidebar({ user }: { user: { name: string; email: string; imag
             <SidebarGroupLabel>{t("navigation.sidebar.locationLabel")}</SidebarGroupLabel>
             <SidebarMenu>
               {sidebarLocationItems.map((item) => (
-                <SidebarNavLink key={item.label} item={item} pathname={pathname} locationCtx={locationCtx} t={t} />
+                <SidebarNavLink
+                  key={item.label}
+                  item={item}
+                  pathname={pathname}
+                  locationCtx={locationCtx}
+                  t={t}
+                  count={item.label === "navigation.sidebar.inbox" ? pendingCount : undefined}
+                />
               ))}
             </SidebarMenu>
           </SidebarGroup>
         )}
+        <SidebarGroup>
+          <SidebarGroupLabel>{t("navigation.sidebar.workspaceLabel")}</SidebarGroupLabel>
+          <SidebarMenu>
+            {sidebarWorkspaceItems.map((item) => (
+              <SidebarNavLink key={item.label} item={item} pathname={pathname} locationCtx={locationCtx} t={t} />
+            ))}
+          </SidebarMenu>
+        </SidebarGroup>
       </SidebarContent>
 
       <SidebarFooter>
@@ -104,9 +114,9 @@ export function AppSidebar({ user }: { user: { name: string; email: string; imag
                     size="lg"
                     tooltip={{ children: user.name || user.email, side: dir === "rtl" ? "left" : "right" }}
                   >
-                    <Avatar className="size-8 rounded-xl">
+                    <Avatar className="size-8 rounded-md">
                       <AvatarImage src={user.image || undefined} alt={user.name || "User"} />
-                      <AvatarFallback className="rounded-xl bg-primary text-primary-foreground text-xs">
+                      <AvatarFallback className="rounded-md bg-primary text-primary-foreground text-xs">
                         {user.name
                           ? user.name
                               .split(" ")
@@ -125,16 +135,16 @@ export function AppSidebar({ user }: { user: { name: string; email: string; imag
                   </SidebarMenuButton>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent
-                  className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-2xl"
+                  className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
                   side={isMobile ? "bottom" : dir === "rtl" ? "left" : "right"}
                   align="end"
                   sideOffset={4}
                 >
                   <DropdownMenuLabel className="p-0 font-normal">
                     <div className="flex items-center gap-2 px-1 py-1.5 text-start text-sm">
-                      <Avatar className="size-8 rounded-xl">
+                      <Avatar className="size-8 rounded-md">
                         <AvatarImage src={user.image || undefined} alt={user.name || "User"} />
-                        <AvatarFallback className="rounded-xl bg-primary text-primary-foreground text-xs">
+                        <AvatarFallback className="rounded-md bg-primary text-primary-foreground text-xs">
                           {user.name
                             ? user.name
                                 .split(" ")
@@ -153,24 +163,6 @@ export function AppSidebar({ user }: { user: { name: string; email: string; imag
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuGroup>
-                    <DropdownMenuItem
-                      onSelect={() => {
-                        if (isMobile) setOpenMobile(false);
-                        router.push("/dashboard/settings");
-                      }}
-                    >
-                      <Settings className="me-2 size-4" />
-                      {t("navigation.sidebar.settings")}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem
-                      onSelect={() => {
-                        if (isMobile) setOpenMobile(false);
-                        router.push("/dashboard/subscription");
-                      }}
-                    >
-                      <CreditCard className="me-2 size-4" />
-                      {t("navigation.sidebar.billing")}
-                    </DropdownMenuItem>
                     <DropdownMenuSub>
                       <DropdownMenuSubTrigger>
                         <Globe className="me-2 size-4" />
@@ -208,11 +200,13 @@ function SidebarNavLink({
   pathname,
   locationCtx,
   t,
+  count,
 }: {
   item: SidebarNavItem;
   pathname: string;
   locationCtx: { locationId: string } | null;
   t: ReturnType<typeof useTranslations>;
+  count?: number;
 }) {
   const { dir } = useDirection();
   const { isMobile, setOpenMobile } = useSidebar();
@@ -221,6 +215,7 @@ function SidebarNavLink({
 
   const isActive = pathname === href || pathname.startsWith(href + "/");
   const Icon = item.icon;
+  const hasCount = typeof count === "number" && count > 0;
 
   return (
     <SidebarMenuItem>
@@ -232,6 +227,11 @@ function SidebarNavLink({
         <Link href={href} onClick={() => isMobile && setOpenMobile(false)}>
           <Icon />
           <span>{t(item.label)}</span>
+          {hasCount && (
+            <span className="ms-auto flex h-5 min-w-5 items-center justify-center rounded-md bg-negative-tint px-1 text-xs font-medium tabular-nums text-destructive group-data-[collapsible=icon]:hidden">
+              {count > 9 ? "9+" : count}
+            </span>
+          )}
         </Link>
       </SidebarMenuButton>
     </SidebarMenuItem>

@@ -55,9 +55,11 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function AboutPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
 
+  const organizationSchema = await generateOrganizationSchema(locale as Locale);
+
   return (
     <>
-      <StructuredData data={generateOrganizationSchema(locale as Locale)} />
+      <StructuredData data={organizationSchema} />
       <AboutContent />
     </>
   );

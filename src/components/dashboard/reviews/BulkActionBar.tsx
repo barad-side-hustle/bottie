@@ -31,29 +31,29 @@ export function BulkActionBar({
         "animate-in slide-in-from-bottom-4 fade-in duration-200"
       )}
     >
-      <div className="pointer-events-auto flex items-center gap-2 sm:gap-3 rounded-2xl border border-border/60 bg-card px-3 sm:px-4 py-2.5 shadow-lg">
-        <span className="text-sm font-medium tabular-nums">
-          <span className="inline-flex items-center justify-center h-5 min-w-5 px-1.5 rounded-full bg-primary text-primary-foreground text-xs font-semibold me-1.5">
+      <div className="pointer-events-auto flex items-center gap-2 sm:gap-3 rounded-lg border border-hairline bg-card px-3 py-2.5 shadow-md sm:px-4">
+        <span className="text-sm font-medium text-foreground">
+          <span className="me-1.5 inline-flex h-5 min-w-5 items-center justify-center rounded-md bg-surface-3 px-1.5 text-xs font-semibold tabular-nums text-foreground">
             {selectedCount}
           </span>
           {t("selected")}
         </span>
 
         {!isAllSelected && totalPublishableCount > selectedCount && (
-          <Button variant="ghost" size="sm" onClick={onSelectAll} className="h-8 gap-1.5 text-xs">
+          <Button variant="ghost" size="sm" onClick={onSelectAll} className="h-8 gap-1.5 rounded-md text-xs">
             <CheckSquare className="size-3.5" />
             {t("selectAll", { count: totalPublishableCount })}
           </Button>
         )}
 
-        <Button variant="ghost" size="sm" onClick={onDeselectAll} className="h-8 gap-1.5 text-xs">
+        <Button variant="ghost" size="sm" onClick={onDeselectAll} className="h-8 gap-1.5 rounded-md text-xs">
           <X className="size-3.5" />
           {t("deselectAll")}
         </Button>
 
-        <div className="h-5 w-px bg-border/60" />
+        <div className="h-5 w-px bg-hairline" />
 
-        <Button size="sm" onClick={onBulkPublish} className="gap-1.5">
+        <Button size="sm" onClick={onBulkPublish} className="gap-1.5 rounded-md">
           <Send className="size-3.5" />
           {t("publishSelected", { count: selectedCount })}
         </Button>

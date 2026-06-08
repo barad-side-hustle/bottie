@@ -34,14 +34,17 @@ export function ActiveFilters({ filters, onRemove, onClearAll }: ActiveFiltersPr
 
   if (!hasFilters) return null;
 
+  const removeButtonClass =
+    "-me-0.5 flex size-4 items-center justify-center rounded-sm text-ink-3 transition-colors hover:bg-surface-3 hover:text-ink";
+
   return (
-    <div className="flex flex-wrap gap-2 items-center mt-4">
+    <div className="flex flex-wrap items-center gap-2">
       {filters.replyStatus?.map((status) => (
-        <Badge key={status} variant="secondary" className="gap-1 ps-2.5 pe-1 py-1">
+        <Badge key={status} variant="outline" className="gap-1 bg-surface-2 ps-2.5 pe-1 py-1 text-ink">
           {t(`status.${status}`)}
           <button
             type="button"
-            className="flex size-4 items-center justify-center rounded-full text-secondary-foreground/70 transition-colors hover:bg-primary/15 hover:text-secondary-foreground"
+            className={removeButtonClass}
             onClick={() => onRemove("replyStatus", status)}
             aria-label={t("removeFilter")}
           >
@@ -51,14 +54,14 @@ export function ActiveFilters({ filters, onRemove, onClearAll }: ActiveFiltersPr
       ))}
 
       {filters.rating?.map((rating) => (
-        <Badge key={rating} variant="secondary" className="gap-1 ps-2.5 pe-1 py-1">
-          <span className="inline-flex items-center gap-0.5">
+        <Badge key={rating} variant="outline" className="gap-1 bg-surface-2 ps-2.5 pe-1 py-1 text-ink">
+          <span className="inline-flex items-center gap-0.5 tabular-nums">
             {rating}
             <Star className="size-3 fill-star-filled text-star-filled" aria-hidden="true" />
           </span>
           <button
             type="button"
-            className="flex size-4 items-center justify-center rounded-full text-secondary-foreground/70 transition-colors hover:bg-primary/15 hover:text-secondary-foreground"
+            className={removeButtonClass}
             onClick={() => onRemove("rating", rating)}
             aria-label={t("removeFilter")}
           >
@@ -68,11 +71,11 @@ export function ActiveFilters({ filters, onRemove, onClearAll }: ActiveFiltersPr
       ))}
 
       {filters.sentiment?.map((sentiment) => (
-        <Badge key={sentiment} variant="secondary" className="gap-1 ps-2.5 pe-1 py-1">
+        <Badge key={sentiment} variant="outline" className="gap-1 bg-surface-2 ps-2.5 pe-1 py-1 text-ink">
           {t(`sentimentValues.${sentiment}`)}
           <button
             type="button"
-            className="flex size-4 items-center justify-center rounded-full text-secondary-foreground/70 transition-colors hover:bg-primary/15 hover:text-secondary-foreground"
+            className={removeButtonClass}
             onClick={() => onRemove("sentiment", sentiment)}
             aria-label={t("removeFilter")}
           >
@@ -82,12 +85,14 @@ export function ActiveFilters({ filters, onRemove, onClearAll }: ActiveFiltersPr
       ))}
 
       {(filters.dateFrom || filters.dateTo) && (
-        <Badge variant="secondary" className="gap-1 ps-2.5 pe-1 py-1">
-          {filters.dateFrom ? format(filters.dateFrom, "LLL dd", { locale: dateLocale }) : "..."} -{" "}
-          {filters.dateTo ? format(filters.dateTo, "LLL dd", { locale: dateLocale }) : "..."}
+        <Badge variant="outline" className="gap-1 bg-surface-2 ps-2.5 pe-1 py-1 text-ink">
+          <span className="tabular-nums">
+            {filters.dateFrom ? format(filters.dateFrom, "LLL dd", { locale: dateLocale }) : "..."} -{" "}
+            {filters.dateTo ? format(filters.dateTo, "LLL dd", { locale: dateLocale }) : "..."}
+          </span>
           <button
             type="button"
-            className="flex size-4 items-center justify-center rounded-full text-secondary-foreground/70 transition-colors hover:bg-primary/15 hover:text-secondary-foreground"
+            className={removeButtonClass}
             onClick={() => onRemove("dateFrom")}
             aria-label={t("removeFilter")}
           >
@@ -96,7 +101,7 @@ export function ActiveFilters({ filters, onRemove, onClearAll }: ActiveFiltersPr
         </Badge>
       )}
 
-      <Button variant="ghost" size="sm" onClick={onClearAll} className="h-7 px-2.5 text-xs">
+      <Button variant="ghost" size="sm" onClick={onClearAll} className="h-7 px-2.5 text-xs text-ink-2">
         {t("clearAll")}
       </Button>
     </div>

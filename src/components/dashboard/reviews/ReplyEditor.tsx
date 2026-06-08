@@ -80,15 +80,13 @@ export function ReplyEditor({
         </DialogHeader>
 
         <div className="space-y-4 py-2">
-          <div className="rounded-xl bg-muted/40 p-3.5">
-            <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              {t("originalReview")}
-            </p>
-            <p className="text-sm leading-relaxed text-muted-foreground">{review.text || t("noText")}</p>
+          <div className="rounded-md bg-surface-2 p-4">
+            <p className="mb-1.5 text-xs font-semibold uppercase tracking-[0.06em] text-ink-2">{t("originalReview")}</p>
+            <p className="text-sm leading-relaxed text-ink-2">{review.text || t("noText")}</p>
           </div>
 
           <div className="space-y-2">
-            <label className="block text-sm font-medium">{t("replyLabel")}</label>
+            <label className="block text-sm font-medium text-foreground">{t("replyLabel")}</label>
             <Textarea
               value={replyText}
               onChange={(e) => setReplyText(e.target.value)}
@@ -97,7 +95,7 @@ export function ReplyEditor({
               maxLength={maxChars}
               disabled={isLoading}
             />
-            <div className="flex justify-end text-xs text-muted-foreground tabular-nums">
+            <div className="flex justify-end text-xs tabular-nums text-ink-3">
               <span>
                 {charCount} / {maxChars} {t("characters")}
               </span>

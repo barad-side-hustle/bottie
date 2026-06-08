@@ -40,8 +40,8 @@ export function BottomNavigation() {
   };
 
   return (
-    <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-background/95 backdrop-blur-sm border-t border-border/60 shadow-lg h-16">
-      <div className="flex items-center justify-around h-full px-2">
+    <nav className="md:hidden fixed bottom-0 inset-x-0 z-50 h-16 border-t border-border bg-background">
+      <div className="flex h-full items-stretch justify-around px-2">
         {landingNavItems.map((item) => {
           const Icon = item.icon;
           const isActive = getIsActive(pathname, item.href, hash);
@@ -51,15 +51,21 @@ export function BottomNavigation() {
               key={item.href}
               type="button"
               onClick={() => scrollToSection(item.href)}
+              aria-current={isActive ? "page" : undefined}
               className={cn(
-                "flex flex-col items-center justify-center flex-1 h-full gap-1 transition-all",
-                isActive ? "text-primary" : "text-muted-foreground hover:text-foreground active:scale-95"
+                "relative flex flex-1 flex-col items-center justify-center gap-1 transition-colors duration-150 ease-[var(--ease-standard)]",
+                isActive ? "text-foreground" : "text-ink-2 hover:text-foreground"
               )}
             >
-              <Icon className={cn("transition-all", isActive ? "size-6" : "size-5")} />
-              <span className={cn("text-xs transition-all", isActive ? "font-semibold" : "font-medium")}>
-                {t(item.label)}
-              </span>
+              <span
+                aria-hidden
+                className={cn(
+                  "absolute inset-x-3 top-0 h-0.5 rounded-full transition-colors duration-150 ease-[var(--ease-standard)]",
+                  isActive ? "bg-foreground" : "bg-transparent"
+                )}
+              />
+              <Icon className="size-5" />
+              <span className={cn("text-xs", isActive ? "font-medium" : "font-normal")}>{t(item.label)}</span>
             </button>
           );
         })}

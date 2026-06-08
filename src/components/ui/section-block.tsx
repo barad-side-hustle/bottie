@@ -1,7 +1,7 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-export type SectionTone =
+type SectionTone =
   | "plain"
   | "muted"
   | "cream"
@@ -16,15 +16,15 @@ export type SectionTone =
 
 const toneClasses: Record<SectionTone, string> = {
   plain: "bg-background text-foreground",
-  muted: "bg-muted/50 text-foreground",
-  cream: "bg-pastel-cream text-foreground",
-  lime: "bg-pastel-lime text-foreground",
-  pink: "bg-pastel-pink text-foreground",
-  periwinkle: "bg-pastel-periwinkle text-foreground",
-  lavender: "bg-pastel-lavender text-foreground",
-  mint: "bg-pastel-mint text-foreground",
-  peach: "bg-pastel-peach text-foreground",
-  sky: "bg-pastel-sky text-foreground",
+  muted: "bg-muted/40 text-foreground",
+  cream: "bg-surface-2 text-foreground",
+  lime: "bg-muted/40 text-foreground",
+  pink: "bg-muted/40 text-foreground",
+  periwinkle: "bg-muted/40 text-foreground",
+  lavender: "bg-muted/40 text-foreground",
+  mint: "bg-muted/40 text-foreground",
+  peach: "bg-muted/40 text-foreground",
+  sky: "bg-surface-2 text-foreground",
   primary: "bg-primary text-primary-foreground",
 };
 
@@ -88,8 +88,8 @@ export function SectionHeading({
       {eyebrow && (
         <span
           className={cn(
-            "inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide",
-            inverted ? "bg-primary-foreground/15 text-primary-foreground" : "bg-brand/10 text-brand"
+            "inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.08em]",
+            inverted ? "text-primary-foreground/80" : "text-accent-text"
           )}
         >
           {eyebrow}
@@ -97,7 +97,7 @@ export function SectionHeading({
       )}
       <h2
         className={cn(
-          "text-3xl font-bold tracking-tight text-balance sm:text-4xl md:text-5xl",
+          "text-3xl font-semibold tracking-[-0.02em] text-balance sm:text-4xl",
           inverted ? "text-primary-foreground" : "text-foreground"
         )}
       >
@@ -107,7 +107,7 @@ export function SectionHeading({
         <p
           className={cn(
             "max-w-2xl text-base leading-relaxed sm:text-lg",
-            inverted ? "text-primary-foreground/75" : "text-muted-foreground"
+            inverted ? "text-primary-foreground/75" : "text-ink-2"
           )}
         >
           {subtitle}

@@ -1,7 +1,5 @@
 import { PageContainer } from "@/components/layout/PageContainer";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
-import { buildLocationBreadcrumbs } from "@/lib/utils/breadcrumbs";
 import { redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import { getLocation } from "@/lib/actions/locations.actions";
@@ -21,7 +19,6 @@ export default async function LocationSettingsPage({
   const { locale, locationId } = await params;
   const t = await getTranslations({ locale, namespace: "dashboard.settings" });
   const tCommon = await getTranslations({ locale, namespace: "common" });
-  const tBreadcrumbs = await getTranslations({ locale, namespace: "breadcrumbs" });
 
   const { userId } = await getAuthenticatedUserId();
 
@@ -44,17 +41,6 @@ export default async function LocationSettingsPage({
 
   return (
     <PageContainer>
-      <div className="mb-4">
-        <Breadcrumbs
-          items={buildLocationBreadcrumbs({
-            locationName: location.name,
-            locationId,
-            currentSection: "settings",
-            t: tBreadcrumbs,
-          })}
-        />
-      </div>
-
       <PageHeader title={location.name} description={location.address} />
 
       <MembersSection

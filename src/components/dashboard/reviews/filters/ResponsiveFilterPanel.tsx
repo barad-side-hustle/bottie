@@ -43,7 +43,7 @@ export function ResponsiveFilterPanel({
       <Filter className="h-4 w-4" />
       {t("filter")}
       {activeCount > 0 && (
-        <Badge variant="secondary" className="h-5 w-5 rounded-full p-0 flex items-center justify-center">
+        <Badge variant="default" className="flex size-5 items-center justify-center rounded-full p-0 tabular-nums">
           {activeCount}
         </Badge>
       )}
@@ -58,7 +58,7 @@ export function ResponsiveFilterPanel({
     return (
       <Popover open={open} onOpenChange={onOpenChange}>
         <PopoverTrigger asChild>{Trigger}</PopoverTrigger>
-        <PopoverContent className="w-[400px] p-4" align="start">
+        <PopoverContent className="w-[400px]" align="start">
           {children}
         </PopoverContent>
       </Popover>

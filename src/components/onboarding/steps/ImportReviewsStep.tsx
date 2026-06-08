@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useTranslations } from "next-intl";
 import { OnboardingFormPanel } from "@/components/onboarding/OnboardingFormPanel";
-import { Loading } from "@/components/ui/loading";
+import { Skeleton } from "@/components/ui/skeleton";
 import { AlertCircle } from "lucide-react";
 
 interface ImportReviewsStepProps {
@@ -58,20 +58,36 @@ export function ImportReviewsStep({ accountId, locationId, onComplete, progressB
       hideNavigation={!error}
       nextButton={error ? { label: t("continue"), onClick: onComplete } : undefined}
     >
-      <div className="flex flex-col items-center justify-center py-12 gap-4">
-        {error ? (
-          <>
-            <span className="inline-flex h-14 w-14 items-center justify-center rounded-full bg-secondary text-primary">
-              <AlertCircle className="h-7 w-7" />
-            </span>
-            <p className="text-base leading-relaxed text-muted-foreground text-center max-w-sm">
-              {t("errorDescription")}
-            </p>
-          </>
-        ) : (
-          <Loading size="lg" text={t("loading")} description={t("loadingDescription")} />
-        )}
-      </div>
+      {error ? (
+        <div className="flex flex-col items-center justify-center py-12 gap-3 text-center">
+          <AlertCircle className="h-6 w-6 text-ink-3" />
+          <p className="text-base leading-relaxed text-ink-2 max-w-sm">{t("errorDescription")}</p>
+        </div>
+      ) : (
+        <div className="space-y-6" aria-busy="true">
+          <div className="space-y-1">
+            <p className="text-base font-medium text-foreground">{t("loading")}</p>
+            <p className="text-sm text-ink-2">{t("loadingDescription")}</p>
+          </div>
+          <ul className="space-y-3">
+            {[0, 1, 2, 3].map((i) => (
+              <li key={i} className="rounded-lg border border-hairline bg-surface p-4 space-y-3">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-9 w-9 rounded-full" />
+                  <div className="flex-1 min-w-0 space-y-2">
+                    <Skeleton className="h-3.5 w-32" />
+                    <Skeleton className="h-3 w-20" />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Skeleton className="h-3 w-full" />
+                  <Skeleton className="h-3 w-4/5" />
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
     </OnboardingFormPanel>
   );
 }

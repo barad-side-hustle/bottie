@@ -32,17 +32,16 @@ export function CheckoutPageLayout({ children, showHeader = true }: CheckoutPage
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-pastel-cream">
+    <div className="min-h-screen flex flex-col bg-paper">
       {showHeader && (
         <header className="flex items-center justify-between px-4 sm:px-8 py-4 max-w-7xl mx-auto w-full">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1">
             <Button
               onClick={handleSignOut}
               variant="ghost"
               size="icon"
               disabled={isSigningOut}
               aria-label={tAuth("signOut")}
-              className="hover:bg-background/50"
             >
               <LogOut className="h-5 w-5" />
             </Button>
@@ -53,7 +52,7 @@ export function CheckoutPageLayout({ children, showHeader = true }: CheckoutPage
 
       <main className="flex-1 flex items-center justify-center px-4 sm:px-8 pb-8">
         <div className="w-full max-w-md mx-auto">
-          <div className="bg-card rounded-3xl border border-border/40 shadow-lg p-6 sm:p-8">{children}</div>
+          <div className="bg-surface rounded-lg border border-hairline p-6 sm:p-8">{children}</div>
         </div>
       </main>
     </div>

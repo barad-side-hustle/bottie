@@ -48,16 +48,14 @@ export function ResetPasswordForm({ token }: { token: string }) {
 
   if (success) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-pastel-cream p-4">
+      <div className="flex min-h-screen flex-col items-center justify-center bg-paper p-4">
         <div className="w-full max-w-md">
-          <div className="rounded-3xl border border-border/60 bg-card p-8 shadow-lg">
+          <div className="rounded-lg border border-hairline bg-card p-8 shadow-sm">
             <div className="flex flex-col items-center text-center">
               <Logo href={"/"} size="lg" variant="full" />
-              <div className="mt-6 flex size-14 items-center justify-center rounded-2xl bg-secondary text-primary">
-                <CheckCircle2 className="size-7" />
-              </div>
-              <h1 className="mt-4 text-2xl font-bold tracking-tight text-foreground">{t("successTitle")}</h1>
-              <p className="mt-2 text-sm text-muted-foreground">{t("successDescription")}</p>
+              <CheckCircle2 className="mt-6 size-6 text-positive" aria-hidden="true" />
+              <h1 className="mt-4 text-2xl font-semibold tracking-[-0.02em] text-foreground">{t("successTitle")}</h1>
+              <p className="mt-2 text-sm text-ink-2">{t("successDescription")}</p>
             </div>
 
             <div className="mt-8">
@@ -72,13 +70,13 @@ export function ResetPasswordForm({ token }: { token: string }) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-pastel-cream p-4">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-paper p-4">
       <div className="w-full max-w-md">
-        <div className="rounded-3xl border border-border/60 bg-card p-8 shadow-lg">
+        <div className="rounded-lg border border-hairline bg-card p-8 shadow-sm">
           <div className="flex flex-col items-center text-center">
             <Logo href={"/"} size="lg" variant="full" />
-            <h1 className="mt-6 text-2xl font-bold tracking-tight text-foreground">{t("title")}</h1>
-            <p className="mt-2 text-sm text-muted-foreground">{t("description")}</p>
+            <h1 className="mt-6 text-2xl font-semibold tracking-[-0.02em] text-foreground">{t("title")}</h1>
+            <p className="mt-2 text-sm text-ink-2">{t("description")}</p>
           </div>
 
           <div className="mt-8 space-y-4">
@@ -92,6 +90,8 @@ export function ResetPasswordForm({ token }: { token: string }) {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   minLength={8}
+                  aria-invalid={error ? true : undefined}
+                  aria-describedby={error ? "reset-error" : undefined}
                   required
                 />
               </div>
@@ -104,11 +104,16 @@ export function ResetPasswordForm({ token }: { token: string }) {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   minLength={8}
+                  aria-invalid={error ? true : undefined}
+                  aria-describedby={error ? "reset-error" : undefined}
                   required
                 />
+                {error && (
+                  <p id="reset-error" role="alert" className="text-sm text-destructive">
+                    {error}
+                  </p>
+                )}
               </div>
-
-              {error && <p className="text-sm text-destructive">{error}</p>}
 
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading && <Loader2 className="h-4 w-4 animate-spin" />}

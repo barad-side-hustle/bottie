@@ -148,7 +148,7 @@ const Sidebar = React.forwardRef<
         <SheetContent
           data-sidebar="sidebar"
           data-mobile="true"
-          className="w-[var(--sidebar-width)] bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden !inset-2 !h-[calc(100svh-1rem)] !w-[calc(var(--sidebar-width)-1rem)] !rounded-xl !border !border-sidebar-border/40 !shadow-sm"
+          className="w-[var(--sidebar-width)] bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden !inset-2 !h-[calc(100svh-1rem)] !w-[calc(var(--sidebar-width)-1rem)] !rounded-lg !border !border-sidebar-border"
           style={
             {
               "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
@@ -193,14 +193,14 @@ const Sidebar = React.forwardRef<
             : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
           variant === "floating" || variant === "inset"
             ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4)_+2px)]"
-            : "group-data-[collapsible=icon]:w-[var(--sidebar-width-icon)] group-data-[side=left]:border-r group-data-[side=right]:border-l border-sidebar-border/30",
+            : "group-data-[collapsible=icon]:w-[var(--sidebar-width-icon)] group-data-[side=left]:border-r group-data-[side=right]:border-l border-sidebar-border",
           className
         )}
         {...props}
       >
         <div
           data-sidebar="sidebar"
-          className="flex h-full w-full flex-col bg-sidebar group-data-[variant=floating]:rounded-2xl group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border/60 group-data-[variant=floating]:shadow-sm"
+          className="flex h-full w-full flex-col bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border"
         >
           {children}
         </div>
@@ -405,7 +405,7 @@ const SidebarMenuItem = React.forwardRef<HTMLLIElement, React.ComponentProps<"li
 SidebarMenuItem.displayName = "SidebarMenuItem";
 
 const sidebarMenuButtonVariants = cva(
-  "peer/menu-button flex w-full items-center gap-3 overflow-hidden rounded-xl p-2 font-medium text-start text-sm outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pe-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-accent data-[active=true]:font-semibold data-[active=true]:text-sidebar-primary data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:!size-8 group-data-[collapsible=icon]:!p-2 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
+  "peer/menu-button flex w-full items-center gap-3 overflow-hidden rounded-md p-2 font-medium text-start text-sm outline-none ring-sidebar-ring transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 active:bg-sidebar-accent active:text-sidebar-accent-foreground disabled:pointer-events-none disabled:opacity-50 group-has-[[data-sidebar=menu-action]]/menu-item:pe-8 aria-disabled:pointer-events-none aria-disabled:opacity-50 data-[active=true]:bg-sidebar-accent data-[active=true]:font-semibold data-[active=true]:text-sidebar-accent-foreground data-[state=open]:hover:bg-sidebar-accent data-[state=open]:hover:text-sidebar-accent-foreground group-data-[collapsible=icon]:!size-8 group-data-[collapsible=icon]:!p-2 [&>span:last-child]:truncate [&>svg]:size-4 [&>svg]:shrink-0",
   {
     variants: {
       variant: {

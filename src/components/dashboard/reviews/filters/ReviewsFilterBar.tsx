@@ -8,14 +8,6 @@ import { useFiltersStore } from "@/lib/store/filters-store";
 import { ReviewFiltersForm } from "./ReviewFiltersForm";
 import { ResponsiveFilterPanel } from "./ResponsiveFilterPanel";
 import { ActiveFilters } from "./ActiveFilters";
-import {
-  DashboardCard,
-  DashboardCardHeader,
-  DashboardCardTitle,
-  DashboardCardContent,
-} from "@/components/ui/dashboard-card";
-import { Filter } from "lucide-react";
-import { useTranslations } from "next-intl";
 
 function useReviewFilters() {
   const router = useRouter();
@@ -87,33 +79,11 @@ export function ReviewsFilterBar() {
     useReviewFilters();
 
   return (
-    <div className="mb-6">
+    <div className="flex flex-wrap items-center gap-3">
       <ResponsiveFilterPanel activeCount={activeCount} open={isOpen} onOpenChange={setIsOpen}>
         <ReviewFiltersForm filters={filters} onApply={handleFilterChange} onReset={handleReset} />
       </ResponsiveFilterPanel>
       <ActiveFilters filters={filters} onRemove={handleRemoveFilter} onClearAll={handleReset} />
     </div>
   );
-}
-
-export function ReviewsDesktopFilterPanel() {
-  const t = useTranslations("dashboard.reviews.filters");
-  const { filters, handleFilterChange, handleReset } = useReviewFilters();
-
-  return (
-    <DashboardCard>
-      <DashboardCardHeader>
-        <DashboardCardTitle icon={<Filter className="size-5" />}>{t("filters")}</DashboardCardTitle>
-      </DashboardCardHeader>
-      <DashboardCardContent>
-        <ReviewFiltersForm filters={filters} onApply={handleFilterChange} onReset={handleReset} />
-      </DashboardCardContent>
-    </DashboardCard>
-  );
-}
-
-export function ReviewsActiveFilters() {
-  const { filters, handleReset, handleRemoveFilter } = useReviewFilters();
-
-  return <ActiveFilters filters={filters} onRemove={handleRemoveFilter} onClearAll={handleReset} />;
 }
