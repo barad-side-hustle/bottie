@@ -292,7 +292,11 @@ export function ReviewsInbox({ reviews: initialReviews, locationId, userId }: Re
       <Sheet open={sheetOpen && !isDesktop} onOpenChange={setSheetOpen}>
         <SheetContent side="bottom" className="h-[88vh] gap-0 rounded-t-lg p-0">
           <SheetTitle className="sr-only">{activeReview?.name ?? tInbox("detailEmptyTitle")}</SheetTitle>
-          <div className="h-full pt-2">{detailPanel}</div>
+          {/* Grab-handle strip reserves room for the sheet close button so it clears the detail toolbar. */}
+          <div className="flex h-12 shrink-0 items-center justify-center">
+            <div className="h-1.5 w-10 rounded-full bg-line-strong" aria-hidden="true" />
+          </div>
+          <div className="h-[calc(100%-3rem)]">{detailPanel}</div>
         </SheetContent>
       </Sheet>
 
