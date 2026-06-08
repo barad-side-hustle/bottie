@@ -15,7 +15,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { useTranslations, useFormatter } from "next-intl";
-import { useRouter } from "@/i18n/routing";
 import { sendRybbitEvent } from "@/lib/analytics";
 import type { ReviewWithLatestGeneration } from "@/lib/db/repositories";
 
@@ -496,26 +495,5 @@ export function ReviewCard({
         loadingText={review.replyStatus === "posted" ? t("updateDialog.loading") : t("publishDialog.loading")}
       />
     </>
-  );
-}
-
-interface ReviewCardWithRefreshProps {
-  review: ReviewWithLatestGeneration;
-  userId: string;
-  locationId: string;
-}
-
-export function ReviewCardWithRefresh({ review, userId, locationId }: ReviewCardWithRefreshProps) {
-  const router = useRouter();
-
-  return (
-    <ReviewCard
-      review={review}
-      userId={userId}
-      locationId={locationId}
-      onUpdate={() => {
-        router.refresh();
-      }}
-    />
   );
 }

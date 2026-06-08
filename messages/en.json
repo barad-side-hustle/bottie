@@ -45,7 +45,6 @@
       "insights": "Insights",
       "locationSettings": "Location Settings",
       "overview": "Overview",
-      "billing": "Billing",
       "settings": "Settings",
       "posts": "Posts",
       "profileHealth": "Profile Health",
@@ -71,10 +70,7 @@
       "title": "Reply to every Google review",
       "titleHighlight": "in your voice, automatically",
       "description": "Connect your Google Business Profile and Bottie drafts a reply in your tone and your customer's language within minutes of each new review. Approve it in one tap, or let it publish on its own.",
-      "cta": "Start free",
       "ctaSecondary": "See it in action",
-      "badge1": "Free to start",
-      "badge2": "No credit card",
       "headline": "Reply to every Google review in your voice, automatically",
       "subhead": "Connect your Google Business Profile and Bottie drafts a reply in your tone and your customer's language within minutes of each new review. Approve it in one tap, or let it publish on its own.",
       "ctaPrimary": "Connect Google Business Profile",
@@ -234,10 +230,6 @@
         "2": {
           "title": "Approve it, or let it auto-publish by rating",
           "description": "Review and post in one tap, or set auto-publish by star rating so your best reviews answer themselves."
-        },
-        "3": {
-          "title": "Review and publish",
-          "description": "Approve replies before they go live, or turn on full auto-publish and let Bottie handle the rest."
         }
       },
       "ctaText": "Ready to start? It takes less than 5 minutes",
@@ -266,7 +258,6 @@
     },
     "footer": {
       "company": {
-        "name": "Bottie.ai",
         "description": "AI that replies to your Google reviews in your voice, automatically. Save hours and protect your reputation.",
         "location": "Tel Aviv, Israel",
         "contact": "Contact Us"
@@ -295,7 +286,6 @@
     "dashboard": "Dashboard",
     "checkingAuth": "Verifying authentication...",
     "loginPage": {
-      "tagline": "Sign in to start managing your reviews",
       "title": "Sign In",
       "description": "Sign in to your account to continue",
       "googleButton": "Sign in with Google",
@@ -314,7 +304,6 @@
       "privacyLink": "Privacy Policy"
     },
     "signUpPage": {
-      "tagline": "Create an account to start managing your reviews",
       "title": "Create Account",
       "description": "Sign up to get started with Bottie",
       "googleButton": "Sign up with Google",
@@ -380,8 +369,6 @@
       "averageRating": "Average Rating",
       "reviewsThisMonth": "Reviews This Month",
       "totalLocations": "Locations",
-      "pendingBanner": "You have {count, plural, one {# review} other {# reviews}} awaiting response",
-      "reviewNow": "Review Now",
       "yourLocations": "Your Locations",
       "pendingBadge": "{count} pending",
       "proBadge": "Pro",
@@ -392,11 +379,6 @@
         "openInbox": "Open inbox",
         "allCaughtUp": "You're all caught up",
         "allCaughtUpHint": "New reviews appear here within minutes of being posted."
-      },
-      "recentActivity": {
-        "title": "Recent activity",
-        "empty": "No activity yet",
-        "viewAll": "View all"
       }
     },
     "home": {
@@ -537,8 +519,6 @@
       }
     },
     "subscription": {
-      "title": "Locations & Billing",
-      "description": "Manage your location subscriptions",
       "upgradePlan": "Upgrade",
       "successMessage": "Your subscription has been activated successfully!",
       "info": {

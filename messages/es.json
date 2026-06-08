@@ -45,7 +45,6 @@
       "insights": "Insights",
       "locationSettings": "Configuracion de ubicacion",
       "overview": "Resumen",
-      "billing": "Facturacion",
       "settings": "Configuracion",
       "getReviews": "Obtener resenas",
       "posts": "Publicaciones",
@@ -71,10 +70,7 @@
       "title": "Responde a cada resena de Google",
       "titleHighlight": "con tu voz, automaticamente",
       "description": "Conecta tu Perfil de Negocio de Google y Bottie redacta una respuesta en tu tono y en el idioma de tu cliente a los pocos minutos de cada nueva resena. Apruebala con un toque, o deja que se publique sola.",
-      "cta": "Empieza gratis",
       "ctaSecondary": "Velo en accion",
-      "badge1": "Gratis para empezar",
-      "badge2": "Sin tarjeta de credito",
       "headline": "Responde a cada resena de Google con tu voz, automaticamente",
       "subhead": "Conecta tu Perfil de Negocio de Google y Bottie redacta una respuesta en tu tono y en el idioma de tu cliente a los pocos minutos de cada nueva resena. Apruebala con un toque, o deja que se publique sola.",
       "ctaPrimary": "Conecta tu Perfil de Negocio de Google",
@@ -234,10 +230,6 @@
         "2": {
           "title": "Apruebala, o deja que se publique sola por calificacion",
           "description": "Revisa y publica con un toque, o configura la publicacion automatica por calificacion para que tus mejores resenas se respondan solas."
-        },
-        "3": {
-          "title": "Revisa y publica",
-          "description": "Aprueba las respuestas antes de que salgan, o activa la publicacion totalmente automatica y deja que Bottie haga el resto."
         }
       },
       "ctaText": "Listo para empezar? Toma menos de 5 minutos",
@@ -266,7 +258,6 @@
     },
     "footer": {
       "company": {
-        "name": "Bottie.ai",
         "description": "IA que responde a tus resenas de Google con tu voz, automaticamente. Ahorra horas y protege tu reputacion.",
         "location": "Tel Aviv, Israel",
         "contact": "Contactanos"
@@ -295,7 +286,6 @@
     "dashboard": "Panel de control",
     "checkingAuth": "Verificando autenticacion...",
     "loginPage": {
-      "tagline": "Inicia sesion para comenzar a gestionar tus resenas",
       "title": "Iniciar sesion",
       "description": "Inicia sesion en tu cuenta para continuar",
       "googleButton": "Iniciar sesion con Google",
@@ -314,7 +304,6 @@
       "privacyLink": "Politica de privacidad"
     },
     "signUpPage": {
-      "tagline": "Crea una cuenta para comenzar a gestionar tus resenas",
       "title": "Crear cuenta",
       "description": "Registrate para comenzar con Bottie",
       "googleButton": "Registrarse con Google",
@@ -380,8 +369,6 @@
       "averageRating": "Calificacion promedio",
       "reviewsThisMonth": "Resenas este mes",
       "totalLocations": "Ubicaciones",
-      "pendingBanner": "Tienes {count, plural, one {# resena} other {# resenas}} esperando respuesta",
-      "reviewNow": "Revisar ahora",
       "yourLocations": "Tus ubicaciones",
       "pendingBadge": "{count} pendientes",
       "proBadge": "Pro",
@@ -392,11 +379,6 @@
         "openInbox": "Abrir bandeja de entrada",
         "allCaughtUp": "Estas al dia",
         "allCaughtUpHint": "Las nuevas resenas aparecen aqui a los pocos minutos de publicarse."
-      },
-      "recentActivity": {
-        "title": "Actividad reciente",
-        "empty": "Aun no hay actividad",
-        "viewAll": "Ver todo"
       }
     },
     "home": {
@@ -537,8 +519,6 @@
       }
     },
     "subscription": {
-      "title": "Ubicaciones y facturacion",
-      "description": "Administra las suscripciones de tus ubicaciones",
       "upgradePlan": "Actualizar",
       "successMessage": "Tu suscripcion ha sido activada exitosamente!",
       "info": {
