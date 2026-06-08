@@ -87,10 +87,8 @@ export function EditableFormModal<T>({
     <Dialog open={open} onOpenChange={(open) => !open && handleCancel()}>
       <DialogContent className="sm:max-w-[600px]" dir={dir}>
         <DialogHeader>
-          <div className="flex items-center gap-3">
-            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary [&_svg]:size-5">
-              {icon}
-            </span>
+          <div className="flex items-center gap-2">
+            <span className="shrink-0 text-ink-3 [&_svg]:size-4">{icon}</span>
             <DialogTitle>{title}</DialogTitle>
           </div>
           <DialogDescription>{description}</DialogDescription>

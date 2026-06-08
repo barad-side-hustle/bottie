@@ -3,17 +3,17 @@ import { ArrowDownRight, ArrowUpRight, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const Bento = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn("grid gap-px overflow-hidden rounded-3xl border border-border/60 bg-border/60 shadow-sm", className)}
-    {...props}
-  />
+  <div ref={ref} className={cn("grid gap-3", className)} {...props} />
 ));
 Bento.displayName = "Bento";
 
 const BentoCell = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn("flex flex-col bg-card p-5 sm:p-6", className)} {...props} />
+    <div
+      ref={ref}
+      className={cn("flex flex-col rounded-lg border border-hairline bg-card p-5 sm:p-6", className)}
+      {...props}
+    />
   )
 );
 BentoCell.displayName = "BentoCell";
@@ -55,25 +55,18 @@ interface StatTileProps {
 
 function StatTile({ label, value, icon: Icon, iconClassName, delta, deltaSuffix, hint, className }: StatTileProps) {
   return (
-    <BentoCell className={cn("gap-3", className)}>
+    <BentoCell className={cn("gap-2", className)}>
       <div className="flex items-center justify-between gap-2">
-        <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{label}</span>
-        {Icon && (
-          <span
-            className={cn(
-              "flex size-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary",
-              iconClassName
-            )}
-          >
-            <Icon className="size-4.5" />
-          </span>
-        )}
+        <span className="text-xs font-semibold uppercase tracking-[0.06em] text-ink-2">{label}</span>
+        {Icon && <Icon className={cn("size-4 shrink-0 text-ink-3", iconClassName)} aria-hidden />}
       </div>
-      <div className="text-3xl font-bold tracking-tight tabular-nums">{value}</div>
+      <div className="text-[1.75rem] font-medium leading-tight tracking-tight tabular-nums text-foreground">
+        {value}
+      </div>
       {(delta !== undefined || hint) && (
         <div className="mt-auto flex items-center gap-2 pt-1">
           {delta !== undefined && <DeltaBadge value={delta} suffix={deltaSuffix} />}
-          {hint && <span className="text-xs text-muted-foreground">{hint}</span>}
+          {hint && <span className="text-xs text-ink-3">{hint}</span>}
         </div>
       )}
     </BentoCell>

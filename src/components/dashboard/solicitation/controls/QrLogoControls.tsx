@@ -58,14 +58,12 @@ export function QrLogoControls({ settings, locationId, onChange }: QrLogoControl
   return (
     <div className="space-y-4">
       <div className="space-y-3">
-        <label className="text-xs font-medium text-muted-foreground">{t("title")}</label>
+        <label className="text-xs font-semibold uppercase tracking-[0.02em] text-ink-2">{t("title")}</label>
 
         {settings.logoUrl ? (
-          <div className="flex items-center gap-3 rounded-lg border border-border/60 p-3">
-            <div className="flex size-10 items-center justify-center rounded bg-primary/10">
-              <ImageIcon className="size-5 text-primary" />
-            </div>
-            <span className="flex-1 text-sm font-medium">{t("uploaded")}</span>
+          <div className="flex items-center gap-3 rounded-md border border-hairline bg-surface-2 p-3">
+            <ImageIcon className="size-4 shrink-0 text-ink-3" strokeWidth={1.5} />
+            <span className="flex-1 text-sm font-medium text-ink">{t("uploaded")}</span>
             <Button variant="ghost" size="sm" onClick={() => fileInputRef.current?.click()}>
               <RefreshCw className="size-4" />
               {t("change")}
@@ -80,7 +78,7 @@ export function QrLogoControls({ settings, locationId, onChange }: QrLogoControl
             type="button"
             onClick={() => fileInputRef.current?.click()}
             disabled={uploading}
-            className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed border-border/60 p-6 text-sm text-muted-foreground transition-colors hover:border-border hover:text-foreground"
+            className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-md border border-hairline bg-surface-2 p-6 text-sm text-ink-2 transition-colors duration-150 ease-[var(--ease-standard)] hover:bg-surface-3 hover:text-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-50"
           >
             {uploading ? (
               <>
@@ -89,7 +87,7 @@ export function QrLogoControls({ settings, locationId, onChange }: QrLogoControl
               </>
             ) : (
               <>
-                <Upload className="size-4" />
+                <Upload className="size-4 text-ink-3" strokeWidth={1.5} />
                 {t("upload")}
               </>
             )}
@@ -103,13 +101,13 @@ export function QrLogoControls({ settings, locationId, onChange }: QrLogoControl
           onChange={handleUpload}
           className="hidden"
         />
-        <p className="text-xs text-muted-foreground">{t("maxSize")}</p>
+        <p className="text-xs text-ink-3">{t("maxSize")}</p>
         {error && <p className="text-xs text-destructive">{error}</p>}
       </div>
 
       {settings.logoUrl && (
-        <div className="space-y-3">
-          <label className="text-xs font-medium text-muted-foreground">{t("size")}</label>
+        <div className="space-y-2">
+          <label className="text-xs font-medium text-ink-2">{t("size")}</label>
           <Slider
             value={[settings.logoSize]}
             onValueChange={([v]) => onChange({ logoSize: v })}

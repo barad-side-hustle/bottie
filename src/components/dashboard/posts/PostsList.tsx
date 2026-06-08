@@ -4,7 +4,6 @@ import { useTranslations, useFormatter } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/ui/empty-state";
-import { DashboardCard, DashboardCardContent } from "@/components/ui/dashboard-card";
 import { publishPost, deletePost } from "@/lib/actions/posts.actions";
 import {
   Trash2,
@@ -34,17 +33,19 @@ export function PostsList({ posts, locationId, onRefresh, onEdit }: PostsListPro
   const t = useTranslations("dashboard.posts");
 
   if (posts.length === 0) {
-    return <EmptyState icon={FileText} title={t("noPosts")} description={t("pageDescription")} />;
+    return (
+      <div className="flex min-h-[280px] items-center justify-center">
+        <EmptyState icon={FileText} title={t("noPosts")} description={t("pageDescription")} />
+      </div>
+    );
   }
 
   return (
-    <DashboardCard>
-      <DashboardCardContent className="p-0 divide-y divide-border/60">
-        {posts.map((post) => (
-          <PostRow key={post.id} post={post} locationId={locationId} onRefresh={onRefresh} onEdit={onEdit} />
-        ))}
-      </DashboardCardContent>
-    </DashboardCard>
+    <ul className="divide-y divide-hairline">
+      {posts.map((post) => (
+        <PostRow key={post.id} post={post} locationId={locationId} onRefresh={onRefresh} onEdit={onEdit} />
+      ))}
+    </ul>
   );
 }
 
@@ -108,59 +109,67 @@ function PostRow({
     : format.dateTime(new Date(post.createdAt), { month: "short", day: "numeric", year: "numeric" });
 
   return (
-    <div className="flex items-start gap-4 p-4 transition-colors first:rounded-t-3xl last:rounded-b-3xl hover:bg-muted/40">
-      <div className="mt-0.5 flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary">
-        <TypeIcon className="size-5" />
-      </div>
+    <li className="group flex gap-4 py-4 transition-colors first:pt-0">
+      {post.mediaUrl ? (
+        <img src={post.mediaUrl} alt="" className="size-12 shrink-0 rounded-md border border-hairline object-cover" />
+      ) : (
+        <div className="flex size-12 shrink-0 items-center justify-center rounded-md border border-hairline bg-surface-2">
+          <TypeIcon className="size-4 text-ink-3" strokeWidth={1.5} aria-hidden />
+        </div>
+      )}
 
       <div className="min-w-0 flex-1">
-        <div className="mb-1.5 flex flex-wrap items-center gap-2">
-          <Badge variant={statusConfig.variant}>
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-medium text-ink-2">{t(`types.${post.topicType}`)}</span>
+          <span className="text-ink-3" aria-hidden>
+            ·
+          </span>
+          <span className="text-xs tabular-nums text-ink-3">{dateStr}</span>
+          <Badge variant={statusConfig.variant} className="ms-auto shrink-0">
             <StatusIcon />
             {t(`status.${post.status}`)}
           </Badge>
-          <span className="text-xs text-muted-foreground">{dateStr}</span>
         </div>
 
-        <p className="line-clamp-2 text-sm">{post.summary}</p>
+        <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-ink">{post.summary}</p>
 
-        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
-          <span className="text-xs font-medium text-muted-foreground">{t(`types.${post.topicType}`)}</span>
-          {post.mediaUrl && (
-            <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-              <ImageIcon className="size-3" />
-            </span>
-          )}
-          {post.callToAction && (
-            <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
-              <ExternalLink className="size-3" />
-              {post.callToAction.actionType.replace("_", " ").toLowerCase()}
-            </span>
-          )}
-          {post.event && <span className="truncate text-xs text-muted-foreground">{post.event.title}</span>}
-        </div>
-      </div>
+        {(post.mediaUrl || post.callToAction || post.event) && (
+          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-ink-3">
+            {post.mediaUrl && (
+              <span className="inline-flex items-center gap-1">
+                <ImageIcon className="size-3" strokeWidth={1.5} aria-hidden />
+              </span>
+            )}
+            {post.callToAction && (
+              <span className="inline-flex items-center gap-1">
+                <ExternalLink className="size-3" strokeWidth={1.5} aria-hidden />
+                {post.callToAction.actionType.replace("_", " ").toLowerCase()}
+              </span>
+            )}
+            {post.event && <span className="truncate">{post.event.title}</span>}
+          </div>
+        )}
 
-      <div className="flex shrink-0 items-center gap-1">
-        {post.status === "draft" && (
-          <>
-            <Button size="icon-sm" variant="ghost" onClick={() => onEdit(post)} disabled={isLoading}>
-              <Pencil className="size-3.5" />
-            </Button>
+        <div className="mt-2.5 flex items-center gap-1">
+          {post.status === "draft" ? (
+            <>
+              <Button size="icon-sm" variant="ghost" onClick={() => onEdit(post)} disabled={isLoading}>
+                <Pencil className="size-3.5" />
+              </Button>
+              <Button size="icon-sm" variant="ghost" onClick={handleDelete} disabled={isLoading}>
+                <Trash2 className="size-3.5" />
+              </Button>
+              <Button size="sm" variant="default" onClick={handlePublish} disabled={isLoading} className="ms-1">
+                {t("publish")}
+              </Button>
+            </>
+          ) : (
             <Button size="icon-sm" variant="ghost" onClick={handleDelete} disabled={isLoading}>
               <Trash2 className="size-3.5" />
             </Button>
-            <Button size="sm" variant="default" onClick={handlePublish} disabled={isLoading}>
-              {t("publish")}
-            </Button>
-          </>
-        )}
-        {post.status !== "draft" && (
-          <Button size="icon-sm" variant="ghost" onClick={handleDelete} disabled={isLoading}>
-            <Trash2 className="size-3.5" />
-          </Button>
-        )}
+          )}
+        </div>
       </div>
-    </div>
+    </li>
   );
 }

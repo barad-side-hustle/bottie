@@ -27,17 +27,19 @@ export function LanguageSwitcher() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="flex items-center gap-2" aria-label={t("selectLanguage")}>
-          <Globe className="h-5 w-5" />
+        <Button variant="ghost" size="icon" aria-label={t("selectLanguage")}>
+          <Globe className="size-5" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="end" className="min-w-40">
         {locales.map((loc) => (
-          <DropdownMenuItem key={loc} onClick={() => handleLocaleChange(loc)}>
-            <span className="flex items-center justify-between w-full">
-              {localeConfig[loc].label}
-              {locale === loc && <Check className="size-4 ms-2" />}
-            </span>
+          <DropdownMenuItem
+            key={loc}
+            onClick={() => handleLocaleChange(loc)}
+            className="flex items-center justify-between gap-3"
+          >
+            <span>{localeConfig[loc].label}</span>
+            {locale === loc && <Check className="size-4 text-accent-text" />}
           </DropdownMenuItem>
         ))}
       </DropdownMenuContent>

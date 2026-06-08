@@ -36,7 +36,7 @@ const CircularProgress = React.forwardRef<HTMLDivElement, CircularProgressProps>
             fill="none"
             stroke="currentColor"
             strokeWidth={strokeWidth}
-            className="text-primary/20"
+            className="text-hairline"
           />
           <circle
             cx={size / 2}
@@ -48,10 +48,14 @@ const CircularProgress = React.forwardRef<HTMLDivElement, CircularProgressProps>
             strokeLinecap="round"
             strokeDasharray={circumference}
             strokeDashoffset={offset}
-            className="text-primary transition-all duration-500 ease-out"
+            className="text-primary transition-all duration-250 ease-[var(--ease-standard)]"
           />
         </svg>
-        {showLabel && <span className="absolute text-2xl font-bold tabular-nums">{Math.round(clampedValue)}%</span>}
+        {showLabel && (
+          <span className="absolute text-2xl font-medium tabular-nums text-foreground">
+            {Math.round(clampedValue)}%
+          </span>
+        )}
       </div>
     );
   }

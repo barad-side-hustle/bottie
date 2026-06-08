@@ -20,33 +20,26 @@ interface StatCardProps {
   };
 }
 
-export function StatCard({
-  label,
-  value,
-  icon: Icon,
-  iconBgColor = "bg-primary/10",
-  iconColor = "text-primary",
-  valueColor,
-  delta,
-}: StatCardProps) {
+export function StatCard({ label, value, icon: Icon, valueColor, delta }: StatCardProps) {
   const deltaDisplay = getDeltaDisplay(delta);
 
   return (
-    <DashboardCard className="shadow-xs hover:shadow-sm transition-shadow">
-      <DashboardCardContent className="p-5">
-        <div className="flex items-start justify-between gap-4">
-          <div className="min-w-0 space-y-2">
-            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">{label}</p>
-            <div className="flex items-center gap-2">
-              <p className={cn("text-2xl font-bold tracking-tight tabular-nums md:text-3xl", valueColor)}>{value}</p>
-              {deltaDisplay}
-            </div>
-          </div>
-          {Icon && (
-            <div className={cn("flex size-10 shrink-0 items-center justify-center rounded-xl", iconBgColor)}>
-              <Icon className={cn("size-[18px]", iconColor)} />
-            </div>
-          )}
+    <DashboardCard>
+      <DashboardCardContent className="flex flex-col gap-2 p-5">
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-xs font-semibold uppercase tracking-[0.06em] text-ink-2">{label}</p>
+          {Icon && <Icon className="size-4 shrink-0 text-ink-3" aria-hidden />}
+        </div>
+        <div className="flex items-center gap-2">
+          <p
+            className={cn(
+              "text-[1.75rem] font-medium leading-tight tracking-tight tabular-nums text-foreground",
+              valueColor
+            )}
+          >
+            {value}
+          </p>
+          {deltaDisplay}
         </div>
       </DashboardCardContent>
     </DashboardCard>

@@ -2,15 +2,11 @@ import { Suspense } from "react";
 import { PageContainer } from "@/components/layout/PageContainer";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { getTranslations } from "next-intl/server";
-import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
-import { buildLocationBreadcrumbs } from "@/lib/utils/breadcrumbs";
 import { getLocation } from "@/lib/actions/locations.actions";
 import { getInsights, getInsightsTrends } from "@/lib/actions/insights.actions";
 import { getPerformanceMetrics } from "@/lib/actions/metrics.actions";
-import { InsightsDateFilter, InsightsCharts } from "@/components/dashboard/insights";
-import { InsightsScoreboard } from "@/components/dashboard/insights/InsightsScoreboard";
-import { TrendsChart } from "@/components/dashboard/insights/TrendsChart";
-import { DiscoveryTrendsChart } from "@/components/dashboard/insights/DiscoveryTrendsChart";
+import { InsightsDateFilter } from "@/components/dashboard/insights";
+import { InsightsTabs } from "@/components/dashboard/insights/InsightsTabs";
 import { EmptyState } from "@/components/ui/empty-state";
 import { subDays } from "date-fns";
 
@@ -26,7 +22,6 @@ export default async function InsightsPage({ params, searchParams }: InsightsPag
   const resolvedSearchParams = await searchParams;
 
   const t = await getTranslations({ locale, namespace: "dashboard.insights" });
-  const tBreadcrumbs = await getTranslations({ locale, namespace: "breadcrumbs" });
 
   const location = await getLocation({ locationId });
 
@@ -53,17 +48,6 @@ export default async function InsightsPage({ params, searchParams }: InsightsPag
 
   return (
     <PageContainer>
-      <div className="mb-4">
-        <Breadcrumbs
-          items={buildLocationBreadcrumbs({
-            locationName: location.name,
-            locationId,
-            currentSection: "insights",
-            t: tBreadcrumbs,
-          })}
-        />
-      </div>
-
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
         <PageHeader title={t("title", { businessName: location.name })} description={t("description")} />
         <Suspense>
@@ -71,20 +55,19 @@ export default async function InsightsPage({ params, searchParams }: InsightsPag
         </Suspense>
       </div>
 
-      <div className="mt-6 space-y-6">
+      <div className="mt-6">
         {!hasData ? (
           <EmptyState title={t("noData")} description={t("noDataDescription")} />
         ) : (
-          <>
-            <InsightsScoreboard stats={insights} performance={performanceMetrics?.totals ?? null} />
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <TrendsChart trends={trends} locale={locale} />
-              {performanceMetrics && <DiscoveryTrendsChart daily={performanceMetrics.daily} />}
-            </div>
-
-            <InsightsCharts stats={insights} locationId={locationId} dateFrom={dateFrom} dateTo={dateTo} />
-          </>
+          <InsightsTabs
+            insights={insights}
+            trends={trends}
+            performanceMetrics={performanceMetrics}
+            locale={locale}
+            locationId={locationId}
+            dateFrom={dateFrom}
+            dateTo={dateTo}
+          />
         )}
       </div>
     </PageContainer>

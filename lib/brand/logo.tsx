@@ -1,7 +1,8 @@
-export const BRAND_BLUE = "#0f74c5";
+export const BRAND_TEAL = "#1f7b83";
+export const BRAND_BLUE = BRAND_TEAL;
 const BRAND_NAME = "Bottie";
 
-export function BotIconSvg({ size, color = BRAND_BLUE }: { size: number; color?: string }) {
+export function BotIconSvg({ size, color = BRAND_TEAL }: { size: number; color?: string }) {
   return (
     <svg
       width={size}
@@ -26,17 +27,17 @@ export function BotIconSvg({ size, color = BRAND_BLUE }: { size: number; color?:
   );
 }
 
-export function FullLogoJsx({ height, color = BRAND_BLUE, gap = 8 }: { height: number; color?: string; gap?: number }) {
-  const fontSize = Math.round(height * 0.65);
+export function FullLogoJsx({ height, gap = 8 }: { height: number; color?: string; gap?: number }) {
+  const fontSize = Math.round(height * 0.62);
 
   return (
     <div style={{ display: "flex", alignItems: "center", gap }}>
-      <BotIconSvg size={height} color={color} />
+      <BotIconSvg size={height} color="var(--primary)" />
       <span
         style={{
           fontSize,
-          fontWeight: 700,
-          color,
+          fontWeight: 600,
+          color: "var(--foreground)",
           lineHeight: 1,
           letterSpacing: "-0.02em",
         }}

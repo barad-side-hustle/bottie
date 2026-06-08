@@ -17,7 +17,7 @@ export function CheckoutSuccessClient({ locale }: CheckoutSuccessClientProps) {
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      router.push(`/${locale}/dashboard/subscription?success=true`);
+      router.push(`/${locale}/dashboard/settings?tab=billing&success=true`);
     }, 2000);
 
     return () => clearTimeout(timer);

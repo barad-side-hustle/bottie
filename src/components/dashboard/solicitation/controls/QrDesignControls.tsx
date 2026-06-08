@@ -13,7 +13,7 @@ interface QrDesignControlsProps {
 
 export function QrDesignControls({ settings, onChange }: QrDesignControlsProps) {
   return (
-    <div className="space-y-6">
+    <div className="divide-y divide-hairline [&>*]:py-6 first:[&>*]:pt-0 last:[&>*]:pb-0">
       <QrColorControls settings={settings} onChange={onChange} />
       <QrDotStyleControls settings={settings} onChange={onChange} />
       <QrCornerStyleControls settings={settings} onChange={onChange} />

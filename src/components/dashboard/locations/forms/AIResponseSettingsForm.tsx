@@ -116,12 +116,15 @@ export function AIResponseSettingsForm({
             onChange={(e) => handleEmojiChange(e.target.value)}
             placeholder={t("emojis.placeholder")}
             disabled={disabled}
+            aria-describedby="allowedEmojis-helper"
             dir="ltr"
             className="flex-1"
           />
           <EmojiPicker onEmojiSelect={handleEmojiSelect} disabled={disabled} />
         </div>
-        <p className="text-xs text-muted-foreground text-start">{t("emojis.helper")}</p>
+        <p id="allowedEmojis-helper" className="text-start text-xs text-ink-3">
+          {t("emojis.helper")}
+        </p>
       </div>
 
       <div className="space-y-2">
@@ -159,9 +162,12 @@ export function AIResponseSettingsForm({
           onChange={(e) => onChange("signature", e.target.value)}
           placeholder={t("signature.placeholder")}
           disabled={disabled}
+          aria-describedby="signature-helper"
           dir={dir}
         />
-        <p className="text-xs text-muted-foreground text-start">{t("signature.helper")}</p>
+        <p id="signature-helper" className="text-start text-xs text-ink-3">
+          {t("signature.helper")}
+        </p>
       </div>
     </div>
   );

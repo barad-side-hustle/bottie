@@ -68,32 +68,32 @@ export function UserAvatarDropdown() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="focus:outline-none">
+      <DropdownMenuTrigger className="rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background">
         <Avatar className="h-10 w-10 cursor-pointer">
           <AvatarImage src={photoURL || undefined} alt={displayName || "User"} />
-          <AvatarFallback className="bg-primary text-primary-foreground">{getInitials()}</AvatarFallback>
+          <AvatarFallback>{getInitials()}</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-56">
         <DropdownMenuLabel className="font-normal">
-          <div className="flex flex-col space-y-1 text-end">
-            <p className="text-sm font-medium leading-none">{displayName || t("user")}</p>
-            <p className="text-xs leading-none text-muted-foreground">{user.email}</p>
+          <div className="flex flex-col space-y-1 text-start">
+            <p className="text-sm font-medium leading-none text-foreground">{displayName || t("user")}</p>
+            <p className="text-xs leading-none text-ink-2">{user.email}</p>
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         {!isDashboardPage && (
-          <DropdownMenuItem onSelect={handleDashboard} className="cursor-pointer flex justify-between">
-            <LayoutDashboard className="h-4 w-4" />
+          <DropdownMenuItem onSelect={handleDashboard}>
+            <LayoutDashboard className="h-4 w-4 text-ink-3" />
             <span>{t("dashboard")}</span>
           </DropdownMenuItem>
         )}
-        <DropdownMenuItem onSelect={handleAddBusiness} className="cursor-pointer flex justify-between">
-          <Plus className="h-4 w-4" />
+        <DropdownMenuItem onSelect={handleAddBusiness}>
+          <Plus className="h-4 w-4 text-ink-3" />
           <span>{t("addBusiness")}</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onSelect={handleSignOut} className="cursor-pointer flex justify-between">
-          <LogOut className="h-4 w-4" />
+        <DropdownMenuItem onSelect={handleSignOut}>
+          <LogOut className="h-4 w-4 text-ink-3" />
           <span>{t("signOut")}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>

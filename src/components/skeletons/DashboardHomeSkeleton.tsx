@@ -1,55 +1,58 @@
 import { Skeleton } from "@/components/ui/skeleton";
 import { PageContainer } from "@/components/layout/PageContainer";
-import { DashboardCard, DashboardCardContent } from "@/components/ui/dashboard-card";
 
 export function DashboardHomeSkeleton() {
   return (
     <PageContainer>
-      <div className="space-y-1 mb-6">
-        <Skeleton className="h-8 w-64" />
-        <Skeleton className="h-4 w-96" />
+      <div className="space-y-2">
+        <Skeleton className="h-7 w-56" />
+        <Skeleton className="h-4 w-80" />
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-        {[1, 2, 3, 4].map((i) => (
-          <DashboardCard key={i}>
-            <DashboardCardContent className="p-5">
-              <div className="flex items-center justify-between gap-4">
-                <div className="min-w-0">
-                  <Skeleton className="h-3 w-20 mb-3" />
-                  <Skeleton className="h-7 w-12" />
-                </div>
-                <Skeleton className="size-11 rounded-xl shrink-0" />
-              </div>
-            </DashboardCardContent>
-          </DashboardCard>
-        ))}
-      </div>
+      <div className="space-y-10">
+        <section className="flex flex-col gap-5 border-b border-hairline pb-8 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex items-end gap-4">
+            <Skeleton className="h-14 w-20 sm:h-16" />
+            <div className="flex flex-col gap-2 pb-1">
+              <Skeleton className="h-3 w-28" />
+              <Skeleton className="h-4 w-40" />
+            </div>
+          </div>
+          <Skeleton className="h-11 w-36 shrink-0 rounded-md" />
+        </section>
 
-      <div className="flex items-center gap-3 rounded-xl border border-border/40 p-4 mb-6">
-        <Skeleton className="size-5 rounded-full shrink-0" />
-        <Skeleton className="h-4 flex-1" />
-        <Skeleton className="h-8 w-24 rounded-md" />
-      </div>
-
-      <div className="space-y-3">
-        <Skeleton className="h-6 w-40" />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[1, 2, 3].map((i) => (
-            <DashboardCard key={i}>
-              <DashboardCardContent className="p-4">
-                <div className="flex items-center gap-3">
-                  <Skeleton className="size-10 rounded-lg shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <Skeleton className="h-4 w-32 mb-1.5" />
-                    <Skeleton className="h-3 w-12" />
-                  </div>
-                  {i === 1 && <Skeleton className="h-5 w-20 rounded-full" />}
-                </div>
-              </DashboardCardContent>
-            </DashboardCard>
+        <section className="grid grid-cols-2 gap-y-6 divide-hairline sm:grid-cols-4 sm:gap-y-0 sm:divide-x">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <div key={i} className="flex flex-col gap-2.5 px-5 py-1">
+              <Skeleton className="h-3 w-20" />
+              <Skeleton className="h-7 w-14" />
+            </div>
           ))}
-        </div>
+        </section>
+
+        <section className="space-y-4">
+          <div className="flex items-baseline justify-between gap-4">
+            <Skeleton className="h-6 w-36" />
+            <Skeleton className="h-4 w-4" />
+          </div>
+
+          <div className="overflow-hidden rounded-lg border border-hairline bg-surface">
+            <div className="divide-y divide-hairline">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="flex items-center gap-4 px-4 py-3.5">
+                  <Skeleton className="size-9 shrink-0 rounded-md" />
+                  <div className="flex min-w-0 flex-1 items-center gap-2">
+                    <Skeleton className="h-4 w-40" />
+                    <Skeleton className="h-5 w-14 rounded-full" />
+                  </div>
+                  <Skeleton className="h-4 w-10" />
+                  <Skeleton className="h-5 w-16 rounded-full" />
+                  <Skeleton className="size-4 shrink-0" />
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
       </div>
     </PageContainer>
   );

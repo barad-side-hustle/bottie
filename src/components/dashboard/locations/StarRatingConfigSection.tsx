@@ -39,7 +39,7 @@ export default function StarRatingConfigSection({ starConfigs, loading, onSave }
             const starConfig = starConfigs[rating];
 
             return (
-              <div key={rating} className="rounded-2xl border border-border/60 bg-card p-4">
+              <div key={rating} className="rounded-lg border border-hairline p-4">
                 <div className="mb-3 flex items-center justify-between gap-3">
                   <StarRating rating={rating} size={18} />
                   <Badge variant={starConfig.autoReply ? "success" : "muted"}>
@@ -48,11 +48,11 @@ export default function StarRatingConfigSection({ starConfigs, loading, onSave }
                 </div>
 
                 {starConfig.customInstructions ? (
-                  <p className="whitespace-pre-wrap rounded-xl bg-muted/60 p-3.5 text-sm leading-relaxed">
+                  <p className="whitespace-pre-wrap rounded-md bg-surface-2 p-3 text-sm leading-relaxed text-foreground">
                     {starConfig.customInstructions}
                   </p>
                 ) : (
-                  <p className="text-sm italic text-muted-foreground">{t("noInstructions")}</p>
+                  <p className="text-sm text-ink-3">{t("noInstructions")}</p>
                 )}
               </div>
             );

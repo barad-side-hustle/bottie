@@ -36,9 +36,9 @@ export function PricingCards() {
   const handleGetStarted = (plan: string) => {
     setLoadingPlan(plan);
     if (!user) {
-      router.push(`/login?redirect=${encodeURIComponent("/dashboard/subscription")}`);
+      router.push(`/login?redirect=${encodeURIComponent("/dashboard/settings?tab=billing")}`);
     } else {
-      router.push("/dashboard/subscription");
+      router.push("/dashboard/settings?tab=billing");
     }
     setLoadingPlan(null);
   };
@@ -47,33 +47,32 @@ export function PricingCards() {
     <SectionBlock tone="plain" id="pricing" width="md">
       <SectionHeading title={t("title")} subtitle={t("subtitle")} />
 
-      <div className="mx-auto mt-12 grid max-w-4xl grid-cols-1 gap-8 md:grid-cols-2 md:gap-6">
-        <div className="flex flex-col rounded-3xl border border-border/60 bg-card p-8 shadow-sm">
-          <div className="mb-6">
-            <h3 className="mb-2 text-2xl font-bold text-foreground">{t("plans.free.name")}</h3>
-            <p className="mb-4 text-sm text-muted-foreground">
+      <div className="mx-auto mt-16 grid max-w-4xl grid-cols-1 items-start gap-6 md:grid-cols-2">
+        <div className="flex flex-col rounded-lg border border-hairline bg-card p-8">
+          <div className="mb-8">
+            <h3 className="mb-2 text-xl font-medium tracking-tight text-foreground">{t("plans.free.name")}</h3>
+            <p className="mb-6 text-sm leading-relaxed text-ink-2">
               {t("plans.free.description", { count: FREE_LOCATION_LIMITS.reviewsPerMonth })}
             </p>
             <div className="flex items-baseline gap-1">
-              <span className="text-5xl font-bold tracking-tight text-foreground">$0</span>
+              <span className="text-5xl font-normal tracking-tight tabular-nums text-foreground">$0</span>
             </div>
-            <p className="mt-2 text-sm text-muted-foreground">
+            <p className="mt-3 text-sm text-ink-3">
               {t("freeReplies", { count: FREE_LOCATION_LIMITS.reviewsPerMonth })}
             </p>
           </div>
 
-          <ul className="mb-8 grow space-y-3">
+          <ul className="mb-8 grow space-y-3.5">
             {freeFeatures.map((feature, i) => (
               <li key={i} className="flex items-start gap-2.5">
-                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-brand" />
-                <span className="text-sm text-foreground">{feature}</span>
+                <CheckCircle2 className="mt-0.5 size-4.5 shrink-0 text-ink-3" />
+                <span className="text-sm leading-relaxed text-foreground">{feature}</span>
               </li>
             ))}
           </ul>
 
           <Button
             className="w-full"
-            size="pill"
             variant="outline"
             onClick={() => handleGetStarted("free")}
             disabled={loadingPlan === "free"}
@@ -82,31 +81,31 @@ export function PricingCards() {
           </Button>
         </div>
 
-        <div className="flex flex-col rounded-3xl bg-secondary/40 p-8 shadow-lg ring-2 ring-primary">
-          <div className="mb-6">
-            <h3 className="mb-2 text-2xl font-bold text-foreground">{t("plans.pro.name")}</h3>
-            <p className="mb-4 text-sm text-muted-foreground">{t("plans.pro.description")}</p>
+        <div className="flex flex-col rounded-lg border border-hairline bg-surface-2 p-8 md:p-10">
+          <span className="mb-5 inline-flex w-fit items-center rounded-full bg-surface-3 px-2.5 py-0.5 text-xs font-medium uppercase tracking-[0.06em] text-ink-2">
+            {t("recommendedLabel")}
+          </span>
+          <div className="mb-8">
+            <h3 className="mb-2 text-2xl font-semibold tracking-tight text-foreground">{t("plans.pro.name")}</h3>
+            <p className="mb-6 text-sm leading-relaxed text-ink-2">{t("plans.pro.description")}</p>
             <div className="flex items-baseline gap-1">
-              <span className="text-5xl font-bold tracking-tight text-foreground">${PRICE_PER_LOCATION}</span>
-              <span className="text-muted-foreground">{t("perLocation")}</span>
+              <span className="text-5xl font-normal tracking-tight tabular-nums text-foreground">
+                ${PRICE_PER_LOCATION}
+              </span>
+              <span className="text-ink-2">{t("perLocation")}</span>
             </div>
           </div>
 
-          <ul className="mb-8 grow space-y-3">
+          <ul className="mb-8 grow space-y-3.5">
             {proFeatures.map((feature, i) => (
               <li key={i} className="flex items-start gap-2.5">
-                <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-brand" />
-                <span className="text-sm text-foreground">{feature}</span>
+                <CheckCircle2 className="mt-0.5 size-4.5 shrink-0 text-positive" />
+                <span className="text-sm leading-relaxed text-foreground">{feature}</span>
               </li>
             ))}
           </ul>
 
-          <Button
-            className="w-full"
-            size="pill"
-            onClick={() => handleGetStarted("pro")}
-            disabled={loadingPlan === "pro"}
-          >
+          <Button className="w-full" onClick={() => handleGetStarted("pro")} disabled={loadingPlan === "pro"}>
             {loadingPlan === "pro" ? t("loading") : t("proCta")}
           </Button>
         </div>

@@ -6,7 +6,7 @@ const DashboardCard = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTML
     <div
       ref={ref}
       className={cn(
-        "relative flex flex-col rounded-3xl border border-border/60 bg-card text-card-foreground shadow-sm group overflow-hidden",
+        "relative flex flex-col rounded-lg border border-hairline bg-card text-card-foreground group",
         className
       )}
       {...props}
@@ -53,7 +53,7 @@ const DashboardCardSection = React.forwardRef<
 >(({ className, withBorder = true, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("space-y-4", withBorder && "border-t border-border/40 pt-4 mt-4", className)}
+    className={cn("space-y-4", withBorder && "border-t border-hairline pt-4 mt-4", className)}
     {...props}
   />
 ));
@@ -63,7 +63,7 @@ const DashboardCardFooter = React.forwardRef<HTMLDivElement, React.HTMLAttribute
   ({ className, ...props }, ref) => (
     <div
       ref={ref}
-      className={cn("flex items-center justify-end gap-2 p-4 sm:p-6 pt-3 sm:pt-4 border-t border-border/40", className)}
+      className={cn("flex items-center justify-end gap-2 p-4 sm:p-6 pt-3 sm:pt-4 border-t border-hairline", className)}
       {...props}
     />
   )

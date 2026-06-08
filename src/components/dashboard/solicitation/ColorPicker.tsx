@@ -62,14 +62,15 @@ export function ColorPicker({ label, value, onChange }: ColorPickerProps) {
   }, [value]);
 
   return (
-    <div className="space-y-1.5">
-      <label className="text-xs font-medium text-muted-foreground">{label}</label>
+    <div className="space-y-2">
+      <label className="text-xs font-medium text-ink-2">{label}</label>
       <div className="flex items-center gap-2">
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
             <button
               type="button"
-              className="size-9 shrink-0 cursor-pointer rounded-md border border-border/60 shadow-sm transition-shadow hover:shadow-md"
+              aria-label={label}
+              className="size-10 shrink-0 cursor-pointer rounded-md border border-line-strong transition-colors duration-150 ease-[var(--ease-standard)] hover:border-ring focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
               style={{ backgroundColor: value }}
             />
           </PopoverTrigger>
@@ -80,7 +81,8 @@ export function ColorPicker({ label, value, onChange }: ColorPickerProps) {
               onChange={handleInputChange}
               onPaste={handlePaste}
               onBlur={handleBlur}
-              className="mt-2 h-8 font-mono text-xs"
+              dir="ltr"
+              className="mt-3 h-8 font-mono text-xs tabular-nums"
               maxLength={7}
             />
           </PopoverContent>
@@ -90,7 +92,8 @@ export function ColorPicker({ label, value, onChange }: ColorPickerProps) {
           onChange={handleInputChange}
           onPaste={handlePaste}
           onBlur={handleBlur}
-          className="h-9 font-mono text-xs"
+          dir="ltr"
+          className="h-10 font-mono text-xs tabular-nums"
           maxLength={7}
         />
       </div>

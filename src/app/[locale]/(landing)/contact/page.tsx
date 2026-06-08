@@ -57,7 +57,7 @@ export default async function ContactPage() {
   return (
     <SectionBlock tone="cream" width="sm">
       <SectionHeading title={t("page.title")} subtitle={t("page.description")} className="mb-12" />
-      <div className="mx-auto w-full max-w-lg rounded-3xl border border-border/60 bg-card p-6 shadow-sm sm:p-8 md:p-10">
+      <div className="mx-auto w-full max-w-lg rounded-lg border border-hairline bg-card p-6 sm:p-8 md:p-10">
         <ContactForm />
       </div>
     </SectionBlock>

@@ -1,5 +1,6 @@
 export * from "./InsightsDateFilter";
 export * from "./InsightsScoreboard";
+export * from "./InsightsTabs";
 export * from "./InsightsCharts";
 export * from "./StatCard";
 export * from "./TrendsChart";

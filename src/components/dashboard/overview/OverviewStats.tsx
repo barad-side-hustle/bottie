@@ -1,31 +1,44 @@
 "use client";
 
-import { Star, Clock, CalendarDays, MapPin } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { Bento, StatTile } from "@/components/ui/bento";
 import { cn } from "@/lib/utils";
 import type { OverviewData } from "@/lib/actions/overview.actions";
 
+interface KpiProps {
+  label: string;
+  value: string | number;
+  accent?: boolean;
+}
+
+function Kpi({ label, value, accent }: KpiProps) {
+  return (
+    <div className="flex flex-col gap-1.5 px-5 py-1">
+      <span className="text-xs font-semibold uppercase tracking-[0.06em] text-ink-2">{label}</span>
+      <span
+        className={cn(
+          "text-2xl font-medium leading-none tracking-[-0.01em] tabular-nums",
+          accent ? "text-accent-text" : "text-foreground"
+        )}
+      >
+        {value}
+      </span>
+    </div>
+  );
+}
+
 export function OverviewStats({ data }: { data: OverviewData }) {
   const t = useTranslations("dashboard.overview");
-  const hasPending = data.pendingCount > 0;
 
   return (
-    <Bento className="grid-cols-2 lg:grid-cols-4">
-      <StatTile
-        label={t("pendingReviews")}
-        icon={Clock}
-        iconClassName={hasPending ? "bg-warning/15 text-warning-foreground" : undefined}
-        value={<span className={cn("tabular-nums", hasPending && "text-warning-foreground")}>{data.pendingCount}</span>}
-      />
-      <StatTile
+    <section className="grid grid-cols-2 gap-y-6 divide-hairline sm:grid-cols-4 sm:gap-y-0 sm:divide-x">
+      <Kpi
         label={t("averageRating")}
-        icon={Star}
-        iconClassName="bg-star-filled/15 text-star-filled"
         value={data.avgRating ? data.avgRating.toFixed(1) : "-"}
+        accent={Boolean(data.avgRating)}
       />
-      <StatTile label={t("reviewsThisMonth")} icon={CalendarDays} value={data.reviewsThisMonth} />
-      <StatTile label={t("totalLocations")} icon={MapPin} value={data.locationCount} />
-    </Bento>
+      <Kpi label={t("pendingReviews")} value={data.pendingCount} />
+      <Kpi label={t("reviewsThisMonth")} value={data.reviewsThisMonth} />
+      <Kpi label={t("totalLocations")} value={data.locationCount} />
+    </section>
   );
 }

@@ -8,6 +8,22 @@ import {
   DashboardCardTitle,
 } from "@/components/ui/dashboard-card";
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis, Legend } from "recharts";
+import type { Props as LegendContentProps } from "recharts/types/component/DefaultLegendContent";
+
+function renderLegend(props: LegendContentProps) {
+  const { payload } = props;
+  if (!payload) return null;
+  return (
+    <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 pt-4 pb-1">
+      {payload.map((entry) => (
+        <span key={entry.value} className="inline-flex items-center gap-1.5 text-xs font-medium text-ink-2">
+          <span className="h-0.5 w-3 rounded-full" style={{ backgroundColor: entry.color }} />
+          {entry.value}
+        </span>
+      ))}
+    </div>
+  );
+}
 
 interface DailyMetric {
   date: string;
@@ -41,10 +57,16 @@ export function DiscoveryTrendsChart({ daily }: DiscoveryTrendsChartProps) {
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={chartData} margin={{ top: 8, right: 12, left: -16, bottom: 0 }}>
-              <CartesianGrid stroke="var(--border)" strokeOpacity={0.5} vertical={false} />
+              <defs>
+                <linearGradient id="discoveryLeadFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="var(--chart-1)" stopOpacity={0.1} />
+                  <stop offset="100%" stopColor="var(--chart-1)" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid stroke="var(--hairline)" vertical={false} />
               <XAxis
                 dataKey="date"
-                tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
+                tick={{ fill: "var(--ink-3)", fontSize: 12, style: { fontVariantNumeric: "tabular-nums" } }}
                 axisLine={false}
                 tickLine={false}
                 tickMargin={8}
@@ -54,42 +76,46 @@ export function DiscoveryTrendsChart({ daily }: DiscoveryTrendsChartProps) {
                 }}
               />
               <YAxis
-                tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
+                tick={{ fill: "var(--ink-3)", fontSize: 12, style: { fontVariantNumeric: "tabular-nums" } }}
                 axisLine={false}
                 tickLine={false}
                 tickMargin={8}
                 allowDecimals={false}
+                width={40}
               />
               <Tooltip
-                cursor={{ stroke: "var(--border)", strokeWidth: 1 }}
+                cursor={{ stroke: "var(--hairline)", strokeWidth: 1 }}
                 contentStyle={{
-                  backgroundColor: "var(--card)",
-                  border: "1px solid var(--border)",
-                  borderRadius: "0.75rem",
+                  backgroundColor: "var(--popover)",
+                  border: "1px solid var(--hairline)",
+                  borderRadius: "var(--radius-lg)",
                   boxShadow: "var(--shadow-md)",
                   padding: "8px 12px",
                   fontSize: "13px",
+                  fontVariantNumeric: "tabular-nums",
                 }}
-                labelStyle={{ color: "var(--muted-foreground)", marginBottom: "4px", fontWeight: 600 }}
+                labelStyle={{ color: "var(--ink-3)", marginBottom: "4px", fontWeight: 600 }}
               />
-              <Legend wrapperStyle={{ fontSize: "12px", paddingTop: "12px" }} iconType="circle" iconSize={8} />
+              <Legend content={renderLegend} />
               <Area
                 type="monotone"
                 dataKey="impressions"
                 name={t("performance.totalImpressions")}
-                stroke="var(--primary)"
+                stroke="var(--chart-1)"
                 strokeWidth={2}
-                fill="var(--primary)"
-                fillOpacity={0.12}
+                fill="url(#discoveryLeadFill)"
+                fillOpacity={1}
+                activeDot={{ r: 3, strokeWidth: 0 }}
               />
               <Area
                 type="monotone"
                 dataKey="actions"
                 name={t("scoreboard.customerActions")}
-                stroke="var(--success, #22c55e)"
+                stroke="var(--chart-2)"
                 strokeWidth={2}
-                fill="var(--success, #22c55e)"
-                fillOpacity={0.12}
+                fill="transparent"
+                fillOpacity={1}
+                activeDot={{ r: 3, strokeWidth: 0 }}
               />
             </AreaChart>
           </ResponsiveContainer>

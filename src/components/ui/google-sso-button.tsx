@@ -14,9 +14,9 @@ const GoogleSsoButton = React.forwardRef<HTMLButtonElement, GoogleSsoButtonProps
         ref={ref}
         className={cn(
           "inline-flex items-center justify-center gap-2 w-full h-11 px-4 py-2 cursor-pointer",
-          "rounded-xl text-sm font-semibold border border-border bg-card shadow-xs",
-          "hover:bg-accent hover:text-accent-foreground transition-colors",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/25",
+          "rounded-md text-sm font-medium border border-border bg-card text-foreground",
+          "hover:bg-surface-3 transition-colors duration-150 ease-[var(--ease-standard)]",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
           "disabled:pointer-events-none disabled:opacity-50",
           className
         )}

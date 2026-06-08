@@ -18,44 +18,46 @@ export function QrCornerStyleControls({ settings, onChange }: QrCornerStyleContr
   return (
     <div className="space-y-4">
       <div className="space-y-3">
-        <label className="text-xs font-medium text-muted-foreground">{t("outerTitle")}</label>
+        <label className="text-xs font-semibold uppercase tracking-[0.02em] text-ink-2">{t("outerTitle")}</label>
         <div className="grid grid-cols-3 gap-2">
           {CORNER_SQUARE_TYPES.map((type) => (
             <button
               key={type}
               type="button"
               onClick={() => onChange({ cornerSquareType: type })}
+              aria-pressed={settings.cornerSquareType === type}
               className={cn(
-                "flex cursor-pointer flex-col items-center gap-1.5 rounded-lg border p-3 text-xs transition-all",
+                "flex cursor-pointer flex-col items-center gap-1.5 rounded-md border p-3 text-xs transition-colors duration-150 ease-[var(--ease-standard)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                 settings.cornerSquareType === type
-                  ? "border-primary bg-primary/5 ring-2 ring-primary"
-                  : "border-border/60 hover:border-border"
+                  ? "border-line-strong bg-surface-3 font-medium text-ink"
+                  : "border-hairline text-ink-2 hover:bg-surface-2"
               )}
             >
               <CornerSquarePreview type={type} />
-              <span className="font-medium">{t(type)}</span>
+              <span>{t(type)}</span>
             </button>
           ))}
         </div>
       </div>
 
       <div className="space-y-3">
-        <label className="text-xs font-medium text-muted-foreground">{t("innerTitle")}</label>
+        <label className="text-xs font-semibold uppercase tracking-[0.02em] text-ink-2">{t("innerTitle")}</label>
         <div className="grid grid-cols-2 gap-2">
           {CORNER_DOT_TYPES.map((type) => (
             <button
               key={type}
               type="button"
               onClick={() => onChange({ cornerDotType: type })}
+              aria-pressed={settings.cornerDotType === type}
               className={cn(
-                "flex cursor-pointer flex-col items-center gap-1.5 rounded-lg border p-3 text-xs transition-all",
+                "flex cursor-pointer flex-col items-center gap-1.5 rounded-md border p-3 text-xs transition-colors duration-150 ease-[var(--ease-standard)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                 settings.cornerDotType === type
-                  ? "border-primary bg-primary/5 ring-2 ring-primary"
-                  : "border-border/60 hover:border-border"
+                  ? "border-line-strong bg-surface-3 font-medium text-ink"
+                  : "border-hairline text-ink-2 hover:bg-surface-2"
               )}
             >
               <CornerDotPreview type={type} />
-              <span className="font-medium">{t(type)}</span>
+              <span>{t(type)}</span>
             </button>
           ))}
         </div>

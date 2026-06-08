@@ -114,11 +114,11 @@ export function BulkPublishDialog({
       .slice(0, 2);
 
   const getStatusIcon = (status: ReviewStatus) => {
-    if (status === "publishing") return <Loader2 className="size-4 animate-spin text-primary" />;
+    if (status === "publishing") return <Loader2 className="size-4 animate-spin text-ink-2" />;
     if (status === "succeeded") return <CheckCircle2 className="size-4 text-success" />;
-    if (status === "removed") return <Trash2 className="size-4 text-muted-foreground" />;
+    if (status === "removed") return <Trash2 className="size-4 text-ink-3" />;
     if (typeof status === "object") return <XCircle className="size-4 text-destructive" />;
-    return <div className="size-4 rounded-full border-2 border-border/60" />;
+    return <div className="size-4 rounded-full border border-line-strong" />;
   };
 
   return (
@@ -131,31 +131,33 @@ export function BulkPublishDialog({
     >
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>
+          <DialogTitle className="tabular-nums">
             {phase === "results"
               ? t("complete", { succeeded: results.succeeded.length, total })
               : t("dialogTitle", { count: total })}
           </DialogTitle>
           {phase === "confirm" && <DialogDescription>{t("dialogDescription")}</DialogDescription>}
-          {phase === "publishing" && <DialogDescription>{t("publishing", { completed, total })}</DialogDescription>}
+          {phase === "publishing" && (
+            <DialogDescription className="tabular-nums">{t("publishing", { completed, total })}</DialogDescription>
+          )}
         </DialogHeader>
 
         {phase === "confirm" && (
-          <div className="max-h-64 overflow-y-auto space-y-2">
+          <div className="max-h-64 divide-y divide-hairline overflow-y-auto rounded-md border border-hairline">
             {selectedReviews.map((review) => (
-              <div key={review.id} className="flex items-start gap-3 rounded-xl border border-border/60 p-3">
-                <Avatar className="h-8 w-8 shrink-0 rounded-lg">
+              <div key={review.id} className="flex items-start gap-3 p-3">
+                <Avatar className="h-8 w-8 shrink-0 rounded-md">
                   <AvatarImage src={review.photoUrl || undefined} />
-                  <AvatarFallback className="rounded-lg bg-secondary text-xs text-primary">
-                    {review.photoUrl ? <User className="h-4 w-4 text-primary" /> : getInitials(review.name)}
+                  <AvatarFallback className="rounded-md bg-surface-2 text-xs text-ink-2">
+                    {review.photoUrl ? <User className="h-4 w-4 text-ink-2" /> : getInitials(review.name)}
                   </AvatarFallback>
                 </Avatar>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium truncate">{review.name}</span>
+                    <span className="truncate text-sm font-medium text-foreground">{review.name}</span>
                     <StarRating rating={review.rating} size={12} />
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{review.latestAiReply}</p>
+                  <p className="mt-1 line-clamp-2 text-xs text-ink-2">{review.latestAiReply}</p>
                 </div>
               </div>
             ))}
@@ -174,18 +176,18 @@ export function BulkPublishDialog({
                   <div
                     key={review.id}
                     className={cn(
-                      "flex items-center gap-2.5 rounded-xl px-3 py-2 text-sm transition-colors",
-                      status === "publishing" && "bg-secondary",
+                      "flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors",
+                      status === "publishing" && "bg-surface-2",
                       (status === "succeeded" || status === "removed") && "opacity-60"
                     )}
                   >
                     {getStatusIcon(status)}
-                    <span className={cn("truncate flex-1", status === "removed" && "line-through")}>{review.name}</span>
-                    {status === "removed" && (
-                      <span className="text-xs text-muted-foreground">{t("reviewRemoved")}</span>
-                    )}
+                    <span className={cn("flex-1 truncate text-foreground", status === "removed" && "line-through")}>
+                      {review.name}
+                    </span>
+                    {status === "removed" && <span className="text-xs text-ink-3">{t("reviewRemoved")}</span>}
                     {typeof status === "object" && (
-                      <span className="text-xs text-destructive truncate max-w-[140px]">{status.error}</span>
+                      <span className="max-w-[140px] truncate text-xs text-destructive">{status.error}</span>
                     )}
                   </div>
                 );
@@ -197,28 +199,28 @@ export function BulkPublishDialog({
         {phase === "results" && (
           <div className="space-y-3">
             {results.succeeded.length > 0 && (
-              <div className="flex items-center gap-2 text-sm text-success">
+              <div className="flex items-center gap-2 rounded-md bg-positive-tint px-3 py-2 text-sm text-success tabular-nums">
                 <CheckCircle2 className="h-4 w-4 shrink-0" />
                 <span>{t("complete", { succeeded: results.succeeded.length, total })}</span>
               </div>
             )}
             {results.removed.length > 0 && (
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 rounded-md bg-surface-2 px-3 py-2 text-sm text-ink-2 tabular-nums">
                 <Trash2 className="h-4 w-4 shrink-0" />
                 <span>{t("removedCount", { count: results.removed.length })}</span>
               </div>
             )}
             {results.failed.length > 0 && (
               <div className="space-y-2">
-                <div className="flex items-center gap-2 text-sm text-destructive">
+                <div className="flex items-center gap-2 rounded-md bg-destructive/10 px-3 py-2 text-sm text-destructive tabular-nums">
                   <XCircle className="h-4 w-4 shrink-0" />
                   <span>{t("someFailed", { count: results.failed.length })}</span>
                 </div>
-                <div className="max-h-32 overflow-y-auto space-y-1">
+                <div className="max-h-32 space-y-1 overflow-y-auto">
                   {results.failed.map((f) => {
                     const review = selectedReviews.find((r) => r.id === f.reviewId);
                     return (
-                      <p key={f.reviewId} className="text-xs text-muted-foreground ps-6">
+                      <p key={f.reviewId} className="ps-6 text-xs text-ink-2">
                         {review?.name}: {f.error}
                       </p>
                     );

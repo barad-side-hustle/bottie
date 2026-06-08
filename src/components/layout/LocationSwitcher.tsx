@@ -43,9 +43,9 @@ export function LocationSwitcher() {
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="cursor-pointer data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
+              className="cursor-pointer rounded-md border border-line-strong bg-surface-2 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <div className="flex aspect-square size-8 shrink-0 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground overflow-hidden">
+              <div className="flex aspect-square size-8 shrink-0 items-center justify-center rounded-md bg-sidebar-primary text-sidebar-primary-foreground overflow-hidden">
                 {currentLocation?.photoUrl ? (
                   <Image
                     src={currentLocation.photoUrl}
@@ -67,7 +67,7 @@ export function LocationSwitcher() {
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg border-border"
             align="start"
             side={isMobile ? "bottom" : dir === "rtl" ? "left" : "right"}
             sideOffset={4}
@@ -78,7 +78,7 @@ export function LocationSwitcher() {
                 onClick={() => handleSelectLocation(loc.locationId)}
                 className="gap-2 p-2"
               >
-                <div className="flex size-6 items-center justify-center rounded-sm border border-border/50 overflow-hidden">
+                <div className="flex size-6 items-center justify-center rounded-md border border-border overflow-hidden">
                   {loc.photoUrl ? (
                     <Image
                       src={loc.photoUrl}
@@ -96,7 +96,7 @@ export function LocationSwitcher() {
             ))}
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleAddLocation} className="gap-2 p-2">
-              <div className="flex size-6 items-center justify-center rounded-md border border-border/50 bg-background">
+              <div className="flex size-6 items-center justify-center rounded-md border border-border bg-surface-2">
                 <Plus className="size-4" />
               </div>
               <span>{t("navigation.sidebar.addLocation")}</span>

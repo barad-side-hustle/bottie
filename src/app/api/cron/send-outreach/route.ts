@@ -10,7 +10,7 @@ import { withTimeout } from "@/lib/cron/deadline";
 export const maxDuration = 300;
 
 function cleanBusinessName(name: string): string {
-  const cleaned = name.split(/\s*[|–—]\s*/)[0].trim();
+  const cleaned = name.split(/\s*[|--]\s*/)[0].trim();
   return cleaned || name;
 }
 

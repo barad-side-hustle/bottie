@@ -1,8 +1,7 @@
 "use client";
 
 import { Location } from "@/lib/types";
-import { DashboardCardField } from "@/components/ui/dashboard-card";
-import { Sparkles } from "lucide-react";
+import { Bot } from "lucide-react";
 import EditableSection from "@/components/dashboard/shared/EditableSection";
 import {
   AIResponseSettingsForm,
@@ -46,7 +45,7 @@ export default function AIResponseSettingsSection({ location, loading, onSave }:
     <EditableSection
       title={t("title")}
       description={t("description")}
-      icon={<Sparkles className="h-5 w-5" />}
+      icon={<Bot className="h-5 w-5" />}
       modalTitle={t("modalTitle")}
       modalDescription={t("modalDescription")}
       loading={loading}
@@ -58,31 +57,40 @@ export default function AIResponseSettingsSection({ location, loading, onSave }:
       saveLabel={tCommon("save")}
       savingLabel={tCommon("saving")}
       renderDisplay={() => (
-        <>
-          <DashboardCardField label={t("fields.toneOfVoice")}>
-            <p className="text-sm font-medium">{toneOptions[location.toneOfVoice] || location.toneOfVoice}</p>
-          </DashboardCardField>
+        <dl className="divide-y divide-hairline">
+          <div className="flex items-start justify-between gap-6 py-2.5 first:pt-0">
+            <dt className="text-xs font-semibold uppercase tracking-wide text-ink-2">{t("fields.toneOfVoice")}</dt>
+            <dd className="text-end text-sm font-medium text-foreground">
+              {toneOptions[location.toneOfVoice] || location.toneOfVoice}
+            </dd>
+          </div>
 
-          <DashboardCardField label={t("fields.languageMode")}>
-            <p className="text-sm font-medium">{languageOptions[location.languageMode] || location.languageMode}</p>
-          </DashboardCardField>
+          <div className="flex items-start justify-between gap-6 py-2.5">
+            <dt className="text-xs font-semibold uppercase tracking-wide text-ink-2">{t("fields.languageMode")}</dt>
+            <dd className="text-end text-sm font-medium text-foreground">
+              {languageOptions[location.languageMode] || location.languageMode}
+            </dd>
+          </div>
 
-          <DashboardCardField label={t("fields.emojis")}>
-            <p className="text-sm font-medium">
+          <div className="flex items-start justify-between gap-6 py-2.5">
+            <dt className="text-xs font-semibold uppercase tracking-wide text-ink-2">{t("fields.emojis")}</dt>
+            <dd className="text-end text-sm font-medium text-foreground">
               {location.allowedEmojis?.length ? location.allowedEmojis.join(" ") : t("noEmojis")}
-            </p>
-          </DashboardCardField>
+            </dd>
+          </div>
 
-          <DashboardCardField label={t("fields.maxSentences")}>
-            <p className="text-sm font-medium">
+          <div className="flex items-start justify-between gap-6 py-2.5">
+            <dt className="text-xs font-semibold uppercase tracking-wide text-ink-2">{t("fields.maxSentences")}</dt>
+            <dd className="text-end text-sm font-medium tabular-nums text-foreground">
               {location.maxSentences || 2} {t("sentencesUnit")}
-            </p>
-          </DashboardCardField>
+            </dd>
+          </div>
 
-          <DashboardCardField label={t("fields.signature")}>
-            <p className="text-sm font-medium">{location.signature || t("noSignature")}</p>
-          </DashboardCardField>
-        </>
+          <div className="flex items-start justify-between gap-6 py-2.5 last:pb-0">
+            <dt className="text-xs font-semibold uppercase tracking-wide text-ink-2">{t("fields.signature")}</dt>
+            <dd className="text-end text-sm font-medium text-foreground">{location.signature || t("noSignature")}</dd>
+          </div>
+        </dl>
       )}
       renderForm={({ data, isLoading, onChange }) => (
         <AIResponseSettingsForm values={data} onChange={onChange} disabled={isLoading} />

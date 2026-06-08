@@ -30,11 +30,9 @@ import {
 
 function SectionHeading({ icon, title }: { icon: ReactNode; title: string }) {
   return (
-    <div className="flex items-center gap-3">
-      <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary [&_svg]:size-5">
-        {icon}
-      </span>
-      <h3 className="text-lg font-semibold leading-none tracking-tight">{title}</h3>
+    <div className="flex items-center gap-2">
+      <span className="shrink-0 text-ink-3 [&_svg]:size-4">{icon}</span>
+      <h3 className="text-base font-medium leading-none tracking-tight">{title}</h3>
     </div>
   );
 }
@@ -170,25 +168,24 @@ export function MembersSection({
           <SectionHeading icon={<Users />} title={t("title")} />
           <DashboardCardDescription>{t("description")}</DashboardCardDescription>
         </DashboardCardHeader>
-        <DashboardCardContent className="space-y-2">
+        <DashboardCardContent className="-my-2 divide-y divide-hairline">
           {sortedMembers.map((member) => (
-            <div
-              key={member.id}
-              className="flex items-center justify-between gap-4 rounded-2xl border border-border/60 bg-card p-3"
-            >
+            <div key={member.id} className="flex items-center justify-between gap-4 py-3">
               <div className="flex min-w-0 items-center gap-3">
-                <Avatar className="h-9 w-9">
+                <Avatar className="h-9 w-9 rounded-md">
                   {member.user.image && <AvatarImage src={member.user.image} alt={member.user.name} />}
-                  <AvatarFallback className="text-xs">{getInitials(member.user.name)}</AvatarFallback>
+                  <AvatarFallback className="rounded-md bg-surface-2 text-xs text-ink-2">
+                    {getInitials(member.user.name)}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="min-w-0">
-                  <p className="truncate text-sm font-medium">{member.user.name}</p>
-                  <p className="truncate text-xs text-muted-foreground">{member.user.email}</p>
+                  <p className="truncate text-sm font-medium text-foreground">{member.user.name}</p>
+                  <p className="truncate text-xs text-ink-2">{member.user.email}</p>
                 </div>
               </div>
 
               <div className="flex shrink-0 items-center gap-2">
-                <Badge variant={member.role === "owner" ? "brand" : "secondary"} className="gap-1">
+                <Badge variant={member.role === "owner" ? "secondary" : "outline"} className="gap-1">
                   {member.role === "owner" ? <Crown className="h-3 w-3" /> : <Shield className="h-3 w-3" />}
                   {t(member.role)}
                 </Badge>
@@ -196,7 +193,7 @@ export function MembersSection({
                   <Button
                     variant="ghost"
                     size="icon-sm"
-                    className="text-destructive hover:text-destructive"
+                    className="text-ink-3 hover:text-destructive"
                     onClick={() => handleRemoveMember(member.userId)}
                     disabled={loadingActions[`remove-${member.userId}`]}
                   >
@@ -215,22 +212,22 @@ export function MembersSection({
             <SectionHeading icon={<ClipboardList />} title={t("pendingRequests")} />
             <DashboardCardDescription>{t("pendingRequestsDescription")}</DashboardCardDescription>
           </DashboardCardHeader>
-          <DashboardCardContent className="space-y-2">
+          <DashboardCardContent className="-my-2 divide-y divide-hairline border-t border-hairline">
             {requests.map((request) => (
-              <div key={request.id} className="flex items-center justify-between gap-4 rounded-2xl bg-secondary/40 p-3">
+              <div key={request.id} className="flex items-center justify-between gap-4 py-3">
                 <div className="flex min-w-0 items-center gap-3">
-                  <Avatar className="h-9 w-9">
+                  <Avatar className="h-9 w-9 rounded-md">
                     {request.requester.image && (
                       <AvatarImage src={request.requester.image} alt={request.requester.name} />
                     )}
-                    <AvatarFallback className="text-xs">{getInitials(request.requester.name)}</AvatarFallback>
+                    <AvatarFallback className="rounded-md bg-surface-2 text-xs text-ink-2">
+                      {getInitials(request.requester.name)}
+                    </AvatarFallback>
                   </Avatar>
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium">{request.requester.name}</p>
-                    <p className="truncate text-xs text-muted-foreground">{request.requester.email}</p>
-                    {request.message && (
-                      <p className="mt-1 text-xs italic text-muted-foreground">&quot;{request.message}&quot;</p>
-                    )}
+                    <p className="truncate text-sm font-medium text-foreground">{request.requester.name}</p>
+                    <p className="truncate text-xs text-ink-2">{request.requester.email}</p>
+                    {request.message && <p className="mt-1 text-xs italic text-ink-3">&quot;{request.message}&quot;</p>}
                   </div>
                 </div>
 
@@ -248,7 +245,7 @@ export function MembersSection({
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="gap-1 text-destructive hover:text-destructive"
+                    className="gap-1 text-ink-3 hover:text-destructive"
                     onClick={() => handleRejectRequest(request.id)}
                     disabled={loadingActions[`reject-${request.id}`]}
                   >
@@ -267,25 +264,20 @@ export function MembersSection({
           <DashboardCardHeader>
             <SectionHeading icon={<Mail />} title={t("pendingInvitations")} />
           </DashboardCardHeader>
-          <DashboardCardContent className="space-y-2">
+          <DashboardCardContent className="-my-2 divide-y divide-hairline border-t border-hairline">
             {invitations.map((invitation) => (
-              <div
-                key={invitation.id}
-                className="flex items-center justify-between gap-4 rounded-2xl bg-secondary/40 p-3"
-              >
+              <div key={invitation.id} className="flex items-center justify-between gap-4 py-3">
                 <div className="flex min-w-0 items-center gap-3">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-primary">
-                    <Mail className="h-4 w-4" />
-                  </div>
+                  <Mail className="h-4 w-4 shrink-0 text-ink-3" />
                   <div className="min-w-0">
-                    <p className="truncate text-sm font-medium">{invitation.email}</p>
-                    <p className="text-xs text-muted-foreground">{t("invitedAs", { role: t("admin") })}</p>
+                    <p className="truncate text-sm font-medium text-foreground">{invitation.email}</p>
+                    <p className="text-xs text-ink-2">{t("invitedAs", { role: t("admin") })}</p>
                   </div>
                 </div>
                 <Button
                   variant="ghost"
                   size="icon-sm"
-                  className="shrink-0 text-destructive hover:text-destructive"
+                  className="shrink-0 text-ink-3 hover:text-destructive"
                   onClick={() => handleCancelInvitation(invitation.id)}
                   disabled={loadingActions[`cancel-${invitation.id}`]}
                 >

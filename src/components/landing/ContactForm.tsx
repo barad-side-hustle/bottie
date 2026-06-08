@@ -52,12 +52,12 @@ export function ContactForm() {
 
   if (status === "success") {
     return (
-      <div className="flex flex-col items-center py-12 text-center">
-        <span className="mb-4 inline-flex size-14 items-center justify-center rounded-full bg-success/15 text-success">
-          <CheckCircle2 className="size-7" />
-        </span>
-        <h3 className="text-lg font-semibold text-foreground mb-2">{t("form.successTitle")}</h3>
-        <p className="text-muted-foreground">{t("form.successMessage")}</p>
+      <div className="flex flex-col items-start gap-3 py-8 text-start">
+        <CheckCircle2 className="size-6 text-positive" strokeWidth={1.75} aria-hidden="true" />
+        <div className="space-y-1.5">
+          <h3 className="text-xl font-semibold tracking-[-0.02em] text-ink">{t("form.successTitle")}</h3>
+          <p className="text-base leading-relaxed text-ink-2">{t("form.successMessage")}</p>
+        </div>
       </div>
     );
   }
@@ -65,7 +65,9 @@ export function ContactForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="space-y-2">
-        <Label htmlFor="subject">{t("form.subject")}</Label>
+        <Label htmlFor="subject" className="text-ink">
+          {t("form.subject")}
+        </Label>
         <Select value={subject} onValueChange={setSubject} required>
           <SelectTrigger id="subject">
             <SelectValue placeholder={t("form.subjectPlaceholder")} />
@@ -81,7 +83,9 @@ export function ContactForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="email">{t("form.email")}</Label>
+        <Label htmlFor="email" className="text-ink">
+          {t("form.email")}
+        </Label>
         <Input
           id="email"
           type="email"
@@ -93,7 +97,9 @@ export function ContactForm() {
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="message">{t("form.message")}</Label>
+        <Label htmlFor="message" className="text-ink">
+          {t("form.message")}
+        </Label>
         <Textarea
           id="message"
           value={message}
@@ -107,8 +113,11 @@ export function ContactForm() {
       </div>
 
       {status === "error" && (
-        <div className="flex items-center gap-2 rounded-xl border border-destructive/30 bg-destructive/10 px-3.5 py-2.5 text-sm text-destructive">
-          <AlertCircle className="size-4 shrink-0" />
+        <div
+          role="alert"
+          className="flex items-start gap-2 rounded-md border border-hairline bg-negative-tint px-3 py-2 text-sm text-destructive"
+        >
+          <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
           <span>{errorMessage}</span>
         </div>
       )}
@@ -118,7 +127,7 @@ export function ContactForm() {
           t("form.submitting")
         ) : (
           <>
-            <Send className="size-4 me-2" />
+            <Send className="size-4 me-2" aria-hidden="true" />
             {t("form.submit")}
           </>
         )}

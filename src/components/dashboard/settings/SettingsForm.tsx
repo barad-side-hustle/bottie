@@ -55,16 +55,16 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
       )}
       renderForm={({ data, isLoading, onChange }) => (
         <div className="space-y-4">
-          <div>
-            <h4 className="mb-1 text-sm font-semibold">{t("emailNotifications.title")}</h4>
-            <p className="text-xs text-muted-foreground">{t("emailNotifications.description")}</p>
+          <div className="space-y-1">
+            <h4 className="text-sm font-medium tracking-tight">{t("emailNotifications.title")}</h4>
+            <p className="text-xs text-ink-2">{t("emailNotifications.description")}</p>
           </div>
-          <div className="flex items-start justify-between gap-4 rounded-2xl border border-border/60 bg-card p-4">
+          <div className="flex items-start justify-between gap-4 rounded-lg border border-hairline p-4">
             <div className="flex-1 space-y-1">
               <Label htmlFor="emailOnNewReview" className="cursor-pointer text-sm font-medium">
                 {t("emailNotifications.label")}
               </Label>
-              <p className="text-xs text-muted-foreground">{t("emailNotifications.tooltip")}</p>
+              <p className="text-xs text-ink-2">{t("emailNotifications.tooltip")}</p>
             </div>
             <Switch
               id="emailOnNewReview"

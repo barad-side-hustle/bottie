@@ -39,22 +39,23 @@ export function QrContentControls({ settings, locationId, onChange }: QrContentC
   return (
     <div className="space-y-6">
       <div className="space-y-3">
-        <label className="text-xs font-medium text-muted-foreground">{t("linkType")}</label>
+        <label className="text-xs font-semibold uppercase tracking-[0.02em] text-ink-2">{t("linkType")}</label>
         <div className="grid grid-cols-3 gap-2">
           {LINK_TYPES.map(({ value, icon: Icon }) => (
             <button
               key={value}
               type="button"
               onClick={() => onChange({ linkType: value })}
+              aria-pressed={settings.linkType === value}
               className={cn(
-                "flex cursor-pointer flex-col items-center gap-1.5 rounded-lg border p-3 text-xs transition-all",
+                "flex cursor-pointer flex-col items-center gap-1.5 rounded-md border p-3 text-xs transition-colors duration-150 ease-[var(--ease-standard)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                 settings.linkType === value
-                  ? "border-primary bg-primary/5 ring-2 ring-primary"
-                  : "border-border/60 hover:border-border"
+                  ? "border-line-strong bg-surface-3 font-medium text-ink"
+                  : "border-hairline text-ink-2 hover:bg-surface-2"
               )}
             >
-              <Icon className="size-4" />
-              <span className="font-medium">{t(`linkTypes.${value}`)}</span>
+              <Icon className="size-4 text-ink-3" strokeWidth={1.5} />
+              <span>{t(`linkTypes.${value}`)}</span>
             </button>
           ))}
         </div>
@@ -64,26 +65,26 @@ export function QrContentControls({ settings, locationId, onChange }: QrContentC
             onChange={(e) => onChange({ customUrl: e.target.value })}
             placeholder="https://..."
             dir="ltr"
-            className="h-9 text-sm"
+            className="text-sm"
           />
         )}
       </div>
 
-      <div className="space-y-4">
-        <div className="space-y-1.5">
-          <label className="text-xs font-medium text-muted-foreground">{tFrame("text")}</label>
+      <div className="space-y-4 border-t border-hairline pt-6">
+        <div className="space-y-2">
+          <label className="text-xs font-medium text-ink-2">{tFrame("text")}</label>
           <Input
             value={settings.frameText}
             onChange={(e) => onChange({ frameText: e.target.value })}
             placeholder={tFrame("textPlaceholder")}
-            className="h-9 text-sm"
+            className="text-sm"
             maxLength={40}
           />
         </div>
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           <div className="flex items-center justify-between">
-            <label className="text-xs font-medium text-muted-foreground">{tFrame("fontSize")}</label>
-            <span className="text-xs text-muted-foreground">{settings.frameTextSize}px</span>
+            <label className="text-xs font-medium text-ink-2">{tFrame("fontSize")}</label>
+            <span className="text-xs tabular-nums text-ink-3">{settings.frameTextSize}px</span>
           </div>
           <Slider
             value={[settings.frameTextSize]}
@@ -93,19 +94,20 @@ export function QrContentControls({ settings, locationId, onChange }: QrContentC
             step={1}
           />
         </div>
-        <div className="space-y-1.5">
-          <label className="text-xs font-medium text-muted-foreground">{tFrame("font")}</label>
+        <div className="space-y-2">
+          <label className="text-xs font-medium text-ink-2">{tFrame("font")}</label>
           <div className="grid grid-cols-2 gap-2">
             {FRAME_FONTS.map((font) => (
               <button
                 key={font}
                 type="button"
                 onClick={() => onChange({ frameTextFont: font })}
+                aria-pressed={settings.frameTextFont === font}
                 className={cn(
-                  "cursor-pointer rounded-lg border px-3 py-2 text-sm transition-all",
+                  "cursor-pointer rounded-md border px-3 py-2 text-sm transition-colors duration-150 ease-[var(--ease-standard)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                   settings.frameTextFont === font
-                    ? "border-primary bg-primary/5 ring-2 ring-primary"
-                    : "border-border/60 hover:border-border"
+                    ? "border-line-strong bg-surface-3 text-ink"
+                    : "border-hairline text-ink-2 hover:bg-surface-2"
                 )}
                 style={{ fontFamily: font }}
               >
@@ -121,7 +123,9 @@ export function QrContentControls({ settings, locationId, onChange }: QrContentC
         />
       </div>
 
-      <QrLogoControls settings={settings} locationId={locationId} onChange={onChange} />
+      <div className="border-t border-hairline pt-6">
+        <QrLogoControls settings={settings} locationId={locationId} onChange={onChange} />
+      </div>
     </div>
   );
 }

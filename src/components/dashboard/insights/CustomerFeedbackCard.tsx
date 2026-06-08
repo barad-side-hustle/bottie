@@ -9,7 +9,8 @@ import {
   DashboardCardTitle,
 } from "@/components/ui/dashboard-card";
 import { Badge } from "@/components/ui/badge";
-import { TrendingUp, TrendingDown, ChevronDown, ChevronUp } from "lucide-react";
+import { ArrowUpRight, ArrowDownRight, ChevronDown, ChevronUp, ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 import type { CategoryCount, ClassificationCategory, TopicCount } from "@/lib/types/classification.types";
 
 interface CustomerFeedbackCardProps {
@@ -64,104 +65,57 @@ export function CustomerFeedbackCard({
       <DashboardCardContent className="pt-0">
         {sentimentTotal > 0 && (
           <div className="mb-6">
-            <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
-              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                {t("scoreboard.sentiment")}
-              </p>
-              <div className="flex items-center gap-4">
-                <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <span className="size-2 rounded-full bg-success" />
-                  {t("overview.positiveSentiment")} {positivePercent}%
-                </span>
-                <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <span className="size-2 rounded-full bg-muted-foreground/30" />
-                  {t("overview.neutralSentiment")} {neutralPercent}%
-                </span>
-                <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">
-                  <span className="size-2 rounded-full bg-destructive" />
-                  {t("overview.negativeSentiment")} {negativePercent}%
-                </span>
-              </div>
-            </div>
-            <div className="flex w-full h-3 rounded-full overflow-hidden gap-px">
-              {positivePercent > 0 && (
-                <div className="bg-success rounded-s-full transition-all" style={{ width: `${positivePercent}%` }} />
-              )}
-              {neutralPercent > 0 && (
-                <div className="bg-muted-foreground/25 transition-all" style={{ width: `${neutralPercent}%` }} />
-              )}
-              {negativePercent > 0 && (
-                <div
-                  className="bg-destructive rounded-e-full transition-all"
-                  style={{ width: `${negativePercent}%` }}
-                />
-              )}
-            </div>
+            <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-ink-3">{t("scoreboard.sentiment")}</p>
+            <SentimentBar
+              label={t("overview.positiveSentiment")}
+              percent={positivePercent}
+              barClassName="bg-positive"
+              labelClassName="text-success-foreground"
+            />
+            <SentimentBar
+              label={t("overview.neutralSentiment")}
+              percent={neutralPercent}
+              barClassName="bg-chart-neutral"
+              labelClassName="text-ink-2"
+            />
+            <SentimentBar
+              label={t("overview.negativeSentiment")}
+              percent={negativePercent}
+              barClassName="bg-negative"
+              labelClassName="text-destructive"
+            />
           </div>
         )}
 
         {hasCategories && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="rounded-2xl border border-border/60 p-4">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="flex size-7 items-center justify-center rounded-lg bg-success/15 text-success">
-                  <TrendingUp className="size-4" />
-                </span>
-                <h4 className="text-sm font-semibold text-success">{tCategories("topPositives")}</h4>
-              </div>
-              <div className="space-y-0.5">
-                {topPositives.map((cat) => (
-                  <button
-                    key={cat.category}
-                    onClick={() => onCategoryClick(cat.category, "positive")}
-                    className="w-full flex items-center gap-3 px-2.5 py-2 rounded-xl hover:bg-muted/40 transition-colors cursor-pointer text-start"
-                  >
-                    <span className="flex-1 text-sm font-medium truncate">{tCategories(cat.category)}</span>
-                    <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">
-                      {cat.count} ({cat.percentage}%)
-                    </span>
-                  </button>
-                ))}
-                {topPositives.length === 0 && <p className="text-sm text-muted-foreground py-2">{t("noCategories")}</p>}
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-border/60 p-4">
-              <div className="flex items-center gap-2 mb-3">
-                <span className="flex size-7 items-center justify-center rounded-lg bg-destructive/15 text-destructive">
-                  <TrendingDown className="size-4" />
-                </span>
-                <h4 className="text-sm font-semibold text-destructive">{tCategories("topNegatives")}</h4>
-              </div>
-              <div className="space-y-0.5">
-                {topNegatives.map((cat) => (
-                  <button
-                    key={cat.category}
-                    onClick={() => onCategoryClick(cat.category, "negative")}
-                    className="w-full flex items-center gap-3 px-2.5 py-2 rounded-xl hover:bg-muted/40 transition-colors cursor-pointer text-start"
-                  >
-                    <span className="flex-1 text-sm font-medium truncate">{tCategories(cat.category)}</span>
-                    <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-xs font-medium tabular-nums text-muted-foreground">
-                      {cat.count} ({cat.percentage}%)
-                    </span>
-                  </button>
-                ))}
-                {topNegatives.length === 0 && <p className="text-sm text-muted-foreground py-2">{t("noCategories")}</p>}
-              </div>
-            </div>
+          <div className="grid grid-cols-1 gap-x-10 gap-y-6 md:grid-cols-2">
+            <FeedbackList
+              heading={tCategories("topPositives")}
+              type="positive"
+              categories={topPositives}
+              emptyLabel={t("noCategories")}
+              renderCategory={(c) => tCategories(c)}
+              onCategoryClick={onCategoryClick}
+            />
+            <FeedbackList
+              heading={tCategories("topNegatives")}
+              type="negative"
+              categories={topNegatives}
+              emptyLabel={t("noCategories")}
+              renderCategory={(c) => tCategories(c)}
+              onCategoryClick={onCategoryClick}
+            />
           </div>
         )}
 
         {hasTopics && (
-          <div className={hasCategories || sentimentTotal > 0 ? "mt-6 pt-6 border-t border-border/60" : ""}>
-            <h4 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3">
-              {t("sections.topics")}
-            </h4>
+          <div className={hasCategories || sentimentTotal > 0 ? "mt-6 pt-6 border-t border-hairline" : ""}>
+            <h4 className="mb-3 text-xs font-semibold uppercase tracking-wide text-ink-3">{t("sections.topics")}</h4>
             <div className="flex flex-wrap gap-2">
               {visibleTopics.map((topic) => (
-                <Badge key={topic.topic} variant="secondary" className="text-sm font-normal px-3 py-1.5">
+                <Badge key={topic.topic} variant="secondary" className="px-2.5 py-1 text-sm font-normal">
                   {topic.topic}
-                  <span className="ms-1.5 text-muted-foreground">({topic.count})</span>
+                  <span className="ms-1.5 tabular-nums text-ink-3">{topic.count}</span>
                 </Badge>
               ))}
             </div>
@@ -169,7 +123,7 @@ export function CustomerFeedbackCard({
               <button
                 type="button"
                 onClick={() => setShowAllTopics(!showAllTopics)}
-                className="mt-3 inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium text-muted-foreground hover:bg-muted/40 hover:text-foreground transition-colors cursor-pointer"
+                className="mt-3 inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-ink-2 transition-colors hover:bg-surface-2 hover:text-ink"
               >
                 {showAllTopics ? (
                   <>
@@ -186,5 +140,76 @@ export function CustomerFeedbackCard({
         )}
       </DashboardCardContent>
     </DashboardCard>
+  );
+}
+
+function SentimentBar({
+  label,
+  percent,
+  barClassName,
+  labelClassName,
+}: {
+  label: string;
+  percent: number;
+  barClassName: string;
+  labelClassName: string;
+}) {
+  return (
+    <div className="flex items-center gap-3 py-1">
+      <span className={cn("w-16 shrink-0 text-xs font-medium", labelClassName)}>{label}</span>
+      <div className="h-2 flex-1 overflow-hidden rounded-full bg-surface-2">
+        <div className={cn("h-full rounded-full", barClassName)} style={{ width: `${percent}%` }} />
+      </div>
+      <span className="w-10 shrink-0 text-end text-sm font-medium tabular-nums text-ink">{percent}%</span>
+    </div>
+  );
+}
+
+function FeedbackList({
+  heading,
+  type,
+  categories,
+  emptyLabel,
+  renderCategory,
+  onCategoryClick,
+}: {
+  heading: string;
+  type: "positive" | "negative";
+  categories: CategoryCount[];
+  emptyLabel: string;
+  renderCategory: (category: ClassificationCategory) => string;
+  onCategoryClick: (category: ClassificationCategory, type: "positive" | "negative") => void;
+}) {
+  const Arrow = type === "positive" ? ArrowUpRight : ArrowDownRight;
+  const arrowClass = type === "positive" ? "text-success" : "text-destructive";
+
+  return (
+    <div>
+      <h4 className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-3">{heading}</h4>
+      {categories.length === 0 ? (
+        <p className="py-2 text-sm text-ink-3">{emptyLabel}</p>
+      ) : (
+        <ul className="-mx-2">
+          {categories.map((cat) => (
+            <li key={cat.category}>
+              <button
+                type="button"
+                onClick={() => onCategoryClick(cat.category, type)}
+                className="group/row flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-start transition-colors hover:bg-surface-2"
+              >
+                <Arrow className={cn("size-3.5 shrink-0", arrowClass)} aria-hidden />
+                <span className="flex-1 truncate text-sm font-medium text-ink">{renderCategory(cat.category)}</span>
+                <span className="shrink-0 text-sm tabular-nums text-ink-2">{cat.count}</span>
+                <span className="w-9 shrink-0 text-end text-xs tabular-nums text-ink-3">{cat.percentage}%</span>
+                <ChevronRight
+                  className="size-3.5 shrink-0 text-ink-3 opacity-0 transition-opacity group-hover/row:opacity-100 rtl:rotate-180"
+                  aria-hidden
+                />
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }

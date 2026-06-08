@@ -84,18 +84,15 @@ export function ConfirmationDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className={`flex items-center gap-2 ${variant === "destructive" ? "text-destructive" : ""}`}>
-            {icon || (variant === "destructive" && <AlertTriangle className="h-5 w-5" />)}
+          <DialogTitle className={cn("flex items-center gap-2", variant === "destructive" && "text-destructive")}>
+            {icon ||
+              (variant === "destructive" && (
+                <AlertTriangle className="size-5 shrink-0" strokeWidth={1.5} aria-hidden />
+              ))}
             {title}
           </DialogTitle>
           <DialogDescription asChild className={cn("space-y-2 text-start")}>
-            <div>
-              {typeof description === "string" ? (
-                <p className={variant === "destructive" ? "text-destructive" : ""}>{description}</p>
-              ) : (
-                description
-              )}
-            </div>
+            <div>{typeof description === "string" ? <p>{description}</p> : description}</div>
           </DialogDescription>
         </DialogHeader>
 
@@ -103,7 +100,7 @@ export function ConfirmationDialog({
           <div className="space-y-4 py-4">
             <div>
               {confirmationLabel && (
-                <Label htmlFor="confirm-input" className={cn("text-sm text-primary font-medium")}>
+                <Label htmlFor="confirm-input" className={cn("text-sm font-medium text-foreground")}>
                   {confirmationLabel}
                 </Label>
               )}
@@ -121,13 +118,13 @@ export function ConfirmationDialog({
 
             {inputValue && !isConfirmValid && textMismatchMessage && (
               <p className={cn("text-sm text-destructive text-start")}>
-                {textMismatchMessage} <span className="italic font-semibold">{confirmationText}</span>
+                {textMismatchMessage} <span className="font-medium">{confirmationText}</span>
               </p>
             )}
           </div>
         )}
 
-        <DialogFooter className="flex justify-between gap-2">
+        <DialogFooter className="gap-2">
           <Button variant="outline" onClick={handleCancel} disabled={showLoading}>
             {cancelText}
           </Button>

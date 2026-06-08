@@ -157,7 +157,7 @@ export function ReviewFiltersForm({ filters, onApply, onReset }: ReviewFiltersFo
         </div>
       </FilterSection>
 
-      <div className="flex justify-end pt-4 border-t border-border/40">
+      <div className="flex justify-end border-t border-hairline pt-4">
         <Button variant="ghost" size="sm" onClick={onReset} className="text-xs">
           {t("reset")}
         </Button>

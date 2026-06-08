@@ -18,8 +18,8 @@ const sizeMap = {
 export function Loading({ className, size = "md", fullScreen = false, text, description }: LoadingProps) {
   const spinner = (
     <div className="flex flex-col items-center gap-2">
-      <Loader2 className={cn("animate-spin text-primary", sizeMap[size], className)} />
-      {text && <p className="text-lg font-bold text-primary">{text}</p>}
+      <Loader2 className={cn("animate-spin text-ink-3", sizeMap[size], className)} />
+      {text && <p className="text-base font-medium text-foreground">{text}</p>}
       {description && <p className="text-sm text-muted-foreground">{description}</p>}
     </div>
   );

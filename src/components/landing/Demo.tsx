@@ -85,7 +85,7 @@ export function Demo() {
   const reviews = getReviews(reviewLanguage);
 
   return (
-    <SectionBlock tone="lime" id="demo">
+    <SectionBlock tone="plain" id="demo">
       <SectionHeading title={t("title")} subtitle={t("subtitle")} />
 
       <div className="mt-12 grid grid-cols-1 gap-6 lg:grid-cols-[320px_1fr] lg:gap-8">

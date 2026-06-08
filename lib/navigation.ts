@@ -6,6 +6,7 @@ import {
   Play,
   Star,
   BarChart3,
+  Settings,
   Settings2,
   QrCode,
   FileText,
@@ -37,7 +38,7 @@ export interface SidebarNavItem {
 export const sidebarLocationItems: SidebarNavItem[] = [
   {
     href: (ctx) => `/dashboard/locations/${ctx.locationId}/reviews`,
-    label: "navigation.sidebar.reviews",
+    label: "navigation.sidebar.inbox",
     icon: Star,
     scope: "location",
   },
@@ -70,6 +71,21 @@ export const sidebarLocationItems: SidebarNavItem[] = [
     label: "navigation.sidebar.locationSettings",
     icon: Settings2,
     scope: "location",
+  },
+];
+
+export const sidebarWorkspaceItems: SidebarNavItem[] = [
+  {
+    href: "/dashboard/home",
+    label: "navigation.sidebar.overview",
+    icon: Home,
+    scope: "global",
+  },
+  {
+    href: "/dashboard/settings",
+    label: "navigation.sidebar.settings",
+    icon: Settings,
+    scope: "global",
   },
 ];
 

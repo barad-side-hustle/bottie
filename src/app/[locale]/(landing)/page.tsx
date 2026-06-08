@@ -6,11 +6,13 @@ import { HowItWorks } from "@/components/landing/HowItWorks";
 import { PricingCards } from "@/components/landing/PricingCards";
 import { Testimonials } from "@/components/landing/Testimonials";
 import { Demo } from "@/components/landing/Demo";
+import { WhyBottie } from "@/components/landing/WhyBottie";
 import { FAQ } from "@/components/landing/FAQ";
 import { FinalCTA } from "@/components/landing/FinalCTA";
 import { StructuredData } from "@/components/seo/StructuredData";
 import {
   generateOrganizationSchema,
+  generateWebSiteSchema,
   generateSoftwareApplicationSchema,
   generateFAQPageSchema,
 } from "@/lib/seo/structured-data";
@@ -62,11 +64,12 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function Home({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
 
-  const schemas = [
+  const schemas = await Promise.all([
     generateOrganizationSchema(locale as Locale),
+    generateWebSiteSchema(locale as Locale),
     generateSoftwareApplicationSchema(locale as Locale),
-    await generateFAQPageSchema(locale as Locale),
-  ];
+    generateFAQPageSchema(locale as Locale),
+  ]);
 
   return (
     <>
@@ -76,6 +79,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         <Statistics />
         <HowItWorks />
         <Demo />
+        <WhyBottie />
         <PricingCards />
         <Testimonials />
         <FAQ />
