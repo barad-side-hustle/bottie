@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useImperativeHandle, forwardRef, type ReactNode } from "react";
+import { useRef, useImperativeHandle, useCallback, forwardRef, type ReactNode } from "react";
 import { StarRating } from "@/components/ui/StarRating";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -93,12 +93,12 @@ export const ReviewDetailPanel = forwardRef<ReviewDetailPanelHandle, ReviewDetai
 
   const workspace = useReplyWorkspace({ review, locationId, onUpdate });
 
-  const handlePublish = async () => {
+  const handlePublish = useCallback(async () => {
     try {
       await workspace.publish();
       onPublished?.(review.id);
     } catch {}
-  };
+  }, [workspace, onPublished, review.id]);
 
   useImperativeHandle(
     ref,
@@ -108,7 +108,7 @@ export const ReviewDetailPanel = forwardRef<ReviewDetailPanelHandle, ReviewDetai
         if (isReviewPublishable(review) && !workspace.isBusy) void handlePublish();
       },
     }),
-    [review, workspace.isBusy]
+    [review, workspace.isBusy, handlePublish]
   );
 
   const classification = review.classifications;
