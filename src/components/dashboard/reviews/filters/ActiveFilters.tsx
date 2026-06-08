@@ -44,18 +44,18 @@ export function ActiveFilters({ filters, onRemove, onClearAll, hideReplyStatus =
     <div className="flex flex-wrap items-center gap-2">
       {showReplyStatus &&
         filters.replyStatus?.map((status) => (
-        <Badge key={status} variant="outline" className="gap-1 bg-surface-2 ps-2.5 pe-1 py-1 text-ink">
-          {t(`status.${status}`)}
-          <button
-            type="button"
-            className={removeButtonClass}
-            onClick={() => onRemove("replyStatus", status)}
-            aria-label={t("removeFilter")}
-          >
-            <X className="h-3 w-3" aria-hidden="true" />
-          </button>
-        </Badge>
-      ))}
+          <Badge key={status} variant="outline" className="gap-1 bg-surface-2 ps-2.5 pe-1 py-1 text-ink">
+            {t(`status.${status}`)}
+            <button
+              type="button"
+              className={removeButtonClass}
+              onClick={() => onRemove("replyStatus", status)}
+              aria-label={t("removeFilter")}
+            >
+              <X className="h-3 w-3" aria-hidden="true" />
+            </button>
+          </Badge>
+        ))}
 
       {filters.rating?.map((rating) => (
         <Badge key={rating} variant="outline" className="gap-1 bg-surface-2 ps-2.5 pe-1 py-1 text-ink">

@@ -12,8 +12,16 @@ import { ActiveFilters } from "@/components/dashboard/reviews/filters/ActiveFilt
 
 export function ReviewsListHeader() {
   const tInbox = useTranslations("dashboard.reviews.inbox");
-  const { filters, activeCount, isOpen, setIsOpen, handleFilterChange, handleReset, handleSearchChange, handleRemoveFilter } =
-    useReviewFilters();
+  const {
+    filters,
+    activeCount,
+    isOpen,
+    setIsOpen,
+    handleFilterChange,
+    handleReset,
+    handleSearchChange,
+    handleRemoveFilter,
+  } = useReviewFilters();
 
   const committed = filters.search ?? "";
   const [searchValue, setSearchValue] = useState(committed);
@@ -79,7 +87,10 @@ export function ReviewsListHeader() {
       </div>
 
       <div className="relative">
-        <Search className="pointer-events-none absolute inset-y-0 start-3 my-auto size-4 text-ink-3" aria-hidden="true" />
+        <Search
+          className="pointer-events-none absolute inset-y-0 start-3 my-auto size-4 text-ink-3"
+          aria-hidden="true"
+        />
         <Input
           type="search"
           value={searchValue}

@@ -35,9 +35,7 @@ export function useReviewFilters() {
   }
 
   const activeCount =
-    (filters.rating?.length ?? 0) +
-    (filters.sentiment?.length ?? 0) +
-    (filters.dateFrom || filters.dateTo ? 1 : 0);
+    (filters.rating?.length ?? 0) + (filters.sentiment?.length ?? 0) + (filters.dateFrom || filters.dateTo ? 1 : 0);
 
   const handleFilterChange = (newFilters: ReviewFilters) => {
     storeSetFilters(locationId, newFilters);

@@ -278,7 +278,6 @@ export function ReviewsInbox({ reviews: initialReviews, locationId, userId }: Re
     <div className={cn(selectedPublishable.length > 0 && "pb-20")}>
       <div className="overflow-hidden rounded-lg border border-hairline bg-card lg:h-[calc(100vh-12rem)] lg:min-h-[600px]">
         <div className="grid h-full grid-cols-1 lg:grid-cols-[minmax(320px,2fr)_minmax(0,3fr)]">
-
           <div className="flex min-h-0 flex-col lg:border-e lg:border-hairline">
             <ReviewsListHeader />
             <div ref={listRef} className="min-h-0 flex-1 overflow-y-auto">

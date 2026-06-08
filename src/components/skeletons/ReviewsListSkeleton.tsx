@@ -11,7 +11,6 @@ export function ReviewsListSkeleton() {
 
       <div className="mt-6 overflow-hidden rounded-lg border border-hairline bg-card lg:h-[calc(100vh-12rem)] lg:min-h-[600px]">
         <div className="grid h-full grid-cols-1 lg:grid-cols-[minmax(320px,2fr)_minmax(0,3fr)]">
-
           <div className="flex min-h-0 flex-col lg:border-e lg:border-hairline">
             <div className="flex flex-col gap-3 border-b border-hairline p-3">
               <div className="flex items-center gap-2">
