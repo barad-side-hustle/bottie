@@ -1,5 +1,4 @@
 const BRAND_TEAL = "#1f7b83";
-/** Brand accent (teal). Exported as BRAND_BLUE for legacy import compatibility. */
 export const BRAND_BLUE = BRAND_TEAL;
 const BRAND_NAME = "Bottie";
 
