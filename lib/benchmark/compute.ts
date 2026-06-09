@@ -22,18 +22,8 @@ function round1(value: number | null): number | null {
   return value === null ? null : Math.round(value * 10) / 10;
 }
 
-// 95% confidence z-score, used for the Wilson lower-bound ranking.
 const WILSON_Z = 1.96;
 
-/**
- * Confidence-weighted score for ranking businesses by rating *and* review volume.
- *
- * Maps the 1–5 star average to a 0–1 proportion and takes the Wilson score
- * lower bound: many reviews tighten the interval (score ≈ the rating), while
- * few reviews widen it (score is pulled well below the rating). This is why a
- * 5.0 with 4 reviews ranks below a 4.9 with thousands. Unrated / zero-review
- * businesses rank last.
- */
 export function wilsonScore(rating: number | null, reviewCount: number | null): number {
   if (rating === null) return -Infinity;
   const n = reviewCount ?? 0;
@@ -46,11 +36,6 @@ export function wilsonScore(rating: number | null, reviewCount: number | null): 
   return (center - margin) / (1 + z2 / n);
 }
 
-/**
- * Rank businesses best-first by their confidence-weighted score, with stable
- * tiebreakers (more reviews, then higher rating). Generic so the same ordering
- * is reused by the benchmark stats and the leaderboard UI.
- */
 export function rankBusinesses<T extends { rating: number | null; reviewCount: number | null }>(items: T[]): T[] {
   return [...items]
     .map((item) => ({ item, score: wilsonScore(item.rating, item.reviewCount) }))
@@ -82,7 +67,6 @@ export function computeBenchmarkStats(own: OwnPlaceForRank, competitors: Competi
   const avgReviewCount = average(reviewCounts);
   const medianReviewCount = median(reviewCounts);
 
-  // Rank by confidence-weighted score so review volume counts, not just the raw star average.
   const ranked = rankBusinesses([
     { rating: own.rating, reviewCount: own.userRatingCount, isOwn: true },
     ...filtered.map((c) => ({ rating: c.rating, reviewCount: c.userRatingCount, isOwn: false })),

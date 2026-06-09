@@ -50,11 +50,9 @@ function buildLeaderboard(data: CompetitorBenchmarkResult): LeaderboardRow[] {
       isOwn: false,
     })),
   ];
-  // Same confidence-weighted ordering as the rank in computeBenchmarkStats.
   return rankBusinesses(rows);
 }
 
-/** Google's documented "link to a place" URL — works for any place_id. */
 function mapsUrlFor(placeId: string | null): string | null {
   return placeId ? `https://www.google.com/maps/place/?q=place_id:${placeId}` : null;
 }

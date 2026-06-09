@@ -111,7 +111,7 @@ describe("computeBenchmarkStats", () => {
       competitor({ placeId: "big", rating: 4.9, userRatingCount: 2000 }),
     ]);
     expect(stats.totalRanked).toBe(2);
-    expect(stats.ownRank).toBe(2); // 5.0/4 reviews is less credible than 4.9/2000
+    expect(stats.ownRank).toBe(2);
   });
 
   it("excludes permanently-closed competitors from stats even if passed in", () => {
