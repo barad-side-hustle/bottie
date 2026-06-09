@@ -30,6 +30,7 @@ export interface CompetitorBenchmarkResult {
   status: CompetitorSnapshotStatus;
   fetchedAt: string;
   own: {
+    placeId: string | null;
     displayName: string;
     rating: number | null;
     reviewCount: number | null;
@@ -58,6 +59,7 @@ function toResult(displayName: string, snapshot: LocationCompetitorSnapshot): Co
     status: snapshot.status,
     fetchedAt: snapshot.fetchedAt.toISOString(),
     own: {
+      placeId: snapshot.placeId,
       displayName,
       rating: snapshot.ownRating,
       reviewCount: snapshot.ownReviewCount,

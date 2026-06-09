@@ -2,11 +2,12 @@
 
 import { useState, useTransition } from "react";
 import { useTranslations, useFormatter, useNow } from "next-intl";
-import { RefreshCw, Star, TrendingUp, TrendingDown, Users, Building2 } from "lucide-react";
+import { RefreshCw, Star, TrendingUp, TrendingDown, Users, Building2, ExternalLink } from "lucide-react";
 import {
   DashboardCard,
   DashboardCardHeader,
   DashboardCardTitle,
+  DashboardCardDescription,
   DashboardCardContent,
 } from "@/components/ui/dashboard-card";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -22,6 +23,7 @@ interface Props {
 
 interface LeaderboardRow {
   key: string;
+  placeId: string | null;
   name: string;
   rating: number | null;
   reviews: number | null;
@@ -30,9 +32,17 @@ interface LeaderboardRow {
 
 function buildLeaderboard(data: CompetitorBenchmarkResult): LeaderboardRow[] {
   const rows: LeaderboardRow[] = [
-    { key: "__own__", name: data.own.displayName, rating: data.own.rating, reviews: data.own.reviewCount, isOwn: true },
+    {
+      key: "__own__",
+      placeId: data.own.placeId,
+      name: data.own.displayName,
+      rating: data.own.rating,
+      reviews: data.own.reviewCount,
+      isOwn: true,
+    },
     ...data.competitors.map((c, i) => ({
       key: c.placeId || `c-${i}`,
+      placeId: c.placeId || null,
       name: c.displayName,
       rating: c.rating,
       reviews: c.userRatingCount,
@@ -40,6 +50,11 @@ function buildLeaderboard(data: CompetitorBenchmarkResult): LeaderboardRow[] {
     })),
   ];
   return rows.sort((a, b) => (b.rating ?? -1) - (a.rating ?? -1) || (b.reviews ?? 0) - (a.reviews ?? 0));
+}
+
+/** Google's documented "link to a place" URL — works for any place_id. */
+function mapsUrlFor(placeId: string | null): string | null {
+  return placeId ? `https://www.google.com/maps/place/?q=place_id:${placeId}` : null;
 }
 
 export function CompetitorsView({ result, locationId }: Props) {
@@ -153,34 +168,52 @@ export function CompetitorsView({ result, locationId }: Props) {
       <DashboardCard>
         <DashboardCardHeader>
           <DashboardCardTitle>{t("leaderboard.title")}</DashboardCardTitle>
+          <DashboardCardDescription>
+            {t("leaderboard.description", { radius: data.radiusMeters / 1000 })}
+          </DashboardCardDescription>
         </DashboardCardHeader>
         <DashboardCardContent>
           <ul className="-mx-2 divide-y divide-hairline">
-            {leaderboard.map((row, index) => (
-              <li
-                key={row.key}
-                className={cn("flex items-center gap-3 rounded-md px-2 py-3", row.isOwn && "bg-surface-2")}
-              >
-                <span className="w-6 shrink-0 text-sm font-medium tabular-nums text-ink-3">{index + 1}</span>
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
-                    <p className="truncate text-sm font-medium text-foreground">{row.name}</p>
-                    {row.isOwn && (
-                      <Badge variant="success" className="shrink-0">
-                        {t("leaderboard.you")}
-                      </Badge>
-                    )}
+            {leaderboard.map((row, index) => {
+              const mapsUrl = mapsUrlFor(row.placeId);
+              return (
+                <li
+                  key={row.key}
+                  className={cn("flex items-center gap-3 rounded-md px-2 py-3", row.isOwn && "bg-surface-2")}
+                >
+                  <span className="w-6 shrink-0 text-sm font-medium tabular-nums text-ink-3">{index + 1}</span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      {mapsUrl ? (
+                        <a
+                          href={mapsUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex min-w-0 items-center gap-1 text-sm font-medium text-foreground transition-colors hover:text-primary"
+                        >
+                          <span className="truncate">{row.name}</span>
+                          <ExternalLink className="size-3 shrink-0 text-ink-3" aria-hidden />
+                        </a>
+                      ) : (
+                        <p className="truncate text-sm font-medium text-foreground">{row.name}</p>
+                      )}
+                      {row.isOwn && (
+                        <Badge variant="success" className="shrink-0">
+                          {t("leaderboard.you")}
+                        </Badge>
+                      )}
+                    </div>
+                    <p className="text-xs text-ink-2">
+                      {row.reviews != null ? t("leaderboard.reviews", { count: format.number(row.reviews) }) : "—"}
+                    </p>
                   </div>
-                  <p className="text-xs text-ink-2">
-                    {row.reviews != null ? t("leaderboard.reviews", { count: format.number(row.reviews) }) : "—"}
-                  </p>
-                </div>
-                <span className="flex shrink-0 items-center gap-1 text-sm font-medium tabular-nums text-foreground">
-                  <Star className="size-3.5 fill-amber-400 text-amber-400" aria-hidden />
-                  {formatRating(row.rating)}
-                </span>
-              </li>
-            ))}
+                  <span className="flex shrink-0 items-center gap-1 text-sm font-medium tabular-nums text-foreground">
+                    <Star className="size-3.5 fill-amber-400 text-amber-400" aria-hidden />
+                    {formatRating(row.rating)}
+                  </span>
+                </li>
+              );
+            })}
           </ul>
         </DashboardCardContent>
       </DashboardCard>

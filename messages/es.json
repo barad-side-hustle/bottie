@@ -892,6 +892,7 @@
       },
       "leaderboard": {
         "title": "Clasificacion local",
+        "description": "Negocios cercanos de tu categoria en un radio de {radius} km, ordenados por calificacion de Google. Selecciona un nombre para abrirlo en Google Maps.",
         "you": "Tu",
         "reviews": "{count} resenas"
       },
