@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useTranslations, useFormatter } from "next-intl";
+import { useTranslations, useFormatter, useNow } from "next-intl";
 import { RefreshCw, Star, TrendingUp, TrendingDown, Users, Building2 } from "lucide-react";
 import {
   DashboardCard,
@@ -45,6 +45,7 @@ function buildLeaderboard(data: CompetitorBenchmarkResult): LeaderboardRow[] {
 export function CompetitorsView({ result, locationId }: Props) {
   const t = useTranslations("dashboard.competitors");
   const format = useFormatter();
+  const now = useNow();
   const [data, setData] = useState(result);
   const [pending, startTransition] = useTransition();
 
@@ -188,7 +189,7 @@ export function CompetitorsView({ result, locationId }: Props) {
         <p className="text-xs text-ink-3">{t("note")}</p>
         <div className="flex items-center gap-3">
           <span className="text-xs text-ink-3">
-            {t("updatedAt", { time: format.relativeTime(new Date(data.fetchedAt)) })}
+            {t("updatedAt", { time: format.relativeTime(new Date(data.fetchedAt), now) })}
           </span>
           <Button variant="outline" size="sm" onClick={refresh} disabled={pending}>
             <RefreshCw className={cn("size-3.5", pending && "animate-spin")} aria-hidden />
