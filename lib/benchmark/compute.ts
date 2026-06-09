@@ -22,6 +22,47 @@ function round1(value: number | null): number | null {
   return value === null ? null : Math.round(value * 10) / 10;
 }
 
+// 95% confidence z-score, used for the Wilson lower-bound ranking.
+const WILSON_Z = 1.96;
+
+/**
+ * Confidence-weighted score for ranking businesses by rating *and* review volume.
+ *
+ * Maps the 1–5 star average to a 0–1 proportion and takes the Wilson score
+ * lower bound: many reviews tighten the interval (score ≈ the rating), while
+ * few reviews widen it (score is pulled well below the rating). This is why a
+ * 5.0 with 4 reviews ranks below a 4.9 with thousands. Unrated / zero-review
+ * businesses rank last.
+ */
+export function wilsonScore(rating: number | null, reviewCount: number | null): number {
+  if (rating === null) return -Infinity;
+  const n = reviewCount ?? 0;
+  if (n <= 0) return -Infinity;
+
+  const p = Math.min(Math.max((rating - 1) / 4, 0), 1);
+  const z2 = WILSON_Z * WILSON_Z;
+  const center = p + z2 / (2 * n);
+  const margin = WILSON_Z * Math.sqrt((p * (1 - p) + z2 / (4 * n)) / n);
+  return (center - margin) / (1 + z2 / n);
+}
+
+/**
+ * Rank businesses best-first by their confidence-weighted score, with stable
+ * tiebreakers (more reviews, then higher rating). Generic so the same ordering
+ * is reused by the benchmark stats and the leaderboard UI.
+ */
+export function rankBusinesses<T extends { rating: number | null; reviewCount: number | null }>(items: T[]): T[] {
+  return [...items]
+    .map((item) => ({ item, score: wilsonScore(item.rating, item.reviewCount) }))
+    .sort(
+      (a, b) =>
+        b.score - a.score ||
+        (b.item.reviewCount ?? 0) - (a.item.reviewCount ?? 0) ||
+        (b.item.rating ?? -1) - (a.item.rating ?? -1)
+    )
+    .map((x) => x.item);
+}
+
 export function filterCompetitors(competitors: CompetitorEntry[], ownPlaceId?: string): CompetitorEntry[] {
   return competitors.filter(
     (c) => c.placeId !== ownPlaceId && c.businessStatus !== "CLOSED_PERMANENTLY" && typeof c.rating === "number"
@@ -41,14 +82,11 @@ export function computeBenchmarkStats(own: OwnPlaceForRank, competitors: Competi
   const avgReviewCount = average(reviewCounts);
   const medianReviewCount = median(reviewCounts);
 
-  const ranked = [
-    { rating: own.rating ?? -1, reviewCount: own.userRatingCount ?? 0, isOwn: true },
-    ...filtered.map((c) => ({
-      rating: c.rating as number,
-      reviewCount: c.userRatingCount ?? 0,
-      isOwn: false,
-    })),
-  ].sort((a, b) => b.rating - a.rating || b.reviewCount - a.reviewCount);
+  // Rank by confidence-weighted score so review volume counts, not just the raw star average.
+  const ranked = rankBusinesses([
+    { rating: own.rating, reviewCount: own.userRatingCount, isOwn: true },
+    ...filtered.map((c) => ({ rating: c.rating, reviewCount: c.userRatingCount, isOwn: false })),
+  ]);
 
   const totalRanked = ranked.length;
   const ownIndex = ranked.findIndex((r) => r.isOwn);

@@ -892,7 +892,7 @@
       },
       "leaderboard": {
         "title": "Local leaderboard",
-        "description": "Nearby businesses in your category within {radius} km, ranked by Google rating. Select a name to open it in Google Maps.",
+        "description": "Nearby businesses in your category within {radius} km, ranked by rating weighted by review volume (more reviews carry more weight). Select a name to open it in Google Maps.",
         "you": "You",
         "reviews": "{count} reviews"
       },

@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { computeBenchmarkStats, filterCompetitors } from "./compute";
+import { computeBenchmarkStats, filterCompetitors, rankBusinesses, wilsonScore } from "./compute";
 import type { CompetitorEntry } from "@/lib/db/schema";
 
 function competitor(overrides: Partial<CompetitorEntry>): CompetitorEntry {
@@ -24,6 +24,25 @@ describe("filterCompetitors", () => {
     ];
     const result = filterCompetitors(competitors, "self");
     expect(result.map((c) => c.placeId)).toEqual(["keep"]);
+  });
+});
+
+describe("rankBusinesses / wilsonScore", () => {
+  it("ranks a high-volume 4.9 above a low-volume 5.0", () => {
+    const ranked = rankBusinesses([
+      { id: "tiny", rating: 5.0, reviewCount: 4 },
+      { id: "big", rating: 4.9, reviewCount: 2000 },
+    ]);
+    expect(ranked.map((r) => r.id)).toEqual(["big", "tiny"]);
+  });
+
+  it("scores more reviews at the same rating higher", () => {
+    expect(wilsonScore(4.5, 1000)).toBeGreaterThan(wilsonScore(4.5, 10));
+  });
+
+  it("sends unrated or zero-review businesses to the bottom", () => {
+    expect(wilsonScore(null, 100)).toBe(-Infinity);
+    expect(wilsonScore(4.8, 0)).toBe(-Infinity);
   });
 });
 
@@ -85,6 +104,14 @@ describe("computeBenchmarkStats", () => {
     expect(stats.ownRank).toBe(3);
     expect(stats.totalRanked).toBe(3);
     expect(stats.reviewCountGap).toBe(-60);
+  });
+
+  it("weights review volume so own 5.0 with few reviews ranks below a 4.9 with many", () => {
+    const stats = computeBenchmarkStats({ placeId: "self", rating: 5.0, userRatingCount: 4 }, [
+      competitor({ placeId: "big", rating: 4.9, userRatingCount: 2000 }),
+    ]);
+    expect(stats.totalRanked).toBe(2);
+    expect(stats.ownRank).toBe(2); // 5.0/4 reviews is less credible than 4.9/2000
   });
 
   it("excludes permanently-closed competitors from stats even if passed in", () => {

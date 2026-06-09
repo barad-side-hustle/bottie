@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { getCompetitorBenchmark, type CompetitorBenchmarkResult } from "@/lib/actions/competitors.actions";
+import { rankBusinesses } from "@/lib/benchmark/compute";
 
 interface Props {
   result: CompetitorBenchmarkResult | null;
@@ -26,7 +27,7 @@ interface LeaderboardRow {
   placeId: string | null;
   name: string;
   rating: number | null;
-  reviews: number | null;
+  reviewCount: number | null;
   isOwn: boolean;
 }
 
@@ -37,7 +38,7 @@ function buildLeaderboard(data: CompetitorBenchmarkResult): LeaderboardRow[] {
       placeId: data.own.placeId,
       name: data.own.displayName,
       rating: data.own.rating,
-      reviews: data.own.reviewCount,
+      reviewCount: data.own.reviewCount,
       isOwn: true,
     },
     ...data.competitors.map((c, i) => ({
@@ -45,11 +46,12 @@ function buildLeaderboard(data: CompetitorBenchmarkResult): LeaderboardRow[] {
       placeId: c.placeId || null,
       name: c.displayName,
       rating: c.rating,
-      reviews: c.userRatingCount,
+      reviewCount: c.userRatingCount,
       isOwn: false,
     })),
   ];
-  return rows.sort((a, b) => (b.rating ?? -1) - (a.rating ?? -1) || (b.reviews ?? 0) - (a.reviews ?? 0));
+  // Same confidence-weighted ordering as the rank in computeBenchmarkStats.
+  return rankBusinesses(rows);
 }
 
 /** Google's documented "link to a place" URL — works for any place_id. */
@@ -204,7 +206,9 @@ export function CompetitorsView({ result, locationId }: Props) {
                       )}
                     </div>
                     <p className="text-xs text-ink-2">
-                      {row.reviews != null ? t("leaderboard.reviews", { count: format.number(row.reviews) }) : "—"}
+                      {row.reviewCount != null
+                        ? t("leaderboard.reviews", { count: format.number(row.reviewCount) })
+                        : "—"}
                     </p>
                   </div>
                   <span className="flex shrink-0 items-center gap-1 text-sm font-medium tabular-nums text-foreground">
