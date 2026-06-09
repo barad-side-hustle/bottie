@@ -11,13 +11,14 @@ import { buildLocationBreadcrumbs, type BreadcrumbItem } from "@/lib/utils/bread
 const SECTION_TO_KEY: Record<string, BreadcrumbSection> = {
   reviews: "reviews",
   insights: "insights",
+  competitors: "competitors",
   posts: "posts",
   "profile-health": "profileHealth",
   "get-reviews": "getReviews",
   settings: "settings",
 };
 
-type BreadcrumbSection = "reviews" | "insights" | "settings" | "getReviews" | "profileHealth" | "posts";
+type BreadcrumbSection = "reviews" | "insights" | "settings" | "getReviews" | "profileHealth" | "posts" | "competitors";
 
 export function DashboardBreadcrumbs() {
   const { isRTL } = useDirection();

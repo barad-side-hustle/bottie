@@ -43,6 +43,7 @@
       "reviews": "Reviews",
       "inbox": "Inbox",
       "insights": "Insights",
+      "competitors": "Competitors",
       "locationSettings": "Location Settings",
       "overview": "Overview",
       "settings": "Settings",
@@ -59,6 +60,7 @@
     "overview": "Overview",
     "reviews": "Reviews",
     "insights": "Insights",
+    "competitors": "Competitors",
     "settings": "Settings",
     "profileHealth": "Profile Health",
     "getReviews": "Get Reviews",
@@ -866,6 +868,49 @@
           "title": "Average Rating",
           "description": "Your average star rating is one of the most important factors customers consider. A rating of 4.0 or higher builds trust and attracts more customers.",
           "action": "Focus on delivering great customer experiences. Encourage satisfied customers to leave reviews to improve your average rating."
+        }
+      }
+    },
+    "competitors": {
+      "title": "Competitors",
+      "description": "See how your rating and review count compare to nearby businesses in your category.",
+      "note": "Comparison is limited to public star rating and review volume — Google doesn't expose competitors' sentiment or response rate.",
+      "locked": {
+        "title": "Compare yourself to the competition",
+        "description": "Competitor benchmarking is a Pro feature. Upgrade this location to see how your rating and review count stack up against nearby businesses in your category."
+      },
+      "stats": {
+        "yourRating": "Your rating",
+        "yourReviews": "Your reviews",
+        "localRank": "Local rank",
+        "avgRating": "Avg competitor rating",
+        "avgValue": "{value} avg",
+        "medianValue": "{value} median",
+        "ofTotal": "of {total}",
+        "competitorCount": "{count, plural, =1 {# competitor} other {# competitors}}",
+        "percentile": "Your rating is ahead of {percentile}% of nearby competitors."
+      },
+      "leaderboard": {
+        "title": "Local leaderboard",
+        "description": "Nearby businesses in your category within {radius} km, ranked by rating weighted by review volume (more reviews carry more weight). Select a name to open it in Google Maps.",
+        "you": "You",
+        "reviews": "{count} reviews"
+      },
+      "updatedAt": "Updated {time}",
+      "refresh": "Refresh",
+      "tryAgain": "Try again",
+      "empty": {
+        "noCompetitors": {
+          "title": "No nearby competitors found",
+          "description": "We couldn't find other businesses in your category nearby. We'll keep checking as more places appear on Google."
+        },
+        "resolutionFailed": {
+          "title": "Couldn't locate this business",
+          "description": "We couldn't match this location on Google Maps. Benchmarking needs a business with a physical storefront and a category."
+        },
+        "apiError": {
+          "title": "Couldn't load competitors",
+          "description": "Something went wrong fetching competitor data. Please try again in a moment."
         }
       }
     },

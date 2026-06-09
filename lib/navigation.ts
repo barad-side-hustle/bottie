@@ -11,6 +11,7 @@ import {
   QrCode,
   FileText,
   HeartPulse,
+  Trophy,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
@@ -46,6 +47,12 @@ export const sidebarLocationItems: SidebarNavItem[] = [
     href: (ctx) => `/dashboard/locations/${ctx.locationId}/insights`,
     label: "navigation.sidebar.insights",
     icon: BarChart3,
+    scope: "location",
+  },
+  {
+    href: (ctx) => `/dashboard/locations/${ctx.locationId}/competitors`,
+    label: "navigation.sidebar.competitors",
+    icon: Trophy,
     scope: "location",
   },
   {

@@ -6,7 +6,7 @@ export interface BreadcrumbItem {
 export function buildLocationBreadcrumbs(params: {
   locationName: string;
   locationId: string;
-  currentSection: "reviews" | "insights" | "settings" | "getReviews" | "profileHealth" | "posts";
+  currentSection: "reviews" | "insights" | "settings" | "getReviews" | "profileHealth" | "posts" | "competitors";
   t: (key: string) => string;
   reviewerName?: string;
 }): BreadcrumbItem[] {

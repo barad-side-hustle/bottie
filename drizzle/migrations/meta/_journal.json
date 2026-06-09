@@ -43,6 +43,13 @@
       "when": 1776439754029,
       "tag": "0005_fresh_violations",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1780995285544,
+      "tag": "0006_jazzy_madame_hydra",
+      "breakpoints": true
     }
   ]
 }

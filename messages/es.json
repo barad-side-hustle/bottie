@@ -43,6 +43,7 @@
       "reviews": "Resenas",
       "inbox": "Bandeja de entrada",
       "insights": "Insights",
+      "competitors": "Competencia",
       "locationSettings": "Configuracion de ubicacion",
       "overview": "Resumen",
       "settings": "Configuracion",
@@ -59,6 +60,7 @@
     "overview": "Resumen",
     "reviews": "Resenas",
     "insights": "Insights",
+    "competitors": "Competencia",
     "settings": "Configuracion",
     "profileHealth": "Salud del perfil",
     "getReviews": "Obtener resenas",
@@ -866,6 +868,49 @@
           "title": "Calificacion promedio",
           "description": "Tu calificacion promedio por estrellas es uno de los factores mas importantes que consideran los clientes. Una calificacion de 4.0 o superior genera confianza y atrae mas clientes.",
           "action": "Enfocate en brindar excelentes experiencias al cliente. Anima a los clientes satisfechos a dejar resenas para mejorar tu calificacion promedio."
+        }
+      }
+    },
+    "competitors": {
+      "title": "Competencia",
+      "description": "Ve como se comparan tu calificacion y cantidad de resenas con negocios cercanos de tu categoria.",
+      "note": "La comparacion se limita a la calificacion publica por estrellas y al volumen de resenas: Google no expone el sentimiento ni la tasa de respuesta de los competidores.",
+      "locked": {
+        "title": "Compara con la competencia",
+        "description": "La comparacion con la competencia es una funcion Pro. Mejora esta ubicacion para ver como se comparan tu calificacion y cantidad de resenas con negocios cercanos de tu categoria."
+      },
+      "stats": {
+        "yourRating": "Tu calificacion",
+        "yourReviews": "Tus resenas",
+        "localRank": "Posicion local",
+        "avgRating": "Calif. promedio de competidores",
+        "avgValue": "{value} promedio",
+        "medianValue": "{value} mediana",
+        "ofTotal": "de {total}",
+        "competitorCount": "{count, plural, one {# competidor} other {# competidores}}",
+        "percentile": "Tu calificacion supera al {percentile}% de los competidores cercanos."
+      },
+      "leaderboard": {
+        "title": "Clasificacion local",
+        "description": "Negocios cercanos de tu categoria en un radio de {radius} km, ordenados por calificacion ponderada por el numero de resenas (mas resenas pesan mas). Selecciona un nombre para abrirlo en Google Maps.",
+        "you": "Tu",
+        "reviews": "{count} resenas"
+      },
+      "updatedAt": "Actualizado {time}",
+      "refresh": "Actualizar",
+      "tryAgain": "Reintentar",
+      "empty": {
+        "noCompetitors": {
+          "title": "No se encontraron competidores cercanos",
+          "description": "No pudimos encontrar otros negocios de tu categoria cerca. Seguiremos revisando a medida que aparezcan mas lugares en Google."
+        },
+        "resolutionFailed": {
+          "title": "No pudimos ubicar este negocio",
+          "description": "No pudimos encontrar esta ubicacion en Google Maps. La comparacion requiere un negocio con local fisico y categoria."
+        },
+        "apiError": {
+          "title": "No pudimos cargar los competidores",
+          "description": "Algo salio mal al obtener los datos de la competencia. Intentalo de nuevo en un momento."
         }
       }
     },
