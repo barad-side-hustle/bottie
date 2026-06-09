@@ -12,6 +12,7 @@ export * from "./location-members.schema";
 export * from "./location-access-requests.schema";
 export * from "./location-invitations.schema";
 export * from "./location-metrics.schema";
+export * from "./location-competitor-snapshots.schema";
 export * from "./location-posts.schema";
 export * from "./leads.schema";
 export * from "./zoe-leads.schema";
