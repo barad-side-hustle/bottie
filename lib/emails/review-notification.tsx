@@ -93,7 +93,13 @@ export default function ReviewNotificationEmail({
             {aiReply ? (
               <Section className="mb-6">
                 <div className="bg-card border border-solid border-border rounded-xl p-5">
-                  <table role="presentation" cellPadding="0" cellSpacing="0" width="100%" style={{ marginBottom: "12px" }}>
+                  <table
+                    role="presentation"
+                    cellPadding="0"
+                    cellSpacing="0"
+                    width="100%"
+                    style={{ marginBottom: "12px" }}
+                  >
                     <tbody>
                       <tr>
                         <td style={{ verticalAlign: "middle" }}>

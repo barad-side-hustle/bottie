@@ -1,16 +1,5 @@
-import {
-  Body,
-  Container,
-  Head,
-  Heading,
-  Html,
-  Preview,
-  Section,
-  Text,
-  Tailwind,
-  Hr,
-} from "@react-email/components";
-import { EmailFont, emailTailwindConfig } from "./theme";
+import { Body, Container, Head, Heading, Html, Preview, Section, Text, Tailwind, Hr } from "@react-email/components";
+import { EmailFont, EmailLogo, emailTailwindConfig } from "./theme";
 
 interface ContactFormEmailProps {
   senderEmail: string;
@@ -30,7 +19,11 @@ export default function ContactFormEmail({ senderEmail, subject, message }: Cont
         <Preview>{previewText}</Preview>
         <Body className="bg-background my-auto mx-auto font-sans px-2 text-foreground">
           <Container className="border border-solid border-border rounded-xl shadow-sm my-[40px] mx-auto p-[32px] max-w-[600px] bg-card">
-            <Section className="mt-2 mb-8 text-center">
+            <Section className="mt-2 mb-6">
+              <EmailLogo />
+            </Section>
+
+            <Section className="mb-8 text-center">
               <Heading className="text-foreground text-2xl font-bold p-0 m-0 leading-tight">
                 New Contact Form Submission
               </Heading>

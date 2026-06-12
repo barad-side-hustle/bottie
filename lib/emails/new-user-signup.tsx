@@ -11,7 +11,7 @@ import {
   Hr,
   Button,
 } from "@react-email/components";
-import { EmailFont, emailTailwindConfig } from "./theme";
+import { EmailFont, EmailLogo, emailTailwindConfig } from "./theme";
 
 interface NewUserSignupEmailProps {
   userName: string;
@@ -44,7 +44,11 @@ export default function NewUserSignupEmail({
         <Preview>{previewText}</Preview>
         <Body className="bg-background my-auto mx-auto font-sans px-2 text-foreground">
           <Container className="border border-solid border-border rounded-xl shadow-sm my-[40px] mx-auto p-[32px] max-w-[600px] bg-card">
-            <Section className="mt-2 mb-8 text-center">
+            <Section className="mt-2 mb-6">
+              <EmailLogo />
+            </Section>
+
+            <Section className="mb-8 text-center">
               <Heading className="text-foreground text-2xl font-bold p-0 m-0 leading-tight">New User Signup</Heading>
               <Text className="text-muted text-sm m-0 mt-2">A new user has joined the platform</Text>
             </Section>
