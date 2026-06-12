@@ -24,18 +24,6 @@
       "schedule": "0 6 * * *"
     },
     {
-      "path": "/api/cron/find-leads",
-      "schedule": "0 7 * * *"
-    },
-    {
-      "path": "/api/cron/scrape-emails",
-      "schedule": "*/5 * * * *"
-    },
-    {
-      "path": "/api/cron/send-outreach",
-      "schedule": "*/5 * * * *"
-    },
-    {
       "path": "/api/cron/daily-stats",
       "schedule": "30 18 * * *"
     },

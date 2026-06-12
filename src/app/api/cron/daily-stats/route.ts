@@ -6,7 +6,7 @@ import { db } from "@/lib/db/client";
 import { user, googleAccounts, reviews } from "@/lib/db/schema";
 import { sendEmail } from "@/lib/utils/email-service";
 import DailyStatsEmail from "@/lib/emails/daily-stats";
-import { LeadsRepository, ZoeLeadsRepository } from "@/lib/db/repositories";
+import { ZoeLeadsRepository } from "@/lib/db/repositories";
 
 export const maxDuration = 300;
 
@@ -26,18 +26,12 @@ export async function GET(req: NextRequest) {
 
   try {
     const since = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    const leadsRepo = new LeadsRepository();
     const zoeLeadsRepo = new ZoeLeadsRepository();
 
     const [
       newUsers,
       newGoogleAccounts,
       reviewCountResult,
-      sentByCountry,
-      pendingByCountry,
-      leadsFound,
-      emailsScraped,
-      leadsSkipped,
       zoeSentByCountry,
       zoePendingByCountry,
       zoeLeadsFound,
@@ -53,11 +47,6 @@ export async function GET(req: NextRequest) {
         .select({ count: sql<number>`count(*)::int` })
         .from(reviews)
         .where(gte(reviews.receivedAt, since)),
-      leadsRepo.countSentByCountry(since),
-      leadsRepo.countPendingByCountry(),
-      leadsRepo.countFoundSince(since),
-      leadsRepo.countEmailsScrapedSince(since),
-      leadsRepo.countSkippedSince(since),
       zoeLeadsRepo.countSentByCountry(since),
       zoeLeadsRepo.countPendingByCountry(),
       zoeLeadsRepo.countFoundSince(since),
@@ -66,32 +55,22 @@ export async function GET(req: NextRequest) {
     ]);
 
     const reviewCount = reviewCountResult[0]?.count ?? 0;
-    const totalSent = sentByCountry.reduce((sum, s) => sum + s.count, 0);
     const zoeTotalSent = zoeSentByCountry.reduce((sum, s) => sum + s.count, 0);
-
-    const combinedSentByCountry = [
-      ...sentByCountry.map((s) => ({ ...s, country: `Bottie ${s.country}` })),
-      ...zoeSentByCountry.map((s) => ({ ...s, country: `Zoe ${s.country}` })),
-    ];
-    const combinedPendingByCountry = [
-      ...pendingByCountry.map((s) => ({ ...s, country: `Bottie ${s.country}` })),
-      ...zoePendingByCountry.map((s) => ({ ...s, country: `Zoe ${s.country}` })),
-    ];
 
     const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL || "alon@bottie.ai";
 
     await sendEmail(
       adminEmail,
-      `Daily Stats: ${newUsers.length} users, ${reviewCount} reviews, ${totalSent}+${zoeTotalSent} outreach`,
+      `Daily Stats: ${newUsers.length} users, ${reviewCount} reviews, ${zoeTotalSent} outreach`,
       DailyStatsEmail({
         newUsers,
         newGoogleAccounts,
         reviewCount,
-        outreachStats: { sentByCountry: combinedSentByCountry, pendingByCountry: combinedPendingByCountry },
+        outreachStats: { sentByCountry: zoeSentByCountry, pendingByCountry: zoePendingByCountry },
         leadPipelineStats: {
-          found: leadsFound + zoeLeadsFound,
-          emailsScraped: emailsScraped + zoeEmailsScraped,
-          skipped: leadsSkipped + zoeLeadsSkipped,
+          found: zoeLeadsFound,
+          emailsScraped: zoeEmailsScraped,
+          skipped: zoeLeadsSkipped,
         },
       })
     );
@@ -100,7 +79,6 @@ export async function GET(req: NextRequest) {
       newUsers: newUsers.length,
       newGoogleAccounts: newGoogleAccounts.length,
       reviewCount,
-      outreachSent: totalSent,
       zoeOutreachSent: zoeTotalSent,
     });
 
@@ -109,7 +87,6 @@ export async function GET(req: NextRequest) {
       newUsers: newUsers.length,
       newGoogleAccounts: newGoogleAccounts.length,
       reviewCount,
-      outreachSent: totalSent,
       zoeOutreachSent: zoeTotalSent,
     });
   } catch (error) {

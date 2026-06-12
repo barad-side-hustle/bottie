@@ -8,10 +8,10 @@ import {
   Section,
   Text,
   Tailwind,
-  Font,
   Hr,
   Button,
 } from "@react-email/components";
+import { EmailFont, EmailLogo, emailTailwindConfig } from "./theme";
 
 interface UserWelcomeEmailProps {
   userName: string;
@@ -23,57 +23,23 @@ export default function UserWelcomeEmail({ userName }: UserWelcomeEmailProps) {
 
   return (
     <Html>
-      <Tailwind
-        config={{
-          theme: {
-            extend: {
-              colors: {
-                background: "#0f172a",
-                foreground: "#e0e7ff",
-                primary: "#3a93e6",
-                card: "#1e1b4b",
-                border: "#2e1065",
-                muted: "#cbd5e1",
-                highlight: "#eab308",
-              },
-              fontFamily: {
-                sans: ["Tomorrow", "sans-serif"],
-              },
-            },
-          },
-        }}
-      >
+      <Tailwind config={emailTailwindConfig}>
         <Head>
-          <Font
-            fontFamily="Tomorrow"
-            fallbackFontFamily="sans-serif"
-            webFont={{
-              url: "https://bottie.ai/fonts/tomorrow-400.woff2",
-              format: "woff2",
-            }}
-            fontWeight={400}
-            fontStyle="normal"
-          />
-          <Font
-            fontFamily="Tomorrow"
-            fallbackFontFamily="sans-serif"
-            webFont={{
-              url: "https://bottie.ai/fonts/tomorrow-400.woff2",
-              format: "woff2",
-            }}
-            fontWeight={600}
-            fontStyle="normal"
-          />
+          <EmailFont />
         </Head>
         <Preview>{previewText}</Preview>
         <Body className="bg-background my-auto mx-auto font-sans px-2 text-foreground">
-          <Container className="border border-solid border-border rounded-lg my-[40px] mx-auto p-[20px] max-w-[600px] bg-card">
-            <Section className="mt-4 mb-6 text-center">
+          <Container className="border border-solid border-border rounded-xl shadow-sm my-[40px] mx-auto p-[32px] max-w-[600px] bg-card">
+            <Section className="mt-2 mb-6">
+              <EmailLogo />
+            </Section>
+
+            <Section className="mb-6 text-center">
               <Text className="text-primary text-xs font-bold uppercase tracking-wider mb-2">Welcome</Text>
               <Heading className="text-foreground text-2xl font-bold p-0 m-0">Welcome to Bottie.ai</Heading>
             </Section>
 
-            <Hr className="border-border opacity-50 mx-0 w-full" />
+            <Hr className="border-border mx-0 w-full" />
 
             <Section className="my-6">
               <Text className="text-foreground text-base font-bold m-0 mb-4">Hi {userName},</Text>
@@ -83,7 +49,7 @@ export default function UserWelcomeEmail({ userName }: UserWelcomeEmailProps) {
                 reach out.
               </Text>
 
-              <Text className="text-primary text-sm leading-relaxed m-0 mb-6 font-bold">
+              <Text className="text-foreground text-sm leading-relaxed m-0 mb-6 font-bold">
                 As one of our first users, your experience means the world to us.
               </Text>
 
@@ -92,25 +58,21 @@ export default function UserWelcomeEmail({ userName }: UserWelcomeEmailProps) {
                 so you can start saving time on your Google Reviews immediately.
               </Text>
 
-              <div className="bg-[#1e1b4b] border-2 border-dashed border-[#eab308] rounded-xl p-6 py-8 text-center mb-8 relative overflow-hidden">
-                <div className="absolute top-0 right-0 bg-[#eab308] text-black text-[10px] font-bold px-2 py-1 uppercase tracking-wider">
-                  Exclusive Gift
-                </div>
-                <Heading as="h3" className="text-[#eab308] text-xl font-bold m-0 mb-2 uppercase tracking-wide">
-                  Golden Ticket
+              <div className="bg-surface border border-solid border-border rounded-xl p-6 py-8 text-center mb-8">
+                <Text className="text-warning text-xs font-bold uppercase tracking-wider m-0 mb-2">Welcome gift</Text>
+                <Heading as="h3" className="text-foreground text-xl font-bold m-0 mb-2">
+                  3 months on us
                 </Heading>
                 <Text className="text-muted text-sm m-0 mb-6 max-w-[400px] mx-auto">
                   To thank you for being a pioneer user, here is 3 months of full access on us.
                 </Text>
 
-                <div className="bg-white rounded-md px-6 py-4 inline-block shadow-2xl mx-auto border-4 border-[#eab308]/20">
-                  <Text className="text-xs text-gray-500 uppercase font-bold m-0 mb-1 tracking-widest">
-                    Coupon Code
-                  </Text>
-                  <Text className="text-3xl text-black font-mono font-bold m-0 tracking-[0.2em]">{`FREE3M`}</Text>
+                <div className="bg-card rounded-md px-6 py-4 inline-block mx-auto border border-solid border-primary">
+                  <Text className="text-xs text-subtle uppercase font-bold m-0 mb-1 tracking-widest">Coupon Code</Text>
+                  <Text className="text-3xl text-primary font-mono font-bold m-0 tracking-[0.2em]">{`FREE3M`}</Text>
                 </div>
 
-                <Text className="text-[#eab308] text-xs font-bold m-0 mt-6 uppercase tracking-wider opacity-80">
+                <Text className="text-subtle text-xs font-bold m-0 mt-6 uppercase tracking-wider">
                   Valid for 3 months • Full Access
                 </Text>
               </div>
@@ -118,19 +80,17 @@ export default function UserWelcomeEmail({ userName }: UserWelcomeEmailProps) {
               <Section className="mb-8">
                 <Text className="text-center text-foreground font-bold text-lg mb-6">What you can do right now:</Text>
 
-                <div className="bg-background border border-solid border-border rounded-xl p-6 mb-4 flex">
-                  <div className="w-full sm:w-auto">
-                    <Heading as="h3" className="text-primary font-bold m-0 mb-2 text-base">
-                      1. Automated Replies
-                    </Heading>
-                    <Text className="text-muted text-sm leading-relaxed m-0">
-                      Connect your Google Business Profile and let Bottie.ai generate professional responses to every
-                      review automatically.
-                    </Text>
-                  </div>
+                <div className="bg-surface border border-solid border-border rounded-xl p-6 mb-4">
+                  <Heading as="h3" className="text-primary font-bold m-0 mb-2 text-base">
+                    1. Automated Replies
+                  </Heading>
+                  <Text className="text-muted text-sm leading-relaxed m-0">
+                    Connect your Google Business Profile and let Bottie.ai generate professional responses to every
+                    review automatically.
+                  </Text>
                 </div>
 
-                <div className="bg-background border border-solid border-border rounded-xl p-6 mb-6">
+                <div className="bg-surface border border-solid border-border rounded-xl p-6 mb-6">
                   <Heading as="h3" className="text-primary font-bold m-0 mb-2 text-base">
                     2. Actionable Insights
                   </Heading>
@@ -141,7 +101,7 @@ export default function UserWelcomeEmail({ userName }: UserWelcomeEmailProps) {
                 </div>
               </Section>
 
-              <div className="bg-primary/10 border border-primary/20 rounded-xl p-6 text-center">
+              <div className="bg-accent-tint border border-solid border-primary rounded-xl p-6 text-center">
                 <Heading as="h3" className="text-foreground font-bold m-0 mb-2 text-lg">
                   Let&apos;s have a quick chat?
                 </Heading>
@@ -151,7 +111,7 @@ export default function UserWelcomeEmail({ userName }: UserWelcomeEmailProps) {
                 </Text>
                 <Button
                   href="mailto:alon@bottie.ai"
-                  className="bg-primary text-white rounded-md px-6 py-3 text-sm font-bold no-underline shadow-lg hover:bg-blue-600 transition-colors"
+                  className="bg-primary text-white rounded-md px-6 py-3 text-sm font-bold no-underline"
                 >
                   Reply to Alon
                 </Button>
@@ -165,14 +125,14 @@ export default function UserWelcomeEmail({ userName }: UserWelcomeEmailProps) {
 
               <div className="mt-2">
                 <Text className="text-foreground text-sm font-bold m-0">Alon</Text>
-                <Text className="text-muted text-xs m-0">Founder, Bottie.ai</Text>
+                <Text className="text-subtle text-xs m-0">Founder, Bottie.ai</Text>
               </div>
             </Section>
 
-            <Hr className="border-border opacity-50 mx-0 w-full mt-6" />
+            <Hr className="border-border mx-0 w-full mt-6" />
 
             <Section className="mt-6">
-              <Text className="text-muted text-xs text-center">
+              <Text className="text-subtle text-xs text-center">
                 You&apos;re receiving this email because you signed up for Bottie.ai
               </Text>
             </Section>
