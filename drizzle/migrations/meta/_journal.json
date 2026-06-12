@@ -50,6 +50,13 @@
       "when": 1780995285544,
       "tag": "0006_jazzy_madame_hydra",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1781221366917,
+      "tag": "0007_cute_thena",
+      "breakpoints": true
     }
   ]
 }

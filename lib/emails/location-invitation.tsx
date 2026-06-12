@@ -10,8 +10,8 @@ import {
   Section,
   Text,
   Tailwind,
-  Font,
 } from "@react-email/components";
+import { EmailFont, EmailLogo, emailTailwindConfig } from "./theme";
 
 interface LocationInvitationEmailProps {
   inviterName: string;
@@ -28,39 +28,19 @@ export default function LocationInvitationEmail({
 
   return (
     <Html>
-      <Tailwind
-        config={{
-          theme: {
-            extend: {
-              colors: {
-                background: "#0f172a",
-                foreground: "#e0e7ff",
-                primary: "#3a93e6",
-                card: "#1e1b4b",
-                border: "#2e1065",
-                muted: "#cbd5e1",
-              },
-            },
-          },
-        }}
-      >
+      <Tailwind config={emailTailwindConfig}>
         <Head>
           <meta name="referrer" content="no-referrer" />
-          <Font
-            fontFamily="Tomorrow"
-            fallbackFontFamily="sans-serif"
-            webFont={{
-              url: "https://bottie.ai/fonts/tomorrow-400.woff2",
-              format: "woff2",
-            }}
-            fontWeight={400}
-            fontStyle="normal"
-          />
+          <EmailFont />
         </Head>
         <Preview>{previewText}</Preview>
-        <Body className="bg-background font-sans">
+        <Body className="bg-background font-sans text-foreground">
           <Container className="mx-auto max-w-lg px-4 py-8">
-            <Section className="rounded-lg border border-border bg-card p-8">
+            <Section className="rounded-xl border border-solid border-border bg-card p-8 shadow-sm">
+              <div className="mb-6">
+                <EmailLogo align="left" />
+              </div>
+              <Text className="text-primary text-xs font-bold uppercase tracking-wider m-0 mb-2">Team Invitation</Text>
               <Heading className="mb-4 text-2xl font-bold text-foreground">
                 You&apos;re invited to manage {locationName}
               </Heading>
@@ -75,7 +55,7 @@ export default function LocationInvitationEmail({
                 Accept Invitation
               </Button>
               <Hr className="my-6 border-border" />
-              <Text className="text-xs text-muted">
+              <Text className="text-xs text-subtle">
                 This invitation expires in 7 days. If you didn&apos;t expect this email, you can safely ignore it.
               </Text>
             </Section>

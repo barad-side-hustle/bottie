@@ -10,8 +10,8 @@ import {
   Section,
   Text,
   Tailwind,
-  Font,
 } from "@react-email/components";
+import { EmailFont, EmailLogo, emailTailwindConfig } from "./theme";
 
 interface AccessRequestNotificationEmailProps {
   requesterName: string;
@@ -32,38 +32,18 @@ export default function AccessRequestNotificationEmail({
 
   return (
     <Html>
-      <Tailwind
-        config={{
-          theme: {
-            extend: {
-              colors: {
-                background: "#0f172a",
-                foreground: "#e0e7ff",
-                primary: "#3a93e6",
-                card: "#1e1b4b",
-                border: "#2e1065",
-                muted: "#cbd5e1",
-              },
-            },
-          },
-        }}
-      >
+      <Tailwind config={emailTailwindConfig}>
         <Head>
-          <Font
-            fontFamily="Tomorrow"
-            fallbackFontFamily="sans-serif"
-            webFont={{
-              url: "https://bottie.ai/fonts/tomorrow-400.woff2",
-              format: "woff2",
-            }}
-            fontWeight={400}
-            fontStyle="normal"
-          />
+          <EmailFont />
         </Head>
         <Preview>{previewText}</Preview>
-        <Body className="bg-background font-sans">
+        <Body className="bg-background font-sans text-foreground">
           <Container className="mx-auto max-w-lg px-4 py-8">
-            <Section className="rounded-lg border border-border bg-card p-8">
+            <Section className="rounded-xl border border-solid border-border bg-card p-8 shadow-sm">
+              <div className="mb-6">
+                <EmailLogo align="left" />
+              </div>
+              <Text className="text-primary text-xs font-bold uppercase tracking-wider m-0 mb-2">Access Request</Text>
               <Heading className="mb-4 text-2xl font-bold text-foreground">
                 New Access Request for {locationName}
               </Heading>
@@ -72,8 +52,8 @@ export default function AccessRequestNotificationEmail({
                 <strong>{locationName}</strong>.
               </Text>
               {message && (
-                <Section className="my-4 rounded-md border border-border bg-background/50 p-4">
-                  <Text className="text-sm text-foreground italic">&quot;{message}&quot;</Text>
+                <Section className="my-4 rounded-md border border-solid border-border bg-surface p-4">
+                  <Text className="text-sm text-foreground italic m-0">&quot;{message}&quot;</Text>
                 </Section>
               )}
               <Text className="mb-6 text-sm text-muted">
@@ -83,7 +63,7 @@ export default function AccessRequestNotificationEmail({
                 Review Request
               </Button>
               <Hr className="my-6 border-border" />
-              <Text className="text-xs text-muted">This is an automated notification from Bottie.</Text>
+              <Text className="text-xs text-subtle">This is an automated notification from Bottie.</Text>
             </Section>
           </Container>
         </Body>

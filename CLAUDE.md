@@ -43,8 +43,7 @@ nvm use 22.13.0
 - **`location_invitations`**: Invitation tokens for team members
 - **`location_metrics`**: Daily Google Business Profile performance data per location
 - **`location_posts`**: Google Business Profile posts (standard, event, offer)
-- **`leads`**: Scraped business leads with email, country, and outreach status
-- **`zoe_leads`**: Zoe Dotan pipeline leads with email, country, and outreach status (separate from Bottie leads)
+- **`zoe_leads`**: Zoe Dotan outreach pipeline leads with email, country, and outreach status
 
 ### Key Relationships
 
@@ -117,10 +116,7 @@ src/
 │       ├── user/settings/           # User settings
 │       ├── cron/weekly-summaries/   # Scheduled weekly emails
 │       ├── cron/fetch-metrics/      # GBP performance metrics sync
-│       ├── cron/find-leads/         # Lead discovery via Google Places
-│       ├── cron/send-outreach/      # Outreach emails to leads (per-country)
 │       ├── cron/daily-stats/        # Daily stats summary email
-│       ├── cron/scrape-emails/      # Scrape emails for leads with websites
 │       ├── cron/zoe-find-leads/     # Zoe pipeline: lead discovery via Google Places
 │       ├── cron/zoe-scrape-emails/  # Zoe pipeline: scrape emails for leads
 │       └── cron/zoe-send-outreach/  # Zoe pipeline: outreach emails to leads
