@@ -7,6 +7,7 @@ const contactFormSchema = z.object({
   email: z.string().email(),
   subject: z.enum(["general", "support", "bug", "feature", "business"]),
   message: z.string().min(10).max(2000),
+  honeypot: z.string().optional(),
 });
 
 type ContactFormInput = z.infer<typeof contactFormSchema>;
@@ -25,7 +26,11 @@ export async function submitContactForm(input: ContactFormInput): Promise<Contac
     };
   }
 
-  const { email, subject, message } = validation.data;
+  const { email, subject, message, honeypot } = validation.data;
+
+  if (honeypot && honeypot.trim().length > 0) {
+    return { success: true };
+  }
 
   const result = await sendContactFormEmail({ email, subject, message });
 
