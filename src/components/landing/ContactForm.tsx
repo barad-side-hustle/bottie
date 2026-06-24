@@ -17,6 +17,7 @@ export function ContactForm() {
   const [email, setEmail] = useState("");
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
+  const [honeypot, setHoneypot] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [status, setStatus] = useState<"idle" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
@@ -31,6 +32,7 @@ export function ContactForm() {
         email,
         subject: subject as (typeof SUBJECT_OPTIONS)[number],
         message,
+        honeypot,
       });
 
       if (result.success) {
@@ -64,6 +66,19 @@ export function ContactForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden" tabIndex={-1}>
+        <label htmlFor="company-website">Company website</label>
+        <input
+          id="company-website"
+          name="company-website"
+          type="text"
+          value={honeypot}
+          onChange={(e) => setHoneypot(e.target.value)}
+          tabIndex={-1}
+          autoComplete="off"
+        />
+      </div>
+
       <div className="space-y-2">
         <Label htmlFor="subject" className="text-ink">
           {t("form.subject")}
