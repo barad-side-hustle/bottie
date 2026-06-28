@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { OnboardingFormPanel } from "@/components/onboarding/OnboardingFormPanel";
-import { authClient } from "@/lib/auth-client";
+import { createLocationCheckout } from "@/lib/actions/checkout.actions";
 import { PRICE_PER_LOCATION } from "@/lib/subscriptions/plans";
 import { Crown, Check } from "lucide-react";
 
@@ -23,10 +23,8 @@ export function SubscribeStep({ locationId, locationName, onSkip, onBack, progre
   const handleSubscribe = async () => {
     try {
       setLoading(true);
-      await authClient.checkout({
-        slug: "location-plan",
-        metadata: { locationId },
-      });
+      const url = await createLocationCheckout(locationId);
+      window.location.href = url;
     } catch (error) {
       console.error("Error creating checkout session:", error);
       setLoading(false);

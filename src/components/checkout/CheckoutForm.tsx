@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { Loading } from "@/components/ui/loading";
 import { useTranslations } from "next-intl";
 import { useAuth } from "@/contexts/AuthContext";
-import { authClient } from "@/lib/auth-client";
+import { createLocationCheckout } from "@/lib/actions/checkout.actions";
 import { useRouter } from "@/i18n/routing";
 import { useSearchParams } from "next/navigation";
 import { CheckoutPageLayout } from "@/components/checkout/CheckoutPageLayout";
@@ -23,11 +23,13 @@ export function CheckoutForm() {
     hasStartedProcessing.current = true;
 
     async function startCheckout() {
+      if (!locationId) {
+        router.push("/");
+        return;
+      }
       try {
-        await authClient.checkout({
-          slug: "location-plan",
-          ...(locationId ? { metadata: { locationId } } : {}),
-        });
+        const url = await createLocationCheckout(locationId);
+        window.location.href = url;
       } catch (error) {
         console.error("Error creating checkout session:", error);
         router.push("/");
