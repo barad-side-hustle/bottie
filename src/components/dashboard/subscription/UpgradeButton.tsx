@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useTranslations } from "next-intl";
-import { authClient } from "@/lib/auth-client";
+import { createLocationCheckout } from "@/lib/actions/checkout.actions";
 
 interface UpgradeButtonProps {
   locationId: string;
@@ -17,13 +17,10 @@ export function UpgradeButton({ locationId, size = "lg" }: UpgradeButtonProps) {
   const handleUpgrade = async () => {
     setLoading(true);
     try {
-      await authClient.checkout({
-        slug: "location-plan",
-        metadata: { locationId },
-      });
+      const url = await createLocationCheckout(locationId);
+      window.location.href = url;
     } catch (error) {
       console.error("Error initiating checkout:", error);
-    } finally {
       setLoading(false);
     }
   };
