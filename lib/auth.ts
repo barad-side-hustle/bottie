@@ -98,11 +98,10 @@ export const auth = betterAuth({
         webhooks({
           secret: env.POLAR_WEBHOOK_SECRET,
           onSubscriptionCreated: async (payload) => {
-            const metadata = payload.data.metadata as Record<string, string> | undefined;
-            const userId = metadata?.userId ?? payload.data.customer?.externalId?.split(":")[0];
+            const userId = payload.data.customer?.externalId;
             if (!userId) return;
 
-            const locationId = metadata?.locationId;
+            const locationId = (payload.data.metadata as Record<string, string> | undefined)?.locationId;
             if (!locationId) {
               console.error("No locationId in subscription metadata", { subscriptionId: payload.data.id });
               return;
